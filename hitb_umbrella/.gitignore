@@ -4,4 +4,5 @@
 erl_crash.dump
 *.ez
 /.elixir_ls
-/Mnesia.nonode@nohost
+/Mnesia.*
+

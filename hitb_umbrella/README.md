@@ -5,5 +5,6 @@
 * [ipfs](https://github.com/ipfs/ipfs) Peer-to-peer hypermedia protocol
 
 ### 项目开发
-* mix init_db
+* ./init.sh
+* ./dev.sh
 * iex -S mix phx.server

@@ -12,6 +12,7 @@ config :hitb_web,
 # Configures the endpoint
 config :hitb_web, HitbWeb.Endpoint,
   url: [host: "localhost"],
+  http: [port: System.get_env("PORT") || 4000],
   secret_key_base: "dqEzstesQkzYjqUZaLSKSyGgNckJhzWexkzoPtJ0P61tmslS2SQMYGvDL6tOrOHM",
   render_errors: [view: HitbWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: HitbWeb.PubSub,
