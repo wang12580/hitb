@@ -16,7 +16,7 @@ use Mix.Config
 config :hitb_web, HitbWeb.Endpoint,
   load_from_system_env: true,
   url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: "HZR57u4kVzpa1JXEo6KLGZLaRXuzeE2KIZQWON9N5XtTdhMEBtvLGDVIzF0Ohl/z"
 
 # ## SSL Support
