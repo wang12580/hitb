@@ -13,6 +13,6 @@ defmodule Peers do
 
   """
   def hello do
-    :peers
+    :world
   end
 end

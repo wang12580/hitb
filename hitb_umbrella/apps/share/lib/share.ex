@@ -13,6 +13,6 @@ defmodule Share do
 
   """
   def hello do
-    :share
+    :world
   end
 end

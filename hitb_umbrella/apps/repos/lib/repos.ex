@@ -13,6 +13,6 @@ defmodule Repos do
 
   """
   def hello do
-    :repos
+    :world
   end
 end

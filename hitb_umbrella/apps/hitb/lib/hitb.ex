@@ -6,4 +6,7 @@ defmodule Hitb do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  def hello do
+    :hitb
+  end
 end

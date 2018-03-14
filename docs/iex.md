@@ -9,4 +9,5 @@
 * * ctrl + g
 * * r  'bb@hitb'  'Elixir.IEx'
 * * c
-
+* h
+* r moduel

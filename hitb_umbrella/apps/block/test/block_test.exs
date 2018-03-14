@@ -3,6 +3,6 @@ defmodule BlockTest do
   doctest Block
 
   test "greets the world" do
-    assert Block.hello() == :block
+    assert Block.hello() == :world
   end
 end

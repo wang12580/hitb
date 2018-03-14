@@ -18,6 +18,7 @@ defmodule Share.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      mod: {Share.Application, []},
       extra_applications: [:logger]
     ]
   end

@@ -11,9 +11,8 @@ defmodule Hitb.Application do
 
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
-
-    Supervisor.start_link([
-      
-    ], strategy: :one_for_one, name: Hitb.Supervisor)
+    children = []
+    opts = [strategy: :one_for_one, name: Hitb.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end

@@ -13,6 +13,6 @@ defmodule Token do
 
   """
   def hello do
-    :token
+    :world
   end
 end

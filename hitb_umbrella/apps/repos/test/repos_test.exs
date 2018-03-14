@@ -3,6 +3,6 @@ defmodule ReposTest do
   doctest Repos
 
   test "greets the world" do
-    assert Repos.hello() == :repos
+    assert Repos.hello() == :world
   end
 end

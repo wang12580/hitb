@@ -3,6 +3,6 @@ defmodule PeersTest do
   doctest Peers
 
   test "greets the world" do
-    assert Peers.hello() == :peers
+    assert Peers.hello() == :world
   end
 end

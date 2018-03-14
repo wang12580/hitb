@@ -3,6 +3,6 @@ defmodule TokenTest do
   doctest Token
 
   test "greets the world" do
-    assert Token.hello() == :token
+    assert Token.hello() == :world
   end
 end

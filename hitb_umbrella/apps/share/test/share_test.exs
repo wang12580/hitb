@@ -3,6 +3,6 @@ defmodule ShareTest do
   doctest Share
 
   test "greets the world" do
-    assert Share.hello() == :share
+    assert Share.hello() == :world
   end
 end

@@ -13,6 +13,6 @@ defmodule Block do
 
   """
   def hello do
-    :block
+    :world
   end
 end
