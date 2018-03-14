@@ -43,6 +43,11 @@ defmodule HitbWeb.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:hitb, in_umbrella: true},
+      {:repos, in_umbrella: true},
+      {:peers, in_umbrella: true},
+      {:block, in_umbrella: true},
+      {:share, in_umbrella: true},
+      {:token, in_umbrella: true},
       {:cowboy, "~> 1.0"}
     ]
   end

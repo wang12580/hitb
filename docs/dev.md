@@ -1,6 +1,6 @@
 ### docker命令
 * docker build -t hitb .
-* docker run --name hitb -p 4000:4000 -v /home/hitb/git/hitb:/hitb -it hitb
+* docker run --name hitb -p 4000:4000 -v /d/git/hitb:/hitb -it hitb
 * cd /hitb/hitb_umbrella
 * mix deps.get
 * mix phx.server

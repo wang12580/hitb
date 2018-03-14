@@ -19,6 +19,7 @@ defmodule HitbWeb do
 
   def controller do
     quote do
+      require Logger
       use Phoenix.Controller, namespace: HitbWeb
       import Plug.Conn
       import HitbWeb.Router.Helpers
