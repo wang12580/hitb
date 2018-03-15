@@ -1,4 +1,4 @@
-defmodule Repos.P2pMessage do
+defmodule Peers.P2pMessage do
   @moduledoc """
   p2p messaging protocol. Defines message options.
   """

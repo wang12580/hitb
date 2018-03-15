@@ -1,4 +1,4 @@
-defmodule Repos.BlockChainRepository do
+defmodule Repos.BlockRepository do
   @moduledoc """
     Defines functionality for interacting with the block chain
     mnesia table

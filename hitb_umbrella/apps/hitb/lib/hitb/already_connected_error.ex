@@ -1,4 +1,4 @@
-defmodule Repos.ErrorAlreadyConnected do
+defmodule Hitb.ErrorAlreadyConnected do
   @moduledoc """
   Exception raised when attempting to connect to a user again.
   """

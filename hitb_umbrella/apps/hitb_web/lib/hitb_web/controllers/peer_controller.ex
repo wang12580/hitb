@@ -1,5 +1,6 @@
 defmodule HitbWeb.PeerController do
   use HitbWeb, :controller
+  alias Hitb
   @moduledoc """
     Functionality for managing peers
   """
@@ -7,9 +8,9 @@ defmodule HitbWeb.PeerController do
   def add_peer(conn, peer_data) do
     host = peer_data["host"]
     port = peer_data["port"]
-    result = Repos.P2pSessionManager.connect(host, port)
+    result = Peers.P2pSessionManager.connect(host, port)
     if result == :fail do
-      raise Repos.ErrorAlreadyConnected
+      raise Hitb.ErrorAlreadyConnected
     end
     json(conn, %{})
   end

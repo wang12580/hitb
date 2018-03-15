@@ -1,4 +1,4 @@
-defmodule Repos.P2pClientHandler do
+defmodule Peers.P2pClientHandler do
   @moduledoc """
   Receives and handles messages over websocket.
   Responsible for keeping the block chain in sync.
@@ -8,12 +8,12 @@ defmodule Repos.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
-  @query_latest_block Repos.P2pMessage.query_latest_block
-  @query_all_blocks   Repos.P2pMessage.query_all_blocks
-  # @update_block_chain Repos.P2pMessage.update_block_chain
-  @add_peer_request   Repos.P2pMessage.add_peer_request
-  @connection_error   Repos.P2pMessage.connection_error
-  @connection_success Repos.P2pMessage.connection_success
+  @query_latest_block Peers.P2pMessage.query_latest_block
+  @query_all_blocks   Peers.P2pMessage.query_all_blocks
+  # @update_block_chain Peers.P2pMessage.update_block_chain
+  @add_peer_request   Peers.P2pMessage.add_peer_request
+  @connection_error   Peers.P2pMessage.connection_error
+  @connection_success Peers.P2pMessage.connection_success
 
   def start_link(host, port) do
     GenSocketClient.start_link(
@@ -73,7 +73,7 @@ defmodule Repos.P2pClientHandler do
   def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
     Logger.info("connection to server failed...")
     IO.inspect payload
-    Repos.P2pSessionManager.terminate_session(self())
+    Peers.P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
 
@@ -113,8 +113,8 @@ defmodule Repos.P2pClientHandler do
 
   def handle_info(@add_peer_request, transport, state) do
     Logger.info("sending request to add me as a peer")
-    local_server_host = Application.get_env(:oniichain, OniichainWeb.Endpoint)[:url][:host]
-    local_server_port = Application.get_env(:oniichain, OniichainWeb.Endpoint)[:http][:port]
+    local_server_host = Application.get_env(:oniichain, HitbWeb.Endpoint)[:url][:host]
+    local_server_port = Application.get_env(:oniichain, HitbWeb.Endpoint)[:http][:port]
     GenSocketClient.push(transport, "p2p", @add_peer_request, %{host: local_server_host, port: local_server_port})
     {:ok, state}
   end

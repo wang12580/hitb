@@ -1,4 +1,4 @@
-defmodule Repos.P2pSessionManager do
+defmodule Peers.P2pSessionManager do
   @moduledoc """
   Oversees clients for each p2p session, using them to send messages.
   """
@@ -20,7 +20,7 @@ defmodule Repos.P2pSessionManager do
         end
       end)
       if not already_connected do
-        {:ok, pid} = Repos.P2pClientHandler.start_link(host, port)
+        {:ok, pid} = Peers.P2pClientHandler.start_link(host, port)
         :ets.insert(:peers, {pid, %{host: host, port: port}})
         :ok
       else

@@ -1,5 +1,6 @@
-defmodule Repos.BlockService do
+defmodule Block.BlockService do
   require Logger
+  import Repos.Block
   @moduledoc """
   Operations for blocks
   TODO: refactor :ets work into its own module
@@ -23,7 +24,7 @@ defmodule Repos.BlockService do
       else
         # remote peers chain is longer
         # TODO: don't do this lol
-        Repos.BlockChainRepository.replace_chain(remote_block_chain, remote_latest_block)
+        Repos.BlockRepository.replace_chain(remote_block_chain, remote_latest_block)
       end
     end
   end
@@ -57,14 +58,14 @@ defmodule Repos.BlockService do
 
   def add_block(block) do
     if is_block_valid(block, get_latest_block()) do
-      Repos.BlockChainRepository.insert_block(block)
+      Repos.BlockRepository.insert_block(block)
     end
   end
 
   def get_latest_block() do
     case :ets.lookup(:latest_block, :latest) do
       [] ->
-        Repos.BlockChainRepository.get_latest_block()
+        Repos.BlockRepository.get_latest_block()
     list ->
       list |> hd |> elem(1)
     end
