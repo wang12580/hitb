@@ -8,3 +8,20 @@
 * ./init.sh
 * ./dev.sh
 * iex -S mix phx.server
+
+### 临时命令
+* curl -H 'Content-Type: application/json' localhost:4000/api/block -X POST -d '{"data": "cooldata"}'
+
+* curl localhost:4000/api/blocks
+
+* curl -H 'Content-Type: application/json' localhost:4000/api/peer -X POST -d '{"host": "127.0.0.1", "port": 5553}'
+
+* curl localhost:4000/api/peers
+
+### 区块链各层
+#### 数据层:repos,使用mnesia
+#### 网络层:peers,
+#### 安全层:block
+#### 共识层:block
+#### 激励层:token
+#### 应用层:share,文件共享

@@ -2,6 +2,7 @@ defmodule HitbWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :hitb_web
 
   socket "/socket", HitbWeb.UserSocket
+  socket "/p2p", HitbWeb.P2pSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

@@ -20,7 +20,13 @@ defmodule HitbWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", HitbWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", HitbWeb do
+    pipe_through :api
+
+    post "/block", BlockController, :add_block
+    get "/blocks", BlockController, :get_all_blocks
+
+    post "/peer", PeerController, :add_peer
+    get "/peers", PeerController, :get_all_peers
+  end
 end
