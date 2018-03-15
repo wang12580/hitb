@@ -7,3 +7,4 @@ gnome-terminal -x bash -c 'PORT=4006 iex --sname ff -S mix phx.server'
 gnome-terminal -x bash -c 'PORT=4007 iex --sname gg -S mix phx.server'
 gnome-terminal -x bash -c 'PORT=4008 iex --sname hh -S mix phx.server'
 gnome-terminal -x bash -c 'PORT=4009 iex --sname ii -S mix phx.server'
+PORT=4000 iex --sname dev -S mix phx.server

@@ -7,14 +7,14 @@
 ### 项目开发
 * ./init.sh
 * ./dev.sh
-* iex -S mix phx.server
+* iex --sname dev -S mix phx.server
 
 ### 临时命令
 * curl -H 'Content-Type: application/json' localhost:4000/api/block -X POST -d '{"data": "cooldata"}'
 
 * curl localhost:4000/api/blocks
 
-* curl -H 'Content-Type: application/json' localhost:4000/api/peer -X POST -d '{"host": "127.0.0.1", "port": 5553}'
+* curl -H 'Content-Type: application/json' localhost:4000/api/peer -X POST -d '{"host": "127.0.0.1", "port": 4001}'
 
 * curl localhost:4000/api/peers
 

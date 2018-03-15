@@ -8,22 +8,62 @@
     <meta name="author" content="">
 
     <title>Hello Hitb!</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap.css") %>" />
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>" />
+    <script src="<%= static_path(@conn, "/js/jquery-1.9.1.min.js") %>" ></script>
+    <script src="<%= static_path(@conn, "/js/bootstrap.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/vue.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/phoenix.js") %>"></script>
   </head>
 
+  <script type="text/javascript">
+
+  </script>
+
   <body>
-    <div class="container">
+    <div id="body">
       <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="#">{{currentTime}}</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Features</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Pricing</a>
+              </li>
+            </ul>
+          </div>
         </nav>
-        <span class="logo"></span>
       </header>
 
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <p class="alert alert-info" role="alert" v-if="false"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert" v-if="false"><%= get_flash(@conn, :error) %></p>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-2">
+            <p><a href='#' v-on:click="addPeer">addPeer</a></p>
+            <p><a href='#' v-on:click="getPeers">peers</a></p>
+            <p><a href='#' v-on:click="addBlock">addBlock</a></p>
+            <p><a href='#' v-on:click="getBlocks">blocks</a></p>
+          </div>
+          <div class="col-10">
+            <table class="table table-striped">
+              <tr v-for="(item, index) in items" v-bind:key='index'>
+                <td> {{ item }} </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <main role="main">
         <%= render @view_module, @view_template, assigns %>

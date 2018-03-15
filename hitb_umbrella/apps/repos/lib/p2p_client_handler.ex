@@ -27,6 +27,10 @@ defmodule Repos.P2pClientHandler do
     {:connect, url, [], %{}}
   end
 
+  def join(_transport, _topic, _payload \\ %{}) do
+
+  end
+
   def handle_connected(transport, state) do
     Logger.info("connected")
     GenSocketClient.join(transport, "p2p")
@@ -118,5 +122,11 @@ defmodule Repos.P2pClientHandler do
   def handle_info(message, _transport, state) do
     Logger.warn("Unhandled message #{inspect message}")
     {:ok, state}
+  end
+
+  def handle_call(_message, _arg1, _transport, _callback_state) do
+    reply = :reply
+    new_state = :new_state
+    {:reply, reply, new_state}
   end
 end
