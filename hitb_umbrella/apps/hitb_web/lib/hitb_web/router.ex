@@ -28,5 +28,16 @@ defmodule HitbWeb.Router do
 
     post "/peer", PeerController, :add_peer
     get "/peers", PeerController, :get_all_peers
+
+    post "/open", AccountController, :openAccount
+    post "/open2", AccountController, :openAccount2
+    get  "/getBalance", AccountController, :getBalance
+    get "/getPublicKey", AccountController, :getPublickey
+    post "/generatePublicKey", AccountController, :generatePublickey
+    get "/delegates", AccountController, :getDelegates
+    get "/delegates/fee", AccountController, :getDelegatesFee
+    put "/delegates", AccountController, :addDelegates
+    get "/account", AccountController, :getAccount
+    get "/newAccount", AccountController, :newAccount
   end
 end
