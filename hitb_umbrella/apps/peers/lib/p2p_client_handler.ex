@@ -44,8 +44,8 @@ defmodule Peers.P2pClientHandler do
   end
 
   def handle_joined(topic, _payload, _transport, state) do
-    Logger.info("joined the topic #{topic}. Attempting to get client connection from remote host...")
-    Process.send(self(), @add_peer_request, [])
+    Logger.info("joined the topic #{topic}.")
+    # Process.send(self(), @add_peer_request, [])
     {:ok, state}
   end
 
