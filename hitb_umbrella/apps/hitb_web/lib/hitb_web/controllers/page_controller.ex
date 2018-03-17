@@ -16,4 +16,16 @@ defmodule HitbWeb.PageController do
     Logger.info Token.hello()
     render conn, "index.html"
   end
+
+  def status(conn, _params) do
+    json(conn, %{})
+  end
+
+  def statusSync(conn, _params) do
+    json(conn, %{})
+  end
+
+  def systemInfo(conn, _params) do
+    json(conn, %{})
+  end
 end

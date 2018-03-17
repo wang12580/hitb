@@ -22,4 +22,16 @@ defmodule HitbWeb.PeerController do
       end)
       json(conn,  %{peers: peers})
   end
+
+  def getPeers(conn, _) do
+    json(conn, %{})
+  end
+
+  def getPeer(conn, _) do
+    json(conn, %{})
+  end
+
+  def version(conn, _) do
+    json(conn, %{})
+  end
 end

@@ -44,4 +44,8 @@ defmodule HitbWeb.AccountController do
   def newAccount(conn, _) do
     json(conn, %{})
   end
+
+  def addSignature(conn, _) do
+    json(conn, %{})
+  end
 end

@@ -16,4 +16,41 @@ defmodule HitbWeb.BlockController do
     all_blocks = Repos.BlockRepository.get_all_blocks()
     json(conn,  %{blocks: all_blocks})
   end
+
+  def getBlock(conn, _) do
+    json(conn, %{})
+  end
+
+  def getFullBlock(conn, _) do
+    json(conn, %{})
+  end
+
+  def getBlocks(conn, _) do
+    json(conn, %{})
+  end
+
+  def getHeight(conn, _) do
+    json(conn, %{})
+  end
+
+  def getFee(conn, _) do
+    json(conn, %{})
+  end
+
+  def getMilestone(conn, _) do
+    json(conn, %{})
+  end
+
+  def getReward(conn, _) do
+    json(conn, %{})
+  end
+
+  def getSupply(conn, _) do
+    json(conn, %{})
+  end
+
+  def getStatus(conn, _) do
+    json(conn, %{})
+  end
 end
+
