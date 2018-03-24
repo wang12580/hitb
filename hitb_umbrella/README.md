@@ -9,6 +9,10 @@
 * ./init.sh
 * ./dev.sh
 * iex --sname dev -S mix phx.server
+* :observer.start()
+* r(Block.S1)
+* Block.S1.create("a")
+* Block.S1.lookup("a")
 
 ### 临时命令
 * curl -H 'Content-Type: application/json' localhost:4000/api/block -X POST -d '{"data": "cooldata"}'
