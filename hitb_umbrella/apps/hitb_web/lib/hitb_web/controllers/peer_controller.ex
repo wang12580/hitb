@@ -6,13 +6,13 @@ defmodule HitbWeb.PeerController do
   """
 
   def add_peer(conn, peer_data) do
-    host = peer_data["host"]
-    port = peer_data["port"]
+    %{"host" => host, "port" => port} = peer_data
     result = Peers.P2pSessionManager.connect(host, port)
     if result == :fail do
       raise Hitb.ErrorAlreadyConnected
+    else
+      json(conn, %{result: [host <> ":" <> port <> "节点连接成功"]})
     end
-    json(conn, %{})
   end
 
   def get_all_peers(conn, _) do

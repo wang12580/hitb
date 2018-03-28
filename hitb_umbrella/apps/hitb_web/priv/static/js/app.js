@@ -11,11 +11,13 @@ $(document).ready(function() {
     el: '#body',
     // delimiters: ['${', '}'],
     data: {
+      type : 'index',
       items: [],
       currentTime: new Date().toLocaleString(),
     },
     methods: {
       getPeers: function() {
+        this.type = 'getPeers'
         this.$ajax({
           type: 'GET',
           url: BASE_URL + 'peers',
@@ -27,6 +29,7 @@ $(document).ready(function() {
         });
       },
       getBlocks: function() {
+        this.type = 'getBlocks'
         this.$ajax({
           type: 'GET',
           url: BASE_URL + 'blocks',
@@ -38,26 +41,36 @@ $(document).ready(function() {
         });
       },
       addPeer: function(){
+        this.type = 'addPeer'
         this.$ajax({
           type: 'POST',
           url: BASE_URL + '/peer',
           data: {"host": "127.0.0.1", "port": 4001},
           dataType: 'json',
           success: (res)=> {
-            console.log(res)
+            this.items = res.result
+          },
+          error: (err)=> {
+            this.items = ['连接节点失败']
+            console.log(err);
           }
-        });        
+        });
       },
       addBlock: function(){
+        this.type = 'addBlock'
         this.$ajax({
           type: 'POST',
           url: BASE_URL + '/block',
           data: {"data": new Date().toLocaleString()},
           dataType: 'json',
           success: (res)=> {
-            console.log(res)
+            this.items = res.result
+          },
+          error: (err)=> {
+            this.items = ['创建区块失败']
+            console.log(err);
           }
-        });        
+        });
       }
     }  // vue-methods
   })  // new-Vue
