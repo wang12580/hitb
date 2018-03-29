@@ -19,6 +19,7 @@ defmodule HitbWeb.Router do
     get "/", PageController, :index
     get "/block", PageController, :block
     get "/peer", PageController, :peer
+    get "/login", PageController, :login
   end
 
   # Other scopes may use custom stacks.

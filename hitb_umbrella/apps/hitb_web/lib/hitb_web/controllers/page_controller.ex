@@ -38,4 +38,9 @@ defmodule HitbWeb.PageController do
     # json(conn, %{})
     render conn, "peers.html"
   end
+  # 登录
+  def login(conn, _params) do
+    # json(conn, %{})
+    render conn, "login.html", layout: false
+  end
 end
