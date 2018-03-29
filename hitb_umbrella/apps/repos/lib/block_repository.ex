@@ -17,6 +17,15 @@ defmodule Repos.BlockRepository do
     :ok
   end
 
+  def get_block(index) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.match_object({:block_chain, String.to_integer(index), :_, :_, :_, :_})
+    end)
+    result
+      |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
+  end
+
   def get_all_blocks() do
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.foldl(fn(record, acc) ->

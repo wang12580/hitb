@@ -17,8 +17,9 @@ defmodule HitbWeb.BlockController do
     json(conn,  %{blocks: all_blocks})
   end
 
-  def getBlock(conn, _) do
-    json(conn, %{})
+  def getBlock(conn, %{"index" => index}) do
+    block = Repos.BlockRepository.get_block(index)
+    json(conn, %{block: block})
   end
 
   def getFullBlock(conn, _) do
@@ -53,4 +54,3 @@ defmodule HitbWeb.BlockController do
     json(conn, %{})
   end
 end
-
