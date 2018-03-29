@@ -17,6 +17,8 @@ defmodule HitbWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/block", PageController, :block
+    get "/peer", PageController, :peer
   end
 
   # Other scopes may use custom stacks.

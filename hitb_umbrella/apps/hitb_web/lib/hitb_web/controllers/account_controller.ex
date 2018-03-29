@@ -42,6 +42,9 @@ defmodule HitbWeb.AccountController do
   end
 
   def newAccount(conn, _) do
+    # IO.inspect :crypto.hash(:sha256, "someone manual strong movie roof episode eight spatial brown soldier soup motor")
+    # |> Base.encode64
+    Repos.AccountRepository.insert_account()
     json(conn, %{})
   end
 

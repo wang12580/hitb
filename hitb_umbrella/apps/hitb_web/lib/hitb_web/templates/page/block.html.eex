@@ -1,0 +1,4 @@
+<div>
+  hello block
+  {{this.items}}
+</div>
