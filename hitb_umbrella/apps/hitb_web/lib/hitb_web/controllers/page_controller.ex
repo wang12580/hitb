@@ -28,4 +28,14 @@ defmodule HitbWeb.PageController do
   def systemInfo(conn, _params) do
     json(conn, %{})
   end
+
+  def block(conn, _params) do
+    # json(conn, %{})
+    render conn, "block.html"
+  end
+
+  def peer(conn, _params) do
+    # json(conn, %{})
+    render conn, "peers.html"
+  end
 end
