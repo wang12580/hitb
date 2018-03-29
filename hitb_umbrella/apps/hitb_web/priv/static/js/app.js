@@ -35,8 +35,18 @@ $(document).ready(function() {
           url: BASE_URL + 'blocks',
           dataType: 'json',
           success: (res)=> {
-            console.log(res)
             this.items = res.blocks
+          }
+        });
+      },
+      getBlock: function(val) {
+        this.type = 'getBlock'
+        this.$ajax({
+          type: 'GET',
+          url: BASE_URL + 'getBlock?index=' + val,
+          dataType: 'json',
+          success: (res)=> {
+            this.items = res.block
           }
         });
       },
