@@ -23,7 +23,9 @@ defmodule Repos.BlockRepository do
         [deserialize_block_from_record(record) | acc]
       end, [], :block_chain)
     end)
+    #按照index排序
     result
+      |> Enum.sort(fn(a, b) -> a.index < b.index end)
   end
 
   def replace_chain(block_chain, latest_block) do
