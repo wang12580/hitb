@@ -3,10 +3,10 @@ defmodule Repos.Account do
   Represents a account in a block chain
   """
   @type block :: %Repos.Account{
-    index:              integer,
-    username:           String.t,
+    index:              integer, #索引
+    username:           String.t, #用户名
     u_username:         String.t,
-    isDelegate:         integer,
+    isDelegate:         integer, #是否委托人
     u_isDelegate:       integer,
     secondSignature:    integer,
     u_secondSignature:  integer,

@@ -81,6 +81,21 @@ $(document).ready(function() {
             console.log(err);
           }
         });
+      },
+      test: function(){
+        this.$ajax({
+          type: 'get',
+          url: BASE_URL + '/newAccount',
+          // data: {"data": new Date().toLocaleString()},
+          dataType: 'json',
+          success: (res)=> {
+            this.items = res.result
+          },
+          error: (err)=> {
+            this.items = ['创建区块失败']
+            console.log(err);
+          }
+        });
       }
     }  // vue-methods
   })  // new-Vue

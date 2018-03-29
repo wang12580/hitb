@@ -17,6 +17,7 @@ defmodule Mix.Tasks.InitDb do
     :mnesia.start()
 
     create_block_chain_table(node)
+    create_account_table(node)
     IO.puts("Successfully created tables.")
   end
 
@@ -34,5 +35,25 @@ defmodule Mix.Tasks.InitDb do
         :abort
     end
     :ok = :mnesia.wait_for_tables([:block_chain], 5000)
+  end
+
+  defp create_account_table(node) do
+    :ok = case :mnesia.create_table(:account, [
+      attributes: [:index, :username, :u_username, :isDelegate, :u_isDelegate, :secondSignature,
+      :u_secondSignature, :address, :publicKey, :secondPublicKey, :balance, :u_balance, :vote,
+      :rate, :delegates, :u_delegates, :multisignatures, :u_multisignatures, :multimin, :u_multimin,
+      :multilifetime, :u_multilifetime, :blockId, :nameexist, :u_nameexist, :producedblocks,
+      :missedblocks, :fees, :rewards, :lockHeight],
+      type: :set,
+      disc_copies: [node]
+    ]) do
+      {:atomic, :ok} ->
+        :ok
+      {:aborted, {:already_exists, _}} ->
+        :ok
+      {:aborted, _} ->
+        :abort
+    end
+    :ok = :mnesia.wait_for_tables([:account], 5000)
   end
 end
