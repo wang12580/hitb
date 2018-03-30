@@ -97,9 +97,6 @@ $(document).ready(function() {
             console.log(err);
           }
         });
-      },
-      login: function() {
-        console.log(this.username)
       }
     }  // vue-methods
   })  // new-Vue
