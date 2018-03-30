@@ -11,6 +11,7 @@ defmodule HitbWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
   end
 
   scope "/", HitbWeb do
@@ -19,7 +20,7 @@ defmodule HitbWeb.Router do
     get "/", PageController, :index
     get "/block", PageController, :block
     get "/peer", PageController, :peer
-    get "/login", PageController, :login
+    get "/login", PageController, :login_html
   end
 
   # Other scopes may use custom stacks.
@@ -76,6 +77,5 @@ defmodule HitbWeb.Router do
     get "/getStorage", TransactionController, :getStorage
     get "/getStorage:id", TransactionController, :getStorage
     put "/putStorage", TransactionController, :putStorage
-
   end
 end
