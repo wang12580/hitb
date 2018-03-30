@@ -15,7 +15,8 @@ defmodule HitbWeb.Login do
           Account.newAccount(user)
           user = Repos.AccountRepository.get_account(user.username)
           user =
-            %{index: user.index,
+            %{login: true,
+              index: user.index,
               username: user.username,
               secret: user.username,
               balance: user.balance,
@@ -26,14 +27,16 @@ defmodule HitbWeb.Login do
               address: user.address,
               secondPublicKey: user.secondPublicKey,
               vote: user.vote}
-          [put_session(conn, :user, %{login: true, username: user.username}), %{user: user}]
+
+          [put_session(conn, :user, user), %{user: user}]
         else
           [put_session(conn, :user, %{login: false, username: user.username}), %{}]
         end
       _ ->
         user = Repos.AccountRepository.get_account(user.username)
         user =
-          %{index: user.index,
+          %{login: true,
+            index: user.index,
             username: user.username,
             secret: user.username,
             balance: user.balance,
@@ -44,7 +47,7 @@ defmodule HitbWeb.Login do
             address: user.address,
             secondPublicKey: user.secondPublicKey,
             vote: user.vote}
-        [put_session(conn, :user, %{login: true, username: user.username}), user]
+        [put_session(conn, :user, user), user]
     end
   end
 
