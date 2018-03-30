@@ -8,7 +8,7 @@ defmodule HitbWeb.AccountController do
   def openAccount(conn, _) do
     IO.inspect conn.params
     if(conn.params["username"])do
-      IO.inspect "ssss"
+      conn = HitbWeb.Login.login(conn, %{username: conn.params["username"]})
       json(conn, %{login: true})
     else
       json(conn, %{})

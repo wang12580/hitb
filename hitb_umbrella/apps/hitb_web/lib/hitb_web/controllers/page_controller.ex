@@ -14,6 +14,13 @@ defmodule HitbWeb.PageController do
     Logger.info Block.hello()
     Logger.info Share.hello()
     Logger.info Token.hello()
+    user = get_session(conn, :user)
+    login = HitbWeb.Login.is_login(conn)
+    if(login)do
+      render conn, "index.html"
+    else
+      redirect conn, to: "/login"
+    end
     render conn, "index.html"
   end
 
