@@ -5,37 +5,6 @@ defmodule Repos.AccountRepository do
   """
 
   def insert_account(account) do
-    IO.inspect {:account,
-      index:             account.index, #索引
-      username:          account.username, #用户名
-      u_username:        account.u_username,
-      isDelegate:        account.isDelegate, #是否委托人
-      u_isDelegate:      account.u_isDelegate,
-      secondSignature:   account.secondSignature,
-      u_secondSignature: account.u_secondSignature,
-      address:           account.address,
-      publicKey:         account.publicKey,
-      secondPublicKey:   account.secondPublicKey,
-      balance:           account.balance,
-      u_balance:         account.u_balance,
-      vote:              account.vote,
-      rate:              account.rate,
-      delegates:         account.delegates,
-      u_delegates:       account.u_delegates,
-      multisignatures:   account.multisignatures,
-      u_multisignatures: account.u_multisignatures,
-      multimin:          account.multimin,
-      u_multimin:        account.u_multimin,
-      multilifetime:     account.multilifetime,
-      u_multilifetime:   account.u_multilifetime,
-      blockId:           account.blockId,
-      nameexist:         account.nameexist,
-      u_nameexist:       account.u_nameexist,
-      producedblocks:    account.producedblocks,
-      missedblocks:      account.missedblocks,
-      fees:              account.fees,
-      rewards:           account.rewards,
-      lockHeight:        account.lockHeight}
     {:atomic, _} = :mnesia.transaction(fn ->
       :mnesia.write({:account,
         account.index, #索引
@@ -87,6 +56,19 @@ defmodule Repos.AccountRepository do
     #按照index排序
     result
       |> Enum.sort(fn(a, b) -> a.index < b.index end)
+  end
+
+  def get_account(username) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.match_object({:account, :_, username, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+    end)
+    case result do
+      [] -> []
+      _ ->
+        result
+          |> Enum.map(fn x -> deserialize_account_from_record(x) end) |> hd
+    end
   end
 
   def delete_all_account() do
