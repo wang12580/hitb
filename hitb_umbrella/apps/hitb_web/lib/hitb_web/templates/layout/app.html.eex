@@ -10,6 +10,7 @@
     <title>Hello Hitb!</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap.css") %>" />
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>" />
+     <link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
     <script src="<%= static_path(@conn, "/js/jquery-1.9.1.min.js") %>" ></script>
     <script src="<%= static_path(@conn, "/js/bootstrap.min.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/vue.min.js") %>"></script>
@@ -46,6 +47,9 @@
                 <a class="nav-link" href="/peer">Peer</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="/account">Account</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/logout">退出</a>
               </li>
             </ul>
@@ -56,7 +60,7 @@
       <p class="alert alert-info" role="alert" v-if="false"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert" v-if="false"><%= get_flash(@conn, :error) %></p>
 
-      <div class="container">
+      <%# <div class="container">
         <div class="row">
           <div class="col-2">
             <p><a href='#' v-on:click="addPeer">连接节点</a></p>
@@ -95,7 +99,7 @@
             </table>
           </div>
         </div>
-      </div>
+      </div> %>
 
       <main role="main">
         <%= render @view_module, @view_template, assigns %>

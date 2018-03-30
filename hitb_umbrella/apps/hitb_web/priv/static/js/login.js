@@ -38,4 +38,3 @@ $(document).ready(function() {
       }  // vue-methods
     })  // new-Vue
   });  // jquery-ready
-  
