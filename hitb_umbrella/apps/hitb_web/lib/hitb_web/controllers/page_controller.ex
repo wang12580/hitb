@@ -49,4 +49,9 @@ defmodule HitbWeb.PageController do
   def login_html(conn, _params) do
     render conn, "login.html", layout: false
   end
+
+  def logout(conn, _params) do
+    conn = HitbWeb.Login.logout(conn)
+    redirect conn, to: "/login"
+  end
 end
