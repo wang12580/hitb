@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hello Hitb!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap.css") %>" />
+    <script src="<%= static_path(@conn, "/js/jquery-1.9.1.min.js") %>" ></script>
+    <script src="<%= static_path(@conn, "/js/bootstrap.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/vue.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/phoenix.js") %>"></script>
+  </head>
+  <body>
+    <div id="body">
+      <div class ="row">
+        <div class="col-md-6">
+          <div class="text-center login">
+            <form>
+              <div class="form-signin password">
+                <h1 class="h3 font-weight-normal md-3">Please sign in</h1>
+                <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="输入密码" class="form-control" v-model="this.username">
+              </div>
+            </form>
+            <button class="btn btn-primary login_but" v-on:click='login'>登录</button>
+            <button type="submit" class="btn btn-primary login_but">新账户</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="current">
+            <h3>区块链服务介绍 (current)</h3>
+            <h3>区块链服务功能列表 (current)</h3>
+            <h3>Search</h3>
+            <p>区块链在数据保护上具有4大特点：</p>
+            <p>隐私保护:用户使用口令密码登录,上传数据使用地址密码代表用户,保障用户个人信息不泄漏</p>
+            <p>数据不可篡改:上传数据通过生成区块链交易保存,交易完成后不可撤销,不可算改,保障数据安全</p>
+            <p>数据完全共享:所有加入区块链的节点,都完全共享区块链上的所有数据</p>
+            <p>数据权益保障:用户上传数据完成交易,获得健康币,健康币可用于区块链上的服务</p>
+            <p>区块链的6大功能分层：</p>
+            <p>数据层:</p>
+            <p>网络层:</p>
+            <p>安全层:</p>
+            <p>共识层:</p>
+            <p>交易层:</p>
+            <p>应用层:</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <style>
+  .login {
+    width: 80%;
+    height: 250px;
+    margin: auto;
+    margin-top: 150px;
+    border: #000 solid 1px;
+    box-shadow: 10px 10px 5px #888888;
+  }
+  .password {
+    margin: 15px 15px 30px 15px;
+  }
+ .login_but {
+   width: 30%;
+   margin:0 5% 0 5%
+ }
+ .current{
+   margin-top: 30px;
+ }
+  </style>
+</html>
+ <script src="<%= static_path(@conn, "/js/app.js") %>"></script>

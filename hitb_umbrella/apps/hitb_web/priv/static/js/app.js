@@ -14,6 +14,7 @@ $(document).ready(function() {
       type : 'index',
       items: [],
       currentTime: new Date().toLocaleString(),
+      username: 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
     },
     methods: {
       getPeers: function() {
@@ -96,6 +97,9 @@ $(document).ready(function() {
             console.log(err);
           }
         });
+      },
+      login: function() {
+        console.log(this.username)
       }
     }  // vue-methods
   })  // new-Vue
