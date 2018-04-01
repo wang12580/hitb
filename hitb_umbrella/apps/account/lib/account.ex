@@ -6,8 +6,12 @@ defmodule Account do
     :account
   end
 
-  def getAddressByPublicKey do
-
+  def getAddressByPublicKey(publicKey) do
+    account = Repos.AccountRepository.get_account_by_publicKey(publicKey)
+    case account do
+      [] -> nil
+      _ -> account.address
+    end
   end
 
   def vote do
@@ -19,7 +23,7 @@ defmodule Account do
   end
 
   def getAccount do
-
+    Repos.AccountRepository.get_account(user.username)
   end
 
   def newAccount(account) do
@@ -37,7 +41,11 @@ defmodule Account do
   end
 
   def getPublickey do
-
+    account = Repos.AccountRepository.get_account(user.username)
+    case account do
+      [] -> nil
+      _ -> account.publicKey
+    end
   end
 
   def generatePublickey do
