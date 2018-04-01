@@ -22,8 +22,8 @@ defmodule Account do
 
   end
 
-  def getAccount do
-    Repos.AccountRepository.get_account(user.username)
+  def getAccount(username) do
+    Repos.AccountRepository.get_account(username)
   end
 
   def newAccount(account) do
@@ -40,8 +40,8 @@ defmodule Account do
 
   end
 
-  def getPublickey do
-    account = Repos.AccountRepository.get_account(user.username)
+  def getPublickey(username) do
+    account = Repos.AccountRepository.get_account(username)
     case account do
       [] -> nil
       _ -> account.publicKey
