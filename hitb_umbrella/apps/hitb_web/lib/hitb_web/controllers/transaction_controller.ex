@@ -11,8 +11,9 @@ defmodule HitbWeb.TransactionController do
     json(conn, %{data: transactions})
   end
 
-  def getTransaction(conn, _) do
-    json(conn,  %{})
+  def getTransaction(conn, %{"id" => id}) do
+    transaction = Repos.TransactionRepository.get_transactions_by_id(id)
+    json conn, %{data: transaction}
   end
 
   def getUnconfirmedTransaction(conn, _) do

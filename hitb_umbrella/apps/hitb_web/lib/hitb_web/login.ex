@@ -12,7 +12,8 @@ defmodule HitbWeb.Login do
     case Repos.AccountRepository.get_account(user.username) do
       [] ->
         if user.username == "someone manual strong movie roof episode eight spatial brown soldier soup motor" and Repos.AccountRepository.get_all_accounts() === [] do
-          Account.newAccount(user)
+          account = Account.newAccount(user)
+          Repos.AccountRepository.insert_account(account)
           user = Repos.AccountRepository.get_account(user.username)
           user =
             %{login: true,

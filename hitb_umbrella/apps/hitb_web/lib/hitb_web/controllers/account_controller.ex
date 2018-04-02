@@ -19,11 +19,22 @@ defmodule HitbWeb.AccountController do
   end
 
   def getBalance(conn, _) do
-    json(conn, %{})
+    user = get_session(conn, :user)
+    if(user.login)do
+      balance = Account.getBalance(user.username)
+      json(conn, %{balance: balance})
+    else
+      json(conn, %{balance: 0})
+    end
   end
 
   def getPublicKey(conn, _) do
-    json(conn, %{})
+    user = get_session(conn, :user)
+    if(user.login)do
+      json(conn, %{publicKey: user.publicKey})
+    else
+      json(conn, %{publicKey: ""})
+    end
   end
 
   def generatePublicKey(conn, _) do
@@ -42,15 +53,21 @@ defmodule HitbWeb.AccountController do
     json(conn, %{})
   end
 
-  def getAccount(conn, _) do
-    json(conn, %{})
+  def getAccount(conn, %{"username" => username}) do
+    account = Repos.AccountRepository.get_account(username)
+    json(conn, %{account: account})
   end
 
-  def newAccount(conn, _) do
-    # IO.inspect :crypto.hash(:sha256, "someone manual strong movie roof episode eight spatial brown soldier soup motor")
-    # |> Base.encode64
-    Repos.AccountRepository.insert_account()
-    json(conn, %{})
+  def newAccount(conn, %{"username" => username}) do
+    account = Account.newAccount(%{username: username})
+    case account do
+      false ->
+        json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
+      _ ->
+        Repos.AccountRepository.insert_account(account)
+        user = Repos.AccountRepository.get_account(username)
+        json(conn, %{success: true, user: user, info: "用户名创建成功"})
+    end
   end
 
   def addSignature(conn, _) do
