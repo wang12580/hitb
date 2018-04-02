@@ -4,11 +4,13 @@
       <div class="col-sm">
         <div class="box_info border border-primary">
           <h3>余额</h3>
+          <%= @user.balance %>
         </div>
       </div>
       <div class="col-sm">
         <div class="box_info border border-success">
           <h3>最后区块高度</h3>
+          <%= @user.lockHeight%>
         </div>
       </div>
       <div class="col-sm">

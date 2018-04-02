@@ -71,6 +71,19 @@ defmodule Repos.AccountRepository do
     end
   end
 
+  def get_account_by_publicKey(publicKey) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.match_object({:account, :_, :_, :_, :_, :_, :_, :_, :_, publicKey, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+    end)
+    case result do
+      [] -> []
+      _ ->
+        result
+          |> Enum.map(fn x -> deserialize_account_from_record(x) end) |> hd
+    end
+  end
+
   def delete_all_account() do
     :mnesia.clear_table(:account)
   end
