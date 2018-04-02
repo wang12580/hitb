@@ -7,7 +7,8 @@ defmodule HitbWeb.TransactionController do
   """
 
   def getTransactions(conn, _) do
-    json(conn, %{})
+    transactions = Repos.TransactionRepository.get_all_transactions
+    json(conn, %{data: transactions})
   end
 
   def getTransaction(conn, _) do
