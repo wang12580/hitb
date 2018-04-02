@@ -26,7 +26,10 @@ defmodule HitbWeb.Login do
               lockHeight: user.lockHeight,
               address: user.address,
               secondPublicKey: user.secondPublicKey,
-              vote: user.vote}
+              vote: user.vote,
+              version: %{version: "1.0.0",
+                        build: "09:28:36 2018/4/2",
+                        net: "testnet"}}
 
           [put_session(conn, :user, user), %{user: user}]
         else
@@ -46,7 +49,10 @@ defmodule HitbWeb.Login do
             lockHeight: user.lockHeight,
             address: user.address,
             secondPublicKey: user.secondPublicKey,
-            vote: user.vote}
+            vote: user.vote,
+            version: %{version: "1.0.0",
+                      build: "09:28:36 2018/4/2",
+                      net: "testnet"}}
         [put_session(conn, :user, user), user]
     end
   end
