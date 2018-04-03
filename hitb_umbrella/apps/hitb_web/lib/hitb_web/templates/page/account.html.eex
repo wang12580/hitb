@@ -1,74 +1,54 @@
-<div>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm">
-        <div class="box_info border border-primary">
-          <h3>余额</h3>
-          <%= @user.balance %>
-        </div>
+<script src="<%= static_path(@conn, "/js/account.js") %>"></script>
+<link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <div class="box_info border border-primary">
+        <h3>余额</h3>
+        <%= @user.balance %>
       </div>
-      <div class="col-sm">
-        <div class="box_info border border-success">
-          <h3>最后区块高度</h3>
-          <%= @user.lockHeight%>
-        </div>
+    </div>
+    <div class="col-sm">
+      <div class="box_info border border-success">
+        <h3>最后区块高度</h3>
+        <%= @user.lockHeight%>
       </div>
-      <div class="col-sm">
-        <div class="box_info border border-warning">
-          <h3>版本信息</h3>
-        </div>
+    </div>
+    <div class="col-sm">
+      <div class="box_info border border-warning">
+        <h3>版本信息</h3>
+        <%= @user.version.build%>&nbsp;&nbsp;&nbsp;&nbsp;<%= @user.version.version%>
       </div>
     </div>
   </div>
-  <div class="row account_hr">
-    <h3>我的交易</h3>
-    <hr class="my-4">
-  </div>
-  <div class="row">
-    <table class="table table-bordered account_table">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">类型</th>
-          <th scope="col">发送者</th>
-          <th scope="col">接受者</th>
-          <th scope="col">日期</th>
-          <th scope="col">金额(费用)</th>
-          <th scope="col">备用</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Larry the Bird</td>
-          <td>@twitter</td>
-          <td>Larry the Bird</td>
-          <td>@twitter</td>
-          <td>@twitter</td>
-          <td>@twitter</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>
-<style>
-
-</style>
+<div class="row account_hr">
+  <h3>我的交易</h3>
+  <hr class="my-4">
+</div>
+<div class="row">
+  <table class="table table-bordered account_table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">类型</th>
+        <th scope="col">发送者</th>
+        <th scope="col">接受者</th>
+        <th scope="col">日期</th>
+        <th scope="col">金额(费用)</th>
+        <th scope="col">备用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(value, index) in transactions" v-bind:key ='index'>
+        <th scope="row">{{value.id}}</th>
+        <td>{{value.type}}</td>
+        <td>{{value.senderId}}</td>
+        <td>{{value.recipientId}}</td>
+        <td>{{value.amount/100000000}}</td>
+        <td>{{value.message}}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

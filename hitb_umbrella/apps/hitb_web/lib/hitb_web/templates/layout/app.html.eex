@@ -10,7 +10,6 @@
     <title>Hello Hitb!</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap.css") %>" />
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>" />
-     <link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
     <script src="<%= static_path(@conn, "/js/jquery-1.9.1.min.js") %>" ></script>
     <script src="<%= static_path(@conn, "/js/bootstrap.min.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/vue.min.js") %>"></script>
@@ -22,90 +21,46 @@
   </script>
 
   <body>
-    <div id="body">
-      <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <header class="header">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div id = "app">
           <a class="navbar-brand" href="#">{{currentTime}}</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/block">Block</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/peer">Peer</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/account">Account</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/logout">退出</a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
-
-      <p class="alert alert-info" role="alert" v-if="false"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert" v-if="false"><%= get_flash(@conn, :error) %></p>
-
-      <%# <div class="container">
-        <div class="row">
-          <div class="col-2">
-            <p><a href='#' v-on:click="addPeer">连接节点</a></p>
-            <p><a href='#' v-on:click="getPeers">节点</a></p>
-            <p><a href='#' v-on:click="addBlock">新建区块</a></p>
-            <p><a href='#' v-on:click="getBlocks">区块列表</a></p>
-            <p><a href='#' v-on:click="test">测试</a></p>
-          </div>
-          <div class="col-10">
-            <table v-if="type === 'getPeers'" class="table table-striped">
-              <thead><tr>
-                <th>地址</th><th>端口</th>
-              </tr></thead>
-              <tr v-for="(item, index) in items" v-bind:key='index'>
-                <td> {{ item.host }} </td><td> {{ item.port }} </td>
-              </tr>
-            </table>
-            <table v-if="type === 'getBlock'" class="table table-bordered">
-              <tr><th>索引</th><td>{{ items.index }}</td></tr>
-              <tr><th>哈希值</th><td>{{ items.hash }}</td></tr>
-              <tr><th>上一个区块哈希值</th><td>{{ items.previous_hash }}</td></tr>
-              <tr><th>时间戳</th><td>{{ items.timestamp }}</td></tr>
-              <tr><th>时间</th><td>{{ items.data }}</td></tr>
-            </table>
-            <table v-if="type === 'getBlocks'" class="table table-striped">
-                <thead><tr>
-                  <th>索引</th>
-                  <th>哈希值</th>
-                  <th>时间</th>
-                </tr></thead>
-                <tr v-for="(item, index) in items" v-bind:key='index'>
-                  <td>{{ item.index }}</td>
-                  <td><a href="#" v-on:click="getBlock(item.index)">{{ item.hash }}</a></td>
-                  <td>{{ item.data }}</td>
-                </tr>
-            </table>
-          </div>
         </div>
-      </div> %>
-
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/block">Block</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/peer">Peer</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/account">Account</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">退出</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id = "page">
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
-
-    </div> <!-- /container -->
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    </div>
   </body>
+  <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 </html>
