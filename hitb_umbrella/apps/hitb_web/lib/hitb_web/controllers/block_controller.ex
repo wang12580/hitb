@@ -31,7 +31,8 @@ defmodule HitbWeb.BlockController do
   end
 
   def getHeight(conn, _) do
-    json(conn, %{})
+    height = Repos.BlockRepository.get_all_blocks() |> List.last |> Map.get(:index)
+    json(conn, %{height: height})
   end
 
   def getFee(conn, _) do

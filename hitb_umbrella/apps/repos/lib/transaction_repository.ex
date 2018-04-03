@@ -25,6 +25,19 @@ defmodule Repos.TransactionRepository do
   #   result
   #     |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
   # end
+  def get_transactions_by_id(id) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+    end)
+    case result do
+      [] ->
+        result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end)|> Enum.map(fn x -> %{x | :args => Tuple.to_list(x.args)} end) |> hd
+      _ ->
+        nil
+    end
+  end
+
 
   def get_all_transactions() do
     {:atomic, result} = :mnesia.transaction(fn ->
