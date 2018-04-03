@@ -22,9 +22,10 @@ defmodule HitbWeb.AccountController do
     user = get_session(conn, :user)
     if(user.login)do
       balance = Account.getBalance(user.username)
-      json(conn, %{balance: balance})
+      u_Balance = Account.getuBalance(user.username)
+      json(conn, %{balance: balance, u_Balance: u_Balance})
     else
-      json(conn, %{balance: 0})
+      json(conn, %{balance: 0, u_Balance: 0})
     end
   end
 
@@ -37,8 +38,9 @@ defmodule HitbWeb.AccountController do
     end
   end
 
-  def generatePublicKey(conn, _) do
-    json(conn, %{})
+  def generatePublicKey(conn, %{"username" => username}) do
+    publicKey = Account.generatePublickey(username)
+    json(conn, %{publicKey: publicKey})
   end
 
   def getDelegates(conn, _) do

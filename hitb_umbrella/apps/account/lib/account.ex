@@ -50,6 +50,14 @@ defmodule Account do
     end
   end
 
+  def getuBalance(username) do
+    account = Repos.AccountRepository.get_account(username)
+    case account do
+      [] -> 0.0
+      _ -> account.u_balance
+    end
+  end
+
   def getPublickey(username) do
     account = Repos.AccountRepository.get_account(username)
     case account do
@@ -58,8 +66,9 @@ defmodule Account do
     end
   end
 
-  def generatePublickey do
-
+  def generatePublickey(username) do
+    :crypto.hash(:sha256, "publicKey#{username}")
+      |> Base.encode64
   end
 
   def getDelegates do
