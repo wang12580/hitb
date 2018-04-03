@@ -8,13 +8,10 @@ $(document).ready(function() {
   // console.log(Vue)
   // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
   const common = new Vue({
-    el: '#index',
-    // delimiters: ['${', '}'],
+    el: '#page',
     data: {
-      type : 'index',
-      items: [],
-      currentTime: new Date().toLocaleString(),
-      username: 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+      type : '',
+      items: []
     },
     methods: {
       getPeers: function() {
@@ -99,5 +96,5 @@ $(document).ready(function() {
         });
       }
     }  // vue-methods
-  })  // new-Vue
-});  // jquery-ready
+  })
+});

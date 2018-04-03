@@ -32,7 +32,7 @@ defmodule Repos.TransactionRepository do
     end)
     case result do
       [] ->
-        result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end)|> Enum.map(fn x -> %{x | :args => Tuple.to_list(x.args)} end) |> hd
+        result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end) |> hd
       _ ->
         nil
     end
@@ -45,9 +45,9 @@ defmodule Repos.TransactionRepository do
         [deserialize_transaction_from_record(record) | acc]
       end, [], :transaction)
     end)
-    # #按照index排序
-    # result
-    #   |> Enum.sort(fn(a, b) -> a.index < b.index end)
+    #按照id排序
+    result
+      |> Enum.sort(fn(a, b) -> a.id < b.id end)
   end
 
   # def replace_chain(block_chain, latest_block) do
@@ -89,7 +89,7 @@ defmodule Repos.TransactionRepository do
       signature:          elem(record, 12),
       signSignature:      elem(record, 13),
       asset:              elem(record, 14),
-      args:               elem(record, 15),
+      args:               Tuple.to_list(elem(record, 15)),
       message:            elem(record, 16)
     }
   end

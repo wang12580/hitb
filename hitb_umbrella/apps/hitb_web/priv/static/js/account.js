@@ -8,8 +8,7 @@ $(document).ready(function() {
     // console.log(Vue)
     // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
     const common = new Vue({
-      el: '#account',
-      // delimiters: ['${', '}'],
+      el: '#page',
       created: function() {
         this.getTransactions()
       },
