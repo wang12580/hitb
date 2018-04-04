@@ -4,18 +4,28 @@ defmodule Repos.TransactionRepository do
     mnesia table
   """
 
-  # def insert_block(block) do
-  #   {:atomic, _} = :mnesia.transaction(fn ->
-  #     :mnesia.write({:block_chain,
-  #       block.index,
-  #       block.previous_hash,
-  #       block.timestamp,
-  #       block.data,
-  #       block.hash})
-  #       :ets.insert(:latest_block, {:latest, block})
-  #   end)
-  #   :ok
-  # end
+  def insert_transaction(transaction) do
+    {:atomic, _} = :mnesia.transaction(fn ->
+      :mnesia.write({:transaction,
+        transaction.id,
+        transaction.height,
+        transaction.blockId,
+        transaction.type,
+        transaction.timestamp,
+        transaction.senderPublicKey,
+        transaction.requesterPublicKey,
+        transaction.senderId,
+        transaction.recipientId,
+        transaction.amount,
+        transaction.fee,
+        transaction.signature,
+        transaction.signSignature,
+        transaction.asset,
+        transaction.args,
+        transaction.message})
+    end)
+    :ok
+  end
 
   # def get_block(index) do
   #   #查询

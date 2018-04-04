@@ -24,7 +24,8 @@ defmodule HitbWeb.TransactionController do
     json(conn,  %{})
   end
 
-  def addTransactions(conn, _) do
+  def addTransactions(conn, %{"secret" => secret, "amount" => amount, "recipientId" => recipientId, "message" => message}) do
+    Transaction.newTransaction(%{secret: secret, amount: amount, recipientId: recipientId, message: message})
     json(conn,  %{})
   end
 
