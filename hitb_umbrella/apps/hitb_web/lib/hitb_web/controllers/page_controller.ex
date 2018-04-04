@@ -50,11 +50,12 @@ defmodule HitbWeb.PageController do
     render conn, "login.html", layout: false
   end
   # 用户信息
-  def account(conn, _params) do
+  def account(conn,  %{"page" => page}) do
     user = get_session(conn, :user)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      render conn, "account.html", user: user
+      IO.inspect user 
+      render conn, "account.html", user: user, page: page
     else
       redirect conn, to: "/login"
     end
