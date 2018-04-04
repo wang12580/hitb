@@ -1,54 +1,135 @@
 <script src="<%= static_path(@conn, "/js/account.js") %>"></script>
 <link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
-<div class="container">
-  <div class="row">
-    <div class="col-sm">
-      <div class="box_info border border-primary">
-        <h3>余额</h3>
-        <%= @user.balance %>
+<%= if(@page == "all")do %>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <div class="box_info border border-primary">
+          <h3>余额</h3>
+          <%= @user.balance %>
+        </div>
       </div>
-    </div>
-    <div class="col-sm">
-      <div class="box_info border border-success">
-        <h3>最后区块高度</h3>
-        <%= @user.lockHeight%>
+      <div class="col-sm">
+        <div class="box_info border border-success">
+          <h3>最后区块高度</h3>
+          <%= @user.lockHeight%>
+        </div>
       </div>
-    </div>
-    <div class="col-sm">
-      <div class="box_info border border-warning">
-        <h3>版本信息</h3>
-        <%= @user.version.build%>&nbsp;&nbsp;&nbsp;&nbsp;<%= @user.version.version%>
+      <div class="col-sm">
+        <div class="box_info border border-warning">
+          <h3>版本信息</h3>
+          <%= @user.version.build%>&nbsp;&nbsp;&nbsp;&nbsp;<%= @user.version.version%>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="row account_hr">
-  <h3>我的交易</h3>
-  <hr class="my-4">
-</div>
-<div class="row">
-  <table class="table table-bordered account_table">
-    <thead>
-      <tr>
-        <th scope="col">ID</th>
-        <th scope="col">类型</th>
-        <th scope="col">发送者</th>
-        <th scope="col">接受者</th>
-        <th scope="col">日期</th>
-        <th scope="col">金额(费用)</th>
-        <th scope="col">备用</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(value, index) in transactions" v-bind:key ='index'>
-        <th scope="row">{{value.id}}</th>
-        <td>{{value.type}}</td>
-        <td>{{value.senderId}}</td>
-        <td>{{value.recipientId}}</td>
-        <td>{{value.amount/100000000}}</td>
-        <td>{{value.message}}</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <div class="row account_hr">
+    <h3>我的交易</h3>
+    <hr class="my-4">
+  </div>
+  <div class="row">
+    <table class="table table-bordered account_table">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">类型</th>
+          <th scope="col">发送者</th>
+          <th scope="col">接受者</th>
+          <th scope="col">日期</th>
+          <th scope="col">金额(费用)</th>
+          <th scope="col">备用</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(value, index) in transactions" v-bind:key ='index'>
+          <th scope="row">{{value.id}}</th>
+          <td>{{value.type}}</td>
+          <td>{{value.senderId}}</td>
+          <td>{{value.recipientId}}</td>
+          <td>{{value.amount/100000000}}</td>
+          <td>{{value.message}}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<%= end%>
+<%= if(@page == "one")do %>
+  <div class="container cards">
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="nav nav-tabs nav-fill">
+          <li class="nav-item">
+            <a class="nav-link" v-bind:class="{'active':accountPage == '账户信息'}" v-on:click="info('账户信息')">账户信息</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" v-bind:class="{'active':accountPage == '二级密码'}" v-on:click="info('二级密码')">二级密码</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" v-bind:class="{'active':accountPage == '锁仓'}" v-on:click="info('锁仓')">锁仓</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="card" style="width: 100%">
+        <div class="card-body" v-if="this.accountPage=='账户信息'">
+          <div class="row">
+            <div class="col-md-3">a</div>
+            <div class="col-md-9">
+              <h2>基本信息</h2>
+              总余额：<%= @user.balance %>
+              <hr/>
+              地址: <%= @user.address %>
+              <hr/>
+              二级密码:   
+              <hr/>
+              锁仓状态:  
+              <hr/>
+              公钥:     <%= @user.publicKey %>
+              <hr/>
+              主密钥二维码:    
+              <hr/>
+              你的地址二维码:     
+            </div>
+          </div>
+        </div>
+        <div class="card-body" v-if="this.accountPage=='二级密码'">
+          <div class="row">
+            <form class="col-md-12">
+              <h2>设置二级密码</h2>
+              <div class="form-group">
+                <label>输入二级密码</label>
+                <input type="password" class="form-control" placeholder="输入二级密码">
+              </div>
+              <div class="form-group">
+                <label>再次输入</label>
+                <input type="password" class="form-control" placeholder="再次输入">
+              </div>
+              <h7>
+                请确定您已经安全保存了二级密码，一旦丢失，您在Asch系统中的财产将无法找回，设置二级密码需要5XAS手续费
+              </h7>
+              <button class="btn btn-primary float-right">确认</button>
+            </form>
+          </div>
+        </div>
+        <div class="card-body" v-if="this.accountPage=='锁仓'">
+          <div class="row">
+            <form class="col-md-12">
+              <h2>设置锁仓信息</h2>
+              <div class="form-group">
+                <label>输入高度</label>
+                <input type="number" class="form-control" placeholder="输入高度">
+              </div>
+              <div class="form-group">
+                <label>输入二级密码</label>
+                <input type="password" class="form-control" placeholder="输入二级密码">
+              </div>
+              <button class="btn btn-primary float-right">确认</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end%>
