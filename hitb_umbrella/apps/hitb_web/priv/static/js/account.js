@@ -18,7 +18,10 @@ $(document).ready(function() {
         currentTime: new Date().toLocaleString(),
         username: 'someone manual strong movie roof episode eight spatial brown soldier soup motor',
         transactions: [],
-        accountPage: '账户信息'
+        accountPage: '账户信息',
+        pay: {
+          secret: '', amount: 0, recipientId: '000000', message: '测试使用'
+        }
       },
       methods: {
         getTransactions: function() {
@@ -48,6 +51,22 @@ $(document).ready(function() {
             default:
               break;
           }
+        },
+        getPays: function (value) {
+          this.pay.secret= value
+          this.$ajax({
+            type: 'PUT',
+            url: BASE_URL + '/addTransactions',
+            data: this.pay,
+            dataType: 'json',
+            success: (res)=> {
+              console.log(res.data)
+            },
+            error: (err)=> {
+              this.items = ['交易失败']
+              console.log(err);
+            }
+          });
         }
       }  // vue-methods
     })  // new-Vue
