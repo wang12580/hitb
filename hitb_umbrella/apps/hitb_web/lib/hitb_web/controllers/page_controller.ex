@@ -50,11 +50,11 @@ defmodule HitbWeb.PageController do
     render conn, "login.html", layout: false
   end
   # 用户信息
-  def account(conn,  %{"page" => page}) do
+  def account(conn,  _params) do
+    %{"page" => page} = Map.merge(%{ "page" => "" }, conn.params)
     user = get_session(conn, :user)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      IO.inspect user 
       render conn, "account.html", user: user, page: page
     else
       redirect conn, to: "/login"

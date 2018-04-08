@@ -26,7 +26,6 @@ defmodule Repos.Application do
   end
 
   defp generate_initial_block() do
-    :mnesia.clear_table(:block_chain)
     init_block = %Repos.Block{
       index: 0,
       previous_hash: "0",
@@ -35,7 +34,7 @@ defmodule Repos.Application do
       hash: :crypto.hash(:sha256, "cool") |> Base.encode64
     }
     init_transaction = %Repos.Transaction{
-      id: 0,
+      id: Transaction.generateId,
       height: init_block.index,
       blockId: to_string(init_block.index),
       type:                 3,
