@@ -87,4 +87,10 @@ defmodule Account do
   def addDelegates do
 
   end
+
+  def addSignature(username, password) do
+    secondPublicKey = :crypto.hash(:sha256, "#{password}")
+      |> Base.encode64
+    IO.inspect secondPublicKey
+  end
 end

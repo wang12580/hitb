@@ -4,7 +4,7 @@
     <p><a href='#' v-on:click="getPeers">节点</a></p>
     <p><a href='#' v-on:click="addBlock">新建区块</a></p>
     <p><a href='#' v-on:click="getBlocks">区块列表</a></p>
-    <p><a href='#' v-on:click="test">测试</a></p>
+    <p><a href='#' v-on:click="test('<%=@user.username%>')">测试</a></p>
   </div>
   <div class="col-10">
     <table v-if="type === 'getPeers'" class="table table-striped">

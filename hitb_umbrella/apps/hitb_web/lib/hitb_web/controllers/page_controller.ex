@@ -17,7 +17,7 @@ defmodule HitbWeb.PageController do
     user = get_session(conn, :user)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      render conn, "index.html"
+      render conn, "index.html", user: user
     else
       redirect conn, to: "/login"
     end
