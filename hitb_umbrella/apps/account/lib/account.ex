@@ -91,6 +91,8 @@ defmodule Account do
   def addSignature(username, password) do
     secondPublicKey = :crypto.hash(:sha256, "#{password}")
       |> Base.encode64
-    IO.inspect secondPublicKey
+    user = getAccount(username)
+    user = %{user | :secondPublicKey => secondPublicKey}
+    Repos.AccountRepository.update_secondPublicKey(user)
   end
 end
