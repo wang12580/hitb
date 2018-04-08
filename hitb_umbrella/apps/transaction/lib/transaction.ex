@@ -75,10 +75,10 @@ defmodule Transaction do
 
   def generateId do
     {megaSecs, secs, microSecs} = :erlang.now()
-    randMegaSecs = :random.uniform(megaSecs)
+    # randMegaSecs = :random.uniform(megaSecs)
     randSecs = :random.uniform(secs)
     randMicroSecs = :random.uniform(microSecs)
     randSec = :os.system_time(:seconds)
-    Enum.sort([randMegaSecs, randSecs, randMicroSecs, randSec]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
+    Enum.sort([randSecs, randMicroSecs, randSec]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
   end
 end
