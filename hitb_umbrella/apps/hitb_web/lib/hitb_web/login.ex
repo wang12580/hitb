@@ -67,4 +67,9 @@ defmodule HitbWeb.Login do
     end
   end
 
+  def user(conn, username) do
+    user = Repos.AccountRepository.get_account(username)
+    put_session(conn, :user, user)
+  end
+
 end
