@@ -55,7 +55,6 @@ defmodule HitbWeb.PageController do
     user = get_session(conn, :user)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      IO.inspect user 
       render conn, "account.html", user: user, page: page
     else
       redirect conn, to: "/login"
