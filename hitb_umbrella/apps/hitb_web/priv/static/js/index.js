@@ -80,10 +80,11 @@ $(document).ready(function() {
           }
         });
       },
-      test: function(){
+      test: function(username){
         this.$ajax({
-          type: 'get',
-          url: BASE_URL + '/newAccount',
+          type: 'put',
+          url: BASE_URL + 'addSignature',
+          data: {username: username, password: 'dzcsssssss'},
           // data: {"data": new Date().toLocaleString()},
           dataType: 'json',
           success: (res)=> {

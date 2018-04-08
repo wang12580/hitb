@@ -17,11 +17,10 @@ defmodule HitbWeb.PageController do
     user = get_session(conn, :user)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      render conn, "index.html"
+      render conn, "index.html", user: user
     else
       redirect conn, to: "/login"
     end
-    render conn, "index.html"
   end
 
   def status(conn, _params) do
@@ -37,13 +36,24 @@ defmodule HitbWeb.PageController do
   end
 
   def block(conn, _params) do
-    # json(conn, %{})
-    render conn, "block.html"
+    user = get_session(conn, :user)
+    login = HitbWeb.Login.is_login(conn)
+    if(login)do
+      render conn, "block.html", user: user
+    else
+      redirect conn, to: "/login"
+    end
   end
 
   def peer(conn, _params) do
     # json(conn, %{})
-    render conn, "peers.html"
+    user = get_session(conn, :user)
+    login = HitbWeb.Login.is_login(conn)
+    if(login)do
+      render conn, "peers.html", user: user
+    else
+      redirect conn, to: "/login"
+    end
   end
   # 登录
   def login_html(conn, _params) do

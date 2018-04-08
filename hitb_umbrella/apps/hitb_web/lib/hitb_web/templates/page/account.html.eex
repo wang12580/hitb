@@ -53,7 +53,7 @@
       </tbody>
     </table>
   </div>
-<%= end%>
+<%end%>
 <%= if(@page == "one")do %>
   <div class="container cards">
     <div class="row">
@@ -82,15 +82,15 @@
               <hr/>
               地址: <%= @user.address %>
               <hr/>
-              二级密码:   
+              二级密码:
               <hr/>
-              锁仓状态:  
+              锁仓状态:
               <hr/>
               公钥:     <%= @user.publicKey %>
               <hr/>
-              主密钥二维码:    
+              主密钥二维码:
               <hr/>
-              你的地址二维码:     
+              你的地址二维码:
             </div>
           </div>
         </div>
@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-<% end%>
+<% end %>
 <%= if(@page == "pay")do %>
   <div class="container cards">
     <div class="row" style="margin-top:10px">
@@ -162,7 +162,6 @@
             <button class="btn btn-primary float-right" v-on:click="getPays('<%= @user.secret%>')">确认</button>
           </form>
       </div>
-    </div>  
+    </div>
   </div>
 <% end%>
-

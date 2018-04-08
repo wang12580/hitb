@@ -72,7 +72,8 @@ defmodule HitbWeb.AccountController do
     end
   end
 
-  def addSignature(conn, _) do
+  def addSignature(conn, %{"username" => username, "password" => password}) do
+    Account.addSignature(username, password)
     json(conn, %{})
   end
 end
