@@ -83,8 +83,8 @@ $(document).ready(function() {
       test: function(username){
         this.$ajax({
           type: 'put',
-          url: BASE_URL + 'addTransactions',
-          data: {secret: username, amount: 0, recipientId: '871718', message: "info"},
+          url: BASE_URL + 'addSignature',
+          data: {username: username, password: 'dzc944262316'},
           dataType: 'json',
           success: (res)=> {
             console.log(res);

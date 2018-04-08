@@ -93,6 +93,13 @@ defmodule Account do
       |> Base.encode64
     user = getAccount(username)
     user = %{user | :secondPublicKey => secondPublicKey}
-    Repos.AccountRepository.update_secondPublicKey(user)
+    case Repos.AccountRepository.update_secondPublicKey(user) do
+      {_, :ok} ->
+        transaction = %{id: Transaction.generateId, type: 5, publicKey: user.publicKey, senderId: user.index, recipientId: "", amount: 0, fee: 5, message: "设置二级密码", secret: username, secondPublicKey: secondPublicKey}
+        Transaction.newTransaction(transaction)
+        [true, transaction.id]
+      _ ->
+        [false, []]
+    end
   end
 end
