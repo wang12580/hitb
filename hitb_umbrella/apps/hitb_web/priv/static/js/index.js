@@ -83,11 +83,11 @@ $(document).ready(function() {
       test: function(username){
         this.$ajax({
           type: 'put',
-          url: BASE_URL + 'addSignature',
-          data: {username: username, password: 'dzcsssssss'},
-          // data: {"data": new Date().toLocaleString()},
+          url: BASE_URL + 'addTransactions',
+          data: {secret: username, amount: 0, recipientId: '871718', message: "info"},
           dataType: 'json',
           success: (res)=> {
+            console.log(res);
             this.items = res.result
           },
           error: (err)=> {

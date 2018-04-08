@@ -26,7 +26,18 @@ defmodule Transaction do
       args: {},
       asset: %{},
       message: transaction.message}
-    Repos.TransactionRepository.insert_transaction(tran)
+    case sender.secondPublicKey do
+      nil ->
+        Repos.TransactionRepository.insert_transaction(tran)
+        [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
+      _ ->
+        if(:crypto.hash(:sha256, "#{transaction.secondPublicKey}")|> Base.encode64 == sender.secondPublicKey)do
+          Repos.TransactionRepository.insert_transaction(tran)
+          [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
+        else
+          [:error, nil]
+        end
+    end
   end
 
   def attachAssetType do
