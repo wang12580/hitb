@@ -91,9 +91,9 @@ defmodule Account do
   def addSignature(username, password) do
     secondPublicKey = :crypto.hash(:sha256, "#{password}")
       |> Base.encode64
-    user = getAccount(username)
-    user = %{user | :secondPublicKey => secondPublicKey}
-    case Repos.AccountRepository.update_secondPublicKey(user) do
+    account = getAccount(username)
+    account = %{account | :secondPublicKey => secondPublicKey}
+    case Repos.AccountRepository.update_secondPublicKey(account) do
       {_, :ok} ->
         latest_block = Block.BlockService.get_latest_block()
         tran = %{
@@ -103,9 +103,9 @@ defmodule Account do
           type: 5,
           timestamp: :os.system_time(:seconds),
           datetime: Transaction.generateDateTime,
-          senderPublicKey: user.publicKey,
+          senderPublicKey: account.publicKey,
           requesterPublicKey: "",
-          senderId: user.index,
+          senderId: account.index,
           recipientId: "",
           amount: 0,
           fee: 5,
@@ -115,6 +115,7 @@ defmodule Account do
           asset: %{},
           message: "设置二级密码"}
         Repos.TransactionRepository.insert_transaction(tran)
+        Repos.AccountRepository.insert_account(Map.merge(account, %{balance: account.balance - 5}))
         [true, tran.id]
       _ ->
         [false, []]

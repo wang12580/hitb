@@ -47,7 +47,7 @@
           <td>{{value.senderId}}</td>
           <td>{{value.requesterPublicKey}}</td>
           <td>{{value.datetime}}</td>
-          <td>{{value.amount}}({{value.fee/100000000}})</td>
+          <td>{{value.amount}}({{value.fee}})</td>
           <td>{{value.message}}</td>
         </tr>
       </tbody>
