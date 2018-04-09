@@ -45,9 +45,9 @@
           <th scope="row">{{value.id}}</th>
           <td>{{value.type}}</td>
           <td>{{value.senderId}}</td>
-          <td>{{value.recipientId}}</td>
+          <td>{{value.requesterPublicKey}}</td>
           <td>{{value.datetime}}</td>
-          <td>{{value.amount/100000000}}</td>
+          <td>{{value.amount}}({{value.fee/100000000}})</td>
           <td>{{value.message}}</td>
         </tr>
       </tbody>
@@ -97,7 +97,7 @@
         <div class="card-body" v-if="this.accountPage=='二级密码'">
           <div class="row">
             <h2>设置二级密码</h2>
-            <%= if(@user.secondPublicKey === '')do %>
+            <%= if(@user.secondPublicKey == nil)do %>
               <form class="col-md-12" @submit.prevent="">
                 <div class="form-group">
                   <label>输入二级密码</label>
@@ -108,10 +108,12 @@
                   <input type="password" class="form-control" placeholder="再次输入"  v-model="secondPass.againSecondPass">
                 </div>
                 <h7>
-                  请确定您已经安全保存了二级密码，一旦丢失，您在Asch系统中的财产将无法找回，设置二级密码需要5XAS手续费
+                  请确定您已经安全保存了二级密码，一旦丢失，您在Asch系统中的财产将无法找回，设置二级密码需要5手续费
                 </h7>
                 <button class="btn btn-primary float-right" v-on:click="getSecondPass('<%= @user.username%>')">确认</button>
               </form>
+            <% else %>
+              <br /> 您已设置二级密码
             <% end%>
           </div>
         </div>

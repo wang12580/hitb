@@ -67,9 +67,12 @@ defmodule HitbWeb.Login do
     end
   end
 
-  def user(conn, username) do
+  def user(conn) do
+    username = get_session(conn, :user).username
     user = Map.merge(get_session(conn, :user), Repos.AccountRepository.get_account(username))
-    put_session(conn, :user, user)
+    latest_block = Block.BlockService.get_latest_block()
+    user = %{user | :lockHeight => latest_block.index}
+    [put_session(conn, :user, user), user]
   end
 
 end
