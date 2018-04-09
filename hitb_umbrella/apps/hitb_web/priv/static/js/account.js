@@ -21,7 +21,11 @@ $(document).ready(function() {
         accountPage: '账户信息',
         pay: {
           secret: '', amount: 0, recipientId: '000000', message: '测试使用'
-        }
+        },
+        secondPass: {
+          secondPass: '', againSecondPass: ''
+        },
+        secondPublicKey: ''
       },
       methods: {
         getTransactions: function() {
@@ -67,6 +71,30 @@ $(document).ready(function() {
               console.log(err);
             }
           });
+        },
+        getSecondPass: function (username) {
+          if (this.secondPass.secondPass === this.secondPass.againSecondPass && this.secondPass.secondPass !== '') {
+            this.$ajax({
+              type: 'put',
+              url: BASE_URL + '/addSignature',
+              data: {username: username, password: this.secondPass.secondPass},
+              // data: {"data": new Date().toLocaleString()},
+              dataType: 'json',
+              success: (res)=> {
+                // this.items = res.result
+                secondPublicKey = res.secondPublicKey
+                this.items = ['二级密码创建成功']
+                console.log(res)
+
+              },
+              error: (err)=> {
+                this.items = ['创建区块失败']
+                console.log(err);
+              }
+            });
+          } else {
+            this.items = ['两次密码输入不一致']
+          }
         }
       }  // vue-methods
     })  // new-Vue
