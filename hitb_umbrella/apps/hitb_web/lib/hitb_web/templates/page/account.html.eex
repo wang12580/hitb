@@ -97,7 +97,7 @@
         <div class="card-body" v-if="this.accountPage=='二级密码'">
           <div class="row">
             <h2>设置二级密码</h2>
-            <%= if(@user.secondPublicKey === '')do %>
+            <%= if(!@user.secondPublicKey)do %>
               <form class="col-md-12" @submit.prevent="">
                 <div class="form-group">
                   <label>输入二级密码</label>

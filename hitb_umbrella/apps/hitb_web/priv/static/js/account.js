@@ -82,10 +82,11 @@ $(document).ready(function() {
               dataType: 'json',
               success: (res)=> {
                 // this.items = res.result
-                secondPublicKey = res.secondPublicKey
-                this.items = ['二级密码创建成功']
-                console.log(res)
-
+                if (res.success === true) {
+                  this.items = ['二级密码创建成功']
+                  console.log(res)
+                  location.reload();
+                }
               },
               error: (err)=> {
                 this.items = ['创建区块失败']
