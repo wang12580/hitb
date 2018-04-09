@@ -7,26 +7,38 @@ defmodule Transaction do
   end
 
   def newTransaction(transaction) do
+    transaction = Map.merge(%{fee: 0, type: 1, id: generateId}, transaction)
     latest_block = Block.BlockService.get_latest_block()
     sender = Account.getAccount(transaction.secret)
     tran = %{
-      id: generateId,
+      id: transaction.id,
       height: latest_block.index,
       blockId: to_string(latest_block.index),
-      type: 1,
+      type: transaction.type,
       timestamp: :os.system_time(:seconds),
       senderPublicKey: sender.publicKey,
       requesterPublicKey: "",
       senderId: sender.index,
       recipientId: transaction.recipientId,
       amount: transaction.amount,
-      fee: 0,
+      fee: transaction.fee,
       signature: "",
       signSignature: "",
       args: {},
       asset: %{},
       message: transaction.message}
-    Repos.TransactionRepository.insert_transaction(tran)
+    case sender.secondPublicKey do
+      nil ->
+        Repos.TransactionRepository.insert_transaction(tran)
+        [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
+      _ ->
+        if(:crypto.hash(:sha256, "#{transaction.secondPublicKey}")|> Base.encode64 == sender.secondPublicKey)do
+          Repos.TransactionRepository.insert_transaction(tran)
+          [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
+        else
+          [:error, nil]
+        end
+    end
   end
 
   def attachAssetType do

@@ -67,4 +67,9 @@ defmodule HitbWeb.Login do
     end
   end
 
+  def user(conn, username) do
+    user = Repos.AccountRepository.get_account(username) |> Map.put(:version, %{version: "1.0.0", build: "09:28:36 2018/4/2", net: "testnet"})
+    put_session(conn, :user, user)
+  end
+
 end

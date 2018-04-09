@@ -84,10 +84,10 @@ $(document).ready(function() {
         this.$ajax({
           type: 'put',
           url: BASE_URL + 'addSignature',
-          data: {username: username, password: 'dzcsssssss'},
-          // data: {"data": new Date().toLocaleString()},
+          data: {username: username, password: 'dzc944262316'},
           dataType: 'json',
           success: (res)=> {
+            console.log(res);
             this.items = res.result
           },
           error: (err)=> {

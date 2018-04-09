@@ -43,7 +43,7 @@ defmodule Account do
           _ -> index + 1
         end
       latest_block = Block.BlockService.get_latest_block()
-      %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: "1", balance: 100000, u_balance: 100000, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block.index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block.index)}
+      %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: nil, balance: 100000, u_balance: 100000, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block.index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block.index)}
     end
   end
 
@@ -91,6 +91,15 @@ defmodule Account do
   def addSignature(username, password) do
     secondPublicKey = :crypto.hash(:sha256, "#{password}")
       |> Base.encode64
-    IO.inspect secondPublicKey
+    user = getAccount(username)
+    user = %{user | :secondPublicKey => secondPublicKey}
+    case Repos.AccountRepository.update_secondPublicKey(user) do
+      {_, :ok} ->
+        transaction = %{id: Transaction.generateId, type: 5, publicKey: user.publicKey, senderId: user.index, recipientId: "", amount: 0, fee: 5, message: "设置二级密码", secret: username, secondPublicKey: secondPublicKey}
+        Transaction.newTransaction(transaction)
+        [true, transaction.id]
+      _ ->
+        [false, []]
+    end
   end
 end

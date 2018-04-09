@@ -84,6 +84,42 @@ defmodule Repos.AccountRepository do
     end
   end
 
+  def update_secondPublicKey(account) do
+    {:atomic, _} = :mnesia.transaction(fn ->
+        :mnesia.write({:account,
+        account.index, #索引
+        account.username, #用户名
+        account.u_username,
+        account.isDelegate, #是否委托人
+        account.u_isDelegate,
+        account.secondSignature,
+        account.u_secondSignature,
+        account.address,
+        account.publicKey,
+        account.secondPublicKey,
+        account.balance,
+        account.u_balance,
+        account.vote,
+        account.rate,
+        account.delegates,
+        account.u_delegates,
+        account.multisignatures,
+        account.u_multisignatures,
+        account.multimin,
+        account.u_multimin,
+        account.multilifetime,
+        account.u_multilifetime,
+        account.blockId,
+        account.nameexist,
+        account.u_nameexist,
+        account.producedblocks,
+        account.missedblocks,
+        account.fees,
+        account.rewards,
+        account.lockHeight})
+    end)
+  end
+
   def delete_all_account() do
     :mnesia.clear_table(:account)
   end
