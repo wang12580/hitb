@@ -102,6 +102,7 @@ defmodule Account do
           blockId: to_string(latest_block.index),
           type: 5,
           timestamp: :os.system_time(:seconds),
+          datetime: Transaction.generateDateTime,
           senderPublicKey: user.publicKey,
           requesterPublicKey: "",
           senderId: user.index,
@@ -113,7 +114,7 @@ defmodule Account do
           args: {},
           asset: %{},
           message: "设置二级密码"}
-        IO.inspect Repos.TransactionRepository.insert_transaction(tran)
+        Repos.TransactionRepository.insert_transaction(tran)
         [true, tran.id]
       _ ->
         [false, []]

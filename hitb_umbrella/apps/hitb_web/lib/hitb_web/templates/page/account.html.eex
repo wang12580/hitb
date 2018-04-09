@@ -46,7 +46,7 @@
           <td>{{value.type}}</td>
           <td>{{value.senderId}}</td>
           <td>{{value.recipientId}}</td>
-          <td>{{value.timestamp}}</td>
+          <td>{{value.datetime}}</td>
           <td>{{value.amount/100000000}}</td>
           <td>{{value.message}}</td>
         </tr>
