@@ -44,7 +44,7 @@
         <tr v-for="(value, index) in transactions" v-bind:key ='index'>
           <th scope="row">{{value.id}}</th>
           <td>{{value.type}}</td>
-          <td>{{value.senderId}}</td>
+          <td>{{value.senderPublicKey}}</td>
           <td>{{value.requesterPublicKey}}</td>
           <td>{{value.datetime}}</td>
           <td>{{value.amount}}({{value.fee}})</td>

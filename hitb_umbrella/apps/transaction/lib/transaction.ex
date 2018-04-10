@@ -9,7 +9,7 @@ defmodule Transaction do
   def newTransaction(transaction) do
     transaction = Map.merge(%{fee: 0, type: 1, id: generateId}, transaction)
     latest_block = Block.BlockService.get_latest_block()
-    sender = Account.getAccount(transaction.secret)
+    sender = Account.getAccountByPublicKey(transaction.publicKey)
     tran = %{
       id: transaction.id,
       height: latest_block.index,
@@ -18,7 +18,7 @@ defmodule Transaction do
       timestamp: :os.system_time(:seconds),
       datetime: Transaction.generateDateTime,
       senderPublicKey: sender.publicKey,
-      requesterPublicKey: "",
+      requesterPublicKey: sender.publicKey,
       senderId: sender.index,
       recipientId: transaction.recipientId,
       amount: transaction.amount,
