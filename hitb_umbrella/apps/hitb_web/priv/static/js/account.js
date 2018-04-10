@@ -11,21 +11,24 @@ $(document).ready(function() {
       el: '#page',
       created: function() {
         this.getTransactions()
+        this.getPublicKey()
       },
       data: {
         type : 'index',
         items: [],
         currentTime: new Date().toLocaleString(),
-        username: 'someone manual strong movie roof episode eight spatial brown soldier soup motor',
+        username: '',
         transactions: [],
         accountPage: '账户信息',
         pay: {
-          secret: '', amount: 0, recipientId: '000000', message: '测试使用'
+          publicKey: '', amount: 0, recipientId: '000000', message: '测试使用'
         },
         secondPass: {
           secondPass: '', againSecondPass: ''
         },
-        secondPublicKey: ''
+        secondPublicKey: '',
+        publicKeys: [],
+        secondPassword: ''
       },
       methods: {
         getTransactions: function() {
@@ -57,14 +60,17 @@ $(document).ready(function() {
           }
         },
         getPays: function (value) {
-          this.pay.secret= value
+          if (this.secondPassword !== '') {
+            this.pay.secondPassword= this.secondPassword
+          }
+          this.pay.publicKey= value
           this.$ajax({
             type: 'PUT',
             url: BASE_URL + '/addTransactions',
             data: this.pay,
             dataType: 'json',
             success: (res)=> {
-              console.log(res.data)
+              console.log(res)
             },
             error: (err)=> {
               this.items = ['交易失败']
@@ -95,6 +101,20 @@ $(document).ready(function() {
           } else {
             this.items = ['两次密码输入不一致']
           }
+        },
+        getPublicKey: function () {
+          this.$ajax({
+            type: 'GET',
+            url: BASE_URL + '/getAccountsPublicKey',
+            dataType: 'json',
+            success: (res)=> {
+              this.publicKeys = res.publicKeys
+            },
+            error: (err)=> {
+              this.items = ['创建区块失败']
+              console.log(err);
+            }
+          });
         }
       }  // vue-methods
     })  // new-Vue
