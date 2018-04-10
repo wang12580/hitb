@@ -83,15 +83,15 @@ $(document).ready(function() {
       test: function(username){
         this.$ajax({
           type: 'put',
-          url: BASE_URL + 'addSignature',
-          data: {username: username, password: 'dzc944262316'},
+          url: BASE_URL + 'addTransactions',
+          data: {publicKey: username, amount: 1000, recipientId: 'W/6j/YE2tbfN6g5gub0rjDwOBJx7SVVAOsaDI8J3Ddg=', message: 'message'},
           dataType: 'json',
           success: (res)=> {
             console.log(res);
-            this.items = res.result
+            // this.items = res.result
           },
           error: (err)=> {
-            this.items = ['创建区块失败']
+            // this.items = ['创建区块失败']
             console.log(err);
           }
         });

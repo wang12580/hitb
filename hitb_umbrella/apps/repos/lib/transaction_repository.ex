@@ -58,7 +58,7 @@ defmodule Repos.TransactionRepository do
     end)
     #按照id排序
     result
-      |> Enum.sort(fn(a, b) -> a.id < b.id end)
+      |> Enum.sort(fn(a, b) -> a.datetime < b.datetime end)
   end
 
   # def replace_chain(block_chain, latest_block) do
