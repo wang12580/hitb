@@ -8,6 +8,7 @@ defmodule Repos.Transaction do
     blockId:              String.t,
     type:                 integer,
     timestamp:            integer,
+    datetime:             String.t,
     senderPublicKey:      String.t,
     requesterPublicKey:   String.t,
     senderId:             String.t,
@@ -20,7 +21,7 @@ defmodule Repos.Transaction do
     args:                 Tuple,
     message:              String.t
   }
-  @fields [:id, :height, :blockId, :type, :timestamp, :senderPublicKey, :requesterPublicKey,
+  @fields [:id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey, :requesterPublicKey,
   :senderId, :recipientId, :amount, :fee, :signature, :signSignature, :asset, :args, :message]
   @enforce_keys @fields
   defstruct     @fields

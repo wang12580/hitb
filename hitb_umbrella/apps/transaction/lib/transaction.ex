@@ -16,6 +16,7 @@ defmodule Transaction do
       blockId: to_string(latest_block.index),
       type: transaction.type,
       timestamp: :os.system_time(:seconds),
+      datetime: Transaction.generateDateTime,
       senderPublicKey: sender.publicKey,
       requesterPublicKey: "",
       senderId: sender.index,
@@ -92,5 +93,12 @@ defmodule Transaction do
     randMicroSecs = :random.uniform(microSecs)
     randSec = :os.system_time(:seconds)
     Enum.sort([randSecs, randMicroSecs, randSec]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
+  end
+
+  def generateDateTime do
+    {date, time} = :calendar.local_time()
+    date = date |> Tuple.to_list |> Enum.map(fn x -> if(x < 10)do "0#{x}" else "#{x}" end end) |> Enum.join("/")
+    time = time |> Tuple.to_list |> Enum.map(fn x -> if(x < 10)do "0#{x}" else "#{x}" end end) |> Enum.join(":")
+    "#{date} #{time}"
   end
 end

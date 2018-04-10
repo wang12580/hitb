@@ -60,7 +60,7 @@ defmodule Mix.Tasks.InitDb do
 
   defp create_transaction_table(node) do
     :ok = case :mnesia.create_table(:transaction, [
-      attributes: [:id, :height, :blockId, :type, :timestamp, :senderPublicKey, :requesterPublicKey,
+      attributes: [:id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey, :requesterPublicKey,
       :senderId, :recipientId, :amount, :fee, :signature, :signSignature, :asset, :args, :message],
       type: :set,
       disc_copies: [node]

@@ -12,6 +12,7 @@ defmodule Repos.TransactionRepository do
         transaction.blockId,
         transaction.type,
         transaction.timestamp,
+        transaction.datetime,
         transaction.senderPublicKey,
         transaction.requesterPublicKey,
         transaction.senderId,
@@ -90,17 +91,18 @@ defmodule Repos.TransactionRepository do
       blockId:            elem(record, 3),
       type:               elem(record, 4),
       timestamp:          elem(record, 5),
-      senderPublicKey:    elem(record, 6),
-      requesterPublicKey: elem(record, 7),
-      senderId:           elem(record, 8),
-      recipientId:        elem(record, 9),
-      amount:             elem(record, 10),
-      fee:                elem(record, 11),
-      signature:          elem(record, 12),
-      signSignature:      elem(record, 13),
-      asset:              elem(record, 14),
-      args:               Tuple.to_list(elem(record, 15)),
-      message:            elem(record, 16)
+      datetime:           elem(record, 6),
+      senderPublicKey:    elem(record, 7),
+      requesterPublicKey: elem(record, 8),
+      senderId:           elem(record, 9),
+      recipientId:        elem(record, 10),
+      amount:             elem(record, 11),
+      fee:                elem(record, 12),
+      signature:          elem(record, 13),
+      signSignature:      elem(record, 14),
+      asset:              elem(record, 15),
+      args:               Tuple.to_list(elem(record, 16)),
+      message:            elem(record, 17)
     }
   end
 end
