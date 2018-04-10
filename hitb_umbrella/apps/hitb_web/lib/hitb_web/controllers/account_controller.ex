@@ -81,4 +81,10 @@ defmodule HitbWeb.AccountController do
     [conn, _] = HitbWeb.Login.user(conn)
     json(conn, %{success:  success, transaction: id})
   end
+
+  def getAccountsPublicKey(conn, _params) do
+    [conn, user] = HitbWeb.Login.user(conn)
+    publicKeys = Repos.AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
+    json conn, %{publicKeys: publicKeys}
+  end
 end
