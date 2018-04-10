@@ -22,11 +22,36 @@
             <form>
               <div class="form-signin password">
                 <h1 class="h3 font-weight-normal md-3">Please sign in</h1>
-                <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="输入密码" class="form-control" v-model="this.username">
+                <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="输入密码" class="form-control" v-model="username">
               </div>
             </form>
             <button class="btn btn-primary login_but" v-on:click='login'>登录</button>
-            <button type="submit" class="btn btn-primary login_but">新账户</button>
+            <button type="submit" class="btn btn-primary login_but" data-toggle="modal" data-target="#exampleModal">新账户</button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">新用户注册</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="form-group">
+                        <label>注册名</label>
+                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="userHelp" placeholder="用户名" v-model="newUsername">
+                        <small id="userHelp" class="form-text text-muted">有12个英文单词注册的用户名</small>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click='register'>注册</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="col-md-6">

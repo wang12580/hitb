@@ -61,14 +61,18 @@ defmodule HitbWeb.AccountController do
   end
 
   def newAccount(conn, %{"username" => username}) do
-    account = Account.newAccount(%{username: username})
-    case account do
-      false ->
-        json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
+    case username do
+      "" -> json(conn, %{success: false, user: %{username: username}, info: "用户名未填写"})
       _ ->
-        Repos.AccountRepository.insert_account(account)
-        user = Repos.AccountRepository.get_account(username)
-        json(conn, %{success: true, user: user, info: "用户名创建成功"})
+        account = Account.newAccount(%{username: username})
+        case account do
+          false ->
+            json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
+          _ ->
+            Repos.AccountRepository.insert_account(account)
+            user = Repos.AccountRepository.get_account(username)
+            json(conn, %{success: true, user: user, info: "用户名创建成功"})
+        end
     end
   end
 
