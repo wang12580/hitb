@@ -25,8 +25,8 @@ defmodule HitbWeb.TransactionController do
   end
 
   def addTransactions(conn, %{"publicKey" => publicKey, "amount" => amount, "recipientId" => recipientId, "message" => message}) do
-    %{"secondPassword" => secondPublicKey} = Map.merge(conn.params, %{"secondPassword" => "dzc944262316"})
-    case Transaction.newTransaction(%{publicKey: publicKey, amount: amount, recipientId: recipientId, message: message, secondPublicKey: secondPublicKey, fee: 1}) do
+    %{"secondPassword" => secondPassword} = Map.merge(%{"secondPassword" => "dzc944262316"}, conn.params)
+    case Transaction.newTransaction(%{publicKey: publicKey, amount: amount, recipientId: recipientId, message: message, secondPassword: secondPassword, fee: 1}) do
       [:ok, transaction] -> json(conn,  %{success: true, transaction: transaction})
       [:error, _] -> json(conn,  %{success: false, transaction: []})
     end
