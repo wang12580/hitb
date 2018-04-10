@@ -82,9 +82,9 @@ $(document).ready(function() {
       },
       test: function(username){
         this.$ajax({
-          type: 'get',
-          url: BASE_URL + 'getAccountsPublicKey',
-          // data: {publicKey: username, amount: 1000, recipientId: 'W/6j/YE2tbfN6g5gub0rjDwOBJx7SVVAOsaDI8J3Ddg=', message: 'message'},
+          type: 'put',
+          url: BASE_URL + 'addTransactions',
+          data: {publicKey: username, amount: 1000, recipientId: 'W/6j/YE2tbfN6g5gub0rjDwOBJx7SVVAOsaDI8J3Ddg=', message: 'message'},
           dataType: 'json',
           success: (res)=> {
             console.log(res);

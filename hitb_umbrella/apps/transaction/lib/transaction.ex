@@ -35,6 +35,9 @@ defmodule Transaction do
       _ ->
         if(:crypto.hash(:sha256, "#{transaction.secondPublicKey}")|> Base.encode64 == sender.secondPublicKey)do
           Repos.TransactionRepository.insert_transaction(tran)
+          IO.inspect transaction
+          sender = %{sender | :balance => sender.balance - String.to_integer(transaction.amount) - transaction.fee}
+          Repos.AccountRepository.insert_account(sender)
           [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
         else
           [:error, nil]
