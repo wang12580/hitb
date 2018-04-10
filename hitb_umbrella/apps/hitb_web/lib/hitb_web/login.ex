@@ -61,10 +61,10 @@ defmodule HitbWeb.Login do
   #登录状态,返回是否登录
   def is_login(conn) do
     user = get_session(conn, :user)
-    account = Repos.AccountRepository.get_account(user.username)
     case user do
       nil -> false
       _ ->
+        account = Repos.AccountRepository.get_account(user.username)
         case account do
           [] -> false
           _ -> user.login
