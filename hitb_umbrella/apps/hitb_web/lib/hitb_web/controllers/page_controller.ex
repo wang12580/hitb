@@ -41,10 +41,11 @@ defmodule HitbWeb.PageController do
   end
 
   def block(conn, _params) do
+    %{"page" => page} = Map.merge(%{ "page" => "" }, conn.params)
     login = HitbWeb.Login.is_login(conn)
     if(login)do
       [conn, user] = HitbWeb.Login.user(conn)
-      render conn, "block.html", user: user
+      render conn, "block.html", user: user, page: page
     else
       redirect conn, to: "/login"
     end

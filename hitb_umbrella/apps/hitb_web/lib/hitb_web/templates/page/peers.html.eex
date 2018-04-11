@@ -1,3 +1,11 @@
-<div>
-  hello peer
+<div class="container" id="peer">
+  <table class="table table-striped">
+      <thead><tr>
+        <th>地址</th><th>端口</th><th>链接状况</th>
+      </tr></thead>
+      <tr v-for="(item, index) in items" v-bind:key='index' v-on:dblclick="addPeer()">
+        <td> {{ item.host }} </td><td> {{ item.port }} </td><td>{{log}}</td>
+      </tr>
+    </table>
 </div>
+<script src="<%= static_path(@conn, "/js/peer.js") %>"></script>

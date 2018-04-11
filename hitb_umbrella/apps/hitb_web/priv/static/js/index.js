@@ -38,6 +38,7 @@ $(document).ready(function() {
         });
       },
       getBlock: function(val) {
+        console.log(val)
         this.type = 'getBlock'
         this.$ajax({
           type: 'GET',
