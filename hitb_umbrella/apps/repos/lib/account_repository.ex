@@ -39,6 +39,9 @@ defmodule Repos.AccountRepository do
         account.lockHeight})
         # :ets.insert(:account, {:latest, block})
     end)
+    :mnesia.add_table_index(:account, :username)
+    :mnesia.add_table_index(:account, :address)
+    :mnesia.add_table_index(:account, :publicKey)
     :ok
   end
 
@@ -60,9 +63,7 @@ defmodule Repos.AccountRepository do
 
   def get_account(username) do
     #查询
-    {:atomic, result} = :mnesia.transaction(fn ->
-      :mnesia.match_object({:account, :_, username, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
-    end)
+    {:atomic, result} = :mnesia.transaction(fn -> :mnesia.index_read(:account, username, :username) end)
     case result do
       [] -> []
       _ ->
@@ -74,7 +75,7 @@ defmodule Repos.AccountRepository do
   def get_account_by_publicKey(publicKey) do
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
-      :mnesia.match_object({:account, :_, :_, :_, :_, :_, :_, :_, :_, publicKey, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+      :mnesia.index_read(:account, publicKey, :publicKey)
     end)
     case result do
       [] -> []

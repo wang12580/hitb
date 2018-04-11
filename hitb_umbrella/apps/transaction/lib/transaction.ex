@@ -13,7 +13,7 @@ defmodule Transaction do
     tran = %{
       id: transaction.id,
       height: latest_block.index,
-      blockId: to_string(latest_block.index),
+      blockId: to_string(latest_block.hash),
       type: transaction.type,
       timestamp: :os.system_time(:seconds),
       datetime: Transaction.generateDateTime,

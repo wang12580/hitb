@@ -14,11 +14,8 @@ defmodule HitbWeb.PageController do
     Logger.info Block.hello()
     Logger.info Share.hello()
     Logger.info Token.hello()
-    # Mnesia.select(Person, [{{Person, :"$1", :"$2", :"$3"}, [{:>, :"$1", 3}], [:"$$"]}])
-    # {:atomic, result} = :mnesia.transaction(fn ->
-    #   :mnesia.index_read({:account, "someone manual strong movie roof episode eight spatial brown soldier soup motor", :username})
-    # end)
-    # IO.inspect result
+    IO.inspect :mnesia.add_table_index(:transaction, :senderPublicKey)
+    IO.inspect Repos.TransactionRepository.get_transactions_by_publicKey("pkryhTdUUwH2ZXlgRii1XHp6ECdSu9jwsNFS+XVOeNU=")
     login = HitbWeb.Login.is_login(conn)
     if(login)do
       [conn, user] = HitbWeb.Login.user(conn)

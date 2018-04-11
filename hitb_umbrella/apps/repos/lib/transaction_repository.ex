@@ -25,30 +25,35 @@ defmodule Repos.TransactionRepository do
         transaction.args,
         transaction.message})
     end)
+    # :mnesia.add_table_index(:transaction, :id)
+    :mnesia.add_table_index(:transaction, :senderPublicKey)
+    :mnesia.add_table_index(:transaction, :recipientId)
     :ok
   end
 
-  # def get_block(index) do
-  #   #查询
-  #   {:atomic, result} = :mnesia.transaction(fn ->
-  #     :mnesia.match_object({:block_chain, String.to_integer(index), :_, :_, :_, :_})
-  #   end)
-  #   result
-  #     |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
-  # end
   def get_transactions_by_id(id) do
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
+      # :mnesia.index_read(:transaction, String.to_integer(id), :id)
       :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
     end)
     case result do
-      [] ->
-        result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end) |> hd
-      _ ->
-        nil
+      [] -> nil
+      _ -> result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end) |> hd
     end
   end
 
+  def get_transactions_by_publicKey(publicKey) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.index_read(:transaction, publicKey, :senderPublicKey)
+      # :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+    end)
+    case result do
+      [] -> nil
+      _ -> result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end) |> hd
+    end
+  end
 
   def get_all_transactions() do
     {:atomic, result} = :mnesia.transaction(fn ->
