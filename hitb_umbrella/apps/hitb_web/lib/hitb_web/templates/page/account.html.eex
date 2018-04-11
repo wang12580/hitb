@@ -45,7 +45,7 @@
           <th scope="row">{{value.id}}</th>
           <td>{{value.type}}</td>
           <td>{{value.senderPublicKey}}</td>
-          <td>{{value.requesterPublicKey}}</td>
+          <td>{{value.recipientId}}</td>
           <td>{{value.datetime}}</td>
           <td>{{value.amount}}({{value.fee}})</td>
           <td>{{value.message}}</td>
@@ -143,14 +143,24 @@
       <div class="card" style="width: 100%">
           <form class="col-md-12" @submit.prevent="">
             <h2>转账</h2>
+            <p v-if="paySuccess === true" class="bg-success">{{payInfo}}</p>
+            <p v-if="paySuccess === false" class="bg-warning">{{payInfo}}</p>
             <div class="form-group">
               <label>发送者：</label>
-              <input type="text" class="form-control" placeholder="<%= @user.secret%>" readonly="readonly">
+              <input type="text" class="form-control" placeholder="<%= @user.publicKey%>" readonly="readonly">
             </div>
             <div class="form-group">
               <label>接受者：</label>
-              <input type="text" class="form-control" placeholder="" v-model="pay.recipientId">
+                <select class="form-control" v-model="pay.recipientId">
+                  <option v-for="value in publicKeys">{{value}}</option>
+                </select>
             </div>
+            <%= if(@user.secondPublicKey != nil)do %>
+              <div class="form-group">
+                <label>二级密码：</label>
+                <input type="text" class="form-control" v-model="secondPassword">
+              </div>
+            <%end%>
             <div class="form-group">
               <label>金额：</label>
               <input type="number" class="form-control" placeholder="" v-model="pay.amount">
@@ -163,7 +173,7 @@
               <label>备注：</label>
               <input type="text" class="form-control" readonly="readonly" v-model="pay.message">
             </div>
-            <button class="btn btn-primary float-right" v-on:click="getPays('<%= @user.secret%>')">确认</button>
+            <button class="btn btn-primary float-right" v-on:click="getPays('<%= @user.publicKey%>')">确认</button>
           </form>
       </div>
     </div>
