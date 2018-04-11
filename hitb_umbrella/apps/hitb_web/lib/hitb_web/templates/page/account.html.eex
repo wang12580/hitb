@@ -45,7 +45,7 @@
           <th scope="row">{{value.id}}</th>
           <td>{{value.type}}</td>
           <td>{{value.senderPublicKey}}</td>
-          <td>{{value.requesterPublicKey}}</td>
+          <td>{{value.recipientId}}</td>
           <td>{{value.datetime}}</td>
           <td>{{value.amount}}({{value.fee}})</td>
           <td>{{value.message}}</td>

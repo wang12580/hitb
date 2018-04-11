@@ -33,9 +33,8 @@ defmodule Transaction do
         Repos.TransactionRepository.insert_transaction(tran)
         [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
       _ ->
-        if(:crypto.hash(:sha256, "#{transaction.secondPublicKey}")|> Base.encode64 == sender.secondPublicKey)do
+        if(:crypto.hash(:sha256, "#{transaction.secondPassword}")|> Base.encode64 == sender.secondPublicKey)do
           Repos.TransactionRepository.insert_transaction(tran)
-          IO.inspect transaction
           sender = %{sender | :balance => sender.balance - String.to_integer(transaction.amount) - transaction.fee}
           Repos.AccountRepository.insert_account(sender)
           [:ok, %{tran | :args => Tuple.to_list(tran.args)}]
@@ -91,11 +90,11 @@ defmodule Transaction do
 
   def generateId do
     {megaSecs, secs, microSecs} = :erlang.now()
-    # randMegaSecs = :random.uniform(megaSecs)
+    randMegaSecs = :random.uniform(megaSecs)
     randSecs = :random.uniform(secs)
-    randMicroSecs = :random.uniform(microSecs)
+    # randMicroSecs = :random.uniform(microSecs)
     randSec = :os.system_time(:seconds)
-    Enum.sort([randSecs, randMicroSecs, randSec]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
+    Enum.sort([randSec, randSecs, randMegaSecs]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
   end
 
   def generateDateTime do

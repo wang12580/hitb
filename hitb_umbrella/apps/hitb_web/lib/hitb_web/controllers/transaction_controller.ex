@@ -7,7 +7,7 @@ defmodule HitbWeb.TransactionController do
   """
 
   def getTransactions(conn, _) do
-    transactions = Repos.TransactionRepository.get_all_transactions
+    transactions = Repos.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
     json(conn, %{data: transactions})
   end
 

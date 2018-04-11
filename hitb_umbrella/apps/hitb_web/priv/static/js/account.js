@@ -38,7 +38,6 @@ $(document).ready(function() {
             dataType: 'json',
             success: (res)=> {
               this.transactions = res.data
-              console.log(res.data[0])
             },
             error: (err)=> {
               this.items = ['登录失败']
