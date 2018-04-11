@@ -21,11 +21,13 @@ $(document).ready(function() {
         transactions: [],
         accountPage: '账户信息',
         pay: {
-          publicKey: '', amount: 0, recipientId: '000000', message: '测试使用'
+          publicKey: '', amount: 0, recipientId: '', message: ''
         },
         secondPass: {
           secondPass: '', againSecondPass: ''
         },
+        paySuccess: '',
+        payInfo: '',
         secondPublicKey: '',
         publicKeys: [],
         secondPassword: ''
@@ -69,7 +71,8 @@ $(document).ready(function() {
             data: this.pay,
             dataType: 'json',
             success: (res)=> {
-              console.log(res)
+              this.paySuccess = res.success
+              this.payInfo = res.info
             },
             error: (err)=> {
               this.items = ['交易失败']

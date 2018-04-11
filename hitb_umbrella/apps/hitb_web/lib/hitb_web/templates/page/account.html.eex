@@ -143,6 +143,8 @@
       <div class="card" style="width: 100%">
           <form class="col-md-12" @submit.prevent="">
             <h2>转账</h2>
+            <p v-if="paySuccess === true" class="bg-success">{{payInfo}}</p>
+            <p v-if="paySuccess === false" class="bg-warning">{{payInfo}}</p>
             <div class="form-group">
               <label>发送者：</label>
               <input type="text" class="form-control" placeholder="<%= @user.publicKey%>" readonly="readonly">

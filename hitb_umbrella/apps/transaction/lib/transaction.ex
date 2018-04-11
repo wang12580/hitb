@@ -38,7 +38,7 @@ defmodule Transaction do
           recipient = Account.getAccountByPublicKey(tran.recipientId)
           pay(sender, recipient, transaction, tran)
         else
-          [:error, nil]
+          [:error, nil, "交易失败,二级密码错误"]
         end
     end
   end
@@ -90,14 +90,14 @@ defmodule Transaction do
   def pay(sender, recipient, transaction, insert_tran) do
     case sender.balance - transaction.amount - transaction.fee < 0 do
       true ->
-        [:error, nil]
+        [:error, nil, "交易失败,费用不足"]
       false ->
         Repos.TransactionRepository.insert_transaction(insert_tran)
         sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
         Repos.AccountRepository.insert_account(sender)
         recipient = %{recipient | :balance => sender.balance + transaction.amount}
         Repos.AccountRepository.insert_account(recipient)
-        [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}]
+        [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
     end
   end
 
