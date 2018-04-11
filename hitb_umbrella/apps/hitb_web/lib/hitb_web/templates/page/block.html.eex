@@ -1,4 +1,27 @@
-<div>
-  hello block
-  {{this.items}}
-</div>
+<script src="<%= static_path(@conn, "/js/block.js") %>"></script>
+
+  <%= if(@page == "newblock")do %>
+    <div class="container" id="block1">
+    <div class="row">
+      <div v-for="(item, index) in items" v-bind:key='index'> {{item}}</div>
+    </div>
+    </div>
+  <% end%>
+  <%= if(@page == "blocklist")do %>
+    <div class="container" id="block2">
+    <div class="row">
+      <table class="table table-bordered">
+        <thead><tr>
+            <th>索引</th>
+            <th>哈希值</th>
+            <th>时间</th>
+          </tr></thead>
+          <tr v-for="(item, index) in items" v-bind:key='index'>
+            <td>{{ item.index }}</td>
+            <td><a href="#" v-on:click="getBlock(item.index)">{{ item.hash }}</a></td>
+            <td>{{ item.data }}</td>
+          </tr>
+      </table>
+    </div>
+    </div>
+  <% end%>
