@@ -42,10 +42,16 @@
       </thead>
       <tbody>
         <tr v-for="(value, index) in transactions" v-bind:key ='index'>
-          <th scope="row">{{value.id}}</th>
+          <th scope="row">
+            <a href ="#" v-on:click="accountID">{{value.id}}</a>
+          </th>
           <td>{{value.type}}</td>
-          <td>{{value.senderPublicKey}}</td>
-          <td>{{value.recipientId}}</td>
+          <td>
+            <a href ="#" v-on:click="accountSenderPublicKey">{{value.senderPublicKey}}</a>
+          </td>
+          <td>
+            <a href="#" v-on:click="accountRecipientId">{{value.recipientId}}</a>
+          </td>
           <td>{{value.datetime}}</td>
           <td>{{value.amount}}({{value.fee}})</td>
           <td>{{value.message}}</td>
