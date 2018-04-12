@@ -82,20 +82,34 @@ $(document).ready(function() {
         });
       },
       test: function(username){
+        this.type = 'addPeer'
         this.$ajax({
-          type: 'put',
-          url: BASE_URL + 'addTransactions',
-          data: {publicKey: username, amount: 1000, recipientId: 'W/6j/YE2tbfN6g5gub0rjDwOBJx7SVVAOsaDI8J3Ddg=', message: 'message'},
+          type: 'POST',
+          url: BASE_URL + '/peer',
+          data: {"host": "127.0.0.1", "port": 4001},
           dataType: 'json',
           success: (res)=> {
-            console.log(res);
-            // this.items = res.result
+            this.items = res.result
           },
           error: (err)=> {
-            // this.items = ['创建区块失败']
+            this.items = ['连接节点失败']
             console.log(err);
           }
         });
+        // this.$ajax({
+        //   type: 'put',
+        //   url: BASE_URL + 'addTransactions',
+        //   data: {publicKey: username, amount: 1000, recipientId: 'W/6j/YE2tbfN6g5gub0rjDwOBJx7SVVAOsaDI8J3Ddg=', message: 'message'},
+        //   dataType: 'json',
+        //   success: (res)=> {
+        //     console.log(res);
+        //     // this.items = res.result
+        //   },
+        //   error: (err)=> {
+        //     // this.items = ['创建区块失败']
+        //     console.log(err);
+        //   }
+        // });
       }
     }  // vue-methods
   })
