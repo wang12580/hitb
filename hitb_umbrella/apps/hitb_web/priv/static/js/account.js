@@ -30,7 +30,8 @@ $(document).ready(function() {
         payInfo: '',
         secondPublicKey: '',
         publicKeys: [],
-        secondPassword: ''
+        secondPassword: '',
+        accoutnInfo: false
       },
       methods: {
         getTransactions: function() {
@@ -117,6 +118,15 @@ $(document).ready(function() {
               console.log(err);
             }
           });
+        },
+        accountID: function () {
+          console.log('ssss')
+        },
+        accountSenderPublicKey: function () {
+          console.log('bbbbbb')
+        },
+        accountRecipientId: function () {
+          console.log('vvvvv')
         }
       }  // vue-methods
     })  // new-Vue
