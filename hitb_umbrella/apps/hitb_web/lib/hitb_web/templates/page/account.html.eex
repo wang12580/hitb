@@ -2,6 +2,54 @@
 <link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
 <%= if(@page == "all")do %>
   <div class="container">
+    <div class="modal fade bd-example-modal-lg" id="accountInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">详细信息</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table v-if="accoutnInfo === 'id'">
+              <tr v-for="(data, key) in getTransactionById" v-bind:key='key' class="server-load-rightpanel-tr">
+                <td v-if="key === 'type'">交易类型</td>
+                <td v-if="key === 'timestamp'">时间戳</td>
+                <td v-if="key === 'senderPublicKey'">二级秘钥</td>
+                <td v-if="key === 'requesterPublicKey'">接受者</td>
+                <td v-if="key === 'message'">备注</td>
+                <td v-if="key === 'id'">交易ID</td>
+                <td v-if="key === 'height'">区块高度</td>
+                <td v-if="key === 'fee'">费用</td>
+                <td v-if="key === 'datetime'">交易时间</td>
+                <td v-if="key === 'blockId'">区块ID</td>
+                <td v-if="key === 'amount'">金额</td>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>{{data}}</td>
+              </tr>
+            </table>
+            <table v-if="accoutnInfo === 'PublicKey'">
+              <tr v-for="(data, key) in getAccountByPublicKey" v-bind:key='key' class="server-load-rightpanel-tr">
+                <td v-if="key === 'vote'">投票</td>
+                <td v-if="key === 'publicKey'">公钥</td>
+                <td v-if="key === 'balance'">余额</td>
+                <td v-if="key === 'address'">地址</td>
+                <td>{{data}}</td>
+              </tr>
+            </table>
+            <table v-if="accoutnInfo === 'RecipientId'">
+              <tr v-for="(data, key) in getAccountByAddress" v-bind:key='key' class="server-load-rightpanel-tr">
+                <td>{{key}}</td>
+                <td>{{data}}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-sm">
         <div class="box_info border border-primary">
@@ -42,15 +90,15 @@
       </thead>
       <tbody>
         <tr v-for="(value, index) in transactions" v-bind:key ='index'>
-          <th scope="row">
-            <a href ="#" v-on:click="accountID">{{value.id}}</a>
+          <th scope="row" data-toggle="modal" data-target="#accountInfo">
+            <a href ="#" v-on:click="accountID(value.id)">{{value.id}}</a>
           </th>
           <td>{{value.type}}</td>
-          <td>
-            <a href ="#" v-on:click="accountSenderPublicKey">{{value.senderPublicKey}}</a>
+          <td data-toggle="modal" data-target="#accountInfo">
+            <a href ="#" v-on:click="accountSenderPublicKey(value.senderPublicKey)">{{value.senderPublicKey}}</a>
           </td>
-          <td>
-            <a href="#" v-on:click="accountRecipientId">{{value.recipientId}}</a>
+          <td data-toggle="modal" data-target="#accountInfo">
+            <a href="#" v-on:click="accountRecipientId(value.recipientId)">{{value.recipientId}}</a>
           </td>
           <td>{{value.datetime}}</td>
           <td>{{value.amount}}({{value.fee}})</td>
