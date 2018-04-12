@@ -60,6 +60,16 @@ defmodule HitbWeb.AccountController do
     json(conn, %{account: account})
   end
 
+  def getAccountByPublicKey(conn, %{"publicKey" => publicKey}) do
+    account = Repos.AccountRepository.get_account_by_publicKey(publicKey)
+    json(conn, %{account: account})
+  end
+
+  def getAccountByAddress(conn, %{"address" => address}) do
+    account = Repos.AccountRepository.get_account_by_address(address)
+    json(conn, %{account: account})
+  end
+
   def newAccount(conn, %{"username" => username}) do
     case username do
       "" -> json(conn, %{success: false, user: %{username: username}, info: "用户名未填写"})

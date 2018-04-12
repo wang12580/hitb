@@ -14,6 +14,7 @@ defmodule Repos.BlockRepository do
         block.hash})
         :ets.insert(:latest_block, {:latest, block})
     end)
+    :mnesia.add_table_index(:block_chain, :hash)
     :ok
   end
 
@@ -24,6 +25,18 @@ defmodule Repos.BlockRepository do
     end)
     result
       |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
+  end
+
+  def get_block_by_hash(hash) do
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.index_read(:block_chain, hash, :hash)
+    end)
+    case result do
+      [] -> []
+      _ ->
+        result
+          |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
+    end
   end
 
   def get_all_blocks() do

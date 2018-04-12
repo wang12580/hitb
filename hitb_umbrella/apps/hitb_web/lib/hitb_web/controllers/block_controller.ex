@@ -22,6 +22,11 @@ defmodule HitbWeb.BlockController do
     json(conn, %{block: block})
   end
 
+  def getBlockByHash(conn, %{"hash" => hash}) do
+    block = Repos.BlockRepository.get_block_by_hash(hash)
+    json(conn, %{block: block})
+  end
+
   def getFullBlock(conn, _) do
     json(conn, %{})
   end
