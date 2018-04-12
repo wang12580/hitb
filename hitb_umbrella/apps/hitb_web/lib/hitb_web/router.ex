@@ -44,6 +44,7 @@ defmodule HitbWeb.Router do
     get "/getReward", BlockController, :getReward
     get "/getSupply", BlockController, :getSupply
     get "/getStatus", BlockController, :getStatus
+    get "/getBlockByHash", BlockController, :getBlockByHash
 
     post "/peer", PeerController, :add_peer
     get "/peers", PeerController, :get_all_peers
@@ -63,6 +64,8 @@ defmodule HitbWeb.Router do
     get "/newAccount", AccountController, :newAccount
     put "/addSignature", AccountController, :addSignature
     get "/getAccountsPublicKey", AccountController, :getAccountsPublicKey
+    get "/getAccountByPublicKey", AccountController, :getAccountByPublicKey
+    get "getAccountByAddress", AccountController, :getAccountByAddress
 
     get "/count", DelegateController, :count
     get "/getVoters", DelegateController, :getVoters

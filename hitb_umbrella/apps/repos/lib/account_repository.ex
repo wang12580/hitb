@@ -85,6 +85,20 @@ defmodule Repos.AccountRepository do
     end
   end
 
+  def get_account_by_address(address) do
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.index_read(:account, address, :address)
+    end)
+    case result do
+      [] -> []
+      _ ->
+        result
+          |> Enum.map(fn x -> deserialize_account_from_record(x) end) |> hd
+    end
+  end
+
+
   def update_secondPublicKey(account) do
     {:atomic, _} = :mnesia.transaction(fn ->
         :mnesia.write({:account,
