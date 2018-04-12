@@ -16,10 +16,10 @@ defmodule HitbWeb.PeerController do
   end
 
   def get_all_peers(conn, _) do
-    peers = :ets.tab2list(:peers)
-      |> Enum.map(fn (peer_entry) ->
-        peer_entry |> elem(1)
-      end)
+    peers = Repos.PeerRepository.get_all_peers()
+      # |> Enum.map(fn (peer_entry) ->
+      #   peer_entry |> elem(1)
+      # end)
       json(conn,  %{peers: peers})
   end
 

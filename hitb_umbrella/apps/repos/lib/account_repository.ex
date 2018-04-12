@@ -62,6 +62,7 @@ defmodule Repos.AccountRepository do
   end
 
   def get_account(username) do
+    :mnesia.add_table_index(:account, :username)
     #查询
     {:atomic, result} = :mnesia.transaction(fn -> :mnesia.index_read(:account, username, :username) end)
     case result do

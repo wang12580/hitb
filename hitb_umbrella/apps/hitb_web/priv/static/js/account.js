@@ -31,7 +31,10 @@ $(document).ready(function() {
         secondPublicKey: '',
         publicKeys: [],
         secondPassword: '',
-        accoutnInfo: false
+        accoutnInfo: '',
+        getTransactionById: {},
+        getAccountByPublicKey: {},
+        getAccountByAddress: {}
       },
       methods: {
         getTransactions: function() {
@@ -119,14 +122,52 @@ $(document).ready(function() {
             }
           });
         },
-        accountID: function () {
-          console.log('ssss')
+        accountID: function (value) {
+          this.$ajax({
+            type: 'GET',
+            url: BASE_URL + `/getTransaction?id=${value}`,
+            dataType: 'json',
+            success: (res)=> {
+              this.accoutnInfo = 'id'
+              const { signature, signSignature, senderId, recipientId, asset, args, ...c } = res.data;
+              this.getTransactionById = c
+            },
+            error: (err)=> {
+              this.items = ['创建区块失败']
+              console.log(err);
+            }
+          });
         },
-        accountSenderPublicKey: function () {
-          console.log('bbbbbb')
+        accountSenderPublicKey: function (value) {
+          this.$ajax({
+            type: 'GET',
+            url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
+            dataType: 'json',
+            success: (res)=> {
+              this.accoutnInfo = 'PublicKey'
+              let { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+              this.getAccountByPublicKey = c
+            },
+            error: (err)=> {
+              this.items = ['创建区块失败']
+              console.log(err);
+            }
+          });
         },
-        accountRecipientId: function () {
-          console.log('vvvvv')
+        accountRecipientId: function (value) {
+          this.$ajax({
+            type: 'GET',
+            url: BASE_URL + `/getAccountByAddress?address=${value}`,
+            dataType: 'json',
+            success: (res)=> {
+              this.accoutnInfo = 'RecipientId'
+              this.getAccountByAddress = res.account
+            },
+            error: (err)=> {
+              this.items = ['创建区块失败']
+              console.log(err);
+            }
+          });
         }
       }  // vue-methods
     })  // new-Vue
