@@ -11,16 +11,14 @@ defmodule HitbWeb.PeerController do
     if result == :fail do
       raise Hitb.ErrorAlreadyConnected
     else
+      Peers.newPeer(host, port)
       json(conn, %{result: [host <> ":" <> port <> "节点连接成功"]})
     end
   end
 
   def get_all_peers(conn, _) do
     peers = Repos.PeerRepository.get_all_peers()
-      # |> Enum.map(fn (peer_entry) ->
-      #   peer_entry |> elem(1)
-      # end)
-      json(conn,  %{peers: peers})
+    json(conn,  %{peers: peers})
   end
 
   def getPeers(conn, _) do

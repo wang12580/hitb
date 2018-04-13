@@ -78,7 +78,7 @@ defmodule Mix.Tasks.InitDb do
 
   defp create_peer_table(node) do
     :ok = case :mnesia.create_table(:peer, [
-      attributes: [:host, :port],
+      attributes: [:host, :port, :connect],
       type: :set,
       disc_copies: [node]
     ]) do

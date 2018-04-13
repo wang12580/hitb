@@ -90,12 +90,14 @@ defmodule Repos.Application do
   defp init_peer() do
     init_peer = %Repos.Peer{
       host:  "127.0.0.1",
-      port:  "4001"
+      port:  "4001",
+      connect: true
     }
     case :mnesia.transaction(fn -> :mnesia.foldl(fn(r, a) -> [r | a] end, [], :peer) end) do
       {:atomic, []} ->
-        case Peers.P2pSessionManager.connect("127.0.0.1", "4001") do
-          :ok -> :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port}) end)
+        case Peers.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+          :ok ->
+            :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port, init_peer.connect}) end)
           _ -> :error
         end
       {:atomic, peers} ->
