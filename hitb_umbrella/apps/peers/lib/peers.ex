@@ -12,4 +12,9 @@ defmodule Peers do
     publicIp
   end
 
+  def newPeer(host, port)do
+    peer = %{host: host, port: port, connect: true}
+    Repos.PeerRepository.insert_peer(peer)
+  end
+
 end

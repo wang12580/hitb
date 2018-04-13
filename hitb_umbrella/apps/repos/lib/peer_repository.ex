@@ -9,7 +9,8 @@ defmodule Repos.PeerRepository do
       :mnesia.write({:peer,
         # peer.pid,
         peer.host,
-        peer.port})
+        peer.port,
+        peer.connect})
     end)
     :ok
   end
@@ -28,7 +29,8 @@ defmodule Repos.PeerRepository do
   def deserialize_block_from_peer(record) do
     %Repos.Peer{
       host:        elem(record, 1),
-      port:        elem(record, 2)
+      port:        elem(record, 2),
+      connect:     elem(record, 3)
     }
   end
 end

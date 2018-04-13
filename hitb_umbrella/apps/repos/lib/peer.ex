@@ -4,9 +4,10 @@ defmodule Repos.Peer do
   """
   @type block :: %Repos.Peer{
     host:        String.t,
-    port:        String.t
+    port:        String.t,
+    connect:     Boolen
   }
-  @fields [:host, :port]
+  @fields [:host, :port, :connect]
   @enforce_keys @fields
   defstruct     @fields
 end
