@@ -84,9 +84,9 @@ $(document).ready(function() {
       test: function(username){
         this.type = 'addPeer'
         this.$ajax({
-          type: 'POST',
-          url: BASE_URL + '/peer',
-          data: {"host": "127.0.0.1", "port": 4001},
+          type: 'get',
+          url: BASE_URL + '/getTransactionsByBlockHeight?height=0',
+          // data: {"host": "127.0.0.1", "port": 4001},
           dataType: 'json',
           success: (res)=> {
             this.items = res.result

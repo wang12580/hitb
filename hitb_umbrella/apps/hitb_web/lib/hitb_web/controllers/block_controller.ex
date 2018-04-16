@@ -13,7 +13,11 @@ defmodule HitbWeb.BlockController do
   end
 
   def get_all_blocks(conn, _) do
-    all_blocks = Repos.BlockRepository.get_all_blocks()
+    all_blocks =
+      Repos.BlockRepository.get_all_blocks()
+      |>Enum.map(fn x ->
+          Map.put(x, :transactions, length(Repos.TransactionRepository.get_transactions_by_blockIndex(x.index)))
+        end)
     json(conn,  %{blocks: all_blocks})
   end
 

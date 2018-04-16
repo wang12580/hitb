@@ -25,8 +25,6 @@ defmodule Repos.TransactionRepository do
         transaction.args,
         transaction.message})
     end)
-    # :mnesia.add_table_index(:transaction, :id)
-    :mnesia.add_table_index(:transaction, :senderPublicKey)
     :mnesia.add_table_index(:transaction, :recipientId)
     :ok
   end
@@ -42,7 +40,20 @@ defmodule Repos.TransactionRepository do
     end
   end
 
+  def get_transactions_by_blockIndex(id) do
+    :mnesia.add_table_index(:transaction, :blockId)
+    #查询
+    {:atomic, result} = :mnesia.transaction(fn ->
+      :mnesia.index_read(:transaction, to_string(id), :blockId)
+    end)
+    case result do
+      [] -> []
+      _ -> result|> Enum.map(fn x -> deserialize_transaction_from_record(x) end)
+    end
+  end
+
   def get_transactions_by_publicKey(publicKey) do
+    :mnesia.add_table_index(:transaction, :senderPublicKey)
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.index_read(:transaction, publicKey, :senderPublicKey)

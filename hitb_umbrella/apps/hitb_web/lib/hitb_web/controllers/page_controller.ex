@@ -16,9 +16,6 @@ defmodule HitbWeb.PageController do
     Logger.info Token.hello()
     login = HitbWeb.Login.is_login(conn)
     if(login)do
-      a = Account.delAccount("byUsername", "dzc")
-      IO.inspect a
-      # :mnesia.delete_object()
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "index.html", user: user
     else

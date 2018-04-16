@@ -22,6 +22,15 @@ defmodule Account do
     end
   end
 
+  def getAddressByAddress(address) do
+    account = Repos.AccountRepository.get_account_by_address(address)
+    case account do
+      [] -> nil
+      _ -> account
+    end
+  end
+
+
   def vote do
 
   end
@@ -35,8 +44,15 @@ defmodule Account do
   end
 
   def delAccount(by, value) do
-    case by do
-       "byUsername" -> getAccount(value)
+    account =
+      case by do
+         "byUsername" -> deserialize_record_from_account(getAccount(value))
+         "byPublicKey" -> deserialize_record_from_account(getAccountByPublicKey(value))
+         "byAddress" -> deserialize_record_from_account(getAddressByAddress(value))
+      end
+    case :mnesia.transaction(fn -> :mnesia.delete_object(account) end) do
+      {:ok, _} -> :ok
+      {:atomic, _} -> :error
     end
   end
 
@@ -137,6 +153,39 @@ defmodule Account do
   end
 
   defp deserialize_record_from_account(account) do
-
+    case account do
+      [] -> []
+      _ ->
+        {:account,
+        account.index,
+        account.username,
+        account.u_username,
+        account.isDelegate,
+        account.secondSignature,
+        account.u_secondSignature,
+        account.address,
+        account.publicKey,
+        account.secondPublicKey,
+        account.balance,
+        account.u_balance,
+        account.vote,
+        account.rate,
+        account.delegates,
+        account.u_delegates,
+        account.multisignatures,
+        account.u_multisignatures,
+        account.multimin,
+        account.u_multimin,
+        account.multilifetime,
+        account.u_multilifetime,
+        account.blockId,
+        account.nameexist,
+        account.u_nameexist,
+        account.producedblocks,
+        account.missedblocks,
+        account.fees,
+        account.rewards,
+        account.lockHeight}
+    end
   end
 end
