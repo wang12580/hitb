@@ -34,6 +34,12 @@ defmodule Account do
     Repos.AccountRepository.get_account(username)
   end
 
+  def delAccount(by, value) do
+    case by do
+       "byUsername" -> getAccount(value)
+    end
+  end
+
   def newAccount(account) do
     accounts = Repos.AccountRepository.get_all_accounts
     usernames = accounts |> Enum.map(fn x -> x.username end)
@@ -128,5 +134,9 @@ defmodule Account do
       _ ->
         [false, []]
     end
+  end
+
+  defp deserialize_record_from_account(account) do
+
   end
 end
