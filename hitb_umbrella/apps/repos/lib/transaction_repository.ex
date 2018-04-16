@@ -34,8 +34,7 @@ defmodule Repos.TransactionRepository do
   def get_transactions_by_id(id) do
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
-      # :mnesia.index_read(:transaction, String.to_integer(id), :id)
-      :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
+      :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
     end)
     case result do
       [] -> nil
@@ -47,7 +46,6 @@ defmodule Repos.TransactionRepository do
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.index_read(:transaction, publicKey, :senderPublicKey)
-      # :mnesia.match_object({:transaction, String.to_integer(id), :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_, :_})
     end)
     case result do
       [] -> nil
@@ -65,29 +63,6 @@ defmodule Repos.TransactionRepository do
     result
       |> Enum.sort(fn(a, b) -> a.datetime < b.datetime end)
   end
-
-  # def replace_chain(block_chain, latest_block) do
-  #   :mnesia.transaction(fn ->
-  #     block_chain
-  #     |> Enum.each(fn(block) ->
-  #       insert_block(block)
-  #     end)
-  #   end)
-  #   :ets.insert(:latest_block, {:latest, latest_block})
-  # end
-
-  # def get_latest_block() do
-  #   block = get_all_blocks()
-  #   |> Enum.reduce(%{index: -1}, fn(block, acc) ->
-  #     if (block.index > acc.index) do
-  #       block
-  #     else
-  #       acc
-  #     end
-  #   end)
-  #   :ets.insert(:latest_block, {:latest, block})
-  #   block
-  # end
 
   def deserialize_transaction_from_record(record) do
     %Repos.Transaction{
