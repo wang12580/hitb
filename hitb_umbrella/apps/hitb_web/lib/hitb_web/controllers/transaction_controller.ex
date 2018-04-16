@@ -34,13 +34,12 @@ defmodule HitbWeb.TransactionController do
 
   def getTransactionsByBlockHeight(conn, %{"height" => height}) do
     transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(height)
-    IO.inspect transaction
     json conn, %{data: transaction}
   end
 
   def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
     block = Repos.BlockRepository.get_block_by_hash(hash)
-    transaction = Repos.TransactionRepository.get_transactions_by_blockHash(block.index)
+    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
     json conn, %{data: transaction}
   end
 

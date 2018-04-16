@@ -31,17 +31,18 @@ defmodule Block.BlockService do
 
 
   # creates a new block based on the latest one
-  def create_next_block(data) do
+  def create_next_block(data, secret) do
     latest_block = get_latest_block()
     index        = latest_block.index + 1
     timestamp    = :os.system_time(:seconds)
     hash         = generate_block_hash(index, latest_block.hash, timestamp, data)
     %Repos.Block{
-      index:         index,
-      previous_hash: latest_block.hash,
-      timestamp:     timestamp,
-      data:          data,
-      hash:          hash
+      index:          index,
+      previous_hash:  latest_block.hash,
+      timestamp:      timestamp,
+      data:           data,
+      hash:           hash,
+      generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64
     }
   end
 

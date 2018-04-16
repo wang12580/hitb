@@ -67,6 +67,7 @@ defmodule HitbWeb.AccountController do
 
   def getAccountByAddress(conn, %{"address" => address}) do
     account = Repos.AccountRepository.get_account_by_address(address)
+    IO.inspect account
     json(conn, %{account: account})
   end
 

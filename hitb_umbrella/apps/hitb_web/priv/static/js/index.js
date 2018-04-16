@@ -85,7 +85,7 @@ $(document).ready(function() {
         this.type = 'addPeer'
         this.$ajax({
           type: 'get',
-          url: BASE_URL + '/getTransactionsByBlockHeight?height=0',
+          url: BASE_URL + '/getAccountByAddress?address=pkryhTdUUwH2ZXlgRii1XHp6ECdSu9jwsNFS+XVOeNU=',
           // data: {"host": "127.0.0.1", "port": 4001},
           dataType: 'json',
           success: (res)=> {

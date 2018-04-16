@@ -11,7 +11,8 @@ defmodule Repos.BlockRepository do
         block.previous_hash,
         block.timestamp,
         block.data,
-        block.hash})
+        block.hash,
+        block.generateAdress})
         :ets.insert(:latest_block, {:latest, block})
     end)
     :mnesia.add_table_index(:block_chain, :hash)
@@ -79,7 +80,8 @@ defmodule Repos.BlockRepository do
       previous_hash: elem(record, 2),
       timestamp:     elem(record, 3),
       data:          elem(record, 4),
-      hash:          elem(record, 5)
+      hash:          elem(record, 5),
+      generateAdress:      elem(record, 6)
     }
   end
 end
