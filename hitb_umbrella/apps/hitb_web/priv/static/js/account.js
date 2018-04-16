@@ -128,6 +128,7 @@ $(document).ready(function() {
             url: BASE_URL + `/getTransaction?id=${value}`,
             dataType: 'json',
             success: (res)=> {
+              console.log(res)
               this.accoutnInfo = 'id'
               const { signature, signSignature, senderId, recipientId, asset, args, ...c } = res.data;
               this.getTransactionById = c

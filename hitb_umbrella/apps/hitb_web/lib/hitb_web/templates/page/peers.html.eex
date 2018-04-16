@@ -1,9 +1,23 @@
 <div class="container" id="peer">
+  <form @submit.prevent="">
+    <div class="row">
+      <div class="col"> 
+        <label class="text-center  w-25">IP地址：</label><input type="text" class="form-control float-right w-75" placeholder="IP" v-model="host">
+      </div>
+      <div class="col">
+        <label class="text-center  w-25">端口：</label><input type="text" class="form-control float-right w-75" placeholder="端口"  v-model="port">
+      </div>
+      <div class="col">
+        <input type="submit" class="form-control" v-on:click="addPeer">
+      </div>
+    </div>
+  </form>
   <table class="table table-striped">
       <thead><tr>
         <th>地址</th><th>端口</th><th>链接状况</th>
       </tr></thead>
-      <tr v-for="(item, index) in items" v-bind:key='index' v-on:dblclick="addPeer()">
+      <%# <tr v-for="(item, index) in items" v-bind:key='index' v-on:dblclick="addPeer()"> %>
+      <tr v-for="(item, index) in items" v-bind:key='index'>
         <td> {{ item.host }} </td><td> {{ item.port }} </td><td>{{log}}</td>
       </tr>
     </table>

@@ -8,7 +8,9 @@ $(document).ready(function() {
     data: {
       type : '',
       items: [],
-      log: ''
+      log: '',
+      host: '',
+      port: ''
     },
     created: function () {
       this.getPeers()
@@ -27,11 +29,11 @@ $(document).ready(function() {
         });
       },
       addPeer: function(){
-        this.type = 'addPeer'
+        // this.type = 'addPeer'
         this.$ajax({
           type: 'POST',
-          url: BASE_URL + '/peer',
-          data: {"host": "127.0.0.1", "port": 4001},
+          url: BASE_URL + `/peer`,
+          data: {"host": this.host, "port": parseInt(this.port, 10)},
           dataType: 'json',
           success: (res)=> {
             this.items = res.result
