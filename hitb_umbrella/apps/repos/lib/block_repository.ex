@@ -15,7 +15,6 @@ defmodule Repos.BlockRepository do
         block.generateAdress})
         :ets.insert(:latest_block, {:latest, block})
     end)
-    :mnesia.add_table_index(:block_chain, :hash)
     :ok
   end
 
@@ -29,6 +28,7 @@ defmodule Repos.BlockRepository do
   end
 
   def get_block_by_hash(hash) do
+    :mnesia.add_table_index(:block_chain, :hash)
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.index_read(:block_chain, hash, :hash)
     end)
