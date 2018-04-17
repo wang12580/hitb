@@ -9,7 +9,9 @@ $(document).ready(function() {
         el: '#block2',
         data: {
           type : '',
-          items: []
+          items: [],
+          blockInfo: null,
+          blockTd: null
         },
         created: function () {
           this.getBlocks()
@@ -26,7 +28,53 @@ $(document).ready(function() {
                 console.log(this.items)
               }
             });
-          }
+          },
+          getBlock: function(val) {
+            console.log(val)
+            this.type = 'getBlock'
+            this.$ajax({
+              type: 'GET',
+              url: BASE_URL + '/getBlockByHash?hash=' + val,
+              dataType: 'json',
+              success: (res)=> {
+                this.blockInfo = res.block
+                this.blockTd = 'id'
+                console.log(res)
+              }
+            });
+          },
+          getPreviousHash: function (val) {
+            console.log(val)
+            // getTransactionsByBlockHash
+            this.$ajax({
+              type: 'GET',
+              url: BASE_URL + '/getTransactionsByBlockHash?hash=' + val,
+              dataType: 'json',
+              success: (res)=> {
+                this.blockInfo = res.data
+                // this.blockTd = 'id'
+                console.log(res)
+              }
+            });
+            this.type = 'getPreviousHash'
+            this.blockTd = 'transaction'
+          },
+          getAddress: function (val) {
+            console.log(val)
+            // getTransactionsByBlockHash
+            this.$ajax({
+              type: 'GET',
+              url: BASE_URL + '/getAccountByAddress?address=' + val,
+              dataType: 'json',
+              success: (res)=> {
+                this.blockInfo = res.data
+                // this.blockTd = 'id'
+                console.log(res)
+              }
+            });
+            this.type = 'getPreviousHash'
+            this.blockTd = 'transaction'
+          },
         }
       })
     } else {

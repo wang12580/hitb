@@ -27,12 +27,14 @@ defmodule Repos.Application do
   end
 
   defp generate_initial_block() do
+    secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
     init_block = %Repos.Block{
       index: 0,
       previous_hash: "0",
       timestamp: :os.system_time(:seconds),
       data: "foofizzbazz",
-      hash: :crypto.hash(:sha256, "cool") |> Base.encode64
+      hash: :crypto.hash(:sha256, "cool") |> Base.encode64 |> regex,
+      generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
     }
     secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
     init_transaction = %Repos.Transaction{
@@ -42,7 +44,7 @@ defmodule Repos.Application do
       type:                 3,
       timestamp:            init_block.timestamp,
       datetime:             Transaction.generateDateTime,
-      senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64,
+      senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64|> regex,
       requesterPublicKey:   "",
       senderId:             "",
       recipientId:          "SYSTEM",
@@ -62,7 +64,8 @@ defmodule Repos.Application do
             init_block.previous_hash,
             init_block.timestamp,
             init_block.data,
-            init_block.hash})
+            init_block.hash,
+            init_block.generateAdress})
             :ets.insert(:latest_block, {:latest, init_block})
           :mnesia.write({:transaction,
             init_transaction.id,
@@ -106,5 +109,10 @@ defmodule Repos.Application do
         peers |> Enum.each(fn x -> Peers.P2pSessionManager.connect(elem(x, 1), elem(x, 2)) end)
       _ -> :error
     end
+  end
+
+  defp regex(s) do
+    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
   end
 end

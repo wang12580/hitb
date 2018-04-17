@@ -83,5 +83,7 @@ defmodule HitbWeb.Router do
     get "/getStorage", TransactionController, :getStorage
     get "/getStorage:id", TransactionController, :getStorage
     put "/putStorage", TransactionController, :putStorage
+    get "/getTransactionsByBlockHeight", TransactionController, :getTransactionsByBlockHeight
+    get "/getTransactionsByBlockHash", TransactionController, :getTransactionsByBlockHash
   end
 end

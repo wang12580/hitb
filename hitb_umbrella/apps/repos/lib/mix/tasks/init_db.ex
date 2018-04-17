@@ -25,7 +25,7 @@ defmodule Mix.Tasks.InitDb do
 
   defp create_block_chain_table(node) do
     :ok = case :mnesia.create_table(:block_chain, [
-      attributes: [:index, :previous_hash, :timestamp, :data, :hash],
+      attributes: [:index, :previous_hash, :timestamp, :data, :hash, :generateAdress],
       type: :set,
       disc_copies: [node]
     ]) do

@@ -87,6 +87,7 @@ defmodule Repos.AccountRepository do
   end
 
   def get_account_by_address(address) do
+    :mnesia.add_table_index(:account, :address)
     #查询
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.index_read(:account, address, :address)

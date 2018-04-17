@@ -22,6 +22,15 @@ defmodule Account do
     end
   end
 
+  def getAddressByAddress(address) do
+    account = Repos.AccountRepository.get_account_by_address(address)
+    case account do
+      [] -> nil
+      _ -> account
+    end
+  end
+
+
   def vote do
 
   end
@@ -35,8 +44,15 @@ defmodule Account do
   end
 
   def delAccount(by, value) do
-    case by do
-       "byUsername" -> getAccount(value)
+    account =
+      case by do
+         "byUsername" -> deserialize_record_from_account(getAccount(value))
+         "byPublicKey" -> deserialize_record_from_account(getAccountByPublicKey(value))
+         "byAddress" -> deserialize_record_from_account(getAddressByAddress(value))
+      end
+    case :mnesia.transaction(fn -> :mnesia.delete_object(account) end) do
+      {:ok, _} -> :ok
+      {:atomic, _} -> :error
     end
   end
 
@@ -46,10 +62,8 @@ defmodule Account do
     if account.username in usernames do
       false
     else
-      address = :crypto.hash(:sha256, "#{account.username}")
-        |> Base.encode64
-      publicKey = :crypto.hash(:sha256, "publicKey#{account.username}")
-        |> Base.encode64
+      address = generateAddress(account.username)
+      publicKey = generatePublickey(account.username)
       index = Repos.AccountRepository.get_all_accounts |> Enum.map(fn x -> x.index end) |> List.last
       index =
         case index do
@@ -87,7 +101,12 @@ defmodule Account do
 
   def generatePublickey(username) do
     :crypto.hash(:sha256, "publicKey#{username}")
-      |> Base.encode64
+      |> Base.encode64 |> regex
+  end
+
+  def generateAddress(username) do
+    :crypto.hash(:sha256, "#{username}")
+      |> Base.encode64 |> regex
   end
 
   def getDelegates do
@@ -104,7 +123,7 @@ defmodule Account do
 
   def addSignature(username, password) do
     secondPublicKey = :crypto.hash(:sha256, "#{password}")
-      |> Base.encode64
+      |> Base.encode64|> regex
     account = getAccount(username)
     account = %{account | :secondPublicKey => secondPublicKey}
     case Repos.AccountRepository.update_secondPublicKey(account) do
@@ -137,6 +156,44 @@ defmodule Account do
   end
 
   defp deserialize_record_from_account(account) do
+    case account do
+      [] -> []
+      _ ->
+        {:account,
+        account.index,
+        account.username,
+        account.u_username,
+        account.isDelegate,
+        account.secondSignature,
+        account.u_secondSignature,
+        account.address,
+        account.publicKey,
+        account.secondPublicKey,
+        account.balance,
+        account.u_balance,
+        account.vote,
+        account.rate,
+        account.delegates,
+        account.u_delegates,
+        account.multisignatures,
+        account.u_multisignatures,
+        account.multimin,
+        account.u_multimin,
+        account.multilifetime,
+        account.u_multilifetime,
+        account.blockId,
+        account.nameexist,
+        account.u_nameexist,
+        account.producedblocks,
+        account.missedblocks,
+        account.fees,
+        account.rewards,
+        account.lockHeight}
+    end
+  end
 
+  defp regex(s) do
+    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
   end
 end

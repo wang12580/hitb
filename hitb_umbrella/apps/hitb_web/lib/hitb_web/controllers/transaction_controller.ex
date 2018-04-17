@@ -32,6 +32,18 @@ defmodule HitbWeb.TransactionController do
     end
   end
 
+  def getTransactionsByBlockHeight(conn, %{"height" => height}) do
+    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(height)
+    json conn, %{data: transaction}
+  end
+
+  def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
+    block = Repos.BlockRepository.get_block_by_hash(hash)
+    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
+    json conn, %{data: transaction}
+  end
+
+
   def getStorage(conn, _) do
     json(conn,  %{})
   end
