@@ -34,7 +34,7 @@ defmodule Transaction do
         recipient = Account.getAccountByPublicKey(tran.recipientId)
         pay(sender, recipient, transaction, tran)
       _ ->
-        if(:crypto.hash(:sha256, "#{transaction.secondPassword}")|> Base.encode64 == sender.secondPublicKey)do
+        if(:crypto.hash(:sha256, "#{transaction.secondPassword}")|> Base.encode64|> regex == sender.secondPublicKey)do
           recipient = Account.getAccountByPublicKey(tran.recipientId)
           pay(sender, recipient, transaction, tran)
         else
@@ -117,5 +117,10 @@ defmodule Transaction do
     date = date |> Tuple.to_list |> Enum.map(fn x -> if(x < 10)do "0#{x}" else "#{x}" end end) |> Enum.join("/")
     time = time |> Tuple.to_list |> Enum.map(fn x -> if(x < 10)do "0#{x}" else "#{x}" end end) |> Enum.join(":")
     "#{date} #{time}"
+  end
+
+  defp regex(s) do
+    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
   end
 end

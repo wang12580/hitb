@@ -42,7 +42,7 @@ defmodule Block.BlockService do
       timestamp:      timestamp,
       data:           data,
       hash:           hash,
-      generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64
+      generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64|> regex
     }
   end
 
@@ -78,6 +78,11 @@ defmodule Block.BlockService do
 
   defp generate_block_hash(index, previous_hash, timestamp, data) do
     :crypto.hash(:sha256, "#{index}#{previous_hash}#{timestamp}#{data}")
-    |> Base.encode64
+    |> Base.encode64 |> regex
+  end
+
+  defp regex(s) do
+    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
   end
 end

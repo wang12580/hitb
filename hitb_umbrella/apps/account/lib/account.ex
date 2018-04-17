@@ -62,10 +62,8 @@ defmodule Account do
     if account.username in usernames do
       false
     else
-      address = :crypto.hash(:sha256, "#{account.username}")
-        |> Base.encode64
-      publicKey = :crypto.hash(:sha256, "publicKey#{account.username}")
-        |> Base.encode64
+      address = generateAddress(account.username)
+      publicKey = generatePublickey(account.username)
       index = Repos.AccountRepository.get_all_accounts |> Enum.map(fn x -> x.index end) |> List.last
       index =
         case index do
@@ -103,7 +101,12 @@ defmodule Account do
 
   def generatePublickey(username) do
     :crypto.hash(:sha256, "publicKey#{username}")
-      |> Base.encode64
+      |> Base.encode64 |> regex
+  end
+
+  def generateAddress(username) do
+    :crypto.hash(:sha256, "#{username}")
+      |> Base.encode64 |> regex
   end
 
   def getDelegates do
@@ -120,7 +123,7 @@ defmodule Account do
 
   def addSignature(username, password) do
     secondPublicKey = :crypto.hash(:sha256, "#{password}")
-      |> Base.encode64
+      |> Base.encode64|> regex
     account = getAccount(username)
     account = %{account | :secondPublicKey => secondPublicKey}
     case Repos.AccountRepository.update_secondPublicKey(account) do
@@ -187,5 +190,10 @@ defmodule Account do
         account.rewards,
         account.lockHeight}
     end
+  end
+
+  defp regex(s) do
+    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
   end
 end
