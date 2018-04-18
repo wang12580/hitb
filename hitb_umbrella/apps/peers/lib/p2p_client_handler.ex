@@ -8,8 +8,9 @@ defmodule Peers.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
-  @query_latest_block Peers.P2pMessage.query_latest_block
-  @query_all_blocks   Peers.P2pMessage.query_all_blocks
+  @query_latest_block     Peers.P2pMessage.query_latest_block
+  @query_all_blocks       Peers.P2pMessage.query_all_blocks
+  @query_all_ransactions   Peers.P2pMessage.query_all_ransactions
   # @update_block_chain Peers.P2pMessage.update_block_chain
   @add_peer_request   Peers.P2pMessage.add_peer_request
   @connection_error   Peers.P2pMessage.connection_error
@@ -43,8 +44,10 @@ defmodule Peers.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_joined(topic, _payload, _transport, state) do
+  def handle_joined(topic, _payload, transport, state) do
     Logger.info("joined the topic #{topic}.")
+    GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
+
     # Process.send(self(), @add_peer_request, [])
     {:ok, state}
   end
@@ -77,7 +80,33 @@ defmodule Peers.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_reply(topic, _ref, payload, _transport, state) do
+  def handle_reply(topic, _ref, payload, transport, state) do
+    type = payload["response"]["type"]
+    response = payload["response"]["data"]
+
+    # IO.inspect response
+    case type do
+      "get_latest_block" ->
+        :ok
+        if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
+          GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        end
+      "get_all_blocks" ->
+        # IO.inspect type
+        response
+        |>Enum.map(fn data ->
+            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
+          end)
+        |>Enum.map(fn x -> Repos.BlockRepository.insert_block(x) end)
+        GenSocketClient.push(transport, "p2p", @query_all_ransactions, %{})
+      _ ->
+        response
+        |>Enum.map(fn data ->
+            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
+          end)
+        |>Enum.map(fn x -> Repos.TransactionRepository.insert_block(x) end)
+        GenSocketClient.push(transport, "p2p", @query_all_ransactions, %{})
+    end
     Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
   end

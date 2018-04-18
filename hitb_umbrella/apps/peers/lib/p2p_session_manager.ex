@@ -19,16 +19,17 @@ defmodule Peers.P2pSessionManager do
           end
         end
       end)
-      if not already_connected do
+      # if not already_connected do
         {:ok, pid} = Peers.P2pClientHandler.start_link(host, port)
         :ets.insert(:peers, {pid, %{host: host, port: port}})
         :ok
-      else
-        :fail
-      end
+      # else
+        # :fail
+      # end
   end
 
   def broadcast(message) do
+    IO.inspect :ets.tab2list(:peers)
     :ets.tab2list(:peers)
     |> Enum.each(fn(peer_entry) ->
       pid = peer_entry |> elem(0)

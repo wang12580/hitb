@@ -97,18 +97,18 @@ defmodule Repos.Application do
       port:  "4001",
       connect: true
     }
-    case :mnesia.transaction(fn -> :mnesia.foldl(fn(r, a) -> [r | a] end, [], :peer) end) do
-      {:atomic, []} ->
-        case Peers.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-          :ok ->
-            :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port, init_peer.connect}) end)
-          _ -> :error
-        end
-      {:atomic, peers} ->
-        # 连接所有存储的节点
-        peers |> Enum.each(fn x -> Peers.P2pSessionManager.connect(elem(x, 1), elem(x, 2)) end)
-      _ -> :error
-    end
+    # case :mnesia.transaction(fn -> :mnesia.foldl(fn(r, a) -> [r | a] end, [], :peer) end) do
+    #   {:atomic, []} ->
+    #     case Peers.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+    #       :ok ->
+    #         :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port, init_peer.connect}) end)
+    #       _ -> :error
+    #     end
+    #   {:atomic, peers} ->
+    #     # 连接所有存储的节点
+    #     peers |> Enum.each(fn x -> Peers.P2pSessionManager.connect(elem(x, 1), elem(x, 2)) end)
+    #   _ -> :error
+    # end
   end
 
   defp regex(s) do
