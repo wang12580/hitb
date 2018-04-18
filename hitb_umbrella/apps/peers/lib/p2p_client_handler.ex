@@ -105,7 +105,7 @@ defmodule Peers.P2pClientHandler do
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
         |>Enum.map(fn x -> Repos.TransactionRepository.insert_block(x) end)
-        GenSocketClient.push(transport, "p2p", @query_all_ransactions, %{})
+        GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
     end
     Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
