@@ -12,7 +12,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <table v-if="accoutnInfo === 'id'">
+            <table v-if="accoutnInfo === 'id'" class="table">
               <tr v-for="(data, key) in getTransactionById" v-bind:key='key' class="server-load-rightpanel-tr">
                 <td v-if="key === 'type'">交易类型</td>
                 <td v-if="key === 'timestamp'">时间戳</td>
@@ -28,7 +28,7 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>{{data}}</td>
               </tr>
             </table>
-            <table v-if="accoutnInfo === 'PublicKey'">
+            <table v-if="accoutnInfo === 'PublicKey'" class="table">
               <tr v-for="(data, key) in getAccountByPublicKey" v-bind:key='key' class="server-load-rightpanel-tr">
                 <td v-if="key === 'vote'">投票</td>
                 <td v-if="key === 'publicKey'">公钥</td>
@@ -37,9 +37,12 @@
                 <td>{{data}}</td>
               </tr>
             </table>
-            <table v-if="accoutnInfo === 'RecipientId'">
+            <table v-if="accoutnInfo === 'RecipientId'" class="table">
               <tr v-for="(data, key) in getAccountByAddress" v-bind:key='key' class="server-load-rightpanel-tr">
-                <td>{{key}}</td>
+                <td v-if="key === 'vote'">投票</td>
+                <td v-if="key === 'publicKey'">公钥</td>
+                <td v-if="key === 'balance'">余额</td>
+                <td v-if="key === 'address'">地址</td>
                 <td>{{data}}</td>
               </tr>
             </table>

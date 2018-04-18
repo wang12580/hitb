@@ -22,9 +22,10 @@
             <table class="table">
               <tr v-for="(value, key) in blockInfo" v-bind:key="key">
                 <td v-if="key === 'timestamp'">时间戳</td>
-                <td v-if="key === 'previous_hash'">时间戳</td>
+                <td v-if="key === 'previous_hash'">上一个区块ID</td>
                 <td v-if="key === 'index'">高度</td>
                 <td v-if="key === 'hash'">ID</td>
+                <td v-if="key === 'generateAdress'">创建者地址</td>
                 <td v-if="key === 'data'">信息</td>
                 <td>{{value}}</td>
               </tr>

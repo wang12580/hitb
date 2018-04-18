@@ -158,11 +158,12 @@ $(document).ready(function() {
         accountRecipientId: function (value) {
           this.$ajax({
             type: 'GET',
-            url: BASE_URL + `/getAccountByAddress?address=${value}`,
+            url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
             dataType: 'json',
             success: (res)=> {
               this.accoutnInfo = 'RecipientId'
-              this.getAccountByAddress = res.account
+              let { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+              this.getAccountByAddress = c
             },
             error: (err)=> {
               this.items = ['创建区块失败']

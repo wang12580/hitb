@@ -94,10 +94,8 @@ defmodule Transaction do
       false ->
         Repos.TransactionRepository.insert_transaction(insert_tran)
         sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
-        Account.delAccount("byUsername", sender.username)
         Repos.AccountRepository.insert_account(sender)
         recipient = %{recipient | :balance => sender.balance + transaction.amount}
-        Account.delAccount("byUsername", recipient.username)
         Repos.AccountRepository.insert_account(recipient)
         [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
     end
