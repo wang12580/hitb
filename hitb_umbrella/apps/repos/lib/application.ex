@@ -17,13 +17,34 @@ defmodule Repos.Application do
     initialize_db()
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
-    generate_initial_block()
     init_peer()
+    generate_initial_block()
   end
 
   defp initialize_db() do
     :mnesia.start()
     :ok = :mnesia.wait_for_tables([:block_chain], 5000)
+  end
+
+  defp init_peer() do
+    init_peer = %Repos.Peer{
+      host:  "127.0.0.1",
+      port:  "4000",
+      connect: true
+    }
+    case :mnesia.transaction(fn -> :mnesia.foldl(fn(r, a) -> [r | a] end, [], :peer) end) do
+      {:atomic, []} ->
+        Peers.P2pSessionManager.connect(init_peer.host, init_peer.port)
+        case Peers.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+          :ok ->
+            :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port, init_peer.connect}) end)
+          _ -> :error
+        end
+      {:atomic, peers} ->
+        # 连接所有存储的节点
+        peers |> Enum.each(fn x -> Peers.P2pSessionManager.connect(elem(x, 1), elem(x, 2)) end)
+      _ -> :error
+    end
   end
 
   defp generate_initial_block() do
@@ -89,28 +110,6 @@ defmodule Repos.Application do
           :ok
       end
     end)
-  end
-
-  defp init_peer() do
-    init_peer = %Repos.Peer{
-      host:  "127.0.0.1",
-      port:  "4001",
-      connect: true
-    }
-    case :mnesia.transaction(fn -> :mnesia.foldl(fn(r, a) -> [r | a] end, [], :peer) end) do
-      {:atomic, []} ->
-        Peers.P2pSessionManager.connect(init_peer.host, init_peer.port)
-    #     case Peers.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-    #       :ok ->
-    #         :mnesia.transaction(fn -> :mnesia.write({:peer, init_peer.host, init_peer.port, init_peer.connect}) end)
-    #       _ -> :error
-    #     end
-      {:atomic, peers} ->
-    #     # 连接所有存储的节点
-        # IO.inspect peers
-        peers |> Enum.each(fn x -> Peers.P2pSessionManager.connect(elem(x, 1), elem(x, 2)) end)
-      _ -> :error
-    end
   end
 
   defp regex(s) do

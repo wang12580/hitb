@@ -42,15 +42,14 @@ defmodule Peers.P2pClientHandler do
   def handle_disconnected(reason, state) do
     peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
     :mnesia.transaction(fn -> :mnesia.write({:peer, peer.host, peer.port, false}) end)
-    # Logger.error("disconnected: #{inspect reason}. Attempting to reconnect...")
-    # Process.send_after(self(), :connect, :timer.seconds(1))
+    Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
+    Process.send_after(self(), :connect, :timer.seconds(1200))
     {:ok, state}
   end
 
   def handle_joined(topic, _payload, transport, state) do
     Logger.info("joined the topic #{topic}.")
     GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
-    # GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
     {:ok, state}
   end
 
@@ -92,15 +91,16 @@ defmodule Peers.P2pClientHandler do
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
         |>Enum.map(fn x -> Repos.AccountRepository.insert_account(x) end)
-        GenSocketClient.push(transport, "p2p", @get_latest_block, %{})
+        GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
       "get_latest_block" ->
         if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
+          block = Map.keys(response) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), response[x]) end)
+          :ets.insert(:latest_block, {:latest, block})
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
         else
           GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
         end
       "get_all_blocks" ->
-        # IO.inspect type
         response
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
@@ -113,7 +113,6 @@ defmodule Peers.P2pClientHandler do
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
         |>Enum.map(fn x -> Repos.TransactionRepository.insert_transaction(%{x | :args => List.to_tuple(x.args)}) end)
-        # GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
     end
     Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}

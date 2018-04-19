@@ -29,7 +29,6 @@ defmodule Peers.P2pSessionManager do
   end
 
   def broadcast(message) do
-    IO.inspect :ets.tab2list(:peers)
     :ets.tab2list(:peers)
     |> Enum.each(fn(peer_entry) ->
       pid = peer_entry |> elem(0)

@@ -65,7 +65,7 @@ defmodule HitbWeb.Router do
     put "/addSignature", AccountController, :addSignature
     get "/getAccountsPublicKey", AccountController, :getAccountsPublicKey
     get "/getAccountByPublicKey", AccountController, :getAccountByPublicKey
-    get "getAccountByAddress", AccountController, :getAccountByAddress
+    get "/getAccountByAddress", AccountController, :getAccountByAddress
 
     get "/count", DelegateController, :count
     get "/getVoters", DelegateController, :getVoters
