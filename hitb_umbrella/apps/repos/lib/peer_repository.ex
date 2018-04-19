@@ -7,7 +7,6 @@ defmodule Repos.PeerRepository do
   def insert_peer(peer) do
     {:atomic, _} = :mnesia.transaction(fn ->
       :mnesia.write({:peer,
-        # peer.pid,
         peer.host,
         peer.port,
         peer.connect})
@@ -21,9 +20,7 @@ defmodule Repos.PeerRepository do
         [deserialize_block_from_peer(record) | acc]
       end, [], :peer)
     end)
-    #按照index排序
     result
-      |> Enum.sort(fn(a, b) -> a.index < b.index end)
   end
 
   def deserialize_block_from_peer(record) do
