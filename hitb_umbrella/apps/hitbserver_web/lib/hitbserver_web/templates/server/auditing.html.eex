@@ -1,0 +1,97 @@
+<div class="ui padded grid">
+  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
+    <div class="ui secondary vertical menu" id="list">
+    </div>
+  </div>
+  <div class="fourteen wide column" id="div_out">
+  <div class="ui big breadcrumb" style="background:#ffffff;">
+    <a class="section" href="/hospitals">主页</a>
+    <i class="right chevron icon divider"></i>
+    <div class="active section">
+      字典审核
+    </div>
+  </div>
+  <div class="ui divider"></div>
+  <div id="div_in" style="width:100%;overflow-x:auto;">
+    <div class="ui menu" id="div_menu">
+      <div class="item">
+        <div class="ui primary button" onclick="off()">通过</div>
+        &nbsp;&nbsp;
+        <div class="ui primary button" onclick="no()">拒绝</div>
+        &nbsp;&nbsp;
+      </div>
+        <div class="item" id = "details_button" style="display:none">
+        <div class="ui red button" onclick="details()">对比</div>
+        </div>
+    </div>
+  </div>
+  <table class="ui celled table">
+    <thead>
+      <tr>
+        <th>选择</th>
+        <th>编码</th>
+        <th>名称</th>
+        <th>类型</th>
+        <th>上传医院</th>
+        <th>同名</th>
+        <th>修订时间</th>
+        <th>当前状态</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="field">
+            <div class="ui checkbox">
+              <input type="checkbox" name="test" value="0">
+              <label></label>
+            </div>
+          </div>
+        </td>
+        <td>17.99940</td>
+        <td>脐疗法治疗</td>
+        <td>新增编码</td>
+        <td>北京协和医院</td>
+        <td>--</td>
+        <td>2018/02/05</td>
+        <td>已通过</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="field">
+            <div class="ui checkbox">
+              <input type="checkbox" name="test" value="1">
+              <label></label>
+            </div>
+          </div>
+        </td>
+        <td>17.99940</td>
+        <td>脐疗法治疗</td>
+        <td>新增编码</td>
+        <td>北京协和医院</td>
+        <td>脐疗法</td>
+        <td>2018/02/05</td>
+        <td>已通过</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script>
+function off () {
+  obj = document.getElementsByName("test");
+  check_val = [];
+  for(k in obj){
+    if(obj[k].checked)
+      check_val.push(obj[k].value);
+  }
+  $.ajax({
+  type: "POST",
+  url: '/hospitals/rule_auditing',
+  async: false,
+  data: {auditing_key: check_val},
+  success: function(data){
+  },
+  dataType: 'json'
+  });
+}
+</script>

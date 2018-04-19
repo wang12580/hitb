@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>医院联盟</title>
+      <script src="<%= static_path(@conn, "/css/jquery/jquery.min.js") %>"></script>
+      <link rel="stylesheet" href="<%= static_path(@conn, "/css/semantic-ui/semantic.min.css") %>">
+      <script src="<%= static_path(@conn, "/css/semantic-ui/semantic.min.js") %>"></script>
+  </head>
+  <!-- <div class="ui inverted segment" style="height:50px;padding:0px;"> -->
+    <!-- <div class="ui inverted secondary pointing menu"> -->
+    <div class="ui inverted menu">
+      <a class= "item" href="/hospitals"><b style="font-size:20px;color:#ffffff;">医院联盟</b></a>
+      <!-- right -->
+      <div class="menu" id="menu1">
+        <div class="ui inverted menu">
+            <div class="ui dropdown item">
+              病案分析
+              <div class="menu">
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">机构分析</span>
+                  <div class="menu">
+                    <a class = "item" href="/hospitals/stat_html?page_type=base">基础分析</a>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">机构绩效</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">机构效率</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_cw">床位指标</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">机构工作量</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_yljc">医疗检查工作量</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_ylzl">医疗治疗工作量</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_yj">医技工作量</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_gl">管理工作量</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_hl">护理工作量</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_zzjh">重症监护室工作量</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">机构绩效</span>
+                      <div class="divider"></div>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_dfx">低风险死亡统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_zdfx">中低风险死亡统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_zgfx">中高风险死亡统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=jgjx_gfx">高风险死亡统计</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">财务指标</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">机构收入</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_yl">医疗收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_ylzl">医疗治疗收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_yj">医技收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_gl">管理收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_hc">耗材收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_xy">西药制品收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_zy">中药收入</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_hl">护理收入</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">医保控费</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_bszg">本市城镇职工基本医疗保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_wbzg">外埠城镇职工基本医疗保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_bsjm">本市城镇居民基本医疗保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_wbjm">外埠城镇居民基本医疗保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_bsnc">本市新型农村合作医疗患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_wbnc">外埠新型农村合作医疗患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_pk">贫困救助患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_sybx">商业医疗保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_gf">全公费患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_zf">全自费患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_shbx">其他社会保险患者支付统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=cwzb_qt">其他患者支付统计</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">医疗质量</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">重返率</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_cfqk">重返情况</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">治愈效果</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_lyqk">离院情况</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">手术质量</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_sszl">手术质量分析</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_fxsj">负性事件分析</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">负性事件</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_yc">压疮</a>
+                        <div class="divider"></div>
+                        <!-- <a class = "item" href="/hospitals/stat_html">治疗</a>
+                        <div class="divider"></div> -->
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_hl">护理</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_yw">药物</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_sx">输血</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_gr">感染</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=ylzl_dd">跌倒/坠床</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">统计分析</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">病案统计</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_bazl">病案质量统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_batj">病案统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_drg">DRG病案入组统计</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">输血统计</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_rhyang">Rh阳性全血使用分析</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_rhyin">Rh阴性全血使用分析</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_blood">血型统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_rhyang2">Rh阳性患者统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_rhyin2">Rh阴性患者统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_nrh">Rh不详患者统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_cfx">成分血统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_hzly">患者来源统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_zdyj">诊断依据统计</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">肿瘤统计</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_fh">分化统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_fbbf">发病部分统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_zlt0">肿瘤T0期统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_zln0">肿瘤N0期统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_zlm0">肿瘤M0期统计</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">新生儿统计</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_xse">新生儿出生统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_fmfs">分娩方式统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_xseqx">新生儿出生缺陷统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_csts">出生胎数统计</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">手术统计</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_mz">麻醉统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_jlqk">甲类切口统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_ylqk">乙类切口统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_qtqk">其他切口统计</a>
+                        <div class="divider"></div>
+                        <a class = "item" href="/hospitals/stat_html?page_type=tjfx_ssjb">手术级别统计</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="ui inverted menu">
+            <div class="ui dropdown item">
+              字典库标准
+              <div class="menu">
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">DRG</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">MDC</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/rule?tab_type=mdc&version=BJ">BJ</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=mdc&version=CN">CN</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=mdc&version=CC">CC</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">ADRG</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/rule?tab_type=adrg&version=BJ">BJ</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=adrg&version=CN">CN</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=adrg&version=CC">CC</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">DRG</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/rule?tab_type=drg&version=BJ">BJ</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=drg&version=CN">CN</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=drg&version=CC">CC</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">ICD</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">ICD10</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/rule?tab_type=icd10&version=BJ">BJ</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=icd10&version=CN">CN</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=icd10&version=CC">CC</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">ICD9</span>
+                      <div class="menu">
+                        <a class = "item" href="/hospitals/rule?tab_type=icd9&version=BJ">BJ</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=icd9&version=CN">CN</a>
+                        <a class = "item" href="/hospitals/rule?tab_type=icd9&version=CC">CC</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">病案首页指标项</span>
+                  <div class="menu">
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">基本信息</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=基本信息&version=BJ">基本信息</a>
+                        <a class="item" href="/hospitals/rule?tab_type=街道乡镇代码&version=BJ">街道乡镇代码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=民族&version=BJ">民族</a>
+                        <a class="item" href="/hospitals/rule?tab_type=区县编码&version=BJ">区县编码</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">手术血型</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=手术血型&version=BJ">手术血型</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">出入院编码</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=出入院编码&version=BJ">出入院编码</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">肿瘤编码</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=肿瘤编码&version=BJ">肿瘤编码</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">科别</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=科别代码&version=BJ">科别代码</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">病理诊断编码</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=病理诊断编码&version=BJ">病理诊断编码</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">医保，诊断依据</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=医保诊断依据&version=BJ">医保，诊断依据</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="item">
+                  <i class="dropdown icon"></i>
+                  <span class="text">自定义指标</span>
+                  <div class="menu">
+                    <a class = "item" href="#">ICD9</a>
+                    <a class = "item" href="#">ICD10</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="ui inverted menu">
+          <div class="ui dropdown item">
+            系统设置
+            <div class="menu">
+              <div class="item">
+                <i class="dropdown icon"></i>
+                <span class="text">机构管理</span>
+                <div class="menu">
+                  <%= if(@user.type == 1)do %>
+                    <a class = "item" id="org_set" href="/hospitals/org_set">机构设置</a>
+                  <% end %>
+                  <a class = "item" id="set" href="/hospitals/department_set">科室设置</a>
+                  <a class = "item" id="set" href="/hospitals/doctors">医师组设置</a>
+                  <a class = "item" id="set" href="#">医师设置</a>
+                  <a class = "item" id="user" href="/hospitals/user_html">用户管理</a>
+                </div>
+              </div>
+              <div class="item">
+                <i class="dropdown icon"></i>
+                <span class="text">字典审核</span>
+                <div class="menu">
+                  <a class = "item" id="auditing" href="/hospitals/rule_auditing_html">ICD9</a>
+                  <a class = "item" id="auditing" href="/hospitals/rule_auditing_html">ICD10</a>
+                </div>
+              </div>
+              <div class="item">
+                <i class="dropdown icon"></i>
+                <span class="text">系统操作</span>
+                <div class="menu">
+                  <a class = "item" id="upload" href="/hospitals/wt4_json">病案上传</a>
+                  <a class = "item" id="count_stat" href="/hospitals/comp_html">统计计算</a>
+                </div>
+              </div>
+              <div class="item">
+                <i class="dropdown icon"></i>
+                <span class="text">系统帮组</span>
+                <div class="menu">
+                  <a class = "item" id="comp_info" href="/hospitals/comp_info">指标说明</a>
+                  <a class = "item" id="record" href="/hospitals/record">操作记录</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ui inverted item">
+          <a href="/hospitals/blockchain">区块链</a>
+        </div>
+        <div class="ui inverted menu">
+        </div>
+      </div>
+
+      <div class="right menu" id="menu2">
+        <a class = "item" id="logout" href="/hospitals/logout">退出</a>
+      </div>
+      <div class="right menu" id="login_href" style="display:none">
+      <div class="ui inverted menu">
+        <a class = "item" target="_blank" href="http://www.jiankanglaifu.com">专家工作平台-CN版</a>
+      </div>
+      <div class="ui inverted menu">
+        <a class = "item" target="_blank" href="http://www.jiankanglaifu.com/drgserver">DRG分组器-CN版</a>
+      </div>
+      <div class="ui inverted menu">
+        <a class = "item" target="_blank" href="http://www.jiankanglaifu.com/jklf">健康来福官网</a>
+      </div>
+    </div>
+    </div>
+  <!-- </div> -->
+<div class="container">
+  <main role="main" id = "main">
+    <%= render @view_module, @view_template, assigns %>
+  </main>
+</div>
+</html>
+<script>
+$('.ui.accordion').accordion();
+$('.ui.dropdown')
+  .dropdown({
+    allowAdditions: true
+  });
+
+var url = window.location.href;
+if(url.includes('login') | url.includes('logout')){
+  $('#menu1').css('display', 'none');
+  $('#menu2').css('display', 'none');
+  $('#login_href').css('display', 'inherit');
+}
+
+</script>

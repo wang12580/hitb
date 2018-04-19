@@ -38,6 +38,7 @@ $(document).ready(function() {
           success: (res)=> {
             this.items = res.result
             this.log = '链接节点成功'
+            location.reload()
           },
           error: (err)=> {
             this.log = '连接节点失败'

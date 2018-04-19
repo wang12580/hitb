@@ -1,0 +1,323 @@
+<div class="ui padded grid"  id="div">
+  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
+    <div class="ui secondary vertical menu" id="add_list">
+
+    </div>
+  </div>
+  <div class="fourteen wide column">
+    <div class="ui big breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <a class="section" href="/hospitals/stat_html">基础分析</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section">分析详情</div>
+    </div>
+    <div class="ui divider"></div>
+    <div id="div_in">
+      <div class="ui menu" id="div_menu">
+        <div class="item">
+          <div class="ui mini primary  button" onclick="change('org')">机构</div>
+          &nbsp;&nbsp;
+          <div class="ui mini primary  button" onclick="change('department')">科室</div>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div class="ui mini orange  button" onclick="change('year_time')">年度</div>
+          &nbsp;&nbsp;
+          <div class="ui mini orange  button" onclick="change('half_year')">半年</div>
+          &nbsp;&nbsp;
+          <div class="ui mini orange  button" onclick="change('season_time')">季度</div>
+          &nbsp;&nbsp;
+          <div class="ui mini orange  button" onclick="change('month_time')">月度</div>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div class="ui mini teal  button" onclick="change('mdc')">MDC</div>
+          &nbsp;&nbsp;
+          <div class="ui mini teal  button" onclick="change('adrg')">ADRG</div>
+          &nbsp;&nbsp;
+          <div class="ui mini teal  button" onclick="change('drg')">DRG</div>
+        </div>
+      </div>
+    <div class="ui grid">
+      <div class="six wide column" style="height:600px;">
+        <div id="charts" style="height:100%;"></div>
+      </div>
+      <div class="ten wide column" id ="fatherchart">
+        <div id="charts2" style="height:100%;"></div>
+      </div>
+      <div class="sixteen wide column">
+        <br/><br/>
+        <div class="ui card" style="width:100%;">
+          <div class="content" style="background:#F5F5F5">
+            <div class="header">建议</div>
+          </div>
+          <div class="content" style="overflow-y:auto;height:100px;width:100%" id = "suggest">
+          </div>
+        </div>
+      </div>
+      <div class="fourteen wide column">
+      </div>
+    </div>
+      <div class="ui grid">
+        <div class="sixteen wide column">
+            <table class="ui single line celled table">
+              <thead id = "stat_th">
+              </thead>
+              <tbody id ="stattable">
+              </tbody>
+            </table>
+        </div>
+        <div class="fourteen wide column">
+        </div>
+      </div>
+  </div>
+<script>
+  //样式
+  $('.href_index').attr('class', 'href_index item');
+  $('#stat').attr('class','ui active dropdown icon item');
+  //添加对比
+  function add(type, org, time, drg){
+    url = 'type='+type+'&org='+org+'&time='+time+'&drg='+drg;
+    $.ajax({
+      type: "post",
+      url: '/hospitals/com_add/',
+      data: {url: url},
+      async: false,
+      success: function(data){
+        if(data['result']){
+          window.location.href = '/hospitals/com_html';
+        }
+      },
+      dataType: 'json'
+    });
+  }
+  change('<%=@type%>');
+  //菜单按钮
+  function change(type){
+    if(type == 'year_time' | type == 'half_year' | type == 'month_time' | type == 'season_time'){
+      href = 'type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=&drg=<%=@drg%>';
+    }else if(type == 'org'){
+      href = 'type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>';
+    }else if(type == 'org' | type == 'department'){
+      href = 'type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>';
+    }else if(type == 'mdc' | type == 'adrg' | type == 'drg'){
+      href = 'type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=';
+    }else if(type == 'heal'){
+      href = 'type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>';
+    }else{
+      href = 'type=case&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=';
+    }
+    html = '';
+    $.ajax({
+      type: "get",
+      url: '/stat/contrast_list?username='+'<%=@user.username%>',
+      data: {url: href},
+      async: false,
+      success: function(data){
+        is_add = '';
+        data['list'][0][0].forEach(function(val){
+          if(is_add == '1'){
+            html = html+'<div class="item">'+val+'<a class="ui label" onclick="add(\''+type+'\',\''+val+'\',\'<%=@time%>\',\'<%=@drg%>\')"><i class="plus icon"></i></a></div>';
+          }else{
+            html = html+'<div class="item">'+val+'</div>';
+          }
+        });
+      },
+      dataType: 'json'
+    });
+    $('#add_list').html(html);
+  }
+
+</script>
+<script src="<%= static_path(@conn, "/css/echarts/echarts.min.js") %>"></script>
+<script type="text/javascript">
+var myChart = echarts.init(document.getElementById('charts'));
+myChart.showLoading();
+$.ajax({
+  type: "get",
+  url: '/stat/stat_info_chart?chart_type=radar&id=<%=@id%>&username=<%=@user.username%>',
+  async: false,
+  success: function(data){
+    chart_data = data.data;
+    chart_key = data.chart_key;
+    indicator = data.indicator;
+  },
+  dataType: 'json'
+});
+
+option = {
+    title: {
+        text: ''
+    },
+    tooltip: {},
+    legend: {
+        data: chart_key
+    },
+    radar: {
+        //scale: 'true',
+        name: {
+            formatter:'{value}',
+            textStyle: {color:'#000000'},
+            textStyle: {
+                color: '#fff',
+                backgroundColor: '#999',
+                borderRadius: 3,
+                padding: [1, 5]
+           }
+        },
+        indicator: indicator
+    },
+    series: [{
+        name: '对比',
+        type: 'radar',
+        data : chart_data
+    }]
+};
+myChart.hideLoading();
+myChart.setOption(option);
+</script>
+<script>
+  var myChart2 = echarts.init(document.getElementById('charts2'));
+  myChart2.showLoading();
+  $.ajax({
+    type: "get",
+    url: '/stat/stat_info_chart?chart_type=bar&id=<%=@id%>&username=<%=@user.username%>',
+    async: false,
+    success: function(data){
+      series = data.series;
+      chart_key = data.chart_key;
+      xAxis = data.xAxis;
+    },
+    dataType: 'json'
+  });
+
+  option2 = {
+      tooltip : {trigger: 'axis'},
+      legend: {data: chart_key},
+      toolbox: {
+        show: true,
+        feature:{
+          magicType: {type: ['bar','line','stack','tiled']},
+          saveAsImage: {}
+        }
+      },
+      calculable : true,
+      xAxis : [xAxis],
+      yAxis : [{type : 'value'}],
+      series : series
+  };
+  myChart2.hideLoading();
+  myChart2.setOption(option2);
+</script>
+
+<script>
+  var col = '-1'
+  function pie(value) {
+    $('.'+col).css("background","")
+    if (col != value) {
+      col = value
+    } else {
+      col = '-1'
+    }
+    $('.' + col).css("background","#e0e0e0")
+    data_name = [];
+    series = [];
+    if (col == "-1") {
+      $('#fatherchart').children().remove();
+      $('#fatherchart').append("<div id = 'charts2' style ='height: 100%'></div>")
+      var myChart2 = echarts.init(document.getElementById('charts2'));
+    } else {
+      $('#fatherchart').children().remove();
+      $('#fatherchart').append("<div id = 'charts3' style ='height: 100%'></div>")
+      var myChart3 = echarts.init(document.getElementById('charts3'));
+    }
+    $.ajax({
+      type: "get",
+      url: '/stat/stat_info_chart?chart_type=pie&id=<%=@id%>&chart_key=' + col,
+      async: false,
+      success: function(data){
+          data_name = data.data;
+          series = data.series;
+      },
+      dataType: 'json'
+    });
+    option3 = {
+      tooltip : {
+          trigger: 'item',
+          formatter: "{a} <br/>{b} : {c} ({d}%)"
+      },
+      legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: data_name
+      },
+      series : [
+          {
+              name: '访问来源',
+              type: 'pie',
+              radius : '55%',
+              center: ['50%', '60%'],
+              data: series,
+              itemStyle: {
+                  emphasis: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+              }
+          }
+      ]
+    };
+    if (col == '-1') {
+      myChart2.setOption(option2);
+    } else {
+      myChart3.setOption(option3);
+    }
+  }
+</script>
+<script>
+  //从数组删除
+  function remove(arr, item) {
+    for(var i = arr.length - 1; i >= 0; i--){
+      if(arr[i] === item){
+        arr.splice(i, 1);
+        return arr;
+      }
+    }
+  }
+  //调用
+  $.ajax({
+    type: "get",
+    url: '/stat/stat_info?username='+'<%=@user.username%>',
+    async: false,
+    success: function(data){
+      let html = '';
+      stat_th = data.stat[0];
+      stat = remove(data.stat, stat_th);
+      //表头
+      console.log(stat_th)
+      html = '<tr class="center aligned">';
+      stat_th.forEach(function(s, index){
+        html = html+`<th>${s}</th>`;
+      });
+
+      $('#stat_th').html(html+'</tr>');
+      //表格
+      html = '';
+      stat.forEach(function(x){
+        html = html+'<tr class="center aligned">';
+        x.forEach(function(i){
+          if (i === null) {
+            i = "--"
+          }
+         html = html+'<td>'+i+'</td>';
+        });
+       html = html+'</tr>';
+      });
+      $('#stattable').html(html);
+      //建议
+      html = '';
+      $('#suggest').html(data.com);
+    },
+
+    dataType: 'json'
+  });
+
+</script>

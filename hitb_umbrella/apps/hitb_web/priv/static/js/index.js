@@ -11,69 +11,41 @@ $(document).ready(function() {
     el: '#page',
     data: {
       type : '',
-      items: []
+      items: [],
+      transactions: [],
+      accoutnInfo: '',
+      getTransactionById: {},
+      getAccountByPublicKey: {},
+      getAccountByAddress: {}
+    },
+    created: function() {
+      this.getTransactions()
     },
     methods: {
-      getPeers: function() {
-        this.type = 'getPeers'
+      getTransactions: function() {
         this.$ajax({
           type: 'GET',
-          url: BASE_URL + 'peers',
+          url: BASE_URL + '/getTransactions',
           dataType: 'json',
           success: (res)=> {
-            console.log(res)
-            this.items = res.peers
-          }
-        });
-      },
-      getBlocks: function() {
-        this.type = 'getBlocks'
-        this.$ajax({
-          type: 'GET',
-          url: BASE_URL + 'blocks',
-          dataType: 'json',
-          success: (res)=> {
-            this.items = res.blocks
-          }
-        });
-      },
-      getBlock: function(val) {
-        console.log(val)
-        this.type = 'getBlock'
-        this.$ajax({
-          type: 'GET',
-          url: BASE_URL + 'getBlock?index=' + val,
-          dataType: 'json',
-          success: (res)=> {
-            this.items = res.block
-          }
-        });
-      },
-      addPeer: function(){
-        this.type = 'addPeer'
-        this.$ajax({
-          type: 'POST',
-          url: BASE_URL + '/peer',
-          data: {"host": "127.0.0.1", "port": 4001},
-          dataType: 'json',
-          success: (res)=> {
-            this.items = res.result
+            this.transactions = res.data
           },
           error: (err)=> {
-            this.items = ['连接节点失败']
+            this.items = ['登录失败']
             console.log(err);
           }
         });
       },
-      addBlock: function(){
-        this.type = 'addBlock'
+      accountID: function (value) {
         this.$ajax({
-          type: 'POST',
-          url: BASE_URL + '/block',
-          data: {"data": new Date().toLocaleString()},
+          type: 'GET',
+          url: BASE_URL + `/getTransaction?id=${value}`,
           dataType: 'json',
           success: (res)=> {
-            this.items = res.result
+            console.log(res)
+            this.accoutnInfo = 'id'
+            const { signature, signSignature, senderId, recipientId, asset, args, ...c } = res.data;
+            this.getTransactionById = c
           },
           error: (err)=> {
             this.items = ['创建区块失败']
@@ -81,6 +53,105 @@ $(document).ready(function() {
           }
         });
       },
+      accountSenderPublicKey: function (value) {
+        this.$ajax({
+          type: 'GET',
+          url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
+          dataType: 'json',
+          success: (res)=> {
+            this.accoutnInfo = 'PublicKey'
+            let { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+            this.getAccountByPublicKey = c
+          },
+          error: (err)=> {
+            this.items = ['创建区块失败']
+            console.log(err);
+          }
+        });
+      },
+      accountRecipientId: function (value) {
+        this.$ajax({
+          type: 'GET',
+          url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
+          dataType: 'json',
+          success: (res)=> {
+            this.accoutnInfo = 'RecipientId'
+            let { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+            this.getAccountByAddress = c
+          },
+          error: (err)=> {
+            this.items = ['创建区块失败']
+            console.log(err);
+          }
+        });
+      },
+      // getPeers: function() {
+      //   this.type = 'getPeers'
+      //   this.$ajax({
+      //     type: 'GET',
+      //     url: BASE_URL + 'peers',
+      //     dataType: 'json',
+      //     success: (res)=> {
+      //       console.log(res)
+      //       this.items = res.peers
+      //     }
+      //   });
+      // },
+      // getBlocks: function() {
+      //   this.type = 'getBlocks'
+      //   this.$ajax({
+      //     type: 'GET',
+      //     url: BASE_URL + 'blocks',
+      //     dataType: 'json',
+      //     success: (res)=> {
+      //       this.items = res.blocks
+      //     }
+      //   });
+      // },
+      // getBlock: function(val) {
+      //   console.log(val)
+      //   this.type = 'getBlock'
+      //   this.$ajax({
+      //     type: 'GET',
+      //     url: BASE_URL + 'getBlock?index=' + val,
+      //     dataType: 'json',
+      //     success: (res)=> {
+      //       this.items = res.block
+      //     }
+      //   });
+      // },
+      // addPeer: function(){
+      //   this.type = 'addPeer'
+      //   this.$ajax({
+      //     type: 'POST',
+      //     url: BASE_URL + '/peer',
+      //     data: {"host": "127.0.0.1", "port": 4001},
+      //     dataType: 'json',
+      //     success: (res)=> {
+      //       this.items = res.result
+      //     },
+      //     error: (err)=> {
+      //       this.items = ['连接节点失败']
+      //       console.log(err);
+      //     }
+      //   });
+      // },
+      // addBlock: function(){
+      //   this.type = 'addBlock'
+      //   this.$ajax({
+      //     type: 'POST',
+      //     url: BASE_URL + '/block',
+      //     data: {"data": new Date().toLocaleString()},
+      //     dataType: 'json',
+      //     success: (res)=> {
+      //       this.items = res.result
+      //     },
+      //     error: (err)=> {
+      //       this.items = ['创建区块失败']
+      //       console.log(err);
+      //     }
+      //   });
+      // },
       test: function(username){
         this.type = 'addPeer'
         this.$ajax({

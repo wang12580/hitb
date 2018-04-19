@@ -1,0 +1,134 @@
+<div class="ui huge breadcrumb" style="background:#ffffff;">
+  <a class="section" href="/hospitals">主页</a>
+  <i class="right chevron icon divider"></i>
+  <div class="active section">指标说明</div>
+</div>
+<div class="ui divider"></div>
+<div class="ui grid">
+  <div class="one wide column"></div>
+  <div class="three wide column">
+  <div class="ui blue segment" >
+    <p><a href="#doc1" name="top">一、BJ-DRGs分组方法：</a></p>
+    <p><a href="#doc2"> 二、BJ-DRGs编码设计：</a></p>
+    <p> <a href="#doc3">三、基于BJ-DRGs的住院医疗服务绩效评价方法：</a></p>
+    <p> &nbsp;<a href="#doc3_1">（一）评估对象和内容</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_1_1">1、评估对象</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_1_2">2、评估内容</a></p>
+    <p><a href="#doc3_2">（二）指标计算方法</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_2_1">1、服务范围和难度</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_2_2">2、服务效率</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_2_3">3、医疗安全和质量率</a></p>
+    <p> &nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_2_4">4、绩效分值的综合计算</a></p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#doc3_2_5">5、学科发展均衡性测评</a></p>
+  </div>
+</div>
+  <div class="eleven wide column">
+    <div class="ui blue segment">
+      <h2 class="ui center aligned header">BJ-DRGs相关说明及指标解释</h2>
+      <p>
+        <h4><a name="doc1" href="#top">一、BJ-DRGs分组方法：</a></h4>
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本平台目前使用的2014版BJ-DRGs有751个DRG组，覆盖所有急性住院病例，利用其住院诊断和本次住院过程中发生的手术操作，均可以在BJ-DRGs中找到唯一对应的DRG组。目前北京市使用的ICD-10临床版包含疾病诊断20000多个，ICD-9第三卷临床版包含临床操作近6000个。BJ-DRGs需要将这些诊断和操作按照“临床过程一致性”和“资源消耗相似性”的原则，进行分类组合，区分外科部分的DRG组、内科部分的DRG组及操作部分的DRG组，并且结合影响临床过程的其他因素，最终形成751个DRG组。基本过程如下图所示：</p>
+      <p style="text-align:center;">BI-DRGs的分组路径</p>
+      <img src="http://139.129.165.56/images/hospitals_img1.jpg" class="ui centered image" />
+      <p>
+        <h4><a name="doc2" href="#top"> 二、BJ-DRGs编码设计：</a></h4>
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;第一位码为英文字母，A-Z分别表示26个MDC；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;第二位码为英文字母，表示DRG组的类型</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;K，L, M, N, P, Q 6个字母表示非手术室手术部分</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R, S, T，U, V, W, X, Y, Z 9个字母表示内科组部分</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;第三位码为阿拉伯数字（1-9），为DRG组的顺序码；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;第四位码为阿拉伯数字，表示是否有合并症和伴随病</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“5”表示不伴合并症和伴随病</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“3”表示伴有一般性的合并症和伴随病</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“1”表示伴有严重的合并症和伴随病</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“7”表示死亡或转院</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“7”表示死亡或转院</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“9”表示未作区分的情况</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;例子：</p>
+      <img src="http://139.129.165.56/images/hospitals_img2.jpg" class="ui centered image" />
+      <p>
+        <h4><a name="doc3" href="#top">三、基于BJ-DRGs的住院医疗服务绩效评价方法：</a></h4>
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_1" href="#top">（一）评估对象和内容</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_1_1" href="#top">1、评估对象</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本平台评估的对象是北京地区向北京市公共卫生信息中心按月度报送住院病案首页信息的所有二级及以上医疗机构。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_1_2" href="#top">2、评估内容</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本平台评估围绕医疗服务绩效的核心内容，对医疗机构的住院服务能力、服务效率和医疗安全进行评估。在历年评价报告中，项目组还将汇总医疗机构在上述各方面的表现，对医疗机构的住院服务的“总绩效”作出判断。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为了对综合医院的学科发展的均衡性，在本次评价中，对综合医院收治的病例数量和治疗工作技术难度进行“分专业”评价。如果某“综合医院”某些基本临床专业上收治病例少，治疗技术水平低，那么，该综合医院该临床专业没有得到良好的发展。如果某综合医院“发展不良”的专业较多，就认为该医院的学科发挥在那不均衡。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;需要强调的是，考虑到DRGs本身的特点，本评估关注的重点是“急性住院诊治服务”的情况。为此，本评估采用的病例是北京市各医院住院时间低于60天的住院病例。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所有这些指标都经过BJ-DRGs“标准化”处理。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2" href="#top">（二）指标计算方法</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2_1" href="#top">1、医院的服务范围和难度</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过医院服务DRGs数量和病例组合指数（CMI）来评价。具体计算方法如下：</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假设某医院的病例数据经过DRGs分组器的运算可以分入k个DRGs。那么，这个医院的“DRGs数量”即为“k”。每个DRG都表示一类疾病。如果这家医院出院病例覆盖的DRGs范围越广，说明这个医院能够提供的诊疗服务范围越大。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;国际上将CMI值作为评判医疗服务技术难度的重要指标，其基本思想是：如果所有医疗机构治疗此类病例所耗费的医疗资源都较高，说明治疗此类疾病的难度较大。考虑到中国目前的定价机制和按项目付费的模式对医疗费用的扭曲，项目组借鉴了“作业成本法”的理念，按照医疗服务的过程将医疗费用分为30类，改良病案首页中关于医疗费用的记录标准。在计量CMI时，以38类医疗过程费用为基础，将医疗费用分为“医疗”、“护理”、“医技”、“药品”和“管理”五大类，每个大类各赋予相同的权重（20%），然后计量各个DRG组的全市权重Wi。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果分别用n1、n2、……、nk分别表示这个医院各个DRGs覆盖的病例数，那么，这个医院
+        <img src="http://139.129.165.56/images/hospitals_img3.jpg"/>。现有的文献报道中，许多关于医疗服务提供者的产出都使用“出院病例总数”来表示。然而，当医院收治病例类型不同时，出院病例多的医院“产出”并不一定高于出院病例少的医院。使用DRGs进行风险调整后的“总权重数”则可以避免这个问题，比较准确地反映医疗服务提供者的产出。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;某个医院的病例组合指数（CMI）值=该医院的总权重数/该医院的总病例数。可见，CMI值是这个医院的例均权重。CMI值只跟这个医院收治的病例类型有关。换言之，如果这个病例收治的权重高的病例较多，CMI值就较大。权重一般是反映不同病例类型之间在治疗成本上上的差别。病情越复杂，治疗成本往往越高。为此，CMI值高通常被认为是这个医院收治病例的评价难度较大的表现。</p>
+      <img src="http://139.129.165.56/images/hospitals_img4.jpg"class="ui centered image"/>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2_2" href="#top">2、 住院服务效率</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本评价的“住院服务效率”通过“治疗同类疾病医疗费用高低和住院时间长短”来反映。这个过程是通过对医疗费用和住院时间的标准化处理来实现的。具体而言，是把医疗费用和住院时间经过DRGs标准化变换，构建出费用消耗指数和时间消耗指数两个指标[ 参见：简伟研; 胡牧; 崔涛; 王洪源; 黄因敏; 张修梅. 运用疾病诊断相关组进行临床服务绩效评价初探. 中华医院管理杂志，2006，22（11）：736-739]。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;① 计算全样本各个DRG的例均费用（
+        <img src="http://139.129.165.56/images/hospitals_img5.jpg"/>）和平均住院日（
+        <img src="http://139.129.165.56/images/hospitals_img6.jpg" />）；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;① 计算本院各个DRG的例均费用（
+        <img src="http://139.129.165.56/images/hospitals_img7.jpg" />）和平均住院日（
+        <img src="http://139.129.165.56/images/hospitals_img8.jpg" />）；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;③ 计算医院与全样本比
+        <img src="http://139.129.165.56/images/hospitals_img9.jpg" />：</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费用比
+        <img src="http://139.129.165.56/images/hospitals_img10.jpg" />，平均住院日比
+        <img src="http://139.129.165.56/images/hospitals_img11.jpg" />；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;④ 费用消耗指数：
+        <img src="http://139.129.165.56/images/hospitals_img12.jpg" />，时间消耗指数
+        <img src="http://139.129.165.56/images/hospitals_img13.jpg" />；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其中
+        <img src="http://139.129.165.56/images/hospitals_img14.jpg" />为该医院诊治的第j组DRG的病例数。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;利用费用消耗指数和时间消耗指数评价医院的绩效，如果计算值在1左右，表示接近平均水平；小于1，表示医疗费用较低或住院时间较短；大于1，表示医疗费用较高或住院时间较长。</p>
+      <p style="text-align:center;">表1 基于DRGs测算某医疗机构“效率”的方法</p>
+      <img src="http://139.129.165.56/images/hospitals_img15.jpg" class="ui centered image" />
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2_3" href="#top">3、 医疗安全和质量率</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本评估中涉及医疗安全和质量的指标，是通过对住院病人死亡率的标准化处理来实现的。具体而言，利用各DRGs病例的住院死亡率对不同DRG进行死亡风险分级。具体步骤如下 ：</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（1）计算各DRG的住院死亡率（
+        <img src="http://139.129.165.56/images/hospitals_img16.jpg" />）；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（2）对
+        <img src="http://139.129.165.56/images/hospitals_img16.jpg" />取对数（
+        <img src="http://139.129.165.56/images/hospitals_img17.jpg" />）；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（3）计算
+        <img src="http://139.129.165.56/images/hospitals_img17.jpg" />的均值（
+        <img src="http://139.129.165.56/images/hospitals_img18.jpg" />）和标准差（
+        <img src="http://139.129.165.56/images/hospitals_img19.jpg" />）；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（4）计算死亡风险评分。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各个“死亡风险级别”的定义如表2所示。死亡风险评分为“0”分者表示归属于这些DRGs的病例没有出现死亡病例；“1”分表示住院死亡率在低于负一倍标准差；“2”分表示住院死亡率在平均水平与负一倍标准差之间；“3”分表示住院死亡率在平均水平与正一倍标准差之间；“4”分表示住院死亡率高于正的一倍标准差。</p>
+      <p style="text-align:center;">表2 死亡风险评分及其定义</p>
+      <img src="http://139.129.165.56/images/hospitals_img20.jpg" class="ui centered image" />
+      <img src="http://139.129.165.56/images/hospitals_img21.jpg" class="ui centered image"/>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;经过“死亡风险评分”以后，风险评分为1分、2分、3分和4分的DRGs分别称“低风险组”、“中低风险组”、“中高风险组”和“高风险组”。在本次评估中，低风险组和中低风险组的死亡率，用于度量医院住院服务的安全和质量。其基本原理是：病例并不危重，一旦发生死亡，意味着死亡原因很可能不在疾病的本身而在临床过程；因此，低风险及中低风险DRGs病例的死亡率，提示临床或管理过程可能存在问题。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2_4" href="#top">4、 住院服务绩效分值的综合计算</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上述各指标分别从诊疗范围、收治病例的技术难度、住院服务效率和医疗安全及质量等不同的维度衡量住院服务绩效。为了得出一个综合反映住院服务绩效的指标，需要将上述各类指标进行综合。本报告中“住院服务绩效分值”的计算方法是：</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（1）计量“诊疗范围分数”和“技术难度分数”：某医院的DRG组数（和CMI值）除以各医院DRG组数的平均值（和CMI值的平均值），便得出该医院的“诊疗范围分数”和“技术难度分数”；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（2）计量“效率分数”：等于“1/资源消耗指数”×“1/时间消耗指数”；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（3）计量“低风险死亡分数”和“中低风险死亡分数”：分别按照“低风险组死亡率”和“中低风险死亡率”由低至高赋值。对于“低风险组死亡率”，“0”赋值100%，0＜低风险组死亡率＜0.05%赋值90%，0.05%≤低风险组死亡率＜0.1%赋值80%，如此类推。对于“中低风险死亡率”，“0”赋值100%，0＜中低风险组死亡率＜0.2%赋值90%，0.2%≤中低风险组死亡率＜0.5%赋值80%,如此类推；</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（4）某医院的住院服务绩效分值等于该医院“诊疗范围分数”、“技术难度分数”、“效率分数”、“低风险死亡分数”和“中低风险死亡分数”的综合乘积或同类加和。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="doc3_2_5" href="#top">5、 综合医院学科发展均衡性测评</a></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BJ-DRGs包含26个“主要疾病分类（MDC）”，不同的MDC反映了不同的医学专业。理论上讲，如果综合医院的医院学科发展均衡性好，收治的病例应该涵盖所有的MDC，并且，诊治这些病例的技术难度达到中等以上水平。考虑到综合医院的基本职能，通过专家咨询和历年评估结果调整，本评估选择了18个MDC进行评估。具体如表3所示。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;假定M家综合医院中的医院m第k个MDC的病例数以
+        <img src="http://139.129.165.56/images/hospitals_img22.jpg" />表示，这家医院总的病例数以
+        <img src="http://139.129.165.56/images/hospitals_img23.jpg" />表示，那么这家医院第k个MDC病例的构成比为
+        <img src="http://139.129.165.56/images/hospitals_img24.jpg" />。汇总所有的综合医院的病例，第k个MDC的病例数为
+        <img src="http://139.129.165.56/images/hospitals_img25.jpg" />。M家综合医院总的病例数为
+        <img src="http://139.129.165.56/images/hospitals_img26.jpg" />。第k个MDC病例的构成比为
+        <img src="http://139.129.165.56/images/hospitals_img27.jpg" />。本次评价以
+        <img src="http://139.129.165.56/images/hospitals_img28.jpg" />反映综合医院m第k个MDC收治病例的数量特征。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;（4）某医院的住院服务绩效分值等于该医院“诊疗范围分数”、“技术难度分数”、“效率分数”、“低风险死亡分数”和“中低风险死亡分数”的综合乘积或同类加和。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;另外，对每家综合医院每一个MDC分别计算CMI值。第m家医院第k个MDC的CMI值以
+        <img src="http://139.129.165.56/images/hospitals_img29.jpg" />表示。医院m在第k个MDC的服务能力以“技能分值（C）”表示：
+        <img src="http://139.129.165.56/images/hospitals_img30.jpg" />。如果医院m的Cmk值为0或者较低，说明该医院没有收治该类病例或者对该类病例的服务能力较低。</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分别计算参评医院这18个MDC的产能、效率及安全指标，而后参照上述“住院服务绩效分值的综合计算”方法，分别计算每一个MDC各个参评医院该MDC的综合分值（称作各医院该MDC的“能力指数”）。如果医院当年没有收治过某MDC的病例或该MDC“能力指数”值较低，则认为该医院当年出现该专业的“缺失”或对该类病例的服务能力较低。</p>
+      <p style="text-align:center;">表3 选择用以度量学科发展均衡性的MDC</p>
+      <img src="http://139.129.165.56/images/hospitals_img31.jpg" class="ui centered image" />
+    </div>
+  </div>
+</div>

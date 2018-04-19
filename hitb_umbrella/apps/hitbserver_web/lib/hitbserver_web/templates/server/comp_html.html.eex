@@ -1,0 +1,68 @@
+    <div class="ui huge breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section">统计计算</div>
+    </div>
+    <div class="ui divider"></div>
+
+
+    <div class="ui grid">
+      <div class="three wide column">
+        <div class="ui card">
+          <div class="content">
+            <div class="header" style="text-align:center">当前机构总数</div>
+          </div>
+          <div class="content">
+            <h3 style="text-align:center"></h3>
+          </div>
+        </div>
+        <div class="ui card">
+          <div class="content">
+            <div class="header" style="text-align:center">计算完成总数</div>
+          </div>
+          <div class="content">
+            <h3 style="text-align:center"></h3>
+          </div>
+        </div>
+        <div class="ui card">
+          <div class="content">
+            <div class="header" style="text-align:center">未计算机构总数</div>
+          </div>
+          <div class="content">
+            <h3 style="text-align:center"></h3>
+          </div>
+        </div>
+      </div>
+      <div class="thirteen wide column">
+        <div class="ui header" style="text-align:center">当前计算进度</div>
+        <div class="ui active progress">
+          <table class="ui celled table">
+            <thead>
+              <tr class="center aligned">
+                <th>计算状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td class="center aligned">未在计算</td>
+                  <td class="center aligned"><div class="ui button">全部重新计算</div></td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ui header" style="text-align:center">未计算机构</div>
+        <table class="ui celled table">
+          <thead>
+            <tr class="center aligned">
+              <th>机构名称</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>

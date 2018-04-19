@@ -1,0 +1,141 @@
+<div class="ui huge breadcrumb" style="background:#ffffff;">
+  <a class="section" href="/hospitals">主页</a>
+  <i class="right chevron icon divider"></i>
+  <div class="active section">用户管理</div>
+</div>
+<div class="ui divider"></div>
+<div class="ui menu" id="div_menu">
+  <div class="item">
+    <button class="ui primary labeled icon button"  onclick = "add_button()"><i class="add icon"></i>新建</button>
+  </div>
+  <div class="item">
+    <button id="edit" class="ui disabled labeled icon button"  onclick = "edit()"><i class="edit icon"></i>编辑</button>
+  </div>
+  <%# <div class="item">
+    <button class="ui orange labeled icon button"  onclick = "ban()"><i class="ban icon"></i>停用</button>
+  </div> %>
+  <div class="item">
+    <button id="remove" class="ui disabled red labeled icon button"  onclick = "remove()"><i class="remove icon"></i>删除</button>
+  </div>
+</div>
+<%= if(@user.type == 2)do %>
+  <div style="height:50%"></div>
+  <div class="ui massive negative message">
+    <div class="header">非常抱歉,您没有管理权限。</div>
+    <p>3秒后会跳转到系统设置。</p>
+  </div>
+  <script>
+  setTimeout("reload()",2000);
+  //重载
+  function reload(){
+    window.history.go(-1);
+  }
+  </script>
+  <% else %>
+  <div class="ui success message" id = "mes" style="display:none;">
+    <div class="header" id = "mes_header">你的用户创建成功!</div>
+    <p>2秒后页面将自动刷新。</p>
+  </div>
+  <div class="ui negative message" id = "error_mes" style="display:none;">
+    <div class="header" id = "error_mes_header">你的用户创建失败!</div>
+    <p id = "error_mes_info">用户名重复。</p>
+  </div>
+  <table class="ui fixed single line celled table">
+    <thead>
+      <tr>
+        <th class="center aligned">序号</th>
+        <th class="center aligned">用户名</th>
+        <th></th>
+        <th class="center aligned">机构</th>
+        <th class="center aligned">姓名</th>
+        <th class="center aligned">电话</th>
+        <th class="center aligned">电子邮箱</th>
+        <th class="center aligned">年龄</th>
+      </tr>
+    </thead>
+    <tbody id="user_tbody">
+
+    </tbody>
+  </table>
+  <div class="ui right floated pagination menu" id="user_footer">
+
+  </div>
+</div>
+<script>
+$.ajax({
+  type: "get",
+  url: `/servers/user/?page=${"<%=@page_num%>"}`,
+  async: false,
+  success: function(data) {
+    let html = '';
+    let str= "";
+    data.page_list.forEach ((n) => {
+      if (data.page_num.toString() == n.num) {
+        str = str + `<a class="disabled item" href="">${n.num}</a>`
+      } else {
+        str = str + `<a class="item" href="/hospitals/user_html?page=${n.page}">${n.num}</a>`
+      }
+    })
+    $('#user_footer').html(str);
+
+    data.data.forEach(function(obj){
+      console.log(obj);
+      html = html + '<tr class="center aligned" id ="'+obj.id+'" onclick="myclick(\''+obj.id+'\', \'false\')">'
+      // if(obj.is_spe){is_spe = '是'}else{is_spe = '否'}
+      // if(obj.is_imp){is_imp = '是'}else{is_imp = '否'}
+      html = html + '<td>'+obj.id+'</td><td>'+obj.username+'</td><td>'+'-'+'</td><td>'+obj.org+'</td><td>'+obj.name+'</td><td>'+obj.tel+'</td><td>'+obj.email+'</td><td>'+obj.age+'</td></tr>'
+    });
+    $('#user_tbody').html(html);
+  },
+  dataType: 'json'
+});
+
+
+
+var sid = -1;
+//新建
+function add_button(){
+  window.location.href= '/hospitals/add?type=user';
+}
+//编辑
+function edit(){
+  window.location.href= '/hospitals/server_edit?type=user&id='+sid;
+}
+//删除
+function remove(){
+  $.ajax({
+    type: "delete",
+    url: '/servers/user/'+sid,
+    async: false,
+    success: function(data) {
+      $("#error_mes").css('display','none');
+      $("#mes_header").html('用户删除成功!');
+      $("#mes").css('display','block');
+      setTimeout("reload()",2000);
+    },
+    dataType: 'json'
+  });
+}
+// 禁用
+function myclick (id) {
+  $('#'+sid).attr('class', 'center aligned');
+  if (id !== sid) {
+    sid = id;
+  } else {
+    sid = -1;
+  }
+  $('#'+sid).attr('class', 'active center aligned');
+  if(sid == -1) {
+    $('#edit').attr('class', 'ui disabled labeled icon button');
+    $('#remove').attr('class', 'ui disabled red labeled icon button');
+  } else {
+    $('#edit').attr('class', 'ui labeled icon button');
+    $('#remove').attr('class', 'ui red labeled icon button');
+  }
+}
+//重载
+function reload(){
+  location.reload();
+}
+</script>
+<% end %>

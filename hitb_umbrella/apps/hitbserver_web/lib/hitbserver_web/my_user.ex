@@ -1,0 +1,42 @@
+defmodule HitbserverWeb.MyUser do
+  use HitbserverWeb, :controller
+
+  #登录,返回conn
+
+  #退出,返回conn
+  def logout(conn) do
+    put_session(conn, :user, %{login: false, username: nil})
+  end
+
+  #登录状态,返回是否登录
+  def is_login(conn) do
+    user = get_session(conn, :user)
+    case user do
+      nil -> false
+      _ ->
+        # case blockchain do
+          # nil -> false
+          # _ ->
+            user.login
+        # end
+    end
+  end
+
+  #返回用户信息
+  def user_info(conn) do
+    user = get_session(conn, :user)
+    cond do
+      user == nil -> %{login: false, username: "", type: 2, key: [], org: ""}
+      user.username == nil ->  %{login: false, username: "", type: 2, key: [], org: ""}
+      true ->
+        %{username: user.username, type: 2, key: [], org: ""}
+        # case blockchain do
+          # nil ->
+            # %{login: false, username: "", type: 2, key: []}
+          # _ ->
+            # Map.merge(%{username: user.username}, %{publicKey: blockchain.publicKey, privateKey: blockchain.privateKey, address: blockchain.address})
+        # end
+    end
+  end
+
+end
