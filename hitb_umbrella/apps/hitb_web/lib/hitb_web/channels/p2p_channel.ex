@@ -6,6 +6,7 @@ defmodule HitbWeb.P2pChannel do
   @query_all_blocks   Peers.P2pMessage.query_all_blocks
   # @update_block_chain Peers.P2pMessage.update_block_chain
   @add_peer_request   Peers.P2pMessage.add_peer_request
+  @query_all_transactions "query_all_transactions"
   @connection_error   Peers.P2pMessage.connection_error
   @connection_success Peers.P2pMessage.connection_success
 
@@ -25,8 +26,15 @@ defmodule HitbWeb.P2pChannel do
 
   def handle_in(@query_all_blocks, payload, socket) do
     Logger.info("sending all blocks to #{inspect socket}")
-    IO.inspect payload
     {:reply, {:ok, %{type: @query_all_blocks, data: Repos.BlockRepository.get_all_blocks()}}, socket}
+  end
+
+  def handle_in(@query_all_transactions, payload, socket) do
+    Logger.info("sending all transactions to #{inspect socket}")
+
+    IO.inspect "testetsttetetetetetetetetettetetet"
+
+    {:reply, {:ok, %{type: @query_all_transactions, data: Repos.TransactionRepository.get_all_transactions()}}, socket}
   end
 
   def handle_in(@add_peer_request, payload, socket) do

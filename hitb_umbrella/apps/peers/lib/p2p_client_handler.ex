@@ -89,13 +89,13 @@ defmodule Peers.P2pClientHandler do
   def handle_reply(topic, _ref, payload, transport, state) do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
-
-    # IO.inspect response
     case type do
       "get_latest_block" ->
         :ok
         if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        else
+          GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
         end
       "get_all_blocks" ->
         # IO.inspect type
@@ -104,14 +104,14 @@ defmodule Peers.P2pClientHandler do
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
         |>Enum.map(fn x -> Repos.BlockRepository.insert_block(x) end)
-        GenSocketClient.push(transport, "p2p", @query_all_ransactions, %{})
-      _ ->
+        GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
+      "query_all_transactions" ->
         response
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
-        |>Enum.map(fn x -> Repos.TransactionRepository.insert_block(x) end)
-        GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
+        |>Enum.map(fn x -> Repos.TransactionRepository.insert_transaction(x) end)
+        # GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
     end
     Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
