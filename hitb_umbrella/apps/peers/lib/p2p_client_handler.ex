@@ -8,6 +8,7 @@ defmodule Peers.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
+  @query_all_accounts   Peers.P2pMessage.query_all_accounts
   @query_latest_block     Peers.P2pMessage.query_latest_block
   @query_all_blocks       Peers.P2pMessage.query_all_blocks
   @query_all_transactions   Peers.P2pMessage.query_all_transactions
@@ -39,12 +40,8 @@ defmodule Peers.P2pClientHandler do
   end
 
   def handle_disconnected(reason, state) do
-    Logger.info("--------------------------------------------------")
     peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
-    IO.inspect self()
     :mnesia.transaction(fn -> :mnesia.write({:peer, peer.host, peer.port, false}) end)
-    Logger.info("--------------------------------------------------")
-
     # Logger.error("disconnected: #{inspect reason}. Attempting to reconnect...")
     # Process.send_after(self(), :connect, :timer.seconds(1))
     {:ok, state}
@@ -52,9 +49,8 @@ defmodule Peers.P2pClientHandler do
 
   def handle_joined(topic, _payload, transport, state) do
     Logger.info("joined the topic #{topic}.")
-    GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
-
-    # Process.send(self(), @add_peer_request, [])
+    GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
+    # GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
     {:ok, state}
   end
 
@@ -90,8 +86,14 @@ defmodule Peers.P2pClientHandler do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
+      "get_all_accounts" ->
+        response
+        |>Enum.map(fn data ->
+            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
+          end)
+        |>Enum.map(fn x -> Repos.AccountRepository.insert_account(x) end)
+        GenSocketClient.push(transport, "p2p", @get_latest_block, %{})
       "get_latest_block" ->
-        :ok
         if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
         else
