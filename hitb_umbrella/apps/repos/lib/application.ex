@@ -23,7 +23,34 @@ defmodule Repos.Application do
 
   defp initialize_db() do
     :mnesia.start()
-    :ok = :mnesia.wait_for_tables([:block_chain], 5000)
+    case :mnesia.wait_for_tables([:block_chain], 5000) do
+      {:timeout, _} ->
+        node = Node.self()
+        :mnesia.create_table(:block_chain, [
+          attributes: [:index, :previous_hash, :timestamp, :data, :hash, :generateAdress],
+          type: :set
+        ])
+        :mnesia.create_table(:account, [
+          attributes: [:index, :username, :u_username, :isDelegate, :u_isDelegate, :secondSignature,
+          :u_secondSignature, :address, :publicKey, :secondPublicKey, :balance, :u_balance, :vote,
+          :rate, :delegates, :u_delegates, :multisignatures, :u_multisignatures, :multimin, :u_multimin,
+          :multilifetime, :u_multilifetime, :blockId, :nameexist, :u_nameexist, :producedblocks,
+          :missedblocks, :fees, :rewards, :lockHeight],
+          type: :set
+        ])
+        :mnesia.create_table(:transaction, [
+          attributes: [:id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey, :requesterPublicKey,
+          :senderId, :recipientId, :amount, :fee, :signature, :signSignature, :asset, :args, :message],
+          type: :set
+        ])
+        :mnesia.create_table(:peer, [
+          attributes: [:host, :port, :connect],
+          type: :set
+        ])
+        :ok = :mnesia.wait_for_tables([:block_chain], 5000)
+      _ ->
+        :ok
+    end
   end
 
   defp init_peer() do

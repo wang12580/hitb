@@ -24,7 +24,7 @@ defmodule HitbWeb.Mixfile do
   def application do
     [
       mod: {HitbWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :mnesia]
     ]
   end
 
@@ -42,6 +42,7 @@ defmodule HitbWeb.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
+      {:account, in_umbrella: true},
       {:hitb, in_umbrella: true},
       {:repos, in_umbrella: true},
       {:peers, in_umbrella: true},

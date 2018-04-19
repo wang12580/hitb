@@ -23,7 +23,7 @@ defmodule Hitb.Mixfile do
   def application do
     [
       mod: {Hitb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :mnesia]
     ]
   end
 

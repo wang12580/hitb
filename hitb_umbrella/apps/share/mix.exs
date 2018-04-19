@@ -19,7 +19,7 @@ defmodule Share.MixProject do
   def application do
     [
       mod: {Share.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :mnesia]
     ]
   end
 

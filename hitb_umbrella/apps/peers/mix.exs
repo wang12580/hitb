@@ -19,7 +19,7 @@ defmodule Peers.MixProject do
   def application do
     [
       mod: {Peers.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :mnesia]
     ]
   end
 
