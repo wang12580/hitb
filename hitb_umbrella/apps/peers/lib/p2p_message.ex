@@ -3,6 +3,7 @@ defmodule Peers.P2pMessage do
   p2p messaging protocol. Defines message options.
   """
   @query_latest_block   "get_latest_block"
+  @query_all_accounts     "get_all_accounts"
   @query_all_blocks     "get_all_blocks"
   @query_all_transactions "query_all_transactions"
   @update_block_chain   "update_block_chain"
@@ -12,6 +13,7 @@ defmodule Peers.P2pMessage do
   @connection_success   "successfully_connected"
 
   def query_latest_block,   do: @query_latest_block
+  def query_all_accounts,     do: @query_all_accounts
   def query_all_blocks,     do: @query_all_blocks
   def query_all_transactions, do: @query_all_transactions
   def update_block_chain,   do: @update_block_chain
