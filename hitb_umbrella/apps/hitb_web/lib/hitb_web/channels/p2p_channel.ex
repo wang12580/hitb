@@ -27,7 +27,6 @@ defmodule HitbWeb.P2pChannel do
 
   def handle_in(@query_all_accounts, payload, socket) do
     Logger.info("sending all accounts to #{inspect socket}")
-    IO.inspect '++++++++++++++++++++++++++++++++++++++'
     {:reply, {:ok, %{type: @query_all_accounts, data: Repos.AccountRepository.get_all_accounts()}}, socket}
   end
 
@@ -38,9 +37,6 @@ defmodule HitbWeb.P2pChannel do
 
   def handle_in(@query_all_transactions, payload, socket) do
     Logger.info("sending all transactions to #{inspect socket}")
-
-    IO.inspect "testetsttetetetetetetetetettetetet"
-
     {:reply, {:ok, %{type: @query_all_transactions, data: Repos.TransactionRepository.get_all_transactions()}}, socket}
   end
 

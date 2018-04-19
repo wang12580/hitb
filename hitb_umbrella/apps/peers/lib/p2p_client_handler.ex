@@ -49,8 +49,8 @@ defmodule Peers.P2pClientHandler do
 
   def handle_joined(topic, _payload, transport, state) do
     Logger.info("joined the topic #{topic}.")
-    # GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
-    GenSocketClient.push(transport, "p2p", @get_latest_block, %{})
+    GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
+    # GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
     {:ok, state}
   end
 
@@ -86,8 +86,7 @@ defmodule Peers.P2pClientHandler do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
-      "query_all_accounts" ->
-        IO.inspect response
+      "get_all_accounts" ->
         response
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
