@@ -10,7 +10,7 @@ defmodule Peers.P2pClientHandler do
   # can't inherit attributes and use them inside matches, so this is necessary
   @query_latest_block     Peers.P2pMessage.query_latest_block
   @query_all_blocks       Peers.P2pMessage.query_all_blocks
-  @query_all_ransactions   Peers.P2pMessage.query_all_ransactions
+  @query_all_transactions   Peers.P2pMessage.query_all_transactions
   # @update_block_chain Peers.P2pMessage.update_block_chain
   @add_peer_request   Peers.P2pMessage.add_peer_request
   @connection_error   Peers.P2pMessage.connection_error
@@ -39,8 +39,14 @@ defmodule Peers.P2pClientHandler do
   end
 
   def handle_disconnected(reason, state) do
-    Logger.error("disconnected: #{inspect reason}. Attempting to reconnect...")
-    Process.send_after(self(), :connect, :timer.seconds(1))
+    Logger.info("--------------------------------------------------")
+    peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
+    IO.inspect self()
+    :mnesia.transaction(fn -> :mnesia.write({:peer, peer.host, peer.port, false}) end)
+    Logger.info("--------------------------------------------------")
+
+    # Logger.error("disconnected: #{inspect reason}. Attempting to reconnect...")
+    # Process.send_after(self(), :connect, :timer.seconds(1))
     {:ok, state}
   end
 
