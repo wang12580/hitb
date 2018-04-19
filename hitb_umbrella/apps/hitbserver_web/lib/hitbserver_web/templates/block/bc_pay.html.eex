@@ -1,0 +1,128 @@
+<form class="ui form">
+  <div class="ui segment">
+    <div class="field">
+      <label>发送者:</label>
+      <input id="pay_name" type="text" name ="pay" placeholder="发送者"  disabled="disabled">
+    </div>
+    <div class="field">
+      <label>接受者:</label>
+      <input type="text" name ="pay" placeholder="接受者" value="16358246403719868041">
+    </div>
+    <div class="field">
+      <label>金额:</label>
+      <input type="number" name ="pay" placeholder="金额">
+    </div>
+    <div id ="pay"></div>
+    <div class="field">
+      <label>费用:</label>
+      <input disabled="disabled" type="number" name ="pay" placeholder="费用" value="0.1">
+    </div>
+    <div class="field">
+      <label>备注:</label>
+      <input type="text" name ="pay" placeholder="备注">
+    </div>
+    <p>请确保您正在发送XAS给正确的地址，本操作无法撤消</p>
+    <div class="ui primary submit button" onclick="pay()"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发送</font></font></div>
+  </div>
+</form>
+<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+const keys = AschJS.crypto.getKeys(secret)
+// 通过公钥获得地址
+const publicKey = keys.publicKey
+const privateKey = keys.privateKey
+const address =  AschJS.crypto.getAddress(publicKey)
+
+
+function post_ajax (value) {
+  console.log(value)
+  console.log('=========================')
+  $.ajax({
+    type: "post",
+    url: '/block/blockchain_post/',
+    async: false,
+    data: value,
+    success: function(data){
+      console.log(data)
+      if(data.result.success) {
+        $("#error_mes").css('display','none');
+        $("#last").css('display','none');
+        console.log(data.result);
+        $("#mes_header").html(data.result.info);
+        $("#mes_info").html(data.result.header);
+        $("#mes").css('display','block');
+        setTimeout("reload()",2000);
+      } else {
+        $("#error_mes_header").html(data.result.info);
+        $("#error_mes_info").html(data.result.header);
+        $("#error_mes").css('display','block');
+      }
+
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+}
+
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">转账</div>');
+// 转账
+function pay () {
+  obj = document.getElementsByName("pay");
+  let objs = {};
+  objs.type = "转账";
+  obj.forEach((n) => {
+    if (n.placeholder == "发送者") {
+      n.placeholder = "sender"
+    } else if (n.placeholder == "接受者") {
+      n.placeholder = "targetAddress"
+    } else if (n.placeholder == "金额") {
+      n.placeholder = "amount"
+    } else if (n.placeholder == "费用") {
+      n.placeholder = "cost"
+    } else if (n.placeholder == "备注") {
+      n.placeholder = "message"
+    } else if (n.placeholder == "二级密码") {
+      n.placeholder = "secondSecret"
+    }
+    objs[n.placeholder] = n.value
+  })
+  //接收者id
+  var targetAddress = objs.recipient;
+  var secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor';
+  objs.amount = parseInt(objs.amount);  
+  //console.log(objs.targetAddress, objs.amount, objs.message, secret, objs.secondSecret)
+  var trs = AschJS.transaction.createTransaction(objs.targetAddress, objs.amount, objs.message, secret, objs.secondSecret);
+  objs2 = {};
+  objs2.type = "转账";
+  objs2.trs = JSON.stringify(trs);
+  console.log(objs2)
+  console.log("++++++++++++++++++++++++++")
+  post_ajax(objs2)
+}
+
+let infos = {};
+$.ajax({
+  type: "get",
+  url: '/block/blockchain',
+  async: false,
+  success: function(data){
+    console.log(data);
+    infos = data;
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    // console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+$('#pay_name').val(infos.data.account.address)
+let str =""
+$('#pay').children().remove()
+if(infos.data.account.secondPublicKey){
+  str ="<div class='field'><label>二级密码:</label><input type='text' name ='pay' placeholder='二级密码'></div>"
+  $('#pay').append(str);
+}
+
+</script>

@@ -1,0 +1,101 @@
+<div class="ui padded grid"  id="div">
+  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
+    <div class="ui secondary vertical menu" id="list">
+    </div>
+  </div>
+  <div class="fourteen wide column" id="div_out">
+    <div class="ui big breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <a class="section" onclick ="reutrn()">字典库查询</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section" id="details_a">
+      </div>
+    </div>
+    <div class="ui divider"></div>
+    <div id="div_in" style="width:100%;overflow-x:auto;">
+      <div class="ui menu" id="div_menu">
+        <div class="item">
+          <div class="ui primary button" onclick="change('version')">版本</div>
+          &nbsp;&nbsp;
+          <div class="ui primary button" onclick="change('year_time')">年度</div>
+          &nbsp;&nbsp;
+          <div class="ui orange button" onclick="change('type')">类别</div>
+          &nbsp;&nbsp;
+          <div class="ui orange button" onclick="change('anatomy')">解剖部位</div>
+          &nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+    <div id="contrast_a"></div>
+    <table class="ui celled table">
+      <thead>
+        <tr id="contrast_b">
+
+        </tr>
+      </thead>
+      <tbody>
+       <tr id="contrast_c">
+
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+<script>
+function reutrn() {
+  window.history.go(-1);
+}
+let info =""
+$.ajax({
+  type: "get",
+  url: `/library/contrast?table=${"<%=@table%>"}&id=${"<%=@id%>"}`,
+  async: false,
+  success: function(data){
+    info = data
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+$('#details_a').html(`${info.result[0].version}${info.result[0].code}与${info.result[1].version}${info.result[1].code}<span onclick = "details()">对比详情</span>`)
+let str =""
+info.result.forEach((n) => {
+  let str_d=""
+  let str_e=""
+  if (info.table="icd9") {
+    if(n.property) {
+      str_a = `<span>${n.property}</span>`
+    } else {
+      str_a = "无"
+    }
+    if (n.option) {
+      str_b =`<span>${n.property}</span>`
+    } else {
+      str_b =`无`
+    }
+    str_d = `<div class="five wide column"><h4 style ="display: inline">类别：</h4>${str_a}</div><div class="five wide column"><h4 style ="display: inline">录入选项：</h4>${str_b}</div>`
+  }
+  if (["icd9", "icd10"].includes(info.table)) {
+    if (n.dissect) {
+      str_c = `<span>${n.dissect}</span>`
+    } else {
+      str_c = `无`
+    }
+    str_e=`<div class="five wide column"><h4 style ="display: inline">解剖部位：</h4>${str_c}</div>`
+  }
+  str =str+`<div class="ui menu" style="width:100%;padding:10px;"><div class="ui grid" style="width:100%;overflow-x:auto;"><div class="five wide column"><h4 style ="display: inline">编码：</h4><span>${n.code}<span></div><div class="five wide column"><h4 style ="display: inline">名称：</h4><span>${n.name}</span></div><div class="five wide column"><h4 style ="display: inline">版本号：</h4><span>${n.version}</span></div>${str_d}${str_e}<div class="one wide column"></div></div></div>`
+})
+$('#contrast_a').html(str)
+// contrast_a
+let str_first = ""
+let str_last = ""
+info.contrast.forEach((n)=> {
+  str_first = str_first + `<th>${n[0]}</th>`
+  str_last = str_last + `<td>${n[1]}</td>`
+})
+$('#contrast_b').html(str_first)
+$('#contrast_c').html(str_last)
+</script>

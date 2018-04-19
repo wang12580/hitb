@@ -1,0 +1,73 @@
+
+      <div style="width:100%;overflow-x:auto;margin-top: 0.2em;">
+        <div class ="ui header" style ="margin-top: 0.2em;">个人信息</div>
+        <div class ="ui divider"></div>
+        <div class="ui three top steps">
+          <div id="application_a" class="step active" onclick ="application_table('application')">
+          <i class="truck icon"></i>
+            <div class="content">
+              <div class="title">应用列表</div>
+              <div class="description">Choose your shipping options</div>
+            </div>
+          </div>
+          <div id="use_application_a" class="step" onclick ="application_table('use_application')">
+            <i class="payment icon"></i>
+            <div class="content">
+              <div class="title">已安装应用列表</div>
+              <div class="description">Enter billing information</div>
+            </div>
+          </div>
+        </div>
+        <div class="ui segment" id="table_application">
+        </div>
+      </div>
+<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">应用中心</div>');
+//应用中心
+const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+const keys = AschJS.crypto.getKeys(secret)
+// 通过公钥获得地址
+const publicKey = keys.publicKey
+const privateKey = keys.privateKey
+const address =  AschJS.crypto.getAddress(publicKey)
+
+function application_table (value) {
+  switch(value)
+    {
+    case "application":
+      change('application');
+      break;
+    case "use_application":
+      change('application_one');
+      break;
+    default:
+      change('application');
+    }
+}
+let type = "application"
+let str = ""
+function application_table (value) {
+  $('#table_application').children().remove()
+  if (value == "application") {
+    type = "application"
+  }else if (value == "use_application") {
+    type ="application_one"
+  }
+  if (type == "application") {
+    $('#application_a').addClass("active")
+    str="<table class='ui called table'><thead><tr><th>图标</th><th>名称</th><th>描述</th><th>ID</th><th>类型</th><th>余额详情</th><th>源码</th></tr></thead></table>"
+    $('#table_application').append(str)
+  } else {
+    $('#application_a').removeClass("active")
+  }
+  if (type == "application_one") {
+    $('#use_application_a').addClass("active")
+    str="<table class='ui called table'><thead><tr><th>图标</th><th>名称</th><th>描述</th><th>ID</th><th>类型</th><th>充值</th><th>余额详情</th><th>源码</th></tr></thead></table>"
+
+    $('#table_application').append(str)
+  } else {
+    $('#use_application_a').removeClass("active")
+  }
+}
+</script>

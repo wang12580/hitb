@@ -1,0 +1,89 @@
+
+    <div id = "blocks" style="width:100%;overflow-x:auto;margin-top: 0.2em;">
+      <div class ="ui header" style ="margin-top: 0.2em;">最新区块</div>
+      <div class ="ui divider"></div>
+      <div id='info' class='popup'></div>
+        <table class="ui called table">
+          <thead>
+            <tr>
+              <th>高度</th>
+              <th>日期</th>
+              <th>ID</th>
+              <th>生产者</th>
+              <th>交易</th>
+              <th>总金额</th>
+              <th>总费用</th>
+              <th>奖励</th>
+            </tr>
+          </thead>
+          <tbody id = "blocks_table">
+
+          </tbody>
+        </table>
+        <div class="ui right floated pagination menu" id ="page_num">
+        </div>
+      </div>
+<script>
+  $('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">区块浏览</div>');
+  let urls = `/block/bc_blockchain`;
+  function d (value) {
+    console.log(value)
+    urls = `/block/bc_blockchain?page=${value}`
+    ajax();
+  }
+
+  ajax ()
+  function ajax () {
+    let info ={};
+    $.ajax({
+      type: "get",
+      url: urls,
+      async: false,
+      success: function(data){
+        info = data;
+      },
+      error: function (jqXHR, textStatus, errorThrown){
+        console.log(errorThrown);
+      },
+      dataType: 'json'
+    });
+    let html=``;
+    info.page_list.forEach((n) => {
+      if (info.page_num === n.num) {
+        html = html + `<a class="disabled item" href="">${n.num}</a>`
+      } else {
+        html = html + `<a class="item" onclick=d('${n.page}')>${n.num}</a>`
+      }
+    })
+    $('#page_num').html(html)
+    let str =""
+    info.data.blocks.forEach((n) => {
+      str = str + "<tr><td><a href='#' onclick=b('"+n.id+"','block')>"+n.height+"</a></td><td></td><td><a href='#' onclick=b('"+n.id+"','block')>"+n.id+"</a></td><td><a href='#' onclick=b('"+n.generatorId+"','user')>"+n.generatorId+"</a></td><td>"+n.numberOfTransactions+"</td><td>"+n.totalAmount+"</td><td>"+n.totalFee+"</td><td>"+n.reward+"</td></tr>"
+    })
+    $('#blocks_table').html(str)
+  }
+
+  function b (id, type) {
+    let info = {};
+    if(type == 'user'){
+      //获取账户信息
+      $.ajax({
+        type: "get",
+        url: '/block/bc_accounts',
+        async: false,
+        success: function(data){
+          info = data;
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+          console.log(errorThrown);
+        },
+        dataType: 'json'
+      });
+      html = '<p><b>地址: </b>'+id+'</p><p><b>公钥: </b>'+ info.data.account.publicKey+'</p><p><b>余额:</b>'+ info.data.account.balance+'</p>';
+    } else {
+      html = '';
+    }
+    $("#info").html(html);
+    $("#info").css('display','block');
+  }
+</script>
