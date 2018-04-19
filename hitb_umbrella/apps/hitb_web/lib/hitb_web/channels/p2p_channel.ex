@@ -10,6 +10,7 @@ defmodule HitbWeb.P2pChannel do
   @connection_success Peers.P2pMessage.connection_success
 
   def join(_topic, _payload, socket) do
+    IO.inspect IO.inspect "P2pChannel1"
     {:ok, socket}
   end
 
@@ -19,7 +20,6 @@ defmodule HitbWeb.P2pChannel do
 
   def handle_in(@query_latest_block, payload, socket) do
     Logger.info("sending latest block to #{inspect socket}")
-    IO.inspect payload
     {:reply, {:ok, %{type: @query_latest_block, data: Block.BlockService.get_latest_block()}}, socket}
   end
 

@@ -16,6 +16,25 @@ defmodule HitbWeb.PageController do
     Logger.info Token.hello()
     login = HitbWeb.Login.is_login(conn)
     if(login)do
+      IO.inspect :ets.tab2list(:peers)
+      peer = :ets.tab2list(:peers) |> Enum.at(0)
+      pid = peer |> elem(0)
+      IO.inspect pid
+      # # # IO.inspect Peers.P2pMessage.query_latest_block
+      # # # IO.inspect Peers.P2pSessionManager.broadcast("ssss")
+      transport = %{
+        serializer: Phoenix.Channels.GenSocketClient.Serializer.Json,
+        transport_mod: Phoenix.Channels.GenSocketClient.Transport.WebSocketClient,
+        transport_pid: pid
+      }
+      # # IO.inspect "-----------PageController----------------"
+      # # # IO.inspect peer
+      # # IO.inspect "-----------PageController----------------"
+      IO.inspect Phoenix.Channels.GenSocketClient.join(transport, "p2p", :ok)
+      # # IO.inspect Phoenix.Channels.GenSocketClient.join(transport, "get_latest_block")
+      # # IO.inspect "-----------PageController----------------"
+      # IO.inspect Phoenix.Channels.GenSocketClient.push(transport, "p2p", "p2p", %{})
+      # IO.inspect "-----------PageController----------------"
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "index.html", user: user
     else
