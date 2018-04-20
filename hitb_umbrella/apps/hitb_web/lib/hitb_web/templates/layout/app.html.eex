@@ -32,7 +32,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="/">首页</a>
+              <a class="nav-link" href="/block">首页</a>
             </li>
             <%# <li class="nav-item">
               <a class="nav-link" href="#">Features</a>
@@ -41,7 +41,7 @@
               <a class="nav-link" href="#">Pricing</a>
             </li> %>
             <li class="nav-item">
-              <a class="nav-link" href="/block/block">区块列表</a>
+              <a class="nav-link" href="/block/block_html">区块列表</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link" href="/block/peer">节点列表</a>
