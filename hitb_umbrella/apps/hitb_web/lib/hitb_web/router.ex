@@ -18,7 +18,7 @@ defmodule HitbWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/block", PageController, :block
+    get "/block_html", PageController, :block
     get "/peer", PageController, :peer
     get "/login", PageController, :login_html
     get "/logout", PageController, :logout
@@ -92,7 +92,7 @@ defmodule HitbWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/block", PageController, :block
+    get "/block_html", PageController, :block
     get "/peer", PageController, :peer
     get "/login", PageController, :login_html
     get "/logout", PageController, :logout
