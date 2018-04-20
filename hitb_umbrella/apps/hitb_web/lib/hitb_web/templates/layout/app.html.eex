@@ -79,5 +79,49 @@
       </main>
     </div>
   </body>
-  <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  <script>
+    $(document).ready(function() {
+      // 将jquery的ajax加入到Vue对象中,vue对象里的this.$ajax就相当于是jquery的$.ajax
+      Vue.prototype.$ajax = $.ajax;
+      const BASE_URL = '/api/';
+      // console.log(Vue)
+      // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
+      const common = new Vue({
+        el: '#app',
+        data: {
+          type : 'index',
+          items: [],
+          currentTime: new Date().toLocaleString()
+        },
+        methods: {
+        }  // vue-methods
+      })  // new-Vue
+    });  // jquery-ready
+  </script>
+  <style>
+    .box_info {
+        width: 80%;
+        height: 120px;
+        margin: auto;
+        padding: 15px;
+        box-shadow: 10px 10px 5px #888888;
+      }
+    .account_table  {
+      width: 91.5%;
+      margin: auto;
+    }
+    .account_hr {
+      width: 91.5%;
+      margin: auto;
+      margin-top: 25px;
+    }
+    .account_hr > hr {
+      width: 100%;
+      border: 1px solid #888888
+    }
+    .cards {
+      width: 90%;
+      margin: auto;
+    }
+  </style>
 </html>
