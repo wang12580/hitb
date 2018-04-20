@@ -218,7 +218,7 @@
             <%end%>
             <div class="form-group">
               <label>金额：</label>
-              <input type="number" class="form-control" placeholder="" v-model="pay.amount">
+              <input type="number" class="form-control" placeholder="" v-model="pay.amount" v-bind:class="{'border-danger': pay.amount < 0}">
             </div>
             <div class="form-group">
               <label>费用：</label>
