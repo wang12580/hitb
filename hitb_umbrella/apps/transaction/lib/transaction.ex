@@ -88,16 +88,21 @@ defmodule Transaction do
   end
   #从一个账户转移到另一个账户
   def pay(sender, recipient, transaction, insert_tran) do
-    case sender.balance - transaction.amount - transaction.fee < 0 do
+    case transaction.amount > 0 do
       true ->
-        [:error, nil, "交易失败,费用不足"]
+        case sender.balance - transaction.amount - transaction.fee < 0 do
+          true ->
+            [:error, nil, "交易失败,费用不足"]
+          false ->
+            Repos.TransactionRepository.insert_transaction(insert_tran)
+            sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
+            Repos.AccountRepository.insert_account(sender)
+            recipient = %{recipient | :balance => sender.balance + transaction.amount}
+            Repos.AccountRepository.insert_account(recipient)
+            [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
+        end
       false ->
-        Repos.TransactionRepository.insert_transaction(insert_tran)
-        sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
-        Repos.AccountRepository.insert_account(sender)
-        recipient = %{recipient | :balance => sender.balance + transaction.amount}
-        Repos.AccountRepository.insert_account(recipient)
-        [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
+        [:error, nil, "输入金额有误"]
     end
   end
 
