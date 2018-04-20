@@ -238,7 +238,7 @@
   $(document).ready(function() {
     // 将jquery的ajax加入到Vue对象中,vue对象里的this.$ajax就相当于是jquery的$.ajax
     Vue.prototype.$ajax = $.ajax;
-    const BASE_URL = '/api';
+    const BASE_URL = '/block/api';
     // console.log(Vue)
     // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
     const common = new Vue({

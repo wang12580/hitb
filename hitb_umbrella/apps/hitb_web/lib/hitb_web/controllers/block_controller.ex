@@ -7,15 +7,10 @@ defmodule HitbWeb.BlockController do
   """
 
   def add_block(conn, payload) do
-    login = HitbWeb.Login.is_login(conn)
-    if(login)do
-      [conn, user] = HitbWeb.Login.user(conn)
-      block = Block.BlockService.create_next_block(payload["data"], user.username)
-      Block.BlockService.add_block(block)
-      json(conn, %{})
-    else
-      redirect conn, to: "/login"
-    end
+    [conn, user] = HitbWeb.Login.user(conn)
+    block = Block.BlockService.create_next_block(payload["data"], user.username)
+    Block.BlockService.add_block(block)
+    json(conn, %{})
   end
 
   def get_all_blocks(conn, _) do

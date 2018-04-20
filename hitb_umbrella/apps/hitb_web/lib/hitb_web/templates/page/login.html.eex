@@ -8,11 +8,11 @@
     <meta name="author" content="">
 
     <title>Hello Hitb!</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap.css") %>" />
-    <script src="<%= static_path(@conn, "/js/jquery-1.9.1.min.js") %>" ></script>
-    <script src="<%= static_path(@conn, "/js/bootstrap.min.js") %>"></script>
-    <script src="<%= static_path(@conn, "/js/vue.min.js") %>"></script>
-    <script src="<%= static_path(@conn, "/js/phoenix.js") %>"></script>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap/css/bootstrap.min.css") %>" />
+    <script src="<%= static_path(@conn, "/css/jquery/jquery.min.js") %>" ></script>
+    <script src="<%= static_path(@conn, "/css/bootstrap/js/bootstrap.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/css/vue.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
   </head>
   <body>
     <div id="body">
@@ -101,7 +101,7 @@
  $(document).ready(function() {
      // 将jquery的ajax加入到Vue对象中,vue对象里的this.$ajax就相当于是jquery的$.ajax
      Vue.prototype.$ajax = $.ajax;
-     const BASE_URL = '/api';
+     const BASE_URL = '/block/api';
      // console.log(Vue)
      // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
      const common = new Vue({
@@ -125,7 +125,7 @@
              success: (res)=> {
                console.log(res)
                if (res.login) {
-                 window.location.href="/";
+                 window.location.href="/block";
                }
              },
              error: (err)=> {
@@ -142,7 +142,7 @@
              success: (res)=> {
                console.log(res)
                if (res.login) {
-                 window.location.href="/login";
+                 window.location.href="/block/login";
                }
              },
              error: (err)=> {
