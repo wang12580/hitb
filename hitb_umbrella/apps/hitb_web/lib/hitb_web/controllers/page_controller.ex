@@ -19,7 +19,7 @@ defmodule HitbWeb.PageController do
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "index.html", user: user
     else
-      redirect conn, to: "/login"
+      redirect conn, to: "/block/login"
     end
   end
 
@@ -42,7 +42,7 @@ defmodule HitbWeb.PageController do
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "block.html", user: user, page: page
     else
-      redirect conn, to: "/login"
+      redirect conn, to: "/block/login"
     end
   end
 
@@ -52,7 +52,7 @@ defmodule HitbWeb.PageController do
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "peers.html", user: user
     else
-      redirect conn, to: "/login"
+      redirect conn, to: "/block/login"
     end
   end
   # 登录
@@ -67,13 +67,13 @@ defmodule HitbWeb.PageController do
       [conn, user] = HitbWeb.Login.user(conn)
       render conn, "account.html", user: user, page: page
     else
-      redirect conn, to: "/login"
+      redirect conn, to: "/block/login"
     end
     # render conn, "account.html"
   end
 
   def logout(conn, _params) do
     conn = HitbWeb.Login.logout(conn)
-    redirect conn, to: "/login"
+    redirect conn, to: "/block/login"
   end
 end

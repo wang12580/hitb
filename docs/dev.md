@@ -8,6 +8,7 @@
 * docker start -i hitb
 
 ### build命令
+* mix phx.digest
 * MIX_ENV=prod mix release
 
 ### watch file changes

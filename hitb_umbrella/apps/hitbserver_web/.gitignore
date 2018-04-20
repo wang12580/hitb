@@ -23,6 +23,8 @@ erl_crash.dump
 # variables.
 
 /priv/static
+/priv/favicon.ico
+/config/prod.secret.exs
 /rel
 mix.lock
 /uploads

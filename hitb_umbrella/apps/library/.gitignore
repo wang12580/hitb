@@ -25,4 +25,5 @@ erl_crash.dump
 /priv/static
 /rel
 mix.lock
+/config/prod.secret.exs
 /uploads

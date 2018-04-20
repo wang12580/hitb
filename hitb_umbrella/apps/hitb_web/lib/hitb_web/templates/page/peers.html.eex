@@ -1,5 +1,3 @@
-
-<link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
 <div class="container" id="peer">
   <form @submit.prevent="" class="account_table" style="margin-bottom: 2rem">
     <div class="row">
@@ -23,4 +21,56 @@
       </tr>
     </table>
 </div>
-<script src="<%= static_path(@conn, "/js/peer.js") %>"></script>
+<script>
+$(document).ready(function() {
+    // 将jquery的ajax加入到Vue对象中,vue对象里的this.$ajax就相当于是jquery的$.ajax
+  Vue.prototype.$ajax = $.ajax;
+  const BASE_URL = '/block/api';
+  // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
+  const common = new Vue({
+    el: '#peer',
+    data: {
+      type : '',
+      items: [],
+      log: '',
+      host: '',
+      port: ''
+    },
+    created: function () {
+      this.getPeers()
+    },
+    methods: {
+      getPeers: function() {
+        this.type = 'getPeers'
+        this.$ajax({
+          type: 'GET',
+          url: BASE_URL + '/peers',
+          dataType: 'json',
+          success: (res)=> {
+            console.log(res)
+            this.items = res.peers
+          }
+        });
+      },
+      addPeer: function(){
+        // this.type = 'addPeer'
+        this.$ajax({
+          type: 'POST',
+          url: BASE_URL + `/peer`,
+          data: {"host": this.host, "port": parseInt(this.port, 10)},
+          dataType: 'json',
+          success: (res)=> {
+            this.items = res.result
+            this.log = '链接节点成功'
+            location.reload()
+          },
+          error: (err)=> {
+            this.log = '连接节点失败'
+            console.log( this.log);
+          }
+        });
+      }
+    }
+  })
+})
+</script>
