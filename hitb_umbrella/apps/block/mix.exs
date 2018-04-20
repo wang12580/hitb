@@ -19,7 +19,7 @@ defmodule Block.MixProject do
   def application do
     [
       mod: {Block.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :mnesia]
     ]
   end
 

@@ -1,0 +1,180 @@
+<div class="ui padded grid"  id="div">
+  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
+    <div class="ui secondary vertical menu" id="add_list">
+
+    </div>
+  </div>
+  <div class="fourteen wide column">
+    <div class="ui big breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section">字典查询</div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui menu" id="div_menu">
+      <div class="item" id ="rule_tool">
+
+      </div>
+    </div>
+    <div id= "rule_tit" ></div>
+    <table class="ui celled table">
+      <thead>
+        <tr id ="tb_ha">
+
+
+        </tr>
+      </thead>
+      <tbody id ="tb_bo">
+
+      </tbody>
+    </table>
+    <div class="ui right floated pagination menu" id ="footer">
+
+    </div>
+  </div>
+</div>
+<script>
+// year_time
+function change(type){
+  window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&type=${type}&tab_type=${"<%=@tab_type%>"}&year=${"<%=@year%>"}&version=${"<%=@version%>"}`;
+}
+//去除选择
+function del(tab_type){
+  if(tab_type == 'year'){
+    window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&tab_type=${"<%=@tab_type%>"}&version=${"<%=@version%>"}&type=${"<%= @type %>"}`;
+  }else{
+    window.location.href = `/hospitals/rule?year=${"<%=@year%>"}&page=${"<%= @page %>"}&tab_type=${"<%=@tab_type%>"}&version=${"<%=@version%>"}&type=${"<%= @type %>"}`;
+  }
+}
+
+</script>
+
+<script>
+let info = {}
+let type = "year";
+let tab_type = "基本信息";
+$.ajax({
+  type: "get",
+  url: `/library/rule?page=${"<%=@page %>"}&type=${"<%=@type %>"}&tab_type=${"<%=@tab_type %>"}&version=${"<%=@version %>"}&year=${"<%=@year %>"}&dissect=${"<%=@dissect %>"}`,
+  async: false,
+  success: function(data){
+    info = data
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+console.log(info)
+let str = "";
+
+
+if (info.type == "year") {
+  info.list.forEach((n) => {
+    let stra = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page%>"}&tab_type=${"<%=@tab_type%>"}&year=${n}&version=${"<%=@version%>"}`
+    str = str + "<a  class='item' href = '"+stra+"' >" + n+ "年</a>"
+  })
+} else {
+  info.list.forEach((n) => {
+    let strb = `/hospitals/rule?dissect=${n}&page=<%=@page%>&tab_type=${"<%=@tab_type%>"}&year=${"<%=@year %>"}&version=${"<%=@version%>"}&type=${info.type}`
+    str = str + "<a  class='item' href = '"+strb+"' >" + n+ "</a>"
+  })
+}
+$('#add_list').children().remove();
+$('#add_list').append(str);
+$('#rule_tool').children().remove();
+let objs = {}
+objs["基本信息"] = [["行政区划", "性别", "婚姻状况", "职业代码", "联系人关系", "国籍"],["行政区划", "性别", "婚姻状况", "职业代码", "联系人关系", "国籍"]]
+objs["手术血型"] = [["切口愈合", "手术级别", "麻醉方式", "血型", "Rh"],["切口愈合", "手术级别", "麻醉方式", "血型", "Rh"]]
+objs["出入院编码"] = [["入院病情", "入院途径", "住院计划"],["入院病情", "入院途径", "住院计划"]]
+objs["肿瘤编码"] = [["0～Ⅳ肿瘤分期", "TNM肿瘤分期", "分化程度编码"],["0～Ⅳ肿瘤分期", "TNM肿瘤分期", "分化程度编码"]]
+objs["医保诊断依据"] = [["最高诊断依据", "药物过敏", "重症监护室", "医疗付费方式", "病案质量"],["最高诊断依据", "药物过敏", "重症监护室", "医疗付费方式", "病案质量"]]
+objs["icd9"] = [["version", "year", "诊断性操作", "治疗性操作", "手术室手术", "中医性操作", "解剖部位"],["版本", "年份", "诊断性操作", "治疗性操作", "手术室手术", "中医性操作", "dissect"]]
+objs["icd10"] = [["version", "year", "dissect"],["版本", "年份", "解剖部位"]]
+// console.log(objs["<%=@tab_type%>"][1])
+let str_jb = ""
+ if ("<%=@tab_type%>" == "基本信息") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "手术血型") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "出入院编码") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "肿瘤编码") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "医保诊断依据") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "icd9") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ } else if ("<%=@tab_type%>" == "icd10") {
+   objs["<%=@tab_type%>"][1].forEach((n, index) => {
+     str_jb = str_jb + "<div class='ui mini primary  button' onclick=change('"+ objs['<%=@tab_type%>'][0][index]+"')>"+n+"</div>&nbsp;&nbsp;"
+   })
+ }
+ $('#rule_tool').append(str_jb);
+ let str_title = ""
+ $('#rule_tit').children().remove();
+ if ("<%=@year%>" != "") {
+  str_title = `<a class='ui blue label'>${'<%=@year%>'}年<i class='delete icon' onclick=del()></i> </a>`
+ } else if ("<%=@dissect%>" != "") {
+   str_title = `<a class='ui blue label'>${'<%=@dissect%>'}<i class='delete icon' onclick=del()></i> </a>`
+ }
+ $('#rule_tit').append(str_title);
+ $('#tb_ha').children().remove();
+ let str_tables_h_1 = ""
+ let str_tables_h_2 = ""
+ if (["icd9", "icd10"].includes("<%=@tab_type%>")) {
+   str_tables_h_1 = "<th>名称</th><th>编码</th>"
+ } else {
+   str_tables_h_1 = "<th>编码</th><th>名称</th>"
+   if (!["mdc", "adrg", "drg", "icd9", "icd10"].includes("<%=@tab_type%>")) {
+     str_tables_h_2 ="<th>类型</th>"
+   }
+ }
+ str_tables_h = str_tables_h_1 + str_tables_h_2 + "<th>年份</th>"
+ $('#tb_ha').append(str_tables_h);
+ console.log(str_tables_h)
+ console.log(info)
+
+
+ $('#tb_bo').children().remove();
+ let str_tables_b_1 =""
+ let str_tables_b_2 =""
+ let str_tables_b_3 =""
+ info.result.forEach((n, index) => {
+   if (["icd9", "icd10"].includes("<%=@tab_type%>") && "<%=@tab_type%>" == "CN") {
+     str_tables_b_2 =`<td>${n.name}</td><td>${n.codes.join('/')}</td>`
+   } else {
+     str_tables_b_2 =`<td>${n.code}</td><td>${n.name}</td>`
+     if (!["mdc", "adrg", "drg", "icd9", "icd10"].includes("<%=@tab_type%>")) {
+       str_tables_b_3 = `<td>${n.type}</td>`
+     }
+   }
+   str_tables_b_1 = str_tables_b_1 + "<tr>"+str_tables_b_2+str_tables_b_3+"<td>"+n.year+"年</td></tr>"
+ })
+ $('#tb_bo').append(str_tables_b_1);
+ $('#footer').children().remove();
+let str_foot =""
+let str_foot_1 =""
+let str_foot_2 =""
+ info.page_list.forEach((n) => {
+   if (('<%=@page%>').toString() == n.num) {
+    str_foot_1 = `<a class="disabled item">${n.num}</a>`
+   } else {
+     str_foot_1 = `<a class="item" href="/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${n.page}&tab_type=${"<%=@tab_type %>"}">${n.num}</a>`
+   }
+   str_foot =str_foot+ str_foot_1
+ })
+ $('#footer').append(str_foot);
+</script>

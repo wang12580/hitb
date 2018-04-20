@@ -1,0 +1,295 @@
+<div class="ui huge breadcrumb" style="background:#ffffff;">
+  <a class="section" href="/hospitals">主页</a>
+  <i class="right chevron icon divider"></i>
+  <div class="active section">病案上传</div>
+</div>
+<div class="ui divider"></div>
+  <select class="ui button" id="type">
+      <option value="json">JSON格式</option>
+      <option value="csv">CSV格式</option>
+  </select>
+
+  <div style="display:none;" id="json_div">
+    <br/>
+    <table class="ui celled table">
+      <thead>
+        <tr  class="center aligned"><th colspan="6">必须字段和字段类型</th>
+      </tr></thead>
+      <tr>
+        <th class="center aligned">DRG</th>
+        <td>drg (字符串)</td>
+        <th class="center aligned">护理费用</th>
+        <td>expense_hl（浮点）</td>
+        <th class="center aligned">科室名称</th>
+        <td>department (字符串)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">年龄</th>
+        <td>age (字符串)</td>
+        <th class="center aligned">医技费用</th>
+        <td>expense_yj (浮点)</td>
+        <th class="center aligned">医师姓名</th>
+        <td>cherf_department (字符串)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">性别</th>
+        <td>gender (字符串,男或女)</td>
+        <th class="center aligned">医疗费用</th>
+        <td>expense_yl (浮点)</td>
+        <th class="center aligned">入院时间</th>
+        <td>date_inhospital (字符串)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">支付方式</th>
+        <td>pay_type (整数)</td>
+        <th class="center aligned">药品费用</th>
+        <td>expense_yp (浮点)</td>
+        <th class="center aligned">年份</th>
+        <td>year_time (字符串或整数)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">住院天数</th>
+        <td>acctual_days (整数)</td>
+        <th class="center aligned">药品与耗材费用</th>
+        <td>expense_yp_hc (浮点)</td>
+        <th class="center aligned">半年</th>
+        <td>half_year (字符串或整数)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">总费用</th>
+        <td>total_expense (浮点)</td>
+        <th class="center aligned">主要诊断</th>
+        <td>disease_code (字符串)</td>
+        <th class="center aligned">季度</th>
+        <td>season_time (字符串或整数)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">管理费用</th>
+        <td>expense_gl (浮点)</td>
+        <th class="center aligned">医院名称</th>
+        <td>org (字符串)</td>
+        <th class="center aligned">月度</th>
+        <td>month_time (字符串或整数)</td>
+      </tr>
+    </table>
+    <table class="ui celled table">
+      <thead>
+        <tr  class="center aligned"><th colspan="6">未分组需要补充字段和字段类型</th>
+      </tr></thead>
+      <tr>
+        <th class="center aligned">其他诊断</th>
+        <td>diags_code (数组)</td>
+        <th class="center aligned">新生儿天数</th>
+        <td>sf0100 (整数)</td>
+        <th class="center aligned">呼吸机使用时间</th>
+        <td>sf0104 (整数)</td>
+      </tr>
+      <tr>
+        <th class="center aligned">手术操作</th>
+        <td>opers_code (数组)</td>
+        <th class="center aligned">新生儿体重</th>
+        <td>sf0102 (整数)</td>
+        <th class="center aligned">出院转归</th>
+        <td>sf0108 (整数)</td>
+      </tr>
+    </table>
+  </div>
+  <div style="display:none;" id="csv_div">
+    <br/>
+    <table class="ui celled table">
+      <thead>
+        <tr  class="center aligned"><th colspan="6">CSV必须字段</th>
+      </tr></thead>
+      <tr>
+        <td>DRG</td>
+        <td>护理费用</td>
+        <td>科室名称</td>
+        <td>年龄</td>
+        <td>医技费用</td>
+        <td>医师姓名</td>
+      </tr>
+      <tr>
+        <td>性别</td>
+        <td>医疗费用</td>
+        <td>入院时间</td>
+        <td>支付方式</td>
+        <td>药品费用</td>
+        <td>年份</td>
+      </tr>
+      <tr>
+        <td>住院天数</td>
+        <td>药品与耗材费用</td>
+        <td>半年</td>
+        <td>总费用</td>
+        <td>主要诊断</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>管理费用</td>
+        <td>医院名称</td>
+        <td>月度</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <table class="ui celled table">
+      <thead>
+        <tr  class="center aligned"><th colspan="6">未分组需要补充字段</th>
+      </tr></thead>
+      <tr>
+        <td>其他诊断编码(用&符号拼接)</td>
+        <td>新生儿天数</td>
+        <td>呼吸机使用时间</td>
+        <td>手术操作编码(用&符号拼接)</td>
+        <td>新生儿体重</td>
+        <td>出院转归</td>
+      </tr>
+    </table>
+  </div>
+
+  <table class="ui fixed single line celled small table">
+    <thead>
+      <tr>
+        <td colspan="12">
+          <input style="font-size:1px;float:right" type="button" value="确认上传" id="upload_button">
+          <div class="form-group">
+            <input style="font-size:1px" id="file_upload" name="file_upload[photo]" type="file">
+            <br />
+            <div class="progress" id="example3">
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="percent">0%</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </thead>
+  </table>
+  <div id="loading" class="loading" style="display:none;">
+    <h2 class="ui header" style="text-align:center">正在校验,请稍等...</h2>
+    <img class="ui centered image" src="<%= static_path(@conn, "/css/hospitals_img/loading.gif") %>" width="10%" height="10%">
+  </div>
+<div class="ui basic buttons"  style="display:none;" id="page"></div>
+<script>
+//样式
+$('.href_index').attr('class', 'href_index item');
+$('#upload').attr('class','href_index active item');
+
+$(document).ready(function() {
+    //初始化进度条
+    $('#example3').progress({percent: 0});
+    $("#percent").css('width', '0%');
+})
+var file = null;
+$(function(){
+  $("#file_upload").click(function(){
+    $('#example3').progress({percent: 0});
+    $("#percent").css('width', '0%');
+    $("#percent").html('')
+    $("#table").css('display','none');
+  });
+  $("#upload_button").click(function(){
+    upload();
+  });
+});
+var input = document.getElementById("file_upload");
+
+ //文件域选择文件时, 执行readFile函数
+ input.addEventListener('change',readFile,false);
+
+ function readFile(){
+  file = this.files[0];
+ }
+ //上传文件
+ function upload(){
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+    type = $("#type").children("option:selected").val();
+    if(type == "json"){
+      file_type = "application/json";
+    }else{
+      file_type = "text/csv";
+    }
+    if(file.type == file_type){
+      //监听事件
+      xhr.upload.addEventListener("progress", uploadProgress, false);
+      fd.append("file", file);
+      //发送文件和表单自定义参数
+      xhr.open("POST", "/hospitals/json_upload",true);
+      //上传结果
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState == 4 && xhr.status == 200) {
+          var data = eval('(' + xhr.responseText + ')');
+          // $('#file_name').text(data['file_name']);
+          // $('#file_size').text(data['file_size']);
+          if(confirm("上传成功,确定要开始校验吗?")){
+            $("#loading").css('display','block');
+            $.ajax({
+              type: "GET",
+              url: '/hospitals/json_check?file_path='+ data['file_path'],
+              async: true,
+              success: function(data){
+                window.location.href= '/hospitals/check_html?page=1';
+              },
+              dataType: 'json'
+            });
+
+          }else{
+            alert("您取消了校验")
+          }
+        }
+      }
+     xhr.send(fd);
+    }
+    else
+    {
+      alert("您选择的文件类型不正确")
+    }
+
+ }
+ function uploadProgress(evt){
+   if (evt.lengthComputable) {
+     //evt.loaded：文件上传的大小 evt.total：文件总的大小
+     var percentComplete = Math.round((evt.loaded) * 100 / evt.total);
+     //加载进度条，同时显示信息
+     $('#example3').progress({percent: percentComplete});
+     $("#percent").html(percentComplete + '%')
+     $("#percent").css('width', percentComplete + '%')
+   }
+}
+function table(data){
+  $('#num').text(data['num']);
+  file_json = data['file_json'];
+  html_str = '';
+  for(i = 0; i < file_json.length; i++){
+    html_str = html_str + '<tr><td></td><td>'+file_json[i]['b_wt4_v1_id']+'</td><td>'+file_json[i]['acctual_days']+'</td><td>'+file_json[i]['total_expense']+'</td><td>'+file_json[i]['disease_code']+'</td><td>'+file_json[i]['org']+ '</td><td>'+file_json[i]['department']+ '</td><td>'+file_json[i]['year_time']+ '</td><td>'+file_json[i]['season_time']+ '</td><td>'+file_json[i]['month_time']+ '</td><td>'+file_json[i]['half_year']+ '</td><td>'+file_json[i]['drg_bj']+ '</td><tr>';
+  }
+  $('#tbody').html(html_str);
+}
+function page(skip,num){
+  page_num = skip/10+1;
+  page_num_count = Math.ceil(num/10);
+  if(page_num = 1 & page_num_count > page_num + 5){
+    arr = ['1','2','3','4','5','>>']
+    arr_name = ['skip_0','skip_10','skip_20','skip_0','skip_40','#']
+  }
+  html_str = '';
+  for(i = 0; i < arr.length; i++){
+    //
+    html_str = html_str + '<div class="ui button" name="'+arr_name[i]+'">'+arr[i]+'</div>';
+  }
+  $('#page').html(html_str);
+}
+
+//json_div
+$("#json_div").css('display','block');
+$("#type").change(function(){
+  type = $("#type").children("option:selected").val();
+  if(type == "json"){
+    $("#json_div").css('display','block');
+    $("#csv_div").css('display','none');
+  }else{
+    $("#csv_div").css('display','block');
+    $("#json_div").css('display','none');
+  }
+});
+</script>

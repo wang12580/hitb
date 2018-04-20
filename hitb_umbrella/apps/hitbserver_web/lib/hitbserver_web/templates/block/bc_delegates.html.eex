@@ -1,0 +1,279 @@
+
+    <div style="width:100%;overflow-x:auto;margin-top: 0.2em;">
+      <div class ="ui header" style ="margin-top: 0.2em;">投票</div>
+      <div class ="ui divider"></div>
+      <div class="ui three top steps">
+        <div id ="usname" class="step active" onclick ="delegates_ajax('usname')">
+          <i class="truck icon"></i>
+          <div class="content">
+            <div class="title">受托人列表</div>
+            <div class="description">Choose your shipping options</div>
+          </div>
+        </div>
+        <div id ="histroy" class="step" onclick ="delegates_ajax('histroy')">
+          <i class="payment icon"></i>
+          <div class="content">
+            <div class="title">投票记录</div>
+            <div class="description">Enter billing information</div>
+          </div>
+        </div>
+        <div id ="me" class="step" onclick ="delegates_ajax('me')">
+          <i class="info icon"></i>
+          <div class="content">
+            <div class="title">谁投了我</div>
+          </div>
+        </div>
+      </div>
+      <div id='infos' class='popup'></div>
+      <div style="display: none" id="vote">
+        <h3>取消给受托人的投票</h3>
+        <h4>每次可最多同时删除对33人的投票</h4>
+        <table  class="ui called table">
+          <tbody id="vote_del">
+          </tbody>
+        </table>
+        <div id="delegates_form"></div>
+        <div class ="ui padded grid" >
+          <div class= "twelve wide column"></div>
+          <div class= "four wide column">
+            <button class="ui primary button" style="margin-top:1em" onclick="vote('return')">返回</button>
+            <button class="ui primary button" onclick="vote('dels')">删除投票</button>
+            <p style="margin-top:1em">需要支付0.1XAS</p>
+          </div>
+        </div>
+      </div>
+      <div class ="ui divider"></div>
+      <div id= "delegates_content">
+      </div>
+      </div>
+    </div>
+
+<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+const keys = AschJS.crypto.getKeys(secret)
+// 通过公钥获得地址
+const publicKey = keys.publicKey
+const privateKey = keys.privateKey
+const address =  AschJS.crypto.getAddress(publicKey)
+
+
+
+$.ajax({
+  type: "get",
+  url: `/block/bc_delegates`,
+  async: false,
+  success: function(data){
+    info1 = data;
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+
+let infos = {};
+$.ajax({
+  type: "get",
+  url: '/block/blockchain',
+  async: false,
+  success: function(data){
+    infos = data;
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+  },
+  dataType: 'json'
+});
+
+function post_ajax (value) {
+  $.ajax({
+    type: "post",
+    url: '/block/blockchain_post/',
+    async: false,
+    data: value,
+    success: function(data){
+      if(data.result.success) {
+        $("#error_mes").css('display','none');
+        $("#last").css('display','none');
+        $("#mes_header").html(data.result.info);
+        $("#mes_info").html(data.result.header);
+        $("#mes").css('display','block');
+        setTimeout("reload()",2000);
+      } else {
+        $("#error_mes_header").html(data.result.info);
+        $("#error_mes_info").html(data.result.header);
+        $("#error_mes").css('display','block');
+      }
+
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+}
+
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">投票</div>');
+// 投票
+function delegates_table(value) {
+   if (value == 'usname') {
+     change('delegates');
+   } else if (value == 'histroy') {
+     change('delegates_his');
+   } else if (value == 'me') {
+     change('delegates_me');
+   }
+ }
+
+function publicKeys(id){
+  $.ajax({
+    type: "get",
+    url: '/block/bc_accounts',
+    async: false,
+    success: function(data){
+      info = data;
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+  return info.account.publicKey;
+}
+// 投票
+var check_val = [];
+function vote (type) {
+  if (type =="del") {
+    check_val = [];
+    $('#vote_del').children().remove();
+    obj = document.getElementsByName("delegates_del");
+    for(k in obj){
+      if(obj[k].checked)
+        check_val.push(obj[k].value.split(','));
+    }
+    let str = "";
+    check_val.forEach((n) => {
+      str = str + "<tr><td>"+n[0]+"</td><td>"+n[1]+"<td></tr>"
+    });
+    if (check_val.length!== 0) {
+      $('#vote').css("display","inline")
+      $('#vote_del').append(str)
+      $("#infos").html('');
+    }
+  }else if (type =='dels') {
+    var password = 'someone manual strong movie roof episode eight spatial brown soldier soup motor';
+    var voteContent = [];
+    check_val.forEach((n) => {
+      voteContent.push('-'+publicKeys(n[1]))
+    })
+    var secondPassword  = document.getElementsByName("del_his")[0].value;
+    var transaction = AschJS.vote.createVote(voteContent, password, secondPassword || undefined);
+    let obj2 = {}
+    obj2.transaction = JSON.stringify(transaction)
+    obj2.type = "删除投票";
+    post_ajax (obj2)
+
+  } else if (type =='return') {
+    check_val = [];
+    $('#vote').css("display","none")
+  }
+
+}
+</script>
+<script>
+let type_value = 'usname'
+let url_dele = '/block/bc_delegates'
+function delegates_page(value) {
+  url_dele =  `/block/bc_delegates?page=${value}`
+  delegates_ajax(type_value)
+}
+function delegates_ajax(value) {
+  type_value = value
+  let type = "delegates";
+  $.ajax({
+    type: "get",
+    url: url_dele,
+    async: false,
+    success: function(data){
+      info1 = data;
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+  let str =""
+  $('#delegates_form').children().remove()
+  if(infos.data.account.secondPublicKey){
+    str ="<form class='ui form'><div class='field'><label>二级密码</label><input type='password' name='del_his' value='' placeholder='至少八位数字和字母组合'></div></form>"
+    $('#delegates_form').append(str);
+  }
+  delegates_table(type_value);
+  function delegates_table(value) {
+    $('#delegates_content').children().remove();
+    if (value == "usname") {
+      type = "delegates"
+    } else if (value == 'histroy') {
+      type ="delegates_his"
+    } else if (value == 'me') {
+      type ="delegates_me"
+    }
+    let strs = ""
+    if (type == "delegates") {
+      $('#usname').addClass("active")
+      str1 = "<div class='ui padded grid'><div class='fourteen wide column'><p>共"+info1.data.totalCount+"人</p></div><div class='two wide column'><button class='ui primary button'>投票 </button></div></div>"
+      str2 = "<div class ='ui divider'></div><table class='ui called table'><thead><tr><th></th><th>排名</th><th>受托人</th><th>地址</th><th>生产率</th><th>生产块数</th><th>得票率</th></tr></thead><tbody id = 'delegates'>"
+      let stra =""
+      info1.data.delegates.forEach((n) => {
+        stra = stra +
+        "<tr><td><div class='field'><div class='ui checkbox'><input type='checkbox'  checked='checked'  name='test' disabled='disabled' ><label></label></div></div></td><td>"+n.rate+"</td><td>"+n.username+"</td><td> <a href='#' onclick=a("+n.address+",'delegates')>"+n.address+"</a></td><td>"+n.productivity+"%</td><td>"+n.producedblocks+"</td><td>"+n.approval+"%</td></tr>"
+      });
+      let strb ="</tbody></table><div class='ui right floated pagination menu' id='page_delegates'>"
+      strs = str1 + str2 + stra + strb
+      $('#delegates_content').append(strs);
+      let html=``;
+      info1.page_list.forEach((n) => {
+        if (info1.page_num === n.num) {
+          html = html + `<a class="disabled item" href="">${n.num}</a>`
+        } else {
+          html = html + `<a class="item" onclick=delegates_page('${n.page}')>${n.num}</a>`
+        }
+      })
+      $('#page_delegates').html(html)
+    } else {
+      $('#usname').removeClass('active')
+    }
+    if (type == "delegates_his") {
+      $('#histroy').addClass("active")
+      str1 = "<div class='ui padded grid'><div class='fourteen wide column'><p>共"+info1.data.totalCount+"人</p></div><div class='two wide column'><button class='ui primary button' onclick=vote('del')>删除 </button></div></div>"
+      str2 = "<div class ='ui divider'></div><table class='ui called table'><thead><tr><th></th><th>排名</th><th>受托人</th><th>地址</th><th>生产率</th><th>生产块数</th><th>得票率</th></tr></thead><tbody id = 'delegates'>"
+      let stra =""
+      info1.data.delegates.forEach((n) => {
+        stra = stra +
+        "<tr><td><div class='field'><div class='ui checkbox'><input type='checkbox' name='delegates_del' value= "+n.username+","+n.address+" ><label></label></div></div></td><td>"+n.rate+"</td><td>"+n.username+"</td><td> <a href='#' onclick=a("+n.address+",'delegates')>"+n.address+"</a></td><td>"+n.productivity+"%</td><td>"+n.producedblocks+"</td><td>"+n.approval+"%</td></tr>"
+      });
+      let strb ="</tbody></table><div class='ui right floated pagination menu' id='page_delegates_h'>"
+      strs = str1 + str2 + stra + strb
+      $('#delegates_content').append(strs);
+      let html=``;
+      info1.page_list.forEach((n) => {
+        if (info1.page_num === n.num) {
+          html = html + `<a class="disabled item" href="">${n.num}</a>`
+        } else {
+          html = html + `<a class="item" onclick=delegates_page('${n.page}')>${n.num}</a>`
+        }
+      })
+      $('#page_delegates_h').html(html)
+    } else {
+      $('#histroy').removeClass('active')
+    }
+    if (type == "delegates_me") {
+      $('#me').addClass("active")
+      strs = "<p>共0人</p><div class ='ui divider'></div><table class='ui called table'><thead><tr><th>地址</th><th>用户名</th><th>权重</th></tr></thead><table>"
+      $('#delegates_content').append(strs);
+    } else {
+      $('#me').removeClass('active')
+    }
+  }
+}
+</script>

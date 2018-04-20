@@ -1,0 +1,207 @@
+
+    <div id="send-msg" style="display: none">
+      <form class="ui form">
+        <div class="field">
+          <label>受托人名称</label>
+          <input type="text" name="register" value="" placeholder="请输入受托人名称">
+        </div>
+        <div class="field" id="hassecond">
+        </div>
+      </form>
+      <div class ="ui padded grid" >
+        <div class= "twelve wide column"></div>
+        <div class= "four wide column">
+          <button class="ui primary button" style="margin-top:1em" onclick="registrant('return')">返回</button>
+          <button class="ui primary button" onclick="registrant('register')">注册</button>
+          <p style="margin-top:1em">需要支付100xas</p>
+        </div>
+      </div>
+      <div class ="ui divider"></div>
+    </div>
+    <div style="width:100%;overflow-x:auto;margin-top: 0.2em;">
+      <div class ="ui header" style ="margin-top: 0.2em;">区块生产</div>
+      <div class ="ui divider"></div>
+      <div class ="ui padded grid">
+        <div class ="four wide column">
+          <h2>受托人基本信息</h2>
+        </div>
+        <div class ="two wide column">
+          <button class="ui primary button">未开启 </button>
+        </div>
+        <div class ="two wide column" id ="button_pro">
+
+        </div>
+      </div>
+      <div class ="ui divider"></div>
+      <div class ="ui padded grid">
+        <div class ="four wide column">
+          <div class="ui blue circular label" style ="height:15em;width:15em;">
+            <h4 style ="margin-top:2em">总收益</h4>
+            <h4 id="rewards"></h4>
+            <h4>XAS</h4>
+          </div>
+        </div>
+        <div class ="four wide column">
+          <div class="ui orange circular label" style ="height:15em;width:15em;">
+            <h4 style ="margin-top:2em">排名</h4>
+            <h4 id="rate"></h4>
+            <h4></h4>
+          </div>
+        </div>
+        <div class ="four wide column">
+          <div class="ui olive circular label" style ="height:15em;width:15em;">
+            <h4 style ="margin-top:2em">生产率</h4>
+            <h4 id="productivity">%</h4>
+            <h4></h4>
+          </div>
+        </div>
+        <div class ="four wide column">
+          <div class="ui teal circular label" style ="height:15em;width:15em;">
+            <h4 style ="margin-top:2em">得票率</h4>
+            <h4 id="vote">%</h4>
+            <h4></h4>
+          </div>
+        </div>
+      </div>
+      <div class ="ui divider"></div>
+      <div class ="ui padded grid">
+        <h1>生产的区块</h1>
+      </div>
+      <div class ="ui divider"></div>
+      <div class="ui segment">
+        <table class="ui called table">
+          <thead>
+            <tr>
+              <th>高度</th>
+              <th>日期</th>
+              <th>ID</th>
+              <th>交易</th>
+              <th>金额</th>
+              <th>费用</th>
+              <th>奖励</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">区块生产</div>');
+//注册受托人
+var registrants = false;
+$('#send-msg').hide()
+function registrant(type) {
+  if (type == 'return') {
+    registrants = false;
+  } else if (type == 'register') {
+    obj = document.getElementsByName("register");
+    let objs = {};
+    objs.type = "注册受托人";
+    obj.forEach((n) => {
+      if (n.placeholder == "请输入受托人名称") {
+        n.placeholder = "name"
+      } else if (n.placeholder == "至少八位数字和字母组合") {
+        n.placeholder = "secondSecret"
+      }
+      objs[n.placeholder] = n.value
+    });
+    var password = 'someone manual strong movie roof episode eight spatial brown soldier soup motor';
+    var secondPassword  = 'duanzhichao123';
+    var userName = 'duanzhiabf123';
+
+    var transaction = AschJS.delegate.createDelegate(userName, password, undefined);
+    let obj2 = {}
+    obj2.transaction = JSON.stringify(transaction)
+    obj2.type = "注册受托人";
+    // post_ajax (objs)
+    post_ajax (obj2)
+  } else if (type == 'registrant') {
+    registrants = true;
+  }
+  if (registrants == false) {
+    $('#send-msg').css("display","none")
+  } else {
+    $('#send-msg').css("display","inline")
+  }
+}
+
+const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+const keys = AschJS.crypto.getKeys(secret)
+// 通过公钥获得地址
+const publicKey = keys.publicKey
+const privateKey = keys.privateKey
+const address =  AschJS.crypto.getAddress(publicKey)
+
+let info = {};
+$.ajax({
+  type: "get",
+  url: '/block/blockchain',
+  async: false,
+  success: function(data){
+    info = data;
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+let info1 = {}
+$.ajax({
+  type: "get",
+  url: `/block/bc_production`,
+  async: false,
+  success: function(data){
+    info1 = data;
+  },
+  error: function (jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  },
+  dataType: 'json'
+});
+str = ""
+$('#hassecond').children().remove()
+if (!info.data.account.secondPublicKey) {
+  str = "<label>二级密码</label>"+
+  '<input type="password" name="register" value="" placeholder="至少八位数字和字母组合">'
+  $('#hassecond').append(str)
+}
+$("#button_pro").children().remove()
+if (info.data.success) {
+  $("#button_pro").append('<button class="ui primary button" onclick=registrant("registrant")>'+info1.data.delegate.username+'</button>')
+}
+$("#rewards").html(`${info1.data.delegate.rewards}`)
+$("#rate").html(`${info1.data.delegate.rate}`)
+$("#productivity").html(`${info1.data.delegate.productivity}%`)
+$("#vote").html(`${info1.data.delegate.vote}%`)
+</script>
+
+<script>
+function post_ajax (value) {
+  $.ajax({
+    type: "post",
+    url: '/block/blockchain_post/',
+    async: false,
+    data: value,
+    success: function(data){
+      if(data.result.success) {
+        $("#error_mes").css('display','none');
+        $("#last").css('display','none');
+        console.log(data.result);
+        $("#mes_header").html(data.result.info);
+        $("#mes_info").html(data.result.header);
+        $("#mes").css('display','block');
+        setTimeout("reload()",2000);
+      } else {
+        $("#error_mes_header").html(data.result.info);
+        $("#error_mes_info").html(data.result.header);
+        $("#error_mes").css('display','block');
+      }
+
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+}
+</script>

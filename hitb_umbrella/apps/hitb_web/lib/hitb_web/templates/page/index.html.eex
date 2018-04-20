@@ -1,39 +1,113 @@
+<link rel="stylesheet" href="<%= static_path(@conn, "/css/account.css") %>" />
 <div class="row">
-  <div class="col-2">
-    <%# <p><a href='#' v-on:click="addPeer">连接节点</a></p>
-    <p><a href='#' v-on:click="getPeers">节点</a></p>
-    <p><a href='#' v-on:click="addBlock">新建区块</a></p>
-    <p><a href='#' v-on:click="getBlocks">区块列表</a></p> %>
-    <p><a href='#' v-on:click="test('<%=@user.publicKey%>')">测试</a></p>
+  <div class="modal fade bd-example-modal-lg" id="accountInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">详细信息</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table v-if="accoutnInfo === 'id'" class="table">
+            <tr v-for="(data, key) in getTransactionById" v-bind:key='key' class="server-load-rightpanel-tr">
+              <td v-if="key === 'type'">交易类型</td>
+              <td v-if="key === 'timestamp'">时间戳</td>
+              <td v-if="key === 'senderPublicKey'">二级秘钥</td>
+              <td v-if="key === 'requesterPublicKey'">接受者</td>
+              <td v-if="key === 'message'">备注</td>
+              <td v-if="key === 'id'">交易ID</td>
+              <td v-if="key === 'height'">区块高度</td>
+              <td v-if="key === 'fee'">费用</td>
+              <td v-if="key === 'datetime'">交易时间</td>
+              <td v-if="key === 'blockId'">区块ID</td>
+              <td v-if="key === 'amount'">金额</td>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>{{data}}</td>
+            </tr>
+          </table>
+          <table v-if="accoutnInfo === 'PublicKey'" class="table">
+            <tr v-for="(data, key) in getAccountByPublicKey" v-bind:key='key' class="server-load-rightpanel-tr">
+              <td v-if="key === 'vote'">投票</td>
+              <td v-if="key === 'publicKey'">公钥</td>
+              <td v-if="key === 'balance'">余额</td>
+              <td v-if="key === 'address'">地址</td>
+              <td>{{data}}</td>
+            </tr>
+          </table>
+          <table v-if="accoutnInfo === 'RecipientId'" class="table">
+            <tr v-for="(data, key) in getAccountByAddress" v-bind:key='key' class="server-load-rightpanel-tr">
+              <td v-if="key === 'vote'">投票</td>
+              <td v-if="key === 'publicKey'">公钥</td>
+              <td v-if="key === 'balance'">余额</td>
+              <td v-if="key === 'address'">地址</td>
+              <td>{{data}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-10">
-    <table v-if="type === 'getPeers'" class="table table-striped">
-      <thead><tr>
-        <th>地址</th><th>端口</th>
-      </tr></thead>
-      <tr v-for="(item, index) in items" v-bind:key='index'>
-        <td> {{ item.host }} </td><td> {{ item.port }} </td>
-      </tr>
-    </table>
-    <table v-if="type === 'getBlock'" class="table table-bordered">
-      <tr><th>索引</th><td>{{ items.index }}</td></tr>
-      <tr><th>哈希值</th><td>{{ items.hash }}</td></tr>
-      <tr><th>上一个区块哈希值</th><td>{{ items.previous_hash }}</td></tr>
-      <tr><th>时间戳</th><td>{{ items.timestamp }}</td></tr>
-      <tr><th>时间</th><td>{{ items.data }}</td></tr>
-    </table>
-    <table v-if="type === 'getBlocks'" class="table table-striped">
-        <thead><tr>
-          <th>索引</th>
-          <th>哈希值</th>
-          <th>时间</th>
-        </tr></thead>
-        <tr v-for="(item, index) in items" v-bind:key='index'>
-          <td>{{ item.index }}</td>
-          <td><a href="#" v-on:click="getBlock(item.index)">{{ item.hash }}</a></td>
-          <td>{{ item.data }}</td>
-        </tr>
-    </table>
+  <div id="index" class="col-12">
+    <div class="row">
+      <div class="col-sm">
+        <div class="box_info border border-primary">
+          <h3>余额</h3>
+          <%= @user.balance %>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="box_info border border-success">
+          <h3>最后区块高度</h3>
+          <%= @user.lockHeight%>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="box_info border border-warning">
+          <h3>版本信息</h3>
+          <%= @user.version.build%>&nbsp;&nbsp;&nbsp;&nbsp;<%= @user.version.version%>
+        </div>
+      </div>
+    </div>
+    <div class="row account_hr">
+      <h3>我的交易</h3>
+      <hr class="my-4">
+    </div>
+    <div class="row">
+      <table class="table table-bordered account_table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">类型</th>
+            <th scope="col">发送者</th>
+            <th scope="col">接受者</th>
+            <th scope="col">日期</th>
+            <th scope="col">金额(费用)</th>
+            <th scope="col">备用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(value, index) in transactions" v-bind:key ='index'>
+            <th scope="row" data-toggle="modal" data-target="#accountInfo">
+              <a href ="#" v-on:click="accountID(value.id)">{{value.id}}</a>
+            </th>
+            <td>{{value.type}}</td>
+            <td data-toggle="modal" data-target="#accountInfo">
+              <a href ="#" v-on:click="accountSenderPublicKey(value.senderPublicKey)">{{value.senderPublicKey}}</a>
+            </td>
+            <td data-toggle="modal" data-target="#accountInfo">
+              <a href="#" v-on:click="accountRecipientId(value.recipientId)">{{value.recipientId}}</a>
+            </td>
+            <td>{{value.datetime}}</td>
+            <td>{{value.amount}}({{value.fee}})</td>
+            <td>{{value.message}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <script src="<%= static_path(@conn, "/js/index.js") %>"></script>

@@ -1,0 +1,5 @@
+<div class="ui huge breadcrumb" style="background:#ffffff;">
+  <a class="section" href="/hospitals">主页</a>
+  <i class="right chevron icon divider"></i>
+  <div class="active section">医师组管理</div>
+</div>

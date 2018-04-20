@@ -1,0 +1,91 @@
+<%=if(@success)do %>
+    <div id = "index" style="width:100%;overflow-x:auto;">
+      <div class="ui padded grid" id = "car">
+      <div class='five wide column'>
+        <div class='ui card red' style='width: 100%'>
+          <div class='content'>
+            <div class='header'>余额</div>
+            <div class='description'>
+              <p><%= @data["account"]["balance"]/100000000 %></p>
+              <p>xas</p>
+            </div>
+          </div>
+        </div>
+      </div><div class='five wide column'>
+        <div class='ui card orange' style='width: 100%'>
+          <div class='content'>
+            <div class='header'>最后区块高度</div>
+            <div class='description'>
+              <p><%= @data["latestBlock"]["height"] %></p>
+              <p id="time" ></p>
+            </div>
+          </div>
+        </div>
+      </div><div class='five wide column'>
+        <div class='ui card yellow' style='width: 100%'>
+          <div class='content'>
+            <div class='header'>版本信息</div>
+            <div class='description'>
+              <p><%= @data["version"]["version"] %></p>
+              <p><%= @data["version"]["build"] %>  -  <%= @data["version"]["net"] %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class ="ui header" style ="margin-top: 0.2em;">我的交易</div>
+      <div class ="ui divider"></div>
+      <div id='info' class='popup'></div>
+      <table class="ui called table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>类型</th>
+            <th>发送者</th>
+            <th>接受者</th>
+            <th>日期</th>
+            <th>金额（费用）</th>
+            <th>备用</th>
+          </tr>
+        </thead>
+        <tbody id = "index_table">
+          <%= for transactions <- @transactions["transactions"] do %>
+            <tr>
+              <td><%= transactions["id"] %></td>
+              <td><%= transactions["type"] %></td>
+              <td>
+                <a href="#" onclick= "a('<%= transactions["senderId"]%>','user')">
+                  <%= transactions["senderId"] %>
+                </a>
+              </td>
+              <td>
+                <a href="#" onclick= "a('<%= transactions["recipientId"]%>','user')">
+                  <%= transactions["recipientId"] %>
+                </a>
+              </td>
+              <td></td>
+              <td><%= transactions["amount"]/100000000 %></td>
+              <td><%= transactions["message"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="ui right floated pagination menu">
+        <%= for page <- @page_list do %>
+          <%=if(to_string(@page_num) == page.num)do %>
+            <a class="disabled item" href=""><%= page.num %></a>
+          <% else %>
+          <a class="item" href="/hospitals/blockchain?page=<%= page.page %>&type=<%= @type %>"><%= page.num %></a>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+<% else %>
+    请求错误,请检查网络是否正常
+<% end %>
+<script>
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><div class="active section">区块链</div>');
+// 时间
+var myDate = new Date();
+$('#time').append(myDate.toLocaleDateString() +"&nbsp;"+ myDate.toLocaleTimeString());
+</script>

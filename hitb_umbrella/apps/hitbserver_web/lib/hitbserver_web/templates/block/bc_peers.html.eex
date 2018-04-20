@@ -1,0 +1,68 @@
+
+    <div id = "blocks" style="width:100%;overflow-x:auto;margin-top: 0.2em;">
+      <div class ="ui header" style ="margin-top: 0.2em;">节点列表</div>
+      <div class ="ui divider"></div>
+        <table class="ui called table">
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>版本</th>
+              <th>操作系统</th>
+            </tr>
+          </thead>
+          <tbody id = "peers_table">
+
+          </tbody>
+        </table>
+        <div class="ui right floated pagination menu" id="page_peers">
+        </div>
+      </div>
+
+<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">转账</div>');
+
+const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+const keys = AschJS.crypto.getKeys(secret)
+// 通过公钥获得地址
+const publicKey = keys.publicKey
+const privateKey = keys.privateKey
+const address =  AschJS.crypto.getAddress(publicKey)
+
+let urls = `/block/bc_peers`
+function page_peer (value) {
+  urls = `/block/bc_peers?page=${value}`
+  peer_ajax();
+}
+peer_ajax();
+function peer_ajax() {
+  let info1 = {};
+  $.ajax({
+    type: "get",
+    url: `/block/bc_peers`,
+    async: false,
+    success: function(data){
+      info1 = data;
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+      console.log(errorThrown);
+    },
+    dataType: 'json'
+  });
+  let str = ""
+  $('#peers_table').children().remove()
+  info1.data.peers.forEach((n) => {
+    str = str + "<tr><td>"+n.ip+"</td><td>"+n.version+"</td><td>"+n.os+"</td></tr>"
+  })
+  $('#peers_table').append(str)
+  let html=``;
+  info1.page_list.forEach((n) => {
+    if (info1.page_num === n.num) {
+      html = html + `<a class="disabled item" href="">${n.num}</a>`
+    } else {
+      html = html + `<a class="item" onclick=page_peer('${n.page}')>${n.num}</a>`
+    }
+  })
+  $('#page_peers').html(html)
+}
+</script>
