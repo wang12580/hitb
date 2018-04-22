@@ -8,10 +8,9 @@
     <meta name="author" content="">
 
     <title>Hello Hitb!</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap/css/bootstrap.min.css") %>" />
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/block_app.css") %>" />
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap4/css/bootstrap.min.css") %>" />
     <script src="<%= static_path(@conn, "/css/jquery/jquery.min.js") %>" ></script>
-    <script src="<%= static_path(@conn, "/css/bootstrap/js/bootstrap.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/css/bootstrap4/js/bootstrap.min.js") %>"></script>
     <script src="<%= static_path(@conn, "/css/vue.min.js") %>"></script>
     <script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
   </head>
@@ -109,6 +108,9 @@
     .account_table  {
       width: 91.5%;
       margin: auto;
+    }
+    .header {
+      margin-bottom: 30px;
     }
     .account_hr {
       width: 91.5%;
