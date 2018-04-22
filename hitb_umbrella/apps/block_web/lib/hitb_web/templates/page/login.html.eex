@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hello Hitb!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap4/css/bootstrap.min.css") %>" />
+    <script src="<%= static_path(@conn, "/css/jquery/jquery.min.js") %>" ></script>
+    <script src="<%= static_path(@conn, "/css/bootstrap4/js/bootstrap.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/css/vue.min.js") %>"></script>
+    <script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
+  </head>
+  <body>
+    <div id="body">
+      <div class ="row">
+        <div class="col-md-6">
+          <div class="text-center login">
+            <form @submit.prevent="">
+              <div class="form-signin password">
+                <h1 class="h3 font-weight-normal md-3">Please sign in</h1>
+                <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="输入密码" class="form-control" v-model="username" v-on:keyup.13="login">
+              </div>
+            </form>
+            <button class="btn btn-primary login_but" v-on:click='login'>登录</button>
+            <button type="submit" class="btn btn-primary login_but" data-toggle="modal" data-target="#exampleModal">新账户</button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">新用户注册</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form @submit.prevent="">
+                      <div class="form-group">
+                        <label>注册名</label>
+                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="userHelp" placeholder="用户名" v-model="newUsername" v-on:keyup.13="register">
+                        <small id="userHelp" class="form-text text-muted">有12个英文单词注册的用户名</small>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click='register'>注册</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="current">
+            <h3>区块链服务介绍 (current)</h3>
+            <h3>区块链服务功能列表 (current)</h3>
+            <h3>Search</h3>
+            <p>区块链在数据保护上具有4大特点：</p>
+            <p>隐私保护:用户使用口令密码登录,上传数据使用地址密码代表用户,保障用户个人信息不泄漏</p>
+            <p>数据不可篡改:上传数据通过生成区块链交易保存,交易完成后不可撤销,不可算改,保障数据安全</p>
+            <p>数据完全共享:所有加入区块链的节点,都完全共享区块链上的所有数据</p>
+            <p>数据权益保障:用户上传数据完成交易,获得健康币,健康币可用于区块链上的服务</p>
+            <p>区块链的6大功能分层：</p>
+            <p>数据层:</p>
+            <p>网络层:</p>
+            <p>安全层:</p>
+            <p>共识层:</p>
+            <p>交易层:</p>
+            <p>应用层:</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <style>
+  .login {
+    width: 80%;
+    height: 250px;
+    margin: auto;
+    margin-top: 150px;
+    border: #000 solid 1px;
+    box-shadow: 10px 10px 5px #888888;
+  }
+  .password {
+    margin: 15px 15px 30px 15px;
+  }
+ .login_but {
+   width: 30%;
+   margin:0 5% 0 5%
+ }
+ .current{
+   margin-top: 30px;
+ }
+  </style>
+</html>
+ <script>
+ $(document).ready(function() {
+     // 将jquery的ajax加入到Vue对象中,vue对象里的this.$ajax就相当于是jquery的$.ajax
+     Vue.prototype.$ajax = $.ajax;
+     const BASE_URL = '/block/api';
+     // console.log(Vue)
+     // 整个页面就是一个Vue对象,将所有属性都放到data里,将所有function都放到methods里
+     const common = new Vue({
+       el: '#body',
+       // delimiters: ['${', '}'],
+       data: {
+         type : 'index',
+         items: [],
+         currentTime: new Date().toLocaleString(),
+         username: 'someone manual strong movie roof episode eight spatial brown soldier soup motor',
+         newUsername: ''
+       },
+       methods: {
+         login: function() {
+           console.log(this.username)
+           this.$ajax({
+             type: 'POST',
+             url: BASE_URL + '/open',
+             data: {"username": this.username},
+             dataType: 'json',
+             success: (res)=> {
+               console.log(res)
+               if (res.login) {
+                 window.location.href="/block";
+               }
+             },
+             error: (err)=> {
+               this.items = ['登录失败']
+               console.log(err);
+             }
+           });
+         },
+         register: function () {
+           this.$ajax({
+             type: 'GET',
+             url: BASE_URL + `/newAccount?username=${this.newUsername}`,
+             dataType: 'json',
+             success: (res)=> {
+               $('.modal').modal('hide')
+               if (res.login) {
+                 window.location.href="/block/login";
+               }
+             },
+             error: (err)=> {
+               this.items = ['登录失败']
+               console.log(err);
+             }
+           });
+          console.log(this.newUsername)
+         }
+       }  // vue-methods
+     })  // new-Vue
+   });  // jquery-ready
+
+ </script>
