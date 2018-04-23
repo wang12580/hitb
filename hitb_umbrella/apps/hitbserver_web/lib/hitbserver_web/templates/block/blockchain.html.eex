@@ -50,82 +50,204 @@
         </tbody>
       </table>
       <div class="ui right floated pagination menu" id="page_num">
-
+      </div>
+      <div class="ui modal">
+        <i class="close icon"></i>
+        <div class="header">
+          Modal Title
+        </div>
+        <div class="image content" id="model_infos">
+        </div>
+        <div class="actions">
+          <div class="ui button">Cancel</div>
+          <div class="ui button">OK</div>
+        </div>
       </div>
     </div>
 <script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
 <script>
-$('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><div class="active section">区块链</div>');
-// 时间
-var myDate = new Date();
-$('#time').append(myDate.toLocaleDateString() +"&nbsp;"+ myDate.toLocaleTimeString());
-
-const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
-const keys = AschJS.crypto.getKeys(secret)
-// 通过公钥获得地址
-const publicKey = keys.publicKey
-const privateKey = keys.privateKey
-const address =  AschJS.crypto.getAddress(publicKey)
-let info = {};
-let urls = `/block/blockchain`
-function c (value) {
-  urls = `/block/blockchain?page=${value}`
-  ajax();
-}
+const BASE_URL = '/block/api';
 ajax ()
 function ajax () {
-  let info = {};
   $.ajax({
-    type: "get",
-    url: urls,
-    async: false,
-    success: function(data){
-      info = data;
+     type: 'POST',
+     url: BASE_URL + '/open',
+     data: {"username": 'someone manual strong movie roof episode eight spatial brown soldier soup motor'},
+     dataType: 'json',
+     success: (res)=> {
+       console.log(res.user)
+         $('#balance').html(res.user.balance/100000000)
+         $('#lockHeight').html(res.user.lockHeight)
+         $('#version').html("<p>"+res.user.version.version+"<p/><p>"+res.user.version.build+"--"+res.user.version.net+"</p>")
+     },
+     error: (err)=> {
+       console.log(err);
+     }
+   });
+  $.ajax({
+    type: 'GET',
+    url: BASE_URL + '/getTransactions',
+    dataType: 'json',
+    success: (res)=> {
+      let str = '';
+      res.data.forEach((n)=>{
+        str = str + "<tr><td><a href='#' onclick=accountID('"+n.id+"','user')>"+n.id+"</a></td><td>"+""+n.type+"</td><td>"+"<a href='#' onclick=accountSenderPublicKey('"+n.senderPublicKey+"','user')>"+n.senderPublicKey+"</a></td><td>"+"<a href='#' onclick=accountRecipientId('"+n.recipientId+"','user')>"+n.recipientId+"</a></td><td>"+n.datetime+"</td><td>"+n.amount+"("+n.fee+")</td><td>"+n.message+"</td></tr>"
+      });
+      $('#index_table').html(str)
     },
-    error: function (jqXHR, textStatus, errorThrown){
-      console.log(errorThrown);
-    },
-    dataType: 'json'
-  });
-  $('#balance').html(info.data.account.balance/100000000)
-  $('#lockHeight').html(info.data.account.lockHeight)
-  $('#version').html("<p>"+info.data.version.version+"<p/><p>"+info.data.version.build+"--"+info.data.version.net+"</p>")
-  let html=``;
-  info.page_list.forEach((n) => {
-    if (info.page_num === n.num) {
-      html = html + `<a class="disabled item" href="">${n.num}</a>`
-    } else {
-      html = html + `<a class="item" onclick=c('${n.page}')>${n.num}</a>`
+    error: (err)=> {
+      console.log(err);
     }
-  })
-  $('#page_num').html(html)
-  let info1 = {};
-  let str="";
-  $('#index_table').children().remove();
-  info.transactions.transactions.forEach((n)=>{
-    str = str + "<tr><td>"+n.id+"</td><td>"+""+n.type+"</td><td>"+"<a href='#' onclick=b('"+n.senderId+"','user')>"+n.senderId+"</a></td><td>"+"<a href='#' onclick=b('"+n.recipientId+"','user')>"+n.recipientId+"</a></td><td>"+n.amount/100000000+"</td><td>"+n.message+"</td></tr>"
   });
-  $('#index_table').append(str);
 }
-function b (id, type) {
-  let info = {};
-  if(type == 'user'){
-    //获取账户信息
-    $.ajax({
-      type: "get",
-      url: '/block/bc_asset',
-      async: false,
-      success: function(data){
-        info = data;
-      },
-      error: function (jqXHR, textStatus, errorThrown){
-        console.log(errorThrown);
-      },
-      dataType: 'json'
-    });
-    html = '<p><b>地址: </b>'+id+'</p><p><b>公钥: </b>'+ info.data.account.publicKey+'</p><p><b>余额:</b>'+ info.data.account.balance+'</p>';
-  }
-  $("#info").html(html);
-  $("#info").css('display','block');
+function accountID(value, type) {
+  $.ajax({
+    type: 'GET',
+    url: BASE_URL + `/getTransaction?id=${value}`,
+    dataType: 'json',
+    success: (res)=> {
+      const { signature, signSignature, senderId, recipientId, asset, args, ...c } = res.data;
+      console.log(c);
+      let str =''
+      str = `<table class="ui celled table">
+      <tr><td>交易类型</td><td>${c.type}</td></tr>
+      <tr><td>时间戳</td><td>${c.timestamp}</td></tr>
+      <tr><td>二级秘钥</td><td>${c.senderPublicKey}</td></tr>
+      <tr><td>接受者</td><td>${c.requesterPublicKey}</td></tr>
+      <tr><td>备注</td><td>${c.message}</td></tr>
+      <tr><td>交易ID</td><td>${c.id}</td></tr>
+      <tr><td>区块高度</td><td>${c.height}</td></tr>
+      <tr><td>费用</td><td>${c.fee}</td></tr>
+      <tr><td>交易时间</td><td>${c.datetime}</td></tr>
+      <tr><td>区块ID</td><td>${c.blockId}</td></tr>
+      <tr><td>金额</td><td>${c.amount}</td></tr>
+      </table>`
+      $('.ui.modal').modal('show')
+      $('#model_infos').html(str)
+    },
+    error: (err)=> {
+      console.log(err);
+    }
+  });
 }
+function accountSenderPublicKey(value, type) {
+  $.ajax({
+    type: 'GET',
+    url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
+    dataType: 'json',
+    success: (res)=> {
+      const { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+      console.log(c);
+      let str =''
+      str = `<table class="ui celled table">
+      <tr><td>投票</td><td>${c.vote}</td></tr>
+      <tr><td>公钥</td><td>${c.publicKey}</td></tr>
+      <tr><td>余额</td><td>${c.balance}</td></tr>
+      <tr><td>地址</td><td>${c.address}</td></tr>
+      </table>`
+      $('.ui.modal').modal('show')
+      $('#model_infos').html(str)
+    },
+    error: (err)=> {
+      console.log(err);
+    }
+  });
+}
+function accountRecipientId(value, type) {
+  $.ajax({
+    type: 'GET',
+    url: BASE_URL + `/getAccountByPublicKey?publicKey=${value}`,
+    dataType: 'json',
+    success: (res)=> {
+      const { username, u_username, u_secondSignature, u_nameexist, u_multisignatures, u_multimin, u_multilifetime, u_isDelegate, u_delegates, u_balance, secondSignature, secondPublicKey, rewards, rate, producedblocks, nameexist, multisignatures, multimin, multilifetime, missedblocks, lockHeight, isDelegate, index, fees, delegates, blockId, ...c } = res.account;
+      console.log(c);
+      let str =''
+      str = `<table class="ui celled table">
+      <tr><td>投票</td><td>${c.vote}</td></tr>
+      <tr><td>公钥</td><td>${c.publicKey}</td></tr>
+      <tr><td>余额</td><td>${c.balance}</td></tr>
+      <tr><td>地址</td><td>${c.address}</td></tr>
+      </table>`
+      $('.ui.modal').modal('show')
+      $('#model_infos').html(str)
+    },
+    error: (err)=> {
+      console.log(err);
+    }
+  });
+}
+//
+// $('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><div class="active section">区块链</div>');
+// // 时间
+// var myDate = new Date();
+// $('#time').append(myDate.toLocaleDateString() +"&nbsp;"+ myDate.toLocaleTimeString());
+//
+// const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
+// const keys = AschJS.crypto.getKeys(secret)
+// // 通过公钥获得地址
+// const publicKey = keys.publicKey
+// const privateKey = keys.privateKey
+// const address =  AschJS.crypto.getAddress(publicKey)
+// let info = {};
+// let urls = `/block/blockchain`
+// function c (value) {
+//   urls = `/block/blockchain?page=${value}`
+//   ajax();
+// }
+// ajax ()
+// function ajax () {
+//   let info = {};
+//   $.ajax({
+//     type: "get",
+//     url: urls,
+//     async: false,
+//     success: function(data){
+//       info = data;
+//     },
+//     error: function (jqXHR, textStatus, errorThrown){
+//       console.log(errorThrown);
+//     },
+//     dataType: 'json'
+//   });
+//   $('#balance').html(info.data.account.balance/100000000)
+//   $('#lockHeight').html(info.data.account.lockHeight)
+//   $('#version').html("<p>"+info.data.version.version+"<p/><p>"+info.data.version.build+"--"+info.data.version.net+"</p>")
+//   let html=``;
+//   info.page_list.forEach((n) => {
+//     if (info.page_num === n.num) {
+//       html = html + `<a class="disabled item" href="">${n.num}</a>`
+//     } else {
+//       html = html + `<a class="item" onclick=c('${n.page}')>${n.num}</a>`
+//     }
+//   })
+//   $('#page_num').html(html)
+//   let info1 = {};
+//   let str="";
+//   $('#index_table').children().remove();
+//   info.transactions.transactions.forEach((n)=>{
+//     str = str + "<tr><td>"+n.id+"</td><td>"+""+n.type+"</td><td>"+"<a href='#' onclick=b('"+n.senderId+"','user')>"+n.senderId+"</a></td><td>"+"<a href='#' onclick=b('"+n.recipientId+"','user')>"+n.recipientId+"</a></td><td>"+n.amount/100000000+"</td><td>"+n.message+"</td></tr>"
+//   });
+//   $('#index_table').append(str);
+// }
+// function b (id, type) {
+//   let info = {};
+//   if(type == 'user'){
+//     //获取账户信息
+//     $.ajax({
+//       type: "get",
+//       url: '/block/bc_asset',
+//       async: false,
+//       success: function(data){
+//         info = data;
+//       },
+//       error: function (jqXHR, textStatus, errorThrown){
+//         console.log(errorThrown);
+//       },
+//       dataType: 'json'
+//     });
+//     html = '<p><b>地址: </b>'+id+'</p><p><b>公钥: </b>'+ info.data.account.publicKey+'</p><p><b>余额:</b>'+ info.data.account.balance+'</p>';
+//   }
+//   $("#info").html(html);
+//   $("#info").css('display','block');
+// }
 </script>
