@@ -29,7 +29,7 @@ defmodule BlockWeb do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/hitb_web/templates",
+      use Phoenix.View, root: "lib/block_web/templates",
                         namespace: BlockWeb
 
       # Import convenience functions from controllers

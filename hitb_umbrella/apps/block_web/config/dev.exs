@@ -35,7 +35,7 @@ config :block_web, BlockWeb.Endpoint,
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/hitb_web/views/.*(ex)$},
-      ~r{lib/hitb_web/templates/.*(eex)$}
+      ~r{lib/block_web/views/.*(ex)$},
+      ~r{lib/block_web/templates/.*(eex)$}
     ]
   ]
