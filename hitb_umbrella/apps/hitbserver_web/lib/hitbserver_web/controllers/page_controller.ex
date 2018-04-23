@@ -21,7 +21,7 @@ defmodule HitbserverWeb.PageController do
   def login(conn, %{"user" => user}) do
     params = Poison.encode!(%{user: user})
     {conn, username, login} =
-      case HTTPoison.request(:post, "http://127.0.0.1/servers/login/",
+      case HTTPoison.request(:post, "http://127.0.0.1:8040/login/",
       params, [{"X-API-Key", "foobar"}, {"Content-Type", "application/json"}]) do
         {:ok, result} ->
           %{body: body} = result
