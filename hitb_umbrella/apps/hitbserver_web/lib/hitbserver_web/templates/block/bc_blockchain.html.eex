@@ -7,13 +7,10 @@
           <thead>
             <tr>
               <th>高度</th>
-              <th>日期</th>
               <th>ID</th>
-              <th>生产者</th>
+              <th>交易者</th>
+              <th>时间</th>
               <th>交易</th>
-              <th>总金额</th>
-              <th>总费用</th>
-              <th>奖励</th>
             </tr>
           </thead>
           <tbody id = "blocks_table">
@@ -23,7 +20,98 @@
         <div class="ui right floated pagination menu" id ="page_num">
         </div>
       </div>
+      <div class="ui modal" id="modals">
+        <i class="close icon"></i>
+        <div class="header">
+          区块详情
+        </div>
+        <div class="image content">
+          <table class="ui celled table" id="model_table">
+          </table>
+        </div>
+        <div class="actions">
+          <div class="ui button">Cancel</div>
+          <div class="ui button">OK</div>
+        </div>
+      </div>
 <script>
+const BASE_URL = '/block/api';
+ajax()
+function ajax () {
+  let blocks = []
+  $.ajax({
+     type: 'GET',
+     url: BASE_URL + '/blocks',
+     dataType: 'json',
+     success: (res)=> {
+       blocks = res.blocks
+       block_html(blocks)
+     },
+     error: (err)=> {
+       console.log(err);
+     }
+   });
+}
+</script>
+<script>
+function block_html(value) {
+  console.log(value);
+  let str =""
+  value.forEach((n) => {
+    str = str + "<tr><td>"+n.index+"</td><td><a href='#' onclick=getBlock('"+n.hash+"','block')>"+n.hash+"</a></td><td><a href='#' onclick=getAddress('"+n.generateAdress+"','user')>"+n.generateAdress+"</a></td><td>"+n.data+"</td><td><a href='#' onclick=getPreviousHash('"+n.hash+"','user')>"+n.transactions+"</a></td></tr>"
+  })
+  $('#blocks_table').html(str)
+}
+</script>
+<script>
+function getBlock(value, type) {
+  $.ajax({
+    type: 'GET',
+    url: BASE_URL + '/getBlockByHash?hash=' + value,
+    dataType: 'json',
+    success: (res)=> {
+      const block = res.block
+      console.log('sssss');
+      $('#modals').modal('show')
+      let str = ''
+      str = `<tr><td>时间戳</td><td>${block.timestamp}</td></tr><tr><td>上一个区块ID	</td><td>${block.previous_hash}</td></tr><tr><td>高度</td><td>${block.index}</td></tr><tr><td>ID</td><td>${block.hash}</td></tr><tr><td>创建者地址</td><td>${block.generateAdress}</td></tr><tr><td>信息</td><td>${block.data}</td></tr>`
+      // this.blockInfo = res.block
+      $('#model_table').html(str);
+      // this.blockTd = 'id'
+      console.log(res)
+    }
+  });
+}
+function getPreviousHash(val, type) {
+$.ajax({
+    type: 'GET',
+    url: BASE_URL + '/getTransactionsByBlockHash?hash=' + val,
+    dataType: 'json',
+    success: (res)=> {
+      $('#modals').modal('show')
+      const blocks = res.data
+      const str = '<thead><tr><th>ID</th><th>金额</th><th>费用</th><th>日期</th></tr></thead><tbody>'
+      let stra = ''
+      blocks.forEach((n) => {
+        stra = stra + `<tr><td>${n.id}</td><td>${n.amount}</td><td>${n.fee}</td><td>${n.datetime}</td><tr>`
+      })
+      const strb = `${str}${stra}</tbody>`
+      $('#model_table').html(strb);
+    }
+  });
+}
+function getAddress(val, type) {
+  $.ajax({
+     type: 'GET',
+     url: BASE_URL + '/getAccountByAddress?address=' + val,
+     dataType: 'json',
+     success: (res)=> {
+       console.log(res.account);
+     }
+   });
+}
+</script>
+<!-- <script>
   $('#breadcrumb').html('<a class="section" href="/hospitals">主页</a><i class="right chevron icon divider"></i><a class="section" href="/hospitals/blockchain">区块链</a><i class="right chevron icon divider"></i><div class="active section">区块浏览</div>');
   let urls = `/block/bc_blockchain`;
   function d (value) {
@@ -86,4 +174,4 @@
     $("#info").html(html);
     $("#info").css('display','block');
   }
-</script>
+</script> -->

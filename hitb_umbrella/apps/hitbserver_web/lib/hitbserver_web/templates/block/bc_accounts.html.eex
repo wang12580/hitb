@@ -28,6 +28,165 @@
     </div>
 <script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
 <script>
+const BASE_URL = '/block/api';
+let user = {}
+ajax()
+function ajax () {
+  $.ajax({
+     type: 'POST',
+     url: BASE_URL + '/open',
+     data: {"username": 'someone manual strong movie roof episode eight spatial brown soldier soup motor'},
+     dataType: 'json',
+     success: (res)=> {
+       user = res.user
+     },
+     error: (err)=> {
+       console.log(err);
+     }
+   });
+}
+// 个人中心
+function accounts_table(value){
+  if (value == 'user') {
+    type = "accounts"
+  }else if (value == 'two_ps') {
+    type = "accounts_two"
+  }else if (value == 'lock_position') {
+    type = "accounts_lock"
+  }
+  if (type == "accounts") {
+    $('#accounts_user').addClass("active")
+    str = "<div class='ui segment' id = 'accounts'>"+
+      "<div class='ui items'>"+
+          "<div class='item'>"+
+            "<div class='image'>"+
+              "<i class='user icon' style='font-size: 12em;line-height: 1.2em;'></i>"+
+            "</div>"+
+            "<div class='content'>"+
+              "<a class='header'><h1>基本信息</h1></a>"+
+              "<div class='description'>"+
+                "<p style='font-size: 1.5em'>总余额:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+user.balance+"</p>"+
+                "<p style='font-size: 1.5em'>地址:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+user.address+"</p>"+
+                "<p style='font-size: 1.5em'>二级密码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+user.secondPublicKey+"</p>"+
+                "<p style='font-size: 1.5em'>锁仓状态:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+user.secondSignature+"</p>"+
+                "<p style='font-size: 1.5em'>公钥:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+user.publicKey+"</p>"+
+                "<p style='font-size: 1.5em'>主密钥二维码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>"+
+                "<p style='font-size: 1.5em'>你的地址二维码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>"+
+              "</div>"+
+            "</div>"+
+          "</div>"+
+        "</div>"+
+     "</div>"
+    $('#content').html(str)
+  } else {
+    $('#accounts_user').removeClass('active')
+  }
+  if (type == "accounts_two") {
+    $('#accounts_two').addClass("active")
+    strs = ""
+    str = "<div class='ui segment'>"+
+      "<h1>设置二级密码</h1>"
+      if(!user.secondPublicKey){
+        strs = "<form class='ui form'>"+
+          "<div class='ui segment'>"+
+            "<div class='field'>"+
+              "<div class='ui left icon input'>"+
+                "<input type='password' name='two_password' placeholder='输入8到16位数字和字母组合'>"+
+                "<i class='lock icon'></i>"+
+              "</div>"+
+            "</div>"+
+            "<div class='field'>"+
+              "<div class='ui left icon input'>"+
+                "<input type='password' name='two_password' placeholder='再次输入'>"+
+                "<i class='lock icon'></i>"+
+              "</div>"+
+            "</div>"+
+            "<p>请确定您已经安全保存了二级密码，一旦丢失，您在Asch系统中的财产将无法找回，设置二级密码需要5XAS手续费</p>"+
+            "<div class='ui primary submit button' onclick='two_password()'><font style='vertical-align: inherit;'><font style='vertical-align: inherit;'>确认</font></font></div>"+
+          "</div>"+
+        "</form>"+"</div>"
+      } else {
+        strs = "</div>"
+      }
+    let stra=str + strs
+    $('#content').html(stra)
+  } else {
+    $('#accounts_two').removeClass('active')
+  }
+  if (type == "accounts_lock") {
+    $('#accounts_lock').addClass("active")
+    let strs = ""
+    str = "<div class='ui segment'>"+
+      "<h1>设置锁仓信息</h1>"+
+      "<form class='ui form'>"+
+        "<div class='ui segment'>"+
+          "<div class='field'>"+
+            "<div class='ui left icon input'>"+
+              "<input type='number' name='lock' placeholder='请输入高度'>"+
+              "<i class='lock icon'></i>"+
+            "</div>"+
+          "</div>"
+    if(!user.secondPublicKey) {
+      strs="<div class='field'>"+
+        "<div class='ui left icon input'>"+
+          "<input type='number' name='lock' placeholder='请输入二级密码'>"+
+          "<i class='lock icon'></i>"+
+        "</div>"+
+      "</div>"+
+      "<div class='ui primary submit button' onclick='lock()'><font style='vertical-align: inherit;'><font style='vertical-align: inherit;'>确认</font></font></div></div></form></div>"
+    } else {
+      strs = "<div class='ui primary submit button' onclick='lock()'><font style='vertical-align: inherit;'><font style='vertical-align: inherit;'>确认</font></font></div></div></form></div>"
+    }
+    let stra=str + strs
+    $('#content').html(stra)
+  } else {
+    $('#accounts_lock').removeClass('active')
+  }
+}
+</script>
+<script>
+//二级密码
+function two_password () {
+  obj = document.getElementsByName("two_password");
+  let objs = {};
+  obj.forEach((n) => {
+    if (n.placeholder == "输入8到16位数字和字母组合") {
+      n.placeholder = "first_pass"
+    } else if (n.placeholder == "再次输入") {
+      n.placeholder = "last_pass"
+    }
+    objs[n.placeholder] = n.value
+  })
+  if (objs.first_pass == objs.last_pass) {
+    objs.type = "设置二级密码"
+    // console.log(objs);
+    account_ajax (objs)
+  } else {
+    alert ("两次密码输入不同");
+  }
+}
+</script>
+<script>
+function account_ajax (value) {
+  $.ajax({
+    type: 'put',
+    url: BASE_URL + '/addSignature',
+    data: { username: user.username, password: value.first_pass },
+    dataType: 'json',
+    success: (res)=> {
+      if (res.success === true) {
+        // this.items = ['二级密码创建成功']
+        location.reload();
+      }
+    },
+    error: (err)=> {
+      // this.items = ['创建区块失败']
+      console.log(err);
+    }
+  });
+}
+</script>
+<!-- <script>
 const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
 const keys = AschJS.crypto.getKeys(secret)
 // 通过公钥获得地址
@@ -114,6 +273,7 @@ $.ajax({
 });
 let type ="accounts";
 let str = "";
+
 function accounts_table(value) {
   $('#content').children().remove();
   if (value == 'user') {
@@ -243,4 +403,4 @@ function post_ajax (value) {
     dataType: 'json'
   });
 }
-</script>
+</script> -->

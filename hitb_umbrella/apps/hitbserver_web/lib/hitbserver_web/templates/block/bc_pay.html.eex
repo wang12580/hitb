@@ -1,12 +1,26 @@
 <form class="ui form">
   <div class="ui segment">
+    <div class="ui message success" id="info_success">
+      <i class="close icon" onclick="info_show('true')"></i>
+      <div class="header"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+      </font></font></div>
+      <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">交易成功</font></font></p>
+    </div>
+    <div class="ui message error" id="info_err">
+      <i class="close icon" onclick="info_show('false')"></i>
+      <div class="header"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+      </font></font></div>
+      <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">交易失败</font></font></p>
+    </div>
     <div class="field">
       <label>发送者:</label>
-      <input id="pay_name" type="text" name ="pay" placeholder="发送者"  disabled="disabled">
+      <input id="pay_name" type="text" name ="pay" disabled="disabled" placeholder="发送者">
     </div>
     <div class="field">
       <label>接受者:</label>
-      <input type="text" name ="pay" placeholder="接受者" value="16358246403719868041">
+      <select class="ui fluid dropdown" id="options">
+      </select>
+      <!-- <input type="text" name ="pay" placeholder="接受者" value="16358246403719868041"> -->
     </div>
     <div class="field">
       <label>金额:</label>
@@ -15,17 +29,112 @@
     <div id ="pay"></div>
     <div class="field">
       <label>费用:</label>
-      <input disabled="disabled" type="number" name ="pay" placeholder="费用" value="0.1">
+      <input disabled="disabled" type="number" placeholder="费用" value="0.1">
     </div>
     <div class="field">
       <label>备注:</label>
       <input type="text" name ="pay" placeholder="备注">
     </div>
     <p>请确保您正在发送XAS给正确的地址，本操作无法撤消</p>
-    <div class="ui primary submit button" onclick="pay()"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发送</font></font></div>
+    <div class="ui primary submit button" onclick="pays()"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发送</font></font></div>
   </div>
 </form>
-<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
+<script>
+  const BASE_URL = '/block/api';
+  ajax()
+  function ajax() {
+    $.ajax({
+       type: 'POST',
+       url: BASE_URL + '/open',
+       data: {"username": 'someone manual strong movie roof episode eight spatial brown soldier soup motor'},
+       dataType: 'json',
+       success: (res)=> {
+         user = res.user
+         console.log(user);
+         $('#pay_name').val(user.publicKey)
+         if (user.secondPublicKey !== null) {
+           let str = ''
+           str = `<label>二级密码:</label><input type="password" name ="pay" placeholder="二级密码">`
+           $('#pay').html(str);
+         }
+       },
+       error: (err)=> {
+         console.log(err);
+       }
+     });
+    $.ajax({
+      type: 'GET',
+      url: BASE_URL + '/getAccountsPublicKey',
+      dataType: 'json',
+      success: (res)=> {
+        let str = ''
+        res.publicKeys.forEach((n)=>{
+          str = str + `<option value=${n}>${n}</option>`
+        })
+        $('#options').html(str)
+      },
+      error: (err)=>{
+        console.log(err);
+      }
+    });
+  }
+</script>
+<script>
+$('#info_success').hide()
+$('#info_err').hide()
+  function pays() {
+    obj = document.getElementsByName("pay");
+    let objs = {};
+   //  else if (n.placeholder == "费用") {
+   //   // n.placeholder = "cost"
+   // }
+   $('#options option:selected').val()
+    obj.forEach((n) => {
+      if (n.placeholder == "发送者") {
+        n.placeholder = "publicKey"
+      } else if (n.placeholder == "接受者") {
+        n.placeholder = "recipientId"
+      } else if (n.placeholder == "金额") {
+        n.placeholder = "amount"
+      } else if (n.placeholder == "备注") {
+        n.placeholder = "message"
+      } else if (n.placeholder == "二级密码") {
+        n.placeholder = "secondPassword"
+      } else if (n.placeholder == "费用") {
+        n.placeholder = ""
+      }
+      objs[n.placeholder] = n.value
+    })
+    objs['recipientId'] = $('#options option:selected').val()
+    $.ajax({
+      type: 'PUT',
+      url: BASE_URL + '/addTransactions',
+      data: objs,
+      dataType: 'json',
+      success: (res)=> {
+        console.log(res.success);
+        if (res.success === true){
+          $('#info_success').show()
+          $('#info_err').hide()
+        } else if (res.success === false) {
+          $('#info_err').show()
+          $('#info_success').hide()
+        }
+      },
+      error: (err)=> {
+        console.log(err);
+      }
+    });
+  }
+  function info_show(value) {
+    if (value === 'true') {
+      $('#info_success').hide()
+    } else if (value === 'false') {
+      $('#info_err').hide()
+    }
+  }
+</script>
+<!-- <script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
 <script>
 const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
 const keys = AschJS.crypto.getKeys(secret)
@@ -92,7 +201,7 @@ function pay () {
   //接收者id
   var targetAddress = objs.recipient;
   var secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor';
-  objs.amount = parseInt(objs.amount);  
+  objs.amount = parseInt(objs.amount);
   //console.log(objs.targetAddress, objs.amount, objs.message, secret, objs.secondSecret)
   var trs = AschJS.transaction.createTransaction(objs.targetAddress, objs.amount, objs.message, secret, objs.secondSecret);
   objs2 = {};
@@ -123,6 +232,7 @@ $('#pay').children().remove()
 if(infos.data.account.secondPublicKey){
   str ="<div class='field'><label>二级密码:</label><input type='text' name ='pay' placeholder='二级密码'></div>"
   $('#pay').append(str);
+
 }
 
-</script>
+</script> -->
