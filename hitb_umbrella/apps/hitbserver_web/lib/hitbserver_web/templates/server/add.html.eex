@@ -330,7 +330,7 @@ function write_html(){
   //获取医院数据
   $.ajax({
     type: "GET",
-    url: '/hospitals/org',
+    url: '/servers/org',
     async: false,
     success: function(data) {
       org_list = data['org'];
@@ -380,7 +380,7 @@ function write_html(){
   //获取数据
   $.ajax({
     type: "GET",
-    url: '/hospitals/org',
+    url: '/servers/org',
     async: false,
     success: function(data) {
       org_list = data['org'];
