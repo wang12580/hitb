@@ -74,21 +74,23 @@
 
   //添加对比
   function add(type, org, time, drg){
+    console.log('----------------------------');
     url = 'type='+type+'&tool_type=@tool_type&org='+org+'&time='+time+'&drg='+drg;
     $.ajax({
       type: "post",
-      url: '/hospitals/com_add/',
-      data: {url: url},
+      url: '/stat/com_add/',
+      data: {url: url, username: '<%=@user.username%>'},
       async: false,
       success: function(data){
         if(data['result']){
-          window.location.href = '/hospitals/com_html';
+          window.location.reload()
+          // window.location.href = `/hospitals/com_html?username = ${'<%=@user.username%>'}`;
         }
       },
       dataType: 'json'
     });
   }
-  change('@type');
+  change('<%=@type%>');
   //菜单按钮
   function change(type){
     if(type == 'year_time' | type == 'half_year' | type == 'month_time' | type == 'season_time'){
@@ -111,14 +113,15 @@
       // data: {url: href},
       async: false,
       success: function(data){
-        data['list'][0][0].forEach((val) => {
+        data['list'].forEach((val) => {
+          // console.log('<%=@drg%>');
           // if(is_add == '1'){
-            // html = html + `<div class="item">${val}<a class="ui label" onclick=add(${type},${val},${time},${drg})><i class="plus icon"></i></a></div>`
-            html = html+'<div class="item">'+val+'<a class="ui label" onclick="add(\''+type+'\',\''+val+'\',\'@time\',\'@drg\')"><i class="plus icon"></i></a></div>';
+            html = html + `<div class="item">${val}<a class="ui label" onclick="add('${type}','${val}','${'<%=@time%>'}','${'<%=@drg%>'}')"><i class="plus icon"></i></a></div>`
+            // html = html+'<div class="item">'+val+'<a class="ui label" onclick="add(\''+type+'\',\''+val+'\',\'<%= @time%>\',\'<%= @drg%>\')"><i class="plus icon"></i></a></div>';
           // }else{
             // html = html+'<div class="item">'+val+'</div>';
           // }
-          
+
         });
       },
       dataType: 'json'
@@ -145,9 +148,16 @@
       title: {
           text: ''
       },
-      tooltip: {},
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross'
+        }
+      },
       legend: {
-          data: chart_key
+          data: chart_key,
+          type: 'scroll',
+          width: '80%'
       },
       radar: {
           //scale: 'true',
@@ -186,7 +196,10 @@
   var myChart2 = echarts.init(document.getElementById('charts2'));
   option2 = {
       tooltip : {trigger: 'axis'},
-      legend: {data: chart_key},
+      legend: {
+        data: chart_key,
+        type: 'scroll',
+        width: '60%' },
       toolbox: {
         show: true,
         feature:{

@@ -60,7 +60,7 @@ defmodule StatWeb.StatController do
     staty =
       cond do
         is_list(staty) and staty != [] -> ["org", "time"] ++ staty
-        staty == nil -> cnkey
+        staty == nil or staty == [] -> cnkey
       end
 
     stat = [staty] ++ statx
@@ -161,19 +161,25 @@ defmodule StatWeb.StatController do
       end
     #取缓存
     statx = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
+    cnkey = Enum.map(key, fn x -> Key.cnkey(to_string(x)) end)
     #按照字段取值
-    stat = statx
+    stat = statx |> Enum.reject(fn x -> x == cnkey or x == key end)
       |>Enum.map(fn x ->
-          Enum.reduce(0..length(x)-1, %{stat: x, key: key, map: %{}}, fn x2, acc ->
-            val = List.first(acc.stat)
-            key = String.to_atom(List.first(acc.key))
-            val =
-              cond do
-                key in [:org, :time, :drg] -> val
-                is_nil(val) -> "-"
-                true -> String.to_float(val)
-              end
-            %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
+          map = Enum.reduce(0..length(x)-1, %{stat: x, key: key, map: %{}}, fn x2, acc ->
+            if(acc.key != [])do
+              val = List.first(acc.stat)
+              key = String.to_atom(List.first(acc.key))
+              val =
+                cond do
+                  key in [:org, :time, :drg] -> val
+                  key in [:num_num, :num_sum] -> String.to_integer(val)
+                  is_nil(val) -> "-"
+                  true -> String.to_float(val)
+                end
+              %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
+            else
+              acc
+            end
           end)|>Map.get(:map)
         end)
     #最终要对比值
@@ -333,4 +339,48 @@ defmodule StatWeb.StatController do
 
     {stats, cnkey}
   end
+  #对比页新增对比
+  def com_add(conn, %{"url" => url, "username" => username})do
+    {{_, type}, {_, tool_type}, {_, org}, {_, time}, {_, drg}} =
+      String.split(url, "&")
+      |>Enum.map(fn x -> List.to_tuple(String.split(x, "=")) end)
+      |>List.to_tuple
+    #拆解url路径和参数
+    {page, _, _, _, _, _, order, order_type, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+    #存储url
+
+    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
+    #获取分析结果
+    {stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    #拿到缓存中所有数据
+    cache = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
+    Hitbserver.ets_insert(:stat_drg, "comx_" <> username, cache ++ stat)
+    json conn, %{result: true}
+  end
+
+  # #对比页面
+  # def com_html(conn, %{"username" => username})do
+  #   #拆解url路径和参数
+  #   {page, type, tool_type, org, time, drg, order, order_type, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+  #   url = "page=" <> to_string(page) <> "&type=" <> type <> "&tool_type=" <> tool_type <> "&time=" <> "&drg=" <> drg <> "&order=" <> order <> "&order_type=" <> order_type <> "&page_type=" <> page_type
+  #   #拿到缓存中所有数据
+  #   statx = Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)
+  #   staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
+  #   #取当前key
+  #   {_, list, _, _, _, key, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+  #   if(is_list(staty) and staty != [])do key = ["org", "time"] ++ staty  end
+  #   #按照字段取值
+  #   stat = statx
+  #     |>Enum.map(fn x ->
+  #         key
+  #         |>Enum.map(fn x -> String.to_atom(x) end)
+  #         |>Enum.map(fn k -> %{key: to_string(k), val: Map.get(x, k)} end)
+  #       end)
+  #   if(length(stat) >= 1)do
+  #     org = Enum.at(hd(stat), 0).val
+  #     time = Enum.at(hd(stat), 1).val
+  #   end
+  #   cnkey = Enum.map(key, fn x -> %{key: to_string(x), val: Key.cnkey(x)} end)
+  #   render conn, "com.html", user: user, stat: stat, list: list, url: url, type: type, tool_type: tool_type, org: org, time: time, drg: drg, cnkey: cnkey
+  # end
 end

@@ -17,7 +17,7 @@
     <div class="ui inverted menu">
       <a class= "item" href="/hospitals"><b style="font-size:20px;color:#ffffff;">医院联盟</b></a>
       <!-- right -->
-      <div class="menu" id="menu1">post_ajax
+      <div class="menu" id="menu1">
         <div class="ui inverted menu">
             <div class="ui dropdown item">
               病案分析

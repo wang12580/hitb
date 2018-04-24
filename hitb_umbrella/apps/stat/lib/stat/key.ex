@@ -19,289 +19,289 @@ defmodule Stat.Key do
         key = Repo.get_by(User, username: username).key
         if(key)do key else [] end
       "base" -> #机构分析指标
-        ["weight_count", "zdxg_num", "fee_index", "day_index", "cmi", "fee_avg", "day_avg"]
+        ["weight_count", "zdxg_num", "fee_index", "day_index", "cmi", "fee_avg", "day_avg", "num_sum"]
       "jgjx_cw" -> #床位指标
-        ["sjkfzc_num", "sjzyzc_num", "cyzzyzc_num", "pjkfbc_num", "bczz_num", "bcgzr_num", "cyzpjzy_num", "bcsy_rate"]
+        ["sjkfzc_num", "sjzyzc_num", "cyzzyzc_num", "pjkfbc_num", "bczz_num", "bcgzr_num", "cyzpjzy_num", "bcsy_rate", "num_sum"]
       "jgjx_yljc" -> #医疗检查工作量
-        ["ylsy_num", "zl_num", "zl_rate", "jc_num", "jc_rate", "js_num", "js_rate"]
+        ["ylsy_num", "zl_num", "zl_rate", "jc_num", "jc_rate", "js_num", "js_rate", "num_sum"]
       "jgjx_ylzl" -> #医疗治疗工作量
         case tool_type do
-          "total" -> ["wlzl_num", "jrzl_num", "tszl_num", "kfzl_num", "zyzl_num", "ybzl_num", "jszl_num"]
-          "rate" -> ["wlzl_rate", "jrzl_rate", "tszl_rate", "kfzl_rate", "zyzl_rate", "ybzl_rate", "jszl_rate"]
+          "total" -> ["wlzl_num", "jrzl_num", "tszl_num", "kfzl_num", "zyzl_num", "ybzl_num", "jszl_num", "num_sum"]
+          "rate" -> ["wlzl_rate", "jrzl_rate", "tszl_rate", "kfzl_rate", "zyzl_rate", "ybzl_rate", "jszl_rate", "num_sum"]
         end
       "jgjx_yj" -> #医技工作量
         case tool_type do
-          "total" -> ["yjsy_num", "hsjc_num", "hszl_num", "cszl_num", "fszl_num", "hy_num", "bl_num"]
-          "rate" -> ["yjsy_rate", "hsjc_rate", "hszl_rate", "cszl_rate", "fszl_rate", "hy_rate", "bl_rate"]
+          "total" -> ["yjsy_num", "hsjc_num", "hszl_num", "cszl_num", "fszl_num", "hy_num", "bl_num", "num_sum"]
+          "rate" -> ["yjsy_rate", "hsjc_rate", "hszl_rate", "cszl_rate", "fszl_rate", "hy_rate", "bl_rate", "num_sum"]
         end
       "jgjx_zzjh" -> #重症监护室工作量
         case tool_type do
-          "total" -> ["ccu_num", "ricu_num", "sicu_num", "nicu_num", "picu_num", "other_num"]
-          "rate" -> ["ccu_rate", "ricu_rate", "sicu_rate", "nicu_rate", "picu_rate", "other_rate"]
+          "total" -> ["ccu_num", "ricu_num", "sicu_num", "nicu_num", "picu_num", "other_num", "num_sum"]
+          "rate" -> ["ccu_rate", "ricu_rate", "sicu_rate", "nicu_rate", "picu_rate", "other_rate", "num_sum"]
         end
       "jgjx_dfx" -> #低风险组统计
-        ["dfx_age", "ysj_num", "wsj_num", "dfx_num", "dfxsw_num", "dfxsw_rate"]
+        ["dfx_age", "ysj_num", "wsj_num", "dfx_num", "dfxsw_num", "dfxsw_rate", "num_sum"]
       "jgjx_zdfx" -> #中低风险组统计
-        ["zdfx_age", "zdysj_num", "zdwsj_num", "zdfx_num", "zdfxsw_num", "zdfxsw_rate"]
+        ["zdfx_age", "zdysj_num", "zdwsj_num", "zdfx_num", "zdfxsw_num", "zdfxsw_rate", "num_sum"]
       "jgjx_zgfx" -> #中高风险组统计
-        ["zgfx_age", "zgysj_num", "zgwsj_num", "zgfx_num", "zgfxsw_num", "zgfxsw_rate"]
+        ["zgfx_age", "zgysj_num", "zgwsj_num", "zgfx_num", "zgfxsw_num", "zgfxsw_rate", "num_sum"]
       "jgjx_gfx" -> #高风险组统计
-        ["gfx_age", "gysj_num", "gwsj_num", "gfx_num", "gfxsw_num", "gfxsw_rate"]
+        ["gfx_age", "gysj_num", "gwsj_num", "gfx_num", "gfxsw_num", "gfxsw_rate", "num_sum"]
       "cwzb_yl" -> #医疗收入
         case tool_type do
-          "total" -> ["yl_expense", "zl_expense", "ybjc_expense", "js_expense", "mz_expense", "ss_expense"]
-          "avg" -> ["avg_yl", "avg_zl", "avg_ybjc", "avg_js", "avg_mz", "avg_ss"]
-          "rate" -> ["yl_rate", "zlf_rate", "ybjcf_rate", "jsf_rate", "mzf_rate", "ssf_rate"]
+          "total" -> ["yl_expense", "zl_expense", "ybjc_expense", "js_expense", "mz_expense", "ss_expense", "num_sum"]
+          "avg" -> ["avg_yl", "avg_zl", "avg_ybjc", "avg_js", "avg_mz", "avg_ss", "num_sum"]
+          "rate" -> ["yl_rate", "zlf_rate", "ybjcf_rate", "jsf_rate", "mzf_rate", "ssf_rate", "num_sum"]
         end
       "cwzb_ylzl" -> #医疗治疗收入
         case tool_type do
-          "total" -> ["jrzl_expense", "tszl_expense", "kfzl_expense", "zyzl_expense", "ybzl_expense", "jszl_expense", "wlzl_expense"]
-          "avg" -> ["avg_jrzl", "avg_tszl", "avg_kfzl", "avg_zyzl", "avg_ybzl", "avg_jszl", "avg_wlzl"]
-          "rate" -> ["jrzlf_rate", "tszlf_rate", "kfzlf_rate", "zyzlf_rate", "ybzlf_rate", "jszlf_rate", "wlzlf_rate"]
+          "total" -> ["jrzl_expense", "tszl_expense", "kfzl_expense", "zyzl_expense", "ybzl_expense", "jszl_expense", "wlzl_expense", "num_sum"]
+          "avg" -> ["avg_jrzl", "avg_tszl", "avg_kfzl", "avg_zyzl", "avg_ybzl", "avg_jszl", "avg_wlzl", "num_sum"]
+          "rate" -> ["jrzlf_rate", "tszlf_rate", "kfzlf_rate", "zyzlf_rate", "ybzlf_rate", "jszlf_rate", "wlzlf_rate", "num_sum"]
         end
       "cwzb_yj" -> #医技收入
         case tool_type do
-          "total" -> ["hsjc_expense", "hszl_expense", "cs_expense", "fs_expense", "hy_expense", "bl_expense"]
-          "avg" -> ["avg_hsjc", "avg_hszl", "avg_cs", "avg_fs", "avg_hy", "avg_bl"]
-          "rate" -> ["hsjc_rate", "hszl_rate", "csf_rate", "fsf_rate", "hyf_rate", "blf_rate"]
+          "total" -> ["hsjc_expense", "hszl_expense", "cs_expense", "fs_expense", "hy_expense", "bl_expense", "num_sum"]
+          "avg" -> ["avg_hsjc", "avg_hszl", "avg_cs", "avg_fs", "avg_hy", "avg_bl", "num_sum"]
+          "rate" -> ["hsjc_rate", "hszl_rate", "csf_rate", "fsf_rate", "hyf_rate", "blf_rate", "num_sum"]
         end
       "cwzb_zy" -> #中药收入
-        ["zc_expense", "zcy_expense", "avg_zc", "avg_zcy", "zc_rate", "zcy_rate"]
+        ["zc_expense", "zcy_expense", "avg_zc", "avg_zcy", "zc_rate", "zcy_rate", "num_sum"]
       "cwzb_hl" -> #护理收入
-        ["hlze_num", "hlzl_num", "hlf_num", "hlzl_avg", "hlf_avg", "hlze_rate", "hlzl_rate", "hlf_rate"]
+        ["hlze_num", "hlzl_num", "hlf_num", "hlzl_avg", "hlf_avg", "hlze_rate", "hlzl_rate", "hlf_rate", "num_sum"]
       "cwzb_hc" -> #耗材收入
         case tool_type do
-          "total" -> ["ypzef", "zlyc_expense", "jryc_expense", "ssyc_expense", "jcyc_expense", "hc_expense"]
-          "avg" -> ["avg_yp", "avg_zlyc", "avg_jryc", "avg_ssyc", "avg_jcyc", "avg_hc"]
-          "rate" -> ["yp_rate", "zlyc_rate", "jryc_rate", "ssyc_rate", "jcyc_rate", "hc_rate"]
+          "total" -> ["ypzef", "zlyc_expense", "jryc_expense", "ssyc_expense", "jcyc_expense", "hc_expense", "num_sum"]
+          "avg" -> ["avg_yp", "avg_zlyc", "avg_jryc", "avg_ssyc", "avg_jcyc", "avg_hc", "num_sum"]
+          "rate" -> ["yp_rate", "zlyc_rate", "jryc_rate", "ssyc_rate", "jcyc_rate", "hc_rate", "num_sum"]
         end
       "cwzb_xy" -> #西药制品费用
         case tool_type do
-          "total" -> ["sx_expense", "xy_expense", "kjy_expense", "bdb_expense", "qdb_expense", "nxyz_expense", "xbyz_expense"]
-          "avg" -> ["avg_sxf", "avg_xyf", "avg_kjy", "avg_bdb", "avg_qdb", "avg_nxyz", "avg_xbyz"]
-          "rate" -> ["sxf_rate", "xyf_rate", "kjy_rate", "bdb_rate", "qdb_rate", "nxyz_rate", "xbyz_rate"]
+          "total" -> ["sx_expense", "xy_expense", "kjy_expense", "bdb_expense", "qdb_expense", "nxyz_expense", "xbyz_expense", "num_sum"]
+          "avg" -> ["avg_sxf", "avg_xyf", "avg_kjy", "avg_bdb", "avg_qdb", "avg_nxyz", "avg_xbyz", "num_sum"]
+          "rate" -> ["sxf_rate", "xyf_rate", "kjy_rate", "bdb_rate", "qdb_rate", "nxyz_rate", "xbyz_rate", "num_sum"]
         end
       "cwzb_gl" -> #管理收入
         case tool_type do
-          "total" -> ["glze_expense", "jhfz_expense", "cw_expense", "gh_expense", "sy_expense", "other_expense"]
-          "avg" -> ["avg_glze", "avg_jhfz", "avg_cw", "avg_gh", "avg_sy", "avg_other"]
-          "rate" -> ["glze_rate", "jhfzf_rate", "cwf_rate", "ghf_rate", "syf_rate", "otherf_rate"]
+          "total" -> ["glze_expense", "jhfz_expense", "cw_expense", "gh_expense", "sy_expense", "other_expense", "num_sum"]
+          "avg" -> ["avg_glze", "avg_jhfz", "avg_cw", "avg_gh", "avg_sy", "avg_other", "num_sum"]
+          "rate" -> ["glze_rate", "jhfzf_rate", "cwf_rate", "ghf_rate", "syf_rate", "otherf_rate", "num_sum"]
         end
       "cwzb_bszg" -> #本市城镇职工基本医疗保险患者支付统计
         case tool_type do
-          "total" -> ["bszg_num", "bszgzf_num", "bszgyl_num", "bszgyj_num", "bszgypj_num", "bszghl_num", "bszggl_num"]
-          "avg" -> ["bszg_avg", "bszgzf_avg", "bszgyl_avg", "bszgyj_avg", "bszgypj_avg", "bszghl_avg", "bszggl_avg"]
-          "rate" -> ["bszg_rate", "bszgzf_rate", "bszgyl_rate", "bszgyj_rate", "bszgypj_rate", "bszghl_rate", "bszggl_rate"]
+          "total" -> ["bszg_num", "bszgzf_num", "bszgyl_num", "bszgyj_num", "bszgypj_num", "bszghl_num", "bszggl_num", "num_sum"]
+          "avg" -> ["bszg_avg", "bszgzf_avg", "bszgyl_avg", "bszgyj_avg", "bszgypj_avg", "bszghl_avg", "bszggl_avg", "num_sum"]
+          "rate" -> ["bszg_rate", "bszgzf_rate", "bszgyl_rate", "bszgyj_rate", "bszgypj_rate", "bszghl_rate", "bszggl_rate", "num_sum"]
         end
       "cwzb_wbzg" -> #外埠城镇职工基本医疗保险患者支付统计
         case tool_type do
-          "total" -> ["wbzg_num", "wbzgzf_num", "wbzgyl_num", "wbzgyj_num", "wbzgypj_num", "wbzghl_num", "wbzggl_num"]
-          "avg" -> ["wbzg_avg", "wbzgzf_avg", "wbzgyl_avg", "wbzgyj_avg", "wbzgypj_avg", "wbzghl_avg", "wbzggl_avg"]
-          "rate" -> ["wbzg_rate", "wbzgzf_rate", "wbzgyl_rate", "wbzgyj_rate", "wbzgypj_rate", "wbzghl_rate", "wbzggl_rate"]
+          "total" -> ["wbzg_num", "wbzgzf_num", "wbzgyl_num", "wbzgyj_num", "wbzgypj_num", "wbzghl_num", "wbzggl_num", "num_sum"]
+          "avg" -> ["wbzg_avg", "wbzgzf_avg", "wbzgyl_avg", "wbzgyj_avg", "wbzgypj_avg", "wbzghl_avg", "wbzggl_avg", "num_sum"]
+          "rate" -> ["wbzg_rate", "wbzgzf_rate", "wbzgyl_rate", "wbzgyj_rate", "wbzgypj_rate", "wbzghl_rate", "wbzggl_rate", "num_sum"]
         end
       "cwzb_bsjm" -> #本市城镇居民基本医疗保险患者支付统计
         case tool_type do
-          "total" -> ["bsjm_num", "bsjmzf_num", "bsjmyl_num", "bsjmyj_num", "bsjmypj_num", "bsjmhl_num", "bsjmgl_num"]
-          "avg" -> ["bsjm_avg", "bsjmzf_avg", "bsjmyl_avg", "bsjmyj_avg", "bsjmypj_avg", "bsjmhl_avg", "bsjmgl_avg"]
-          "rate" -> ["bsjm_rate", "bsjmzf_rate", "bsjmyl_rate", "bsjmyj_rate", "bsjmypj_rate", "bsjmhl_rate", "bsjmgl_rate"]
+          "total" -> ["bsjm_num", "bsjmzf_num", "bsjmyl_num", "bsjmyj_num", "bsjmypj_num", "bsjmhl_num", "bsjmgl_num", "num_sum"]
+          "avg" -> ["bsjm_avg", "bsjmzf_avg", "bsjmyl_avg", "bsjmyj_avg", "bsjmypj_avg", "bsjmhl_avg", "bsjmgl_avg", "num_sum"]
+          "rate" -> ["bsjm_rate", "bsjmzf_rate", "bsjmyl_rate", "bsjmyj_rate", "bsjmypj_rate", "bsjmhl_rate", "bsjmgl_rate", "num_sum"]
         end
       "cwzb_wbjm" -> #外埠城镇居民基本医疗保险患者支付统计
         case tool_type do
-          "total" -> ["wbjm_num", "wbjmzf_num", "wbjmyl_num", "wbjmyj_num", "wbjmypj_num", "wbjmhl_num", "wbjmgl_num"]
-          "avg" -> ["wbjm_avg", "wbjmzf_avg", "wbjmyl_avg", "wbjmyj_avg", "wbjmypj_avg", "wbjmhl_avg", "wbjmgl_avg"]
-          "rate" -> ["wbjm_rate", "wbjmzf_rate", "wbjmyl_rate", "wbjmyj_rate", "wbjmypj_rate", "wbjmhl_rate", "wbjmgl_rate"]
+          "total" -> ["wbjm_num", "wbjmzf_num", "wbjmyl_num", "wbjmyj_num", "wbjmypj_num", "wbjmhl_num", "wbjmgl_num", "num_sum"]
+          "avg" -> ["wbjm_avg", "wbjmzf_avg", "wbjmyl_avg", "wbjmyj_avg", "wbjmypj_avg", "wbjmhl_avg", "wbjmgl_avg", "num_sum"]
+          "rate" -> ["wbjm_rate", "wbjmzf_rate", "wbjmyl_rate", "wbjmyj_rate", "wbjmypj_rate", "wbjmhl_rate", "wbjmgl_rate", "num_sum"]
         end
       "cwzb_bsnc" -> #本市新型农村合作医疗患者支付统计
         case tool_type do
-          "total" -> ["bsxnh_num", "bsxnhzf_num", "bsxnhyl_num", "bsxnhyj_num", "bsxnhypj_num", "bsxnhhl_num", "bsxnhgl_num"]
-          "avg" -> ["bsxnh_avg", "bsxnhzf_avg", "bsxnhyl_avg", "bsxnhyj_avg", "bsxnhypj_avg", "bsxnhhl_avg", "bsxnhgl_avg"]
-          "rate" -> ["bsxnh_rate", "bsxnhzf_rate", "bsxnhyl_rate", "bsxnhyj_rate", "bsxnhypj_rate", "bsxnhhl_rate", "bsxnhgl_rate"]
+          "total" -> ["bsxnh_num", "bsxnhzf_num", "bsxnhyl_num", "bsxnhyj_num", "bsxnhypj_num", "bsxnhhl_num", "bsxnhgl_num", "num_sum"]
+          "avg" -> ["bsxnh_avg", "bsxnhzf_avg", "bsxnhyl_avg", "bsxnhyj_avg", "bsxnhypj_avg", "bsxnhhl_avg", "bsxnhgl_avg", "num_sum"]
+          "rate" -> ["bsxnh_rate", "bsxnhzf_rate", "bsxnhyl_rate", "bsxnhyj_rate", "bsxnhypj_rate", "bsxnhhl_rate", "bsxnhgl_rate", "num_sum"]
         end
       "cwzb_wbnc" -> #外埠新型农村合作医疗患者支付统计
         case tool_type do
-          "total" -> ["wbxnh_num", "wbxnhzf_num", "wbxnhyl_num", "wbxnhyj_num", "wbxnhypj_num", "wbxnhhl_num", "wbxnhgl_num"]
-          "avg" -> ["wbxnh_avg", "wbxnhzf_avg", "wbxnhyl_avg", "wbxnhyj_avg", "wbxnhypj_avg", "wbxnhhl_avg", "wbxnhgl_avg"]
-          "rate" -> ["wbxnh_rate", "wbxnhzf_rate", "wbxnhyl_rate", "wbxnhyj_rate", "wbxnhypj_rate", "wbxnhhl_rate", "wbxnhgl_rate"]
+          "total" -> ["wbxnh_num", "wbxnhzf_num", "wbxnhyl_num", "wbxnhyj_num", "wbxnhypj_num", "wbxnhhl_num", "wbxnhgl_num", "num_sum"]
+          "avg" -> ["wbxnh_avg", "wbxnhzf_avg", "wbxnhyl_avg", "wbxnhyj_avg", "wbxnhypj_avg", "wbxnhhl_avg", "wbxnhgl_avg", "num_sum"]
+          "rate" -> ["wbxnh_rate", "wbxnhzf_rate", "wbxnhyl_rate", "wbxnhyj_rate", "wbxnhypj_rate", "wbxnhhl_rate", "wbxnhgl_rate", "num_sum"]
         end
       "cwzb_pkjz" -> #贫困救助患者支付统计
         case tool_type do
-          "total" -> ["pkjz_num", "pkjzzf_num", "pkjzyl_num", "pkjzyj_num", "pkjzypj_num", "pkjzhl_num", "pkjzgl_num"]
-          "avg" -> ["pkjz_avg", "pkjzzf_avg", "pkjzyl_avg", "pkjzyj_avg", "pkjzypj_avg", "pkjzhl_avg", "pkjzgl_avg"]
-          "rate" -> ["pkjz_rate", "pkjzzf_rate", "pkjzyl_rate", "pkjzyj_rate", "pkjzypj_rate", "pkjzhl_rate", "pkjzgl_rate"]
+          "total" -> ["pkjz_num", "pkjzzf_num", "pkjzyl_num", "pkjzyj_num", "pkjzypj_num", "pkjzhl_num", "pkjzgl_num", "num_sum"]
+          "avg" -> ["pkjz_avg", "pkjzzf_avg", "pkjzyl_avg", "pkjzyj_avg", "pkjzypj_avg", "pkjzhl_avg", "pkjzgl_avg", "num_sum"]
+          "rate" -> ["pkjz_rate", "pkjzzf_rate", "pkjzyl_rate", "pkjzyj_rate", "pkjzypj_rate", "pkjzhl_rate", "pkjzgl_rate", "num_sum"]
         end
       "cwzb_sybx" -> #商业医疗保险患者支付统计
         case tool_type do
-          "total" -> ["sybx_num", "sybxzf_num", "sybxyl_num", "sybxyj_num", "sybxypj_num", "sybxhl_num", "sybxgl_num"]
-          "avg" -> ["sybx_avg", "sybxzf_avg", "sybxyl_avg", "sybxyj_avg", "sybxypj_avg", "sybxhl_avg", "sybxgl_avg"]
-          "rate" -> ["sybx_rate", "sybxzf_rate", "sybxyl_rate", "sybxyj_rate", "sybxypj_rate", "sybxhl_rate", "sybxgl_rate"]
+          "total" -> ["sybx_num", "sybxzf_num", "sybxyl_num", "sybxyj_num", "sybxypj_num", "sybxhl_num", "sybxgl_num", "num_sum"]
+          "avg" -> ["sybx_avg", "sybxzf_avg", "sybxyl_avg", "sybxyj_avg", "sybxypj_avg", "sybxhl_avg", "sybxgl_avg", "num_sum"]
+          "rate" -> ["sybx_rate", "sybxzf_rate", "sybxyl_rate", "sybxyj_rate", "sybxypj_rate", "sybxhl_rate", "sybxgl_rate", "num_sum"]
         end
       "cwzb_gf" -> #全公费患者支付统计
         case tool_type do
-          "total" -> ["qgf_num", "qgfzf_num", "qgfyl_num", "qgfyj_num", "qgfypj_num", "qgfhl_num", "qgfgl_num"]
-          "avg" -> ["qgf_avg", "qgfzf_avg", "qgfyl_avg", "qgfyj_avg", "qgfypj_avg", "qgfhl_avg", "qgfgl_avg"]
-          "rate" -> ["qgf_rate", "qgfzf_rate", "qgfyl_rate", "qgfyj_rate", "qgfypj_rate", "qgfhl_rate", "qgfgl_rate"]
+          "total" -> ["qgf_num", "qgfzf_num", "qgfyl_num", "qgfyj_num", "qgfypj_num", "qgfhl_num", "qgfgl_num", "num_sum"]
+          "avg" -> ["qgf_avg", "qgfzf_avg", "qgfyl_avg", "qgfyj_avg", "qgfypj_avg", "qgfhl_avg", "qgfgl_avg", "num_sum"]
+          "rate" -> ["qgf_rate", "qgfzf_rate", "qgfyl_rate", "qgfyj_rate", "qgfypj_rate", "qgfhl_rate", "qgfgl_rate", "num_sum"]
         end
       "cwzb_zf" -> #全自费患者支付统计
         case tool_type do
-          "total" -> ["qzf_num", "qzfyl_num", "qzfyj_num", "qzfypj_num", "qzfhl_num", "qzfgl_num"]
-          "avg" -> ["qzf_avg", "qzfyl_avg", "qzfyj_avg", "qzfypj_avg", "qzfhl_avg", "qzfgl_avg"]
-          "rate" -> ["qzf_rate", "qzfyl_rate", "qzfyj_rate", "qzfypj_rate", "qzfhl_rate", "qzfgl_rate"]
+          "total" -> ["qzf_num", "qzfyl_num", "qzfyj_num", "qzfypj_num", "qzfhl_num", "qzfgl_num", "num_sum"]
+          "avg" -> ["qzf_avg", "qzfyl_avg", "qzfyj_avg", "qzfypj_avg", "qzfhl_avg", "qzfgl_avg", "num_sum"]
+          "rate" -> ["qzf_rate", "qzfyl_rate", "qzfyj_rate", "qzfypj_rate", "qzfhl_rate", "qzfgl_rate", "num_sum"]
         end
       "cwzb_shbx" -> #其他社会保险患者支付统计
         case tool_type do
-          "total" -> ["qtbx_num", "qtbxzf_num", "qtbxyl_num", "qtbxyj_num", "qtbxypj_num", "qtbxhl_num", "qtbxgl_num"]
-          "avg" -> ["qtbx_avg", "qtbxzf_avg", "qtbxyl_avg", "qtbxyj_avg", "qtbxypj_avg", "qtbxhl_avg", "qtbxgl_avg"]
-          "rate" -> ["qtbx_rate", "qtbxzf_rate", "qtbxyl_rate", "qtbxyj_rate", "qtbxypj_rate", "qtbxhl_rate", "qtbxgl_rate"]
+          "total" -> ["qtbx_num", "qtbxzf_num", "qtbxyl_num", "qtbxyj_num", "qtbxypj_num", "qtbxhl_num", "qtbxgl_num", "num_sum"]
+          "avg" -> ["qtbx_avg", "qtbxzf_avg", "qtbxyl_avg", "qtbxyj_avg", "qtbxypj_avg", "qtbxhl_avg", "qtbxgl_avg", "num_sum"]
+          "rate" -> ["qtbx_rate", "qtbxzf_rate", "qtbxyl_rate", "qtbxyj_rate", "qtbxypj_rate", "qtbxhl_rate", "qtbxgl_rate", "num_sum"]
         end
       "cwzb_qt" -> #其他患者支付统计
         case tool_type do
-          "total" -> ["qthz_num", "qthzzf_num", "qthzyl_num", "qthzyj_num", "qthzypj_num", "qthzhl_num", "qthzgl_num"]
-          "avg" -> ["qthz_avg", "qthzzf_avg", "qthzyl_avg", "qthzyj_avg", "qthzypj_avg", "qthzhl_avg", "qthzgl_avg"]
-          "rate" -> ["qthz_rate", "qthzzf_rate", "qthzyl_rate", "qthzyj_rate", "qthzypj_rate", "qthzhl_rate", "qthzgl_rate"]
+          "total" -> ["qthz_num", "qthzzf_num", "qthzyl_num", "qthzyj_num", "qthzypj_num", "qthzhl_num", "qthzgl_num", "num_sum"]
+          "avg" -> ["qthz_avg", "qthzzf_avg", "qthzyl_avg", "qthzyj_avg", "qthzypj_avg", "qthzhl_avg", "qthzgl_avg", "num_sum"]
+          "rate" -> ["qthz_rate", "qthzzf_rate", "qthzyl_rate", "qthzyj_rate", "qthzypj_rate", "qthzhl_rate", "qthzgl_rate", "num_sum"]
         end
       "ylzl_cfqk" -> #医疗质量-重返率-重返情况
-        ["is_inhosp31", "inhosp_rate", "num_num1", "num_rate1", "num_num2", "num_rate2", "num_num3", "num_rate3"]
+        ["is_inhosp31", "inhosp_rate", "num_num1", "num_rate1", "num_num2", "num_rate2", "num_num3", "num_rate3", "num_sum"]
       "ylzl_lyqk" -> #医疗质量-治愈效果-离院情况
-        ["yzly_num" , "yzly_rate", "yzzy_num", "yzzy_rate", "yzzsq_num", "yzzsq_rate", "fyzly_num", "fyzly_rate"]
+        ["yzly_num" , "yzly_rate", "yzzy_num", "yzzy_rate", "yzzsq_num", "yzzsq_rate", "fyzly_num", "fyzly_rate", "num_sum"]
       "zdfhl" -> #诊断符合率
-        ["rycyfh_num", "rycyfh_rate", "zdblfh_num", "zdblfh_rate", "ryssfh_num", "ryssfh_rate"]
+        ["rycyfh_num", "rycyfh_rate", "zdblfh_num", "zdblfh_rate", "ryssfh_num", "ryssfh_rate", "num_sum"]
       "ylzl_sszl" -> #医疗质量-手术质量-手术质量分析
-        ["sqday_num", "shday_num", "fjh_num", "fjh_rate", "zdss_num", "sw_num", "sw_rate"]
+        ["sqday_num", "shday_num", "fjh_num", "fjh_rate", "zdss_num", "sw_num", "sw_rate", "num_sum"]
       "ylzl_fxsj" -> #医疗质量-手术质量-负性事件分析
-        ["qklk_num", "qklk_rate", "qkgr_num", "qkgr_rate", "shgr_num", "shgr_rate", "shbf_num", "shbf_rate"]
+        ["qklk_num", "qklk_rate", "qkgr_num", "qkgr_rate", "shgr_num", "shgr_rate", "shbf_num", "shbf_rate", "num_sum"]
       "ylzl_szfxsj" -> #术中负性事件
         case tool_type do
-          "total" -> ["ssywss_num", "ssywqg_num", "ssywzc_num", "ssywck_num", "ssywcx_num", "ssylyw_num", "sswjsb_num", "ssczbd_num"]
-          "rate" -> ["ssywss_rate", "ssywqg_rate", "ssywzc_rate", "ssywck_rate", "ssywcx_rate", "ssylyw_rate", "sswjsb_rate", "ssczbd_rate"]
+          "total" -> ["ssywss_num", "ssywqg_num", "ssywzc_num", "ssywck_num", "ssywcx_num", "ssylyw_num", "sswjsb_num", "ssczbd_num", "num_sum"]
+          "rate" -> ["ssywss_rate", "ssywqg_rate", "ssywzc_rate", "ssywck_rate", "ssywcx_rate", "ssylyw_rate", "sswjsb_rate", "ssczbd_rate", "num_sum"]
         end
       "ylzl_yw" -> #医疗质量-负性事件-药物
-        ["num_num", "ywfxsj_num", "ywfxsj_rate", "ywgl_num", "ywgl_rate", "ywgc_num", "ywgc_rate"]
+        ["num_num", "ywfxsj_num", "ywfxsj_rate", "ywgl_num", "ywgl_rate", "ywgc_num", "ywgc_rate", "num_sum"]
       # "ylzl_dd" -> #医疗质量-负性事件-跌倒、坠床
       #   ["num_num", "ywdd_num", "ycdd_rate", "zc_num", "zc_rate"]
       "ylzl_dd" -> #医疗质量--负性事件-治疗
         case tool_type do
-          "total" -> ["zlywzl_num", "zlywqg_num", "zlywzc_num", "zlywck_num", "zlywcx_num", "zlylyw_num", "zlwjsb_num", "zlczbd_num"]
-          "rate" -> ["zlywzl_rate", "zlywqg_rate", "zlywzc_rate", "zlywck_rate", "zlywcx_rate", "zlylyw_rate", "zlwjsb_rate", "zlczbd_rate"]
-          "" -> ["zlywzl_num", "zlywqg_num", "zlywzc_num", "zlywck_num", "zlywcx_num", "zlylyw_num", "zlwjsb_num", "zlczbd_num"]
+          "total" -> ["zlywzl_num", "zlywqg_num", "zlywzc_num", "zlywck_num", "zlywcx_num", "zlylyw_num", "zlwjsb_num", "zlczbd_num", "num_sum"]
+          "rate" -> ["zlywzl_rate", "zlywqg_rate", "zlywzc_rate", "zlywck_rate", "zlywcx_rate", "zlylyw_rate", "zlwjsb_rate", "zlczbd_rate", "num_sum"]
+          "" -> ["zlywzl_num", "zlywqg_num", "zlywzc_num", "zlywck_num", "zlywcx_num", "zlylyw_num", "zlwjsb_num", "zlczbd_num", "num_sum"]
         end
       "ylzl_yc" -> #医疗质量-负性事件-压疮
         case tool_type do
-          "total" -> ["num_num", "ychz_num", "odyc_num", "wdyc_num", "tdyc_num", "fdyc_num"]
-          "rate" -> ["ychz_rate", "odyc_rate", "wdyc_rate", "tdyc_rate", "fdyc_rate"]
+          "total" -> ["num_num", "ychz_num", "odyc_num", "wdyc_num", "tdyc_num", "fdyc_num", "num_sum"]
+          "rate" -> ["ychz_rate", "odyc_rate", "wdyc_rate", "tdyc_rate", "fdyc_rate", "num_sum"]
         end
       "ylzl_hl" -> #医疗质量-负性事件-护理
         case tool_type do
-          "total" -> ["num_num", "hlfxsj_num", "syyw_num", "syyl_num", "syyf_num", "syry_num", "sywr_num", "sygl_num"]
-          "rate" -> ["hlfxsj_rate", "syyw_rate", "syyl_rate", "syyf_rate", "syry_rate", "sywr_rate", "sygl_rate"]
+          "total" -> ["num_num", "hlfxsj_num", "syyw_num", "syyl_num", "syyf_num", "syry_num", "sywr_num", "sygl_num", "num_sum"]
+          "rate" -> ["hlfxsj_rate", "syyw_rate", "syyl_rate", "syyf_rate", "syry_rate", "sywr_rate", "sygl_rate", "num_sum"]
         end
       "ylzl_sx" -> #医疗质量-负性事件-输血
         case tool_type do
-          "total" -> ["num_num", "sxfxsj_num", "sxyw_num", "sxyl_num", "sxyf_num", "sxwr_num", "sxgl_num"]
-          "rate" -> ["sxfxsj_rate", "sxyw_rate", "sxyl_rate", "sxyf_rate", "sxwr_rate", "sxgl_rate"]
+          "total" -> ["num_num", "sxfxsj_num", "sxyw_num", "sxyl_num", "sxyf_num", "sxwr_num", "sxgl_num", "num_sum"]
+          "rate" -> ["sxfxsj_rate", "sxyw_rate", "sxyl_rate", "sxyf_rate", "sxwr_rate", "sxgl_rate", "num_sum"]
         end
       "ylzl_gr" -> #医疗质量-负性事件-感染
         case tool_type do
-          "total" -> ["szh_num", "czh_num", "ssh_num", "stx_num", "rgjt_num", "ylqj_num"]
-          "rate" -> ["szh_rate", "czh_rate", "ssh_rate", "stx_rate", "rgjt_rate", "ylqj_rate"]
+          "total" -> ["szh_num", "czh_num", "ssh_num", "stx_num", "rgjt_num", "ylqj_num", "num_sum"]
+          "rate" -> ["szh_rate", "czh_rate", "ssh_rate", "stx_rate", "rgjt_rate", "ylqj_rate", "num_sum"]
         end
       "tjfx_bazl" -> #统计分析-病案统计-病案质量统计
-        ["bazlj_num", "bazlj_rate", "bazly_num", "bazly_rate", "bazlb_num", "bazlb_rate"]
+        ["bazlj_num", "bazlj_rate", "bazly_num", "bazly_rate", "bazlb_num", "bazlb_rate", "num_sum"]
       "tjfx_batj" -> #统计分析-病案统计-病案统计
         case tool_type do
-          "total" -> ["num_num", "ssls_num", "mzzy_num", "jzzy_num", "ybzf_num", "xnh_num", "qzfbl_num", "qgfbl_num"]
-          "rate" -> ["ssls_rate", "mzzy_rate", "jzzy_rate", "ybzf_rate", "xnh_rate", "qzfbl_rate", "qgfbl_rate"]
+          "total" -> ["num_num", "ssls_num", "mzzy_num", "jzzy_num", "ybzf_num", "xnh_num", "qzfbl_num", "qgfbl_num", "num_sum"]
+          "rate" -> ["ssls_rate", "mzzy_rate", "jzzy_rate", "ybzf_rate", "xnh_rate", "qzfbl_rate", "qgfbl_rate", "num_sum"]
         end
       "tjfx_drg" -> #统计分析-病案统计-DRG病案入组统计
-        ["hos_num", "pc_num", "wrmdc_num", "wrz_num", "qy_num", "drg_rate", "num_num"]
+        ["hos_num", "pc_num", "wrmdc_num", "wrz_num", "qy_num", "drg_rate", "num_num", "num_sum"]
       "tjfx_blood" -> #统计分析-输血统计-血型统计
         case tool_type do
-          "total" -> ["blood_num", "ablood_num", "bblood_num", "abblood_num", "oblood_num", "wcblood_num"]
-          "rate" -> ["blood_rate", "ablood_rate", "bblood_rate", "abblood_rate", "oblood_rate", "wcblood_rate"]
+          "total" -> ["blood_num", "ablood_num", "bblood_num", "abblood_num", "oblood_num", "wcblood_num", "num_sum"]
+          "rate" -> ["blood_rate", "ablood_rate", "bblood_rate", "abblood_rate", "oblood_rate", "wcblood_rate", "num_sum"]
         end
       "tjfx_rhyang2" -> #统计分析-输血统计-RH阳性患者统计
-        ["rhyxa_num", "rhyxa_rate", "rhyxb_num", "rhyxb_rate", "rhyxo_num", "rhyxo_rate", "rhyxab_num", "rhyxab_rate"]
+        ["rhyxa_num", "rhyxa_rate", "rhyxb_num", "rhyxb_rate", "rhyxo_num", "rhyxo_rate", "rhyxab_num", "rhyxab_rate", "num_sum"]
       "tjfx_rhyin2" -> #统计分析-输血统计-RH阴性患者统计
-        ["rhya_num", "rhya_rate", "rhyb_num", "rhyb_rate", "rhyo_num", "rhyo_rate", "rhyab_num", "rhyab_rate"]
+        ["rhya_num", "rhya_rate", "rhyb_num", "rhyb_rate", "rhyo_num", "rhyo_rate", "rhyab_num", "rhyab_rate", "num_sum"]
       "tjfx_nrh" ->  #统计分析-输血统计-RH不详患者统计
-        ["rhbxa_num", "rhbxa_rate", "rhbxb_num", "rhbxb_rate", "rhbxo_num", "rhbxo_rate", "rhbxab_num", "rhbxab_rate"]
+        ["rhbxa_num", "rhbxa_rate", "rhbxb_num", "rhbxb_rate", "rhbxo_num", "rhbxo_rate", "rhbxab_num", "rhbxab_rate", "num_sum"]
       "tjfx_rhyang" -> #统计分析-输血统计-Rh阳性全血使用统计
-        ["rhyxa_cc", "rhyxb_cc", "rhyxab_cc", "rhyxo_cc", "rhyxacc_rate", "rhyxbcc_rate", "rhyxabcc_rate", "rhyx0cc_rate"]
+        ["rhyxa_cc", "rhyxb_cc", "rhyxab_cc", "rhyxo_cc", "rhyxacc_rate", "rhyxbcc_rate", "rhyxabcc_rate", "rhyx0cc_rate", "num_sum"]
       "tjfx_rhyin" -> #统计分析-输血统计-Rh阴性全血使用统计
-        ["rhyacc_rate", "rhybcc_rate", "rhyabcc_rate", "rhy0cc_rate", "rhya_cc", "rhyb_cc", "rhyab_cc", "rhyo_cc"]
+        ["rhyacc_rate", "rhybcc_rate", "rhyabcc_rate", "rhy0cc_rate", "rhya_cc", "rhyb_cc", "rhyab_cc", "rhyo_cc", "num_sum"]
       "tjfx_cfx" -> #统计分析-输血统计- 成分血统计
         case tool_type do
-          "total" -> ["num_num", "cfx_num", "hxb_num", "xsb_num", "xj_num", "qx_num", "qtx_num"]
-          "avg" -> ["num_num", "cfx_avg", "hxb_avg", "xsb_avg", "xj_avg", "qx_avg", "qtx_avg"]
-          "rate" -> ["sum_rate", "cfx_rate", "hxb_rate", "xsb_rate", "xj_rate", "qx_rate", "qtx_rate"]
+          "total" -> ["num_num", "cfx_num", "hxb_num", "xsb_num", "xj_num", "qx_num", "qtx_num", "num_sum"]
+          "avg" -> ["num_num", "cfx_avg", "hxb_avg", "xsb_avg", "xj_avg", "qx_avg", "qtx_avg", "num_sum"]
+          "rate" -> ["sum_rate", "cfx_rate", "hxb_rate", "xsb_rate", "xj_rate", "qx_rate", "qtx_rate", "num_sum"]
         end
       "tjfx_hzly" -> #肿瘤患者来源统计
-        ["man_num", "man_rate", "woman_num", "woman_rate", "bd_num", "bd_rate", "wd_num", "wd_rate"]
+        ["man_num", "man_rate", "woman_num", "woman_rate", "bd_num", "bd_rate", "wd_num", "wd_rate", "num_sum"]
       "tjfx_zdyj" -> #诊断依据统计
         case tool_type do
-          "total" -> ["lczg_num", "xxct_num", "sszd_num", "shmy_num", "xbx_num", "bljf_num", "blyf_num", "sjybl_num", "zgzdyj_num"]
-          "rate" -> ["lczg_rate", "xxct_rate", "sszd_rate", "shmy_rate", "xbx_rate", "bljf_rate", "blyf_rate", "sjybl_rate", "zgzdyj_rate"]
+          "total" -> ["lczg_num", "xxct_num", "sszd_num", "shmy_num", "xbx_num", "bljf_num", "blyf_num", "sjybl_num", "zgzdyj_num", "num_sum"]
+          "rate" -> ["lczg_rate", "xxct_rate", "sszd_rate", "shmy_rate", "xbx_rate", "bljf_rate", "blyf_rate", "sjybl_rate", "zgzdyj_rate", "num_sum"]
         end
       "tjfx_fbbf" -> #统计分析-肿瘤统计-发病部分统计
         case tool_type do
-          "total" -> ["xhxt_num", "sjxt_num", "hxxt_num", "xyxh_num", "ydxt_num", "nfm_num", "mnxt_num", "szxt_num"]
-          "rate" -> ["xhxt_rate", "sjxt_rate", "hxxt_rate", "xyxh_rate", "ydxt_rate", "nfm_rate", "mnxt_rate", "szxt_rate"]
+          "total" -> ["xhxt_num", "sjxt_num", "hxxt_num", "xyxh_num", "ydxt_num", "nfm_num", "mnxt_num", "szxt_num", "num_sum"]
+          "rate" -> ["xhxt_rate", "sjxt_rate", "hxxt_rate", "xyxh_rate", "ydxt_rate", "nfm_rate", "mnxt_rate", "szxt_rate", "num_sum"]
         end
       "tjfx_fh" -> #统计分析-肿瘤统计-分化统计
         case tool_type do
-          "total" -> ["zlfq_num", "gfh_num", "zfh_num", "dfh_num", "wfh_num", "wqd_num"]
-          "rate" -> ["zlfq_rate", "gfh_rate", "zfh_rate", "dfh_rate", "wfh_rate", "wqd_rate"]
+          "total" -> ["zlfq_num", "gfh_num", "zfh_num", "dfh_num", "wfh_num", "wqd_num", "num_sum"]
+          "rate" -> ["zlfq_rate", "gfh_rate", "zfh_rate", "dfh_rate", "wfh_rate", "wqd_rate", "num_sum"]
         end
       "tjfx_tbxb" -> #统计分析-肿瘤统计-T、B细胞统计
-        ["txb_num", "txb_rate", "bxb_num", "bxb_rate", "ftfbxb_num", "ftfbxb_rate", "nk_num", "nk_rate"]
+        ["txb_num", "txb_rate", "bxb_num", "bxb_rate", "ftfbxb_num", "ftfbxb_rate", "nk_num", "nk_rate", "num_sum"]
       "tjfx_zlt0" -> #统计分析-肿瘤统计-肿瘤患者T0期统计
         case tool_type do
-          "total" -> ["tl_num", "to_num", "tw_num", "tt_num", "tf_num", "wfpgyf_num"]
-          "rate" -> ["tl_rate", "to_rate", "tw_rate", "tt_rate", "tf_rate", "wfpgyf_rate"]
+          "total" -> ["tl_num", "to_num", "tw_num", "tt_num", "tf_num", "wfpgyf_num", "num_sum"]
+          "rate" -> ["tl_rate", "to_rate", "tw_rate", "tt_rate", "tf_rate", "wfpgyf_rate", "num_sum"]
         end
       "tjfx_zln0" -> #统计分析-肿瘤统计-肿瘤患者N0期统计
         case tool_type do
-          "total" -> ["nl_num", "no_num", "nw_num", "nt_num", "nf_num", "wfpglb_num"]
-          "rate" -> ["nl_rate", "no_rate", "nw_rate", "nt_rate", "nf_rate", "wfpglb_rate"]
+          "total" -> ["nl_num", "no_num", "nw_num", "nt_num", "nf_num", "wfpglb_num", "num_sum"]
+          "rate" -> ["nl_rate", "no_rate", "nw_rate", "nt_rate", "nf_rate", "wfpglb_rate", "num_sum"]
         end
       "tjfx_zlm0" -> #统计分析-肿瘤统计-肿瘤患者M0期统计
-        ["ml_num", "ml_rate", "mo_num", "mo_rate", "wfpgyc_num", "wfpgyc_rate"]
+        ["ml_num", "ml_rate", "mo_num", "mo_rate", "wfpgyc_num", "wfpgyc_rate", "num_sum"]
       "tjfx_jlqk" -> #统计分析-手术统计-甲类切口统计
-        ["yjqk_num", "yjqk_rate", "ejqk_num", "ejqk_rate", "sjqk_num", "sjqk_rate"]
+        ["yjqk_num", "yjqk_rate", "ejqk_num", "ejqk_rate", "sjqk_num", "sjqk_rate", "num_sum"]
       "tjfx_ylqk" -> #统计分析-手术统计-乙类切口统计
-        ["yjyqk_num", "yjyqk_rate", "ejyqk_num", "ejyqk_rate", "sjyqk_num", "sjyqk_rate"]
+        ["yjyqk_num", "yjyqk_rate", "ejyqk_num", "ejyqk_rate", "sjyqk_num", "sjyqk_rate", "num_sum"]
       "tjfx_blqk" -> #丙类切口统计
-        ["yjbqk_num", "yjbqk_rate", "ejbqk_num", "ejbqk_rate", "sjbqk_num", "sjbqk_rate"]
+        ["yjbqk_num", "yjbqk_rate", "ejbqk_num", "ejbqk_rate", "sjbqk_num", "sjbqk_rate", "num_sum"]
       "tjfx_qtqk" -> #统计分析-手术统计-其他切口统计
-        ["yss_num", "yss_rate", "yjqtqk_num", "yjqtqk_rate", "ejqtqk_num", "ejqtqk_rate", "sjqtqk_num", "sjqtqk_rate"]
+        ["yss_num", "yss_rate", "yjqtqk_num", "yjqtqk_rate", "ejqtqk_num", "ejqtqk_rate", "sjqtqk_num", "sjqtqk_rate", "num_sum"]
       "tjfx_ssjb" -> #统计分析-手术统计-手术级别统计
-        ["ojss_num", "ojss_rate", "wjss_num", "wjss_rate", "tjss_num", "tjss_rate", "fjss_num", "fjss_rate"]
+        ["ojss_num", "ojss_rate", "wjss_num", "wjss_rate", "tjss_num", "tjss_rate", "fjss_num", "fjss_rate", "num_sum"]
       "tjfx_mz" -> #统计分析-手术统计-麻醉统计
         case tool_type do
-          "total" -> ["mz_num", "wmz_num", "qsmz_num", "xrmz_num", "jmmz_num", "jcmz_num", "qymz_num", "zgnmz_num"]
-          "rate" -> ["mz_rate", "wmz_rate", "qsmz_rate", "xrmz_rate", "jmmz_rate", "jcmz_rate", "qymz_rate", "zgnmz_rate"]
+          "total" -> ["mz_num", "wmz_num", "qsmz_num", "xrmz_num", "jmmz_num", "jcmz_num", "qymz_num", "zgnmz_num", "num_sum"]
+          "rate" -> ["mz_rate", "wmz_rate", "qsmz_rate", "xrmz_rate", "jmmz_rate", "jcmz_rate", "qymz_rate", "zgnmz_rate", "num_sum"]
         end
       "tjfx_fhmz" -> #复合麻醉患者统计
         case tool_type do
-          "total" -> ["ymwfh_num", "fhmz_num", "btywfh_num", "btfffh_num", "tsfffh_num", "jxfh_num", "qtmz_num"]
-          "rate" -> ["ymwfh_rate", "fhmz_rate", "btywfh_rate", "btfffh_rate", "tsfffh_rate", "jxfh_rate", "qtmz_rate"]
+          "total" -> ["ymwfh_num", "fhmz_num", "btywfh_num", "btfffh_num", "tsfffh_num", "jxfh_num", "qtmz_num", "num_sum"]
+          "rate" -> ["ymwfh_rate", "fhmz_rate", "btywfh_rate", "btfffh_rate", "tsfffh_rate", "jxfh_rate", "qtmz_rate", "num_sum"]
         end
       "tjfx_qtzz" -> #其他阻滞麻醉统计
-        ["zwmx_num", "zwmx_rate", "ymw_num", "ymw_rate", "jc_num", "jc_rate", "sj_num", "sj_rate"]
+        ["zwmx_num", "zwmx_rate", "ymw_num", "ymw_rate", "jc_num", "jc_rate", "sj_num", "sj_rate", "num_sum"]
       "tjfx_sjmz" -> #神经阻滞麻醉统计
         case tool_type do
-          "total" -> ["bc_num", "yz_num", "qg_num", "zp_num", "per_num", "jg_num", "xy_num", "n_num"]
-          "rate" -> ["bc_rate", "yz_rate", "qg_rate", "zp_rate", "per_rate", "jg_rate", "xy_rate", "n_rate"]
+          "total" -> ["bc_num", "yz_num", "qg_num", "zp_num", "per_num", "jg_num", "xy_num", "n_num", "num_sum"]
+          "rate" -> ["bc_rate", "yz_rate", "qg_rate", "zp_rate", "per_rate", "jg_rate", "xy_rate", "n_rate", "num_sum"]
         end
       "tjfx_xse" -> #统计分析-新生儿统计-新生儿出生统计
-        ["baby_num", "baby_rate", "boy_num", "boy_rate", "girl_num", "girl_rate", "def_num", "def_rate"]
+        ["baby_num", "baby_rate", "boy_num", "boy_rate", "girl_num", "girl_rate", "def_num", "def_rate", "num_sum"]
       "tjfx_fmfs" -> #统计分析-新生儿统计-分娩方式统计
-        ["ck_num", "ck_rate", "pgc_num", "pgc_rate", "sc_num", "sc_rate"]
+        ["ck_num", "ck_rate", "pgc_num", "pgc_rate", "sc_num", "sc_rate", "num_sum"]
       "tjfx_csts" -> #统计分析-新生儿统计-出生胎数统计
-        ["dt_num", "dt_rate", "sbt_num", "sbt_rate", "dbt_num", "dbt_rate", "st_num", "st_rate"]
+        ["dt_num", "dt_rate", "sbt_num", "sbt_rate", "dbt_num", "dbt_rate", "st_num", "st_rate", "num_sum"]
       "tjfx_xseqx" -> #统计分析-新生儿统计-新生儿出生缺陷统计
         case tool_type do
-          "total" -> ["xhqx_num", "sjqx_num", "hxqx_num", "xyqx_num", "ydqx_num", "nfmqx_num", "mnqx_num", "szqx_num"]
-          "rate" -> ["xhqx_rate", "sjqx_rate", "hxqx_rate", "xyqx_rate", "ydqx_rate", "nfmqx_rate", "mnqx_rate", "szqx_rate"]
+          "total" -> ["xhqx_num", "sjqx_num", "hxqx_num", "xyqx_num", "ydqx_num", "nfmqx_num", "mnqx_num", "szqx_num", "num_sum"]
+          "rate" -> ["xhqx_rate", "sjqx_rate", "hxqx_rate", "xyqx_rate", "ydqx_rate", "nfmqx_rate", "mnqx_rate", "szqx_rate", "num_sum"]
         end
     end
   end
@@ -341,6 +341,7 @@ defmodule Stat.Key do
       "death_level" -> "死亡风险等级"
       "day_avg" -> "平均住院天数"
       "num_num" -> "病历数"
+      "num_sum" -> "病历数"
       "death_rate" -> "死亡率"
       #机构分析指标
       "weight_count" -> "总权重"

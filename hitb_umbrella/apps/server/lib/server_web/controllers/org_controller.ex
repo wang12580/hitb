@@ -30,8 +30,8 @@ defmodule ServerWeb.OrgController do
   end
 
   def show(conn, %{"id" => id}) do
-    org = Repo.get!(Hospitals.Org, id)
-    render(conn, "show.json", org: org)
+    org = Repo.get!(Server.Org, id)
+    render(conn, "show.json", org: org, success: true)
   end
 
   def update(conn, %{"id" => id, "org" => org_params}) do

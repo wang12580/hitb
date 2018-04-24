@@ -161,31 +161,32 @@
             <div class="ui form">
               <div class="field">
                 <label>用户名</label>
-                <input type="text" placeholder="用户名" value="">
+                <input type="text" placeholder="用户名" value="" id="username">
               </div>
               <div class="field">
                 <label>密码</label>
-                <input type="password" id="" placeholder="密码">
+                <input type="password" id="password" placeholder="密码">
               </div>
               <div class="field">
                 <label>机构</label>
-                <input type="text" id = "" placeholder="机构" value="">
+                <select class="ui dropdown" id="org" style="width:100%">
+                </select>
               </div>
-                <div class="field">
-                  <label>姓名</label>
-                  <input type="text" id = "" placeholder="姓名" value="">
-                </div>
+              <div class="field">
+                <label>姓名</label>
+                <input type="text" id = "name" placeholder="姓名" value="">
+              </div>
               <div class="field">
                 <label>电话</label>
-                <input type="text" id = "" placeholder="电话" value="">
+                <input type="text" id = "tel" placeholder="电话" value="">
               </div>
               <div class="field">
                 <label>电子邮箱</label>
-                <input type="text" id="" placeholder="电子邮箱" value="">
+                <input type="text" id="email" placeholder="电子邮箱" value="">
               </div>
               <div class="field">
                 <label>年龄</label>
-                <input type="text"  placeholder="年龄" value="">
+                <input type="text"  id="age" placeholder="年龄" value="">
               </div>
               <div class="field">
                 <button class="ui button" type="button" onclick="re()">清空</button>
@@ -252,11 +253,12 @@ function write_html(){
   //输出科省份列表
   var html = '';
   province.forEach(function(value){
-    // if('result.province' == value){
-    //   html = html+'<option value="'+value+'" selected="selected">'+value+'</option>'
-    // }else{
-    //   html = html+'<option value="'+value+'">'+value+'</option>'
-    // }
+    console.log(value);
+    if('result.province' == value){
+      html = html+'<option value="'+value+'" selected="selected">'+value+'</option>'
+    }else{
+      html = html+'<option value="'+value+'">'+value+'</option>'
+    }
   })
   $("#province").html(html);
   get_city(city,county);
@@ -266,6 +268,7 @@ $("#province").change(function(){get_city(city,county)});
 function get_city(city,county){
   city_list = city[$("#province").val()];
   var html = '';
+  console.log($("#province").val());
   city_list.forEach(function(val){
     if('result.city' == val){
       html = html+'<option value="'+val+'" selected="selected">'+val+'</option>'
@@ -373,7 +376,7 @@ function write_html(){
   //   html = html+'<option value="'+obj.class_code+'">'+obj.class_name+'</option>'
   // })
   // $("#my_class").html(html);
-  //获取医院数据
+  <!--//获取医院数据
   // $.ajax({
   //   type: "GET",
   //   url: '/hospitals/org',
@@ -387,7 +390,7 @@ function write_html(){
   // var html = '';
   // org_list.forEach(function(val){
   //   html = html+'<option value="'+val+'">'+val+'</option>'
-  // })
+  // })-->
   $("#org").html(html);
 }
 //保存
@@ -427,20 +430,20 @@ function write_html(){
   //获取数据
   $.ajax({
     type: "GET",
-    url: '/hospitals/org',
+    url: '/servers/org',
     async: false,
     success: function(data) {
-      org_list = data['org'];
+      org_list = data['data'];
     },
     dataType: 'json'
   });
   //输出科室类列表
   var html = '';
   org_list.forEach(function(val){
-    html = html+'<option value="'+val+'">'+val+'</option>'
+    html = html+'<option value="'+val.name+'">'+val.name+'</option>'
   })
   console.log(html);
-  $("#user_org").html(html);
+  $("#org").html(html);
 }
 //保存
 function save(){
@@ -454,8 +457,8 @@ function save(){
   name = $('#name').val();
   obj = {username:username, password:password, org:org, age:age, email:email, tel:tel, name:name}
   $.ajax({
-    type: "POST",
-    url: '/hospitals/user',
+    type: "PUT",
+    url: `/servers/user/${'<%=@id%>'}`,
     async: false,
     data: {user: obj},
     success: function(data) {
