@@ -3,17 +3,6 @@ defmodule Library.Rule do
   # use CndrgWeb, :controller
   alias Library.Repo
   import Ecto.Query
-  alias Library.Mdc
-  alias Library.Adrg
-  alias Library.Drg
-  alias Library.Icd10
-  alias Library.Icd9
-  alias Library.RuleMdc
-  alias Library.RuleAdrg
-  alias Library.RuleDrg
-  alias Library.RuleIcd10
-  alias Library.RuleIcd9
-  alias Library.DrgRate
 
   @doc """
   Starts the registry.
@@ -64,56 +53,56 @@ defmodule Library.Rule do
 
   defp rule() do
     #读取mdc表并转换为atom字段存入缓存
-    from(p in Mdc)
+    from(p in Library.Mdc)
     |>Repo.all
     |>Enum.each(fn x ->
-        #修正P组的结果
-        adrgs =
-          case x.mdc do
-            "P" -> Repo.all(from p in Adrg, where: p.mdc == "P", select: p.code)
-            _ -> []
-          end
-        Hitbserver.ets_insert(:mdc_cn, x.mdc, Map.merge(x, %{adrgs: adrgs}))
+        # #修正P组的结果
+        # adrgs =
+        #   case x.mdc do
+        #     "P" -> Repo.all(from p in Library.Adrg, where: p.mdc == "P", select: p.code)
+        #     _ -> []
+        #   end
+        # Hitbserver.ets_insert(:mdc_cn, x.mdc, Map.merge(x, %{adrgs: adrgs}))
       end)
     #读取adrg表并转换为atom字段存入缓存
-    from(p in Adrg)
+    from(p in Library.Adrg)
     |>Repo.all
     |>Enum.each(fn x ->
-        Hitbserver.ets_insert(:adrg_cn, x.code, %{x | :sf0100 => s2i(x.sf0100), :sf0102 => s2i(x.sf0102)})
+        # Hitbserver.ets_insert(:adrg_cn, x.code, %{x | :sf0100 => s2i(x.sf0100), :sf0102 => s2i(x.sf0102)})
       end)
 
     #读取drg表并转换为atom字段存入缓存
-    from(p in Drg)
+    from(p in Library.Drg)
     |>Repo.all
     |>Enum.each(fn x ->
-        Hitbserver.ets_insert(:drg_cn, x.code, %{x | :age => s2i(x.age), :sf0108 => s2i(x.sf0108), :day => s2i(x.day)})
+        # Hitbserver.ets_insert(:drg_cn, x.code, %{x | :age => s2i(x.age), :sf0108 => s2i(x.sf0108), :day => s2i(x.day)})
       end)
 
     #读取icd10表并转换为atom字段存入缓存
-    from(p in Icd10)
+    from(p in Library.Icd10)
     |>Repo.all
     |>Enum.each(fn x ->
-        Hitbserver.ets_insert(:icd10_cn, x.name, x)
+        # Hitbserver.ets_insert(:icd10_cn, x.name, x)
       end)
 
     #读取icd9表并转换为atom字段存入缓存
-    from(p in Icd9)
+    from(p in Library.Icd9)
     |>Repo.all
     |>Enum.each(fn x ->
-        Hitbserver.ets_insert(:icd9_cn, x.name, x)
+        # Hitbserver.ets_insert(:icd9_cn, x.name, x)
       end)
 
     #DrgRate
-    from(p in DrgRate)
+    from(p in Library.DrgRate)
     |>Repo.all
     |>Enum.each(fn x ->
-        key = if(x.name)do x.drg <> "_" <> x.name else x.drg end
-        Hitbserver.ets_insert(:drg_rate, key, x.rate)
+        # key = if(x.name)do x.drg <> "_" <> x.name else x.drg end
+        # Hitbserver.ets_insert(:drg_rate, key, x.rate)
       end)
 
     #其他版本
     #读取mdc表并转换为atom字段存入缓存
-    from(p in RuleMdc)
+    from(p in Library.RuleMdc)
     |>where([p], p.year == "2017")
     |>where([p], p.version != "CN")
     |>where([p], p.version != "TEST")
@@ -121,13 +110,13 @@ defmodule Library.Rule do
     |>select([p], %{mdc: p.mdc, code: p.code, name: p.name, icd9_a: p.icd9_a, version: p.version})
     |>Repo.all
     |>Enum.each(fn x ->
-        case x.version do
-          "BJ" -> Hitbserver.ets_insert(:mdc_bj, x.mdc, x)
-          "GB" -> Hitbserver.ets_insert(:mdc_gb, x.mdc, x)
-        end
+        # case x.version do
+        #   "BJ" -> Hitbserver.ets_insert(:mdc_bj, x.mdc, x)
+        #   "GB" -> Hitbserver.ets_insert(:mdc_gb, x.mdc, x)
+        # end
       end)
     #读取adrg表并转换为atom字段存入缓存
-    from(p in RuleAdrg)
+    from(p in Library.RuleAdrg)
     |>where([p], p.year == "2017")
     |>where([p], p.version != "CN")
     |>where([p], p.version != "TEST")
@@ -135,14 +124,14 @@ defmodule Library.Rule do
     |>select([p], %{code: p.code, name: p.name, drgs_1: p.drgs_1, mdc: p.mdc, icd10_a: p.icd10_a, icd10_b: p.icd10_b, icd9_a: p.icd9_a, icd9_b: p.icd9_b, version: p.version})
     |>Repo.all
     |>Enum.each(fn x ->
-        case x.version do
-          "BJ" -> Hitbserver.ets_insert(:adrg_bj, x.code, x)
-          "GB" -> Hitbserver.ets_insert(:adrg_gb, x.code, x)
-        end
+        # case x.version do
+        #   "BJ" -> Hitbserver.ets_insert(:adrg_bj, x.code, x)
+        #   "GB" -> Hitbserver.ets_insert(:adrg_gb, x.code, x)
+        # end
       end)
 
     #读取drg表并转换为atom字段存入缓存
-    from(p in RuleDrg)
+    from(p in Library.RuleDrg)
     |>where([p], p.year == "2017")
     |>where([p], p.version != "CN")
     |>where([p], p.version != "TEST")
@@ -150,14 +139,14 @@ defmodule Library.Rule do
     |>select([p], %{code: p.code, adrg: p.adrg, version: p.version})
     |>Repo.all
     |>Enum.each(fn x ->
-        case x.version do
-          "BJ" -> Hitbserver.ets_insert(:drg_bj, x.code, x)
-          "GB" -> Hitbserver.ets_insert(:drg_gb, x.code, x)
-        end
+        # case x.version do
+        #   "BJ" -> Hitbserver.ets_insert(:drg_bj, x.code, x)
+        #   "GB" -> Hitbserver.ets_insert(:drg_gb, x.code, x)
+        # end
       end)
 
     #读取icd10表并转换为atom字段存入缓存
-    from(p in RuleIcd10)
+    from(p in Library.RuleIcd10)
     |>where([p], p.year == "2017")
     |>where([p], p.version != "CN")
     |>where([p], p.version != "TEST")
@@ -165,14 +154,14 @@ defmodule Library.Rule do
     |>select([p], %{code: p.code, name: p.name, adrg: p.adrg, mcc: p.mcc, cc: p.cc, nocc_a: p.nocc_a, version: p.version})
     |>Repo.all
     |>Enum.each(fn x ->
-        case x.version do
-          "BJ" -> Hitbserver.ets_insert(:icd10_bj, x.code, x)
-          "GB" -> Hitbserver.ets_insert(:icd10_gb, x.code, x)
-        end
+        # case x.version do
+        #   "BJ" -> Hitbserver.ets_insert(:icd10_bj, x.code, x)
+        #   "GB" -> Hitbserver.ets_insert(:icd10_gb, x.code, x)
+        # end
       end)
 
     #读取icd9表并转换为atom字段存入缓存
-    from(p in RuleIcd9)
+    from(p in Library.RuleIcd9)
     |>where([p], p.year == "2017")
     |>where([p], p.version != "CN")
     |>where([p], p.version != "TEST")
@@ -180,20 +169,11 @@ defmodule Library.Rule do
     |>select([p], %{code: p.code, name: p.name, adrg: p.adrg, p_type: p.p_type, version: p.version})
     |>Repo.all
     |>Enum.each(fn x ->
-        case x.version do
-          "BJ" -> Hitbserver.ets_insert(:icd9_bj, x.code, x)
-          "GB" -> Hitbserver.ets_insert(:icd9_gb, x.code, x)
-        end
+        # case x.version do
+        #   "BJ" -> Hitbserver.ets_insert(:icd9_bj, x.code, x)
+        #   "GB" -> Hitbserver.ets_insert(:icd9_gb, x.code, x)
+        # end
       end)
-
-  #   # wt4_count = hd(Repo.all(from p in Wt2016, select: count(p.id)))
-  #   # from(p in Wt2016)
-  #   # |>group_by([p], p.drg)
-  #   # |>select([p], %{drg: p.drg, num: count(p.id)})
-  #   # |>Repo.all
-  #   # |>Enum.each(fn x ->
-  #   #     Hitbserver.ets_insert(:hitb_rate, x.drg, x.num/wt4_count)
-  #   #   end)
   end
 
 

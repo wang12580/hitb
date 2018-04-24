@@ -90,7 +90,7 @@ defmodule LibraryWeb.PageController do
           end
         num = select(query, [w], count(w.id))
         count = hd(Repo.all(num, [timeout: 1500000]))
-        skip = Hitbserver.Page.skip(page, rows)
+        skip = Library.Page.skip(page, rows)
         query = order_by(query, [w], asc: w.code)
             |>limit([w], ^rows)
             |>offset([w], ^skip)
@@ -99,11 +99,21 @@ defmodule LibraryWeb.PageController do
         list =
           cond do
             type in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
-              hd(Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year))))|>Enum.sort
+              i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year)))
+                |>Enum.reject(fn x -> x == nil end)
+              case i do
+                [] -> []
+                _ -> List.first(i)|>Enum.sort
+              end
             true ->
-              hd(Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type))))|>Enum.sort
+              i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
+                |>Enum.reject(fn x -> x == nil end)
+              case i do
+                [] -> []
+                _ -> List.first(i)|>Enum.sort
+              end
           end
-        {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows)
+        {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
         {result, list, page_list, page_num, count_page, type}
       else
         query =
@@ -148,13 +158,13 @@ defmodule LibraryWeb.PageController do
           |>Repo.all
           |>hd
 
-        skip = Hitbserver.Page.skip(page, rows)
+        skip = Library.Page.skip(page, rows)
         #查询
         result = query
           |>limit([p], ^rows)
           |>offset([w], ^skip)
           |>Repo.all
-        {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows)
+        {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
         list = []
         {result, list, page_list, page_num, count_page, type}
       end
@@ -171,26 +181,34 @@ defmodule LibraryWeb.PageController do
         table == "adrg" -> RuleAdrg
         table == "drg" -> RuleDrg
       end
-    result =
-      Enum.map(String.split(id, "-"), fn x ->
-        Repo.get!(tab, String.to_integer(x))
-      end)
-    a1 = List.first(result)
-    a2 = List.last(result)
-    a =[:name, :code, :version, :property, :option, :dissect, :cc, :mcc]
-    b = Enum.map(a, fn x ->
-      val1 = Map.get(a1, x)
-      val2 = Map.get(a2, x)
-      cond do
-        val1 == nil -> nil
-        val1 == val2 -> [Key.cnkey(x), "一致"]
-        val1 !=val2 -> [Key.cnkey(x), "不一致"]
+    result = String.split(id, "-")
+      |>Enum.map(fn x ->
+          x = String.to_integer(x)
+          Repo.all(from p in tab, where: p.id == ^x)
+        end)
+      |>List.flatten
+    {result, c} =
+      if(result != [])do
+        a1 = List.first(result)
+        a2 = List.last(result)
+        a =[:name, :code, :version, :property, :option, :dissect, :cc, :mcc]
+        b = Enum.map(a, fn x ->
+          val1 = Map.get(a1, x)
+          val2 = Map.get(a2, x)
+          cond do
+            val1 == nil -> nil
+            val1 == val2 -> [Key.cnkey(x), "一致"]
+            val1 !=val2 -> [Key.cnkey(x), "不一致"]
+          end
+        end)
+        c = Enum.reject(b, fn x -> x == nil end)
+        result = Enum.map(result, fn x ->
+          Map.drop(x, [:__meta__, :__struct__])
+        end)
+        {result, c}
+      else
+        {[], []}
       end
-    end)
-    c = Enum.reject(b, fn x -> x == nil end)
-    result = Enum.map(result, fn x ->
-      Map.drop(x, [:__meta__, :__struct__])
-    end)
     json conn, %{result: result, table: table, contrast: c}
   end
 
