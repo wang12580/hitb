@@ -111,8 +111,9 @@
       data: {url: href},
       async: false,
       success: function(data){
+        console.log(data);
         is_add = '';
-        data['list'][0][0].forEach(function(val){
+        data['list'].forEach(function(val){
           if(is_add == '1'){
             html = html+'<div class="item">'+val+'<a class="ui label" onclick="add(\''+type+'\',\''+val+'\',\'<%=@time%>\',\'<%=@drg%>\')"><i class="plus icon"></i></a></div>';
           }else{
