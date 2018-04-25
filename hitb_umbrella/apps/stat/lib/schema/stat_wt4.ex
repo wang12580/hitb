@@ -27,7 +27,7 @@ defmodule Stat.StatWt4 do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:time, :org, :num_sum, :stat_num_sum, :remove_num_sum, :n_num_sum, :n_mdc_num_sum, :drg_rate, :department_num, :doctor_num, :death_num, :time_type, :org_type, :day_avg, :fee_avg, :death_rate, :int_time])
-    |> validate_required([])
+    |> cast(params, [:time, :org, :num_sum, :stat_num_sum, :remove_num_sum, :n_num_sum, :n_mdc_num_sum, :drg_rate, :department_num, :doctor_num, :time_type, :org_type, :day_avg, :fee_avg, :death_rate, :int_time])
+    |> validate_required([:time, :org])
   end
 end
