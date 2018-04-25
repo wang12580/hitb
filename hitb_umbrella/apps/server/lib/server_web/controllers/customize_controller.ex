@@ -36,7 +36,7 @@ defmodule ServerWeb.CustomizeDepartmentController do
 
   def show(conn, %{"id" => id}) do
     customize_department = Repo.get!(CustomizeDepartment, id)
-    render(conn, "show.json", customize_department: customize_department)
+    render(conn, "show.json", customize_department: customize_department, success: true)
   end
 
   def update(conn, %{"id" => id, "customize_department" => params}) do

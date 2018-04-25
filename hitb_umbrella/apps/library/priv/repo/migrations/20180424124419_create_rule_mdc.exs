@@ -14,6 +14,7 @@ defmodule Library.Repo.Migrations.CreateRuleMdc do
       add :year, :string
       add :version, :string
       add :plat, :string
+
       timestamps()
     end
 

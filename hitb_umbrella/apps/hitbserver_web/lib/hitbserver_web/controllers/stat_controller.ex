@@ -38,7 +38,8 @@ defmodule HitbserverWeb.StatController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      render conn, "contrast.html", user: user
+      {_, type, _, _, time, drg, _, _, _} = Hitbserver.ets_get(:stat_drg, "comurl_" <> user.username)
+      render conn, "contrast.html", user: user, time: time, drg: drg, type: type
     else
       redirect conn, to: "/hospitals/login"
     end

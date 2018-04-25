@@ -21,7 +21,7 @@ defmodule Library.RuleDrg do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:code, :name, :mdc, :adrg, :org, :year, :version, :plat])
-    |> validate_required([])
+    |> validate_required([:code])
   end
 
 end
