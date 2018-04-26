@@ -19,7 +19,11 @@ defmodule BlockWeb.AccountController do
   end
 
   def getBalance(conn, _) do
-    user = get_session(conn, :user)
+    user =
+       case get_session(conn, :user) do
+         nil -> %{login: false}
+          _ -> get_session(conn, :user)
+       end
     if(user.login)do
       balance = Account.getBalance(user.username)
       u_Balance = Account.getuBalance(user.username)
@@ -30,7 +34,11 @@ defmodule BlockWeb.AccountController do
   end
 
   def getPublicKey(conn, _) do
-    user = get_session(conn, :user)
+    user =
+       case get_session(conn, :user) do
+         nil -> %{login: false}
+          _ -> get_session(conn, :user)
+       end
     if(user.login)do
       json(conn, %{publicKey: user.publicKey})
     else

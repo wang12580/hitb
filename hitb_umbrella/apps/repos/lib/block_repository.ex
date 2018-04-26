@@ -23,8 +23,11 @@ defmodule Repos.BlockRepository do
     {:atomic, result} = :mnesia.transaction(fn ->
       :mnesia.match_object({:block_chain, String.to_integer(index), :_, :_, :_, :_})
     end)
-    result
-      |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
+    case result do
+      [] -> []
+        _ -> result
+          |> Enum.map(fn x -> deserialize_block_from_record(x) end) |> hd
+    end
   end
 
   def get_block_by_hash(hash) do

@@ -57,7 +57,7 @@ $(document).ready(function() {
         this.$ajax({
           type: 'POST',
           url: BASE_URL + `/peer`,
-          data: {"host": this.host, "port": parseInt(this.port, 10)},
+          data: {peer_data: {"host": this.host, "port": parseInt(this.port, 10)}},
           dataType: 'json',
           success: (res)=> {
             this.items = res.result
