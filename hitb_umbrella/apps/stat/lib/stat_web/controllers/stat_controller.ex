@@ -9,11 +9,14 @@ defmodule StatWeb.StatController do
   def stat_json(conn, _params) do
     user = %{username: ""}
     %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc"}, conn.params)
+    page = String.to_integer(page)
     #获取分析结果
     {stat, list, tool, page_list, _, _, _, _, _} = MyRepo.getstat(user.username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    # IO.inspect stat
     #存储在自定义之前最后一次url
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> user.username, "page=" <> to_string(page) <> "&type=" <> type <> "&tool_type=" <> tool_type <> "&time=" <> "&drg=" <> drg <> "&order=" <> order <> "&order_type=" <> order_type <> "&page_type=" <> page_type <> "&org=" <> org)
-    stat = Stat.Rand.rand(stat)
+    # IO.inspect stat
+    # stat = Stat.Rand.rand(stat)
     json conn, %{stat: stat, page: page, tool: tool, list: [[list]], page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
@@ -37,13 +40,13 @@ defmodule StatWeb.StatController do
           Enum.reduce(0..length(x)-1, %{stat: x, key: keys, map: %{}}, fn x2, acc ->
             val = List.first(acc.stat)
             key = String.to_atom(List.first(acc.key))
-            val =
-              cond do
-                key in [:info_type, :org, :time, :drg] -> val
-                key in [:num_num, :num_sum] -> String.to_integer(val)
-                is_nil(val) -> "-"
-                true -> String.to_float(val)
-              end
+            # val =
+            #   cond do
+            #     key in [:info_type, :org, :time, :drg] -> val
+            #     key in [:num_num, :num_sum] -> String.to_integer(val)
+            #     is_nil(val) -> "-"
+            #     true -> String.to_float(val)
+            #   end
             %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
           end)|>Map.get(:map)
         end)
@@ -69,7 +72,7 @@ defmodule StatWeb.StatController do
       end
 
     stat = [staty] ++ statx
-
+    IO.inspect stat
     #按照字段取值
     #存储在自定义之前最后一次url
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, "page=" <> to_string(page) <> "&type=" <> type <> "&tool_type=" <> tool_type <> "&time=" <> "&drg=" <> drg <> "&order=" <> order <> "&order_type=" <> order_type <> "&page_type=" <> page_type <> "&org=" <> org)
@@ -189,13 +192,6 @@ defmodule StatWeb.StatController do
             if(acc.key != [])do
               val = List.first(acc.stat)
               key = String.to_atom(List.first(acc.key))
-              val =
-                cond do
-                  key in [:org, :time, :drg] -> val
-                  key in [:num_num, :num_sum] -> String.to_integer(val)
-                  is_nil(val) -> "-"
-                  true -> String.to_float(val)
-                end
               %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
             else
               acc
@@ -235,6 +231,7 @@ defmodule StatWeb.StatController do
     #取对比分析
     %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc"}, conn.params)
     {stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
+    IO.inspect length(stat)
     #按照字段取值
     str = stat
       |>List.delete_at(0)
@@ -261,13 +258,13 @@ defmodule StatWeb.StatController do
           Enum.reduce(0..length(x)-1, %{stat: x, key: keys, map: %{}}, fn x2, acc ->
             val = List.first(acc.stat)
             key = String.to_atom(List.first(acc.key))
-            val =
-              cond do
-                key in [:info_type, :org, :time, :drg] -> val
-                key in [:num_num, :num_sum] -> String.to_integer(val)
-                is_nil(val) -> "-"
-                true -> String.to_float(val)
-              end
+            # val =
+            #   cond do
+            #     key in [:info_type, :org, :time, :drg] -> val
+            #     key in [:num_num, :num_sum] -> String.to_integer(val)
+            #     is_nil(val) -> "-"
+            #     true -> String.to_float(val)
+            #   end
             %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
           end)|>Map.get(:map)
         end)
