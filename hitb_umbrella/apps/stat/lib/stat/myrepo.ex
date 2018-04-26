@@ -14,25 +14,106 @@ defmodule Stat.MyRepo do
     #如果有下载任务,进行下载查询
     {list, count, _, stat, tool} =
       if(stat == nil or stat_type == "download")do
-        #求skip
-        skip = Hitbserver.Page.skip(page, rows_num)
-        #查询stat
-        sql = "select getstat(" <> to_string(skip) <> ", " <> to_string(rows_num) <> ", '" <> type <> "', '" <> time <> "', '" <> org <> "', '" <> drg <> "', '" <> to_string(order) <> "', '" <> order_type <> "', '" <> page_type <> "', '" <> tool_type <> "')"
-        IO.puts sql
-        stat = Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows
-        #查询左侧list
-        sql = "select getstat2('" <> type <> "', '" <> time <> "', '" <> org <> "', '" <> drg <> "', '" <> org <> "', '" <> page_type <> "')"
-        list = Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows|>List.flatten|>Enum.uniq
-        #查询工具
-        sql = "select gettool('" <> type <> "', '" <> time <> "', '" <> org <> "', '" <> drg <> "', '" <> to_string(order) <> "', '" <> page_type <> "')"
-        tool = Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows
-        #求总数
-        count = hd(hd(stat))
-        count = String.to_integer(hd(:lists.usort(hd(count))))
-        #取得分析结果
-        stat = List.delete_at(hd(hd(stat)), 0)
-        #存储
-        Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat})
+        #获取各种keys
+        key = Key.key(username, drg, type, tool_type, page_type) #英文key
+        # IO.inspect key
+        cnkey = Enum.map(key, fn x -> Key.cnkey(x) end) #中文key
+        thkey = Enum.map(key, fn x -> %{cnkey: Key.cnkey(x), key: x} end) #表头key
+        #取缓存stat
+        # stat = ConCache.get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Time.sdata_date()])
+        stat = Hitbserver.ets_get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Hitbserver.Time.sdata_date()])
+        order = if(is_bitstring(order))do String.to_atom(order) else order end
+        #如果有下载任务,进行下载查询
+        # if(stat == nil or stat_type == "download")do
+        if(true)do
+          list =
+            cond do
+              type == "org" ->
+                from(p in Stat.StatOrg)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+              type == "heal" ->
+                from(p in Stat.StatOrgHeal)|>department_where(org)|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+              type == "department" ->
+                from(p in Stat.StatOrg)|>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+              type in ["mdc", "adrg", "drg"] -> []
+              type == "case" ->
+                cond do
+                  String.contains? org, "_" ->
+                    query_org = hd(String.split(org, "_")) <> "_%"
+                    from(p in Stat.StatWt4)|>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+                  true ->
+                    from(p in Stat.StatWt4)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+                end
+              type in ["year_time", "month_time", "season_time", "half_year"] ->
+                from(p in Stat.StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+            end
+          query =
+            cond do
+              type in ["mdc", "adrg", "drg"] ->
+                query = from(p in Stat.StatDrg)
+                  |>mywhere(type, org, time)
+                  |>where([p], p.etype == ^type)
+                list = select(query, [p], fragment("distinct ?", p.drg2))|>Repo.all|>Enum.sort
+                if(type == "mdc")do
+                  list = Enum.map(list, fn x -> "MDC" <> x end)
+                  drg = String.slice(drg, 3, 1)
+                end
+                query
+                |>drgwhere(type, drg)
+              type == "heal" ->
+                myfrom(drg)
+                |>mywhere(type, org, time)
+              type == "case" ->
+                from(p in Stat.StatWt4)
+                |>mywhere(type, org, time)
+              true ->
+                from(p in Stat.StatOrg)
+                |>mywhere(type, org, time)
+            end
+          #求总数
+          num = select(query, [p], count(p.id))
+          count = hd(Repo.all(num, [timeout: 1500000]))
+          #求skip
+          skip = Hitbserver.Page.skip(page, rows_num)
+          #取本页结果
+          query =
+            case order_type do
+              "asc" -> order_by(query, [p], [asc: field(p, ^order)])
+              "desc" -> order_by(query, [p], [desc: field(p, ^order)])
+            end
+          query2 = query
+          stat = limit(query, [p], ^rows_num)
+              |>offset([p], ^skip)
+              |>Repo.all
+          Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat})
+
+          {list, count, skip, stat}
+        else
+          {list, count, skip, stat} = stat
+        end
+        #按照字段取值
+        #如果有下载任务,进行下载查询
+        if(stat_type == "download")do
+          stat = Repo.all(query2)
+        end
+        stat = Enum.map(stat, fn x ->
+            Enum.map(["id", "org_type", "etype", "time_type", "int_time", "__struct__"] ++ key, fn x -> String.to_atom(x) end)
+            |>Enum.reduce(%{}, fn k, acc ->
+                v = Map.get(x, k)
+                cond do
+                  is_nil(v) -> Map.put(acc, k, "-")
+                  is_float(v) ->  Map.put(acc, k, Float.round(v, 4))
+                  true -> Map.put(acc, k, v)
+                end
+              end)
+          end)
+        tool = []
+        IO.inspect "sssss"
+        stat = stat
+          |>Enum.map(fn x ->
+              a = key
+              |>Enum.map(fn x -> if(is_bitstring(x))do String.to_atom(x) else x end end)
+              |>Enum.map(fn k -> Map.get(x, k) end)
+            end)
         {list, count, skip, stat, tool}
       else
         Tuple.append(stat, [])
@@ -44,5 +125,79 @@ defmodule Stat.MyRepo do
     # stat = if(stat_type == "download")do stat else [] end
     # 返回结果(分析结果, 列表, 页面工具, 页码列表, 当前页码, 字段, 中文字段, 表头字段)
     {stat, list, tool, page_list, page_num, count_page, key, cnkey, thkey}
+  end
+
+  #表判断
+  defp myfrom(drg) do
+    case drg do
+      "" -> from(p in Stat.StatOrgHeal)
+      _ ->  from(p in Stat.StatDrgHeal)
+    end
+  end
+
+  #科室排除查询
+  defp department_where(w, org) do
+    cond do
+      org == "" -> w
+      true ->
+        org = if(String.contains? org, "_")do hd(String.split(org, "_")) <> "_%" else org <> "_%" end
+        where(w, [p], like(p.org, ^org))
+    end
+  end
+
+  #drg排除查询
+  defp drgwhere(w, type, code) do
+    case code do
+      "" -> w
+      _ ->
+        case type do
+          "heal" ->
+            code = code <> "%"
+            where(w, [p], like(p.drg2, ^code))
+           _ -> where(w, [p], p.drg2 == ^code and p.etype == ^type)
+        end
+    end
+  end
+
+  #排除查询
+  defp mywhere(w, type, org, time) do
+    w =
+      case org do
+        "" ->
+          cond do
+            type in ["org", "department"] -> where(w, [p], p.org_type == ^type)
+            true -> where(w, [p], p.org_type == "org")
+          end
+        _ ->
+          case type do
+            "org" ->
+              case String.contains? org, "_" do
+                true -> where(w, [p], p.org_type == "org")
+                false -> where(w, [p], p.org_type == "org" and p.org == ^org)
+              end
+            "department" ->
+              query_org = if(String.contains? org, "_")do org else org <> "_%" end
+              where(w, [p], p.org_type == "department" and like(p.org, ^query_org))
+            _ ->
+              case String.contains? org, "_" do
+                true -> where(w, [p], p.org_type == "department" and like(p.org, ^org))
+                false -> where(w, [p], p.org_type == "org" and p.org == ^org)
+              end
+          end
+      end
+    case time do
+      "" ->
+        cond do
+          type in ["year_time", "half_year", "season_time", "month_time"] ->
+            where(w, [p], p.time_type == ^type)
+          true ->
+            w
+        end
+      _ ->
+        case type in ["year_time", "half_year", "season_time", "month_time"] do
+          true ->  where(w, [p], p.time == ^time and p.time_type == ^type)
+          false -> where(w, [p], p.time == ^time)
+        end
+    end
   end
 end

@@ -31,7 +31,7 @@ defmodule Library.RuleIcd10 do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:code, :name, :codes, :dissect, :icdcc, :icdc, :icdc_az, :adrg, :cc, :nocc_1, :nocc_a, :nocc_aa, :mcc, :org, :year, :version, :plat, :mdc])
-    |> validate_required([])
+    |> validate_required([:code])
   end
 
 end
