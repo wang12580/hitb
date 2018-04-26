@@ -218,8 +218,17 @@ $.ajax({
   success: function(data) {
     let html = '';
     if('<%=@type%>' == 'org'){
+      $('#code').val(data.data.code);
+      $('#org_name').val(data.data.name);
+      $('#level').val(data.data.level);
+      $('#type').val(data.data.type);
+      $('#province').val(data.data.province);
+      $('#city').val(data.data.city);
+      $('#county').val(data.data.county);
+      $('#person_name').val(data.data.person_name);
+      $('#tel').val(data.data.tel);
+      $('#email').val(data.data.email);
     }else if('<%=@type%>' == 'department'){
-      console.log(data.data);
       $('#wt4_department').val(data.data.wt_code);
       $('#wt_name').val(data.data.wt_name);
       $('#org').val(data.data.org);
@@ -253,7 +262,6 @@ function write_html(){
   //输出科省份列表
   var html = '';
   province.forEach(function(value){
-    console.log(value);
     if('result.province' == value){
       html = html+'<option value="'+value+'" selected="selected">'+value+'</option>'
     }else{
@@ -268,7 +276,6 @@ $("#province").change(function(){get_city(city,county)});
 function get_city(city,county){
   city_list = city[$("#province").val()];
   var html = '';
-  console.log($("#province").val());
   city_list.forEach(function(val){
     if('result.city' == val){
       html = html+'<option value="'+val+'" selected="selected">'+val+'</option>'
@@ -442,7 +449,6 @@ function write_html(){
   org_list.forEach(function(val){
     html = html+'<option value="'+val.name+'">'+val.name+'</option>'
   })
-  console.log(html);
   $("#org").html(html);
 }
 //保存

@@ -55,8 +55,8 @@ defmodule BlockWeb.Router do
     post "/open", AccountController, :openAccount
     post "/open2", AccountController, :openAccount2
     get  "/getBalance", AccountController, :getBalance
-    get "/getPublicKey", AccountController, :getPublickey
-    post "/generatePublicKey", AccountController, :generatePublickey
+    get "/getPublicKey", AccountController, :getPublicKey
+    post "/generatePublicKey", AccountController, :generatePublicKey
     get "/delegates", AccountController, :getDelegates
     get "/delegates/fee", AccountController, :getDelegatesFee
     put "/delegates", AccountController, :addDelegates
