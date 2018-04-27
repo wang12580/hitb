@@ -6,5 +6,5 @@ config :hitbserver, Hitbserver.Repo,
   username: "postgres",
   password: "postgres",
   database: "hitbserver_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10

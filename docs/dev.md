@@ -5,6 +5,8 @@
 * docker run --name hitb --link postgres:postgres -p 4000:4000 -v /d/git/hitb:/hitb -it hitb
 * cd /hitb/hitb_umbrella
 * mix deps.get
+* mix ecto.create
+* mix ecto.migrate
 * mix phx.server
 * exit
 * docker start -i hitb
