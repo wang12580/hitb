@@ -126,18 +126,18 @@ let str_jb = ""
  let str_title = ""
  $('#rule_tit').children().remove();
  if ("<%=@year%>" != "") {
-  str_title = `<a class='ui blue label'>${'<%=@year%>'}年<i class='delete icon' onclick=del()></i> </a>`
+  str_title = `<a class='ui blue label'>${'<%=@year%>'}年<i class='delete icon' onclick=del('year')></i> </a>`
  } else if ("<%=@dissect%>" != "") {
-   str_title = `<a class='ui blue label'>${'<%=@dissect%>'}<i class='delete icon' onclick=del()></i> </a>`
+   str_title = `<a class='ui blue label'>${'<%=@dissect%>'}<i class='delete icon' onclick=del('dissect')></i> </a>`
  }
  $('#rule_tit').append(str_title);
  $('#tb_ha').children().remove();
  let str_tables_h_1 = ""
  let str_tables_h_2 = ""
  if (["icd9", "icd10"].includes("<%=@tab_type%>")) {
-   str_tables_h_1 = "<th>名称</th><th>编码</th>"
+   str_tables_h_1 = "<th>名称</th><th>编码</th><th>版本</th>"
  } else {
-   str_tables_h_1 = "<th>编码</th><th>名称</th>"
+   str_tables_h_1 = "<th>编码</th><th>名称</th><th>版本</th>"
    if (!["mdc", "adrg", "drg", "icd9", "icd10"].includes("<%=@tab_type%>")) {
      str_tables_h_2 ="<th>类型</th>"
    }
@@ -153,10 +153,11 @@ let str_jb = ""
  let str_tables_b_2 =""
  let str_tables_b_3 =""
  info.result.forEach((n, index) => {
+   console.log(n);
    if (["icd9", "icd10"].includes("<%=@tab_type%>") && "<%=@tab_type%>" == "CN") {
-     str_tables_b_2 =`<td>${n.name}</td><td>${n.codes.join('/')}</td>`
+     str_tables_b_2 =`<td>${n.name}</td><td>${n.codes.join('/')}</td><td>${n.version}</td>`
    } else {
-     str_tables_b_2 =`<td>${n.code}</td><td>${n.name}</td>`
+     str_tables_b_2 =`<td>${n.code}</td><td>${n.name}</td><td>${n.version}</td>`
      if (!["mdc", "adrg", "drg", "icd9", "icd10"].includes("<%=@tab_type%>")) {
        str_tables_b_3 = `<td>${n.type}</td>`
      }
@@ -172,7 +173,7 @@ let str_foot_2 =""
    if (('<%=@page%>').toString() == n.num) {
     str_foot_1 = `<a class="disabled item">${n.num}</a>`
    } else {
-     str_foot_1 = `<a class="item" href="/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${n.page}&tab_type=${"<%=@tab_type %>"}">${n.num}</a>`
+     str_foot_1 = `<a class="item" href="/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${n.page}&tab_type=${"<%=@tab_type %>"}&year=${"<%=@year %>"}">${n.num}</a>`
    }
    str_foot =str_foot+ str_foot_1
  })
