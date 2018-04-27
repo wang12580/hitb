@@ -67,13 +67,15 @@ defmodule LibraryWeb.PageController do
       if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
         type = String.to_atom(type)
         #判断值
+        IO.inspect year
+        IO.inspect dissect
         query =
           cond do
             year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
             version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-            year == "" or dissect == "" -> from(w in tab)
             year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
             dissect != "" and year == "" -> from(w in tab)|>where([w], w.dissect == ^dissect)
+            year == "" or dissect == "" -> from(w in tab)
             dissect != "" and year != ""-> from(w in tab)|>where([w], w.dissect == ^dissect and w.year == ^year)
             true -> from(w in tab)
           end
