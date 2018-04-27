@@ -1,4 +1,6 @@
 ### docker命令
+* docker pull nginx
+* docker run --name nginx -v /d/hitb/docs/:/etc/nginx/conf.d/ -p 80:80 -d nginx
 * docker pull postgres:9.6
 * docker run --name postgres -e POSTGRES_PASSWORD=postgres -d postgres:9.6
 * docker build -t hitb .
