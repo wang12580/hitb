@@ -53,5 +53,5 @@ config :server, Server.Repo,
   username: "postgres",
   password: "postgres",
   database: "server_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10

@@ -15,5 +15,5 @@ config :edit, Edit.Repo,
   username: "postgres",
   password: "postgres",
   database: "edit_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox

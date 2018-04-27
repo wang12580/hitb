@@ -53,5 +53,5 @@ config :edit, Edit.Repo,
   username: "postgres",
   password: "postgres",
   database: "edit_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10
