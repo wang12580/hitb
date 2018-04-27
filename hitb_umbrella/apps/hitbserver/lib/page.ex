@@ -2,13 +2,20 @@ defmodule Hitbserver.Page do
   #求当前页的skip值(当前页码,每页条数)
   def skip(page, num) do
     #定义每页条目数量
-    (elem(Integer.parse(page),0)-1)*num
+    cond do
+      is_integer(page) -> (page-1)*num
+      is_bitstring(page) -> (elem(Integer.parse(page),0)-1)*num
+    end
   end
 
   #求分页列表(当前页码,数据库skip,总计条数,每页条数)
   def page_list(page, count, num) do
     #定义每页条目数量
-    page = elem(Integer.parse(page),0)
+    page =
+      cond do
+        is_integer(page) -> page
+        is_bitstring(page) -> elem(Integer.parse(page),0)
+      end
     #求总页数
     page_count =  Float.ceil(count/num)
     page_count = elem(Integer.parse(to_string(page_count)), 0)

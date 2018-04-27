@@ -39,8 +39,12 @@ defmodule BlockWeb.TransactionController do
 
   def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
     block = Repos.BlockRepository.get_block_by_hash(hash)
-    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
-    json conn, %{data: transaction}
+    IO.inspect block
+    case block do
+      [] -> json conn, %{data: []}
+      _ -> transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
+           json conn, %{data: transaction}
+    end
   end
 
 

@@ -13,19 +13,8 @@ defmodule Stat.MyRepo do
     order = String.to_atom(order)
     #如果有下载任务,进行下载查询
     {list, count, _, stat, tool} =
-      if(stat == nil or stat_type == "download")do
-        #获取各种keys
-        key = Key.key(username, drg, type, tool_type, page_type) #英文key
-        # IO.inspect key
-        cnkey = Enum.map(key, fn x -> Key.cnkey(x) end) #中文key
-        thkey = Enum.map(key, fn x -> %{cnkey: Key.cnkey(x), key: x} end) #表头key
-        #取缓存stat
-        # stat = ConCache.get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Time.sdata_date()])
-        stat = Hitbserver.ets_get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Hitbserver.Time.sdata_date()])
-        order = if(is_bitstring(order))do String.to_atom(order) else order end
-        #如果有下载任务,进行下载查询
-        # if(stat == nil or stat_type == "download")do
-        if(true)do
+      cond do
+        stat_type == "download" or stat == nil ->
           list =
             cond do
               type == "org" ->
@@ -80,43 +69,30 @@ defmodule Stat.MyRepo do
               "asc" -> order_by(query, [p], [asc: field(p, ^order)])
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])
             end
-          query2 = query
-          stat = limit(query, [p], ^rows_num)
-              |>offset([p], ^skip)
-              |>Repo.all
-          Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat})
-
-          {list, count, skip, stat}
-        else
-          {list, count, skip, stat} = stat
-        end
-        #按照字段取值
-        #如果有下载任务,进行下载查询
-        if(stat_type == "download")do
-          stat = Repo.all(query2)
-        end
-        stat = Enum.map(stat, fn x ->
-            Enum.map(["id", "org_type", "etype", "time_type", "int_time", "__struct__"] ++ key, fn x -> String.to_atom(x) end)
-            |>Enum.reduce(%{}, fn k, acc ->
-                v = Map.get(x, k)
-                cond do
-                  is_nil(v) -> Map.put(acc, k, "-")
-                  is_float(v) ->  Map.put(acc, k, Float.round(v, 4))
-                  true -> Map.put(acc, k, v)
-                end
-              end)
-          end)
-        tool = []
-        IO.inspect "sssss"
-        stat = stat
-          |>Enum.map(fn x ->
-              a = key
-              |>Enum.map(fn x -> if(is_bitstring(x))do String.to_atom(x) else x end end)
-              |>Enum.map(fn k -> Map.get(x, k) end)
+          query = if(stat_type == "download")do query else limit(query, [p], ^rows_num)|>offset([p], ^skip) end
+          IO.inspect query
+          stat = Repo.all(query)
+            |>Enum.map(fn x ->
+                key
+                |>Enum.map(fn x ->
+                    if(is_bitstring(x))do String.to_atom(x) else x end
+                  end)
+                |>Enum.map(fn k ->
+                    v = Map.get(x, k)
+                    cond do
+                      is_nil(v) -> Stat.Rand.rand(k, nil)
+                      is_float(v) ->  Float.round(v, 4)
+                      is_integer(v) ->  Stat.Rand.rand(k, nil)
+                      true -> v
+                    end
+                  end)
             end)
-        {list, count, skip, stat, tool}
-      else
-        Tuple.append(stat, [])
+          stat = [key, cnkey] ++ stat
+          Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat})
+          tool = []
+          {list, count, skip, stat, tool}
+        true ->
+          Tuple.append(stat, [])
       end
     #求分页列表
     {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows_num)

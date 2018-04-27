@@ -5,7 +5,8 @@ defmodule BlockWeb.PeerController do
     Functionality for managing peers
   """
 
-  def add_peer(conn, peer_data) do
+  def add_peer(conn, %{"peer_data" => peer_data}) do
+    IO.inspect peer_data
     %{"host" => host, "port" => port} = peer_data
     result = Peers.P2pSessionManager.connect(host, port)
     if result == :fail do

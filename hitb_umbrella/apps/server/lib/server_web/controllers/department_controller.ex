@@ -23,11 +23,11 @@ defmodule ServerWeb.DepartmentController do
   end
 
   def show(conn, %{"id" => id}) do
-    # id = 1
-    department = Repo.get!(Hospitals.CustomizeDepartment, id)
+    # id = 1\
+    department = Repo.get!(Server.Department, id)
     # department = SchemaHospitals.get_department!(id)
-    json conn, %{department: department}
-    # render(conn, "show.json", department: department)
+    # json conn, %{department: department}
+    render(conn, "show.json", department: department)
   end
 
   def update(conn, %{"id" => id, "department" => department_params}) do
