@@ -84,6 +84,7 @@ defmodule HitbserverWeb.Router do
 
     #统计分析
     get "/stat_html", StatController, :stat
+    get "/stat_html2", StatController, :stat2
     get "/contrast", StatController, :contrast
     get "/stat_info", StatController, :stat_info
     #系统设置
@@ -110,7 +111,7 @@ defmodule HitbserverWeb.Router do
   scope "/hospitals", HitbserverWeb do
     pipe_through :api
 
-    
+
     post "/login", PageController, :login
     #省市县三级联动
     get "/province", ServerController, :province
