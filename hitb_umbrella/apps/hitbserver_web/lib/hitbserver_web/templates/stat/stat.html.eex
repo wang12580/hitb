@@ -1,7 +1,15 @@
+<div id="app">
 <div class="ui padded grid"  id="div">
   <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
-    <div class="ui secondary vertical menu" id="left_list">
-
+    <div class="ui secondary vertical menu">
+      <%= cond do%>
+        <% @type in ["org", "department", "heal", "case"] -> %>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&time=<%=@time%>&drg=<%=@drg%>&order_type=<%=@order_type%>&org='+x">{{ x }}</a>
+        <% @type in ["year_time", "half_year", "season_time", "month_time"] -> %>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&drg=<%=@drg%>&order_type=<%=@order_type%>&time='+x">{{ x }}</a>
+        <% @type in ["mdc", "adrg", "drg"] -> %>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&order_type=<%=@order_type%>&drg='+x">{{ x }}</a>
+        <% end %>
     </div>
   </div>
   <div class="fourteen wide column" id="div_out">
@@ -35,18 +43,13 @@
         </div>
         <div class="item">
           <div class="ui purple button" onclick="download()">下载</div>
-
         </div>
-          <div class="item">
-
-          </div>
-
-        <div class="item" style="display:none;" id="combut">
-          <div class="ui violet button" onclick="com()">对比</div>
+        <div class="item" v-show="clickedX.length > 0 || clickedY.length > 0">
+          <div class="ui violet button" onclick="com()">对比</div>&nbsp;&nbsp;
           <div class="ui violet button" onclick="com_clear()">清空对比</div>
         </div>
-        <div class="item" style="display:none;" id="stat_info">
-          <div class="ui green button" onclick="stat_info()" id="stat_info_but">详情</div>
+        <div class="item" v-show="clickedX.length > 0">
+          <div class="ui green button" v-on:click="stat_info">{{statInfo}}&nbsp;&nbsp;详情</div>
         </div>
       </div>
       <%=if(@org != "")do %>
@@ -59,16 +62,18 @@
         <a class="ui teal label"><%=@drg%> <i class="delete icon" onclick="del('drg')"></i> </a>
       <% end %>
       <!--缓存表格-->
-          <table class="ui celled compact table" id="com_table" style="display:none;">
+        <table class="ui celled compact table" v-show="clickedX.length > 0 || clickedY.length > 0">
           <thead>
             <tr>
               <th class = "center aligned" style="font-weight:normal;">机构/时间/病种</th>
-              <td id="x_comarr">
+              <td>
+                <a v-for="x in clickedX" class="ui label">{{x}}<i v-on:click="com_x(statX.indexOf(x))" title ="点击删除该条件" class="delete icon"></i></a>&nbsp;
               </td>
             </tr>
             <tr>
               <th class = "center aligned" style="font-weight:normal;">指标</th>
-              <td id="y_comarr">
+              <td>
+                <a v-for="y in clickedY" class="ui label">{{y}}<i v-on:click="com_y(headerCn.indexOf(y))" title ="点击删除该条件" class="delete icon"></i></a>&nbsp;
               </td>
             </tr>
           </thead>
@@ -76,349 +81,188 @@
       <!--缓存表格-->
     <!--分析表格-->
       <table class="ui single line celled table">
-        <thead id="stat_th">
+        <thead>
+          <tr class="center aligned">
+            <th v-for="(a, index) in headerCn" v-on:click="com_y(index)">
+              <a style="color:black" v-if="index === order && order_type === 'asc'"><i style="float:left;margin-top:2%" class="sort content ascending icon"></i></a>
+              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=asc&order='+headerEn[index]"><i style="float:left;margin-top:2%" class="sort content ascending icon" ></i></a>
+              {{ a }}
+              <a style="color:black" v-if="index === order && order_type === 'desc'"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>
+              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=desc&order='+headerEn[index]"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>
+            </th>
+          </tr>
         </thead>
-        <tbody id="stat_body">
+        <tbody>
+          <tr v-for="(xs, i) in stat" v-on:click="com_x(i)" v-bind:class="{'center aligned active': clickedX.includes(statX[i]), 'center aligned': !clickedX.includes(statX[i])}">
+            <td v-for="(x, index) in xs" v-bind:class="{'center aligned active': clickedY.includes(headerCn[index]), 'center aligned': !clickedY.includes(headerCn[index])}">
+                {{ x }}
+            </td>
+          </tr>
         </tbody>
       </table>
-        <div class="ui right floated pagination menu" id="page_list">
-
+        <div class="ui right floated pagination menu">
+          <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}"
+            :href="'/hospitals/stat_html?type=<%= @type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&page='+p.page">{{p.num}}</a>
        </div>
      </div>
   <!--分析表格-->
-  </div>
-
 <script>
-  //样式
-  //获取已经选择对比的行或列
-  var x_arr = []; //作为行选中集合
-  var y_arr = []; //作为列选中集合
-  var x_comarr = []; //作为对比表中行选中显示
-  var y_comarr = []; //作为对比表中列选中显示
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  const url = '/stat/stat_json'+'?'+'page=<%=@page_num%>&type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
+  common = new Vue({
+    el: '#app',
+    data: {
+      stat: [],
+      statX: [],
+      statInfo: '',
+      headerCn: [],
+      headerEn: [],
+      leftList: [],
+      pages: [],
+      page: 1,
+      order: 0,
+      order_type: 'asc',
+      clickedY: [],
+      clickedX: []
+    },
+    created: function () {
+      this.getStat(url);
+      this.getContrast();
+    },
+    methods: {
+      getStat: function(url) {
+        this.$ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: (res)=> {
+            this.stat = res.stat;
+            this.headerEn = this.stat[0];
+            this.headerCn = this.stat[1];
+            this.stat.splice(0, 2);
+            this.leftList = res.list[0][0];
+            this.pages = res.page_list;
+            this.page = res.page;
+            this.order = this.headerEn.indexOf(res.order);
+            this.order_type = res.order_type;
+            res.stat.forEach((x) => {
+              if (this.headerCn.includes('病种')) {
+                this.statX.push(`${x[0]}_${x[1]}_${x[2]}`);
+              } else {
+                this.statX.push(`${x[0]}_${x[1]}`);
+              }
+            })
+          }
+        });
+      },
+      getContrast: function() {
+        $.ajax({
+          type: "get",
+          url: `/stat/contrast_info?username=${'<%=@user.username%>'}`,
+          async: false,
+          success: (res)=> {
+            this.clickedX = res.x
+            this.clickedY = res.y
+            if (this.clickedX.length > 0) {
+              this.statInfo = this.clickedX[this.clickedX.length - 1]
+            }
+          }
+        });
+      },
+      com_y: function(index) {
+        index = this.headerCn[index]
+        if (!['机构','时间','病种'].includes(index)) {
+          if (this.clickedY.includes(index)) {
+            this.clickedY.splice(this.clickedY.indexOf(index), 1)
+            com_cache(index, 'del_y')
+          } else {
+            this.clickedY.push(index);
+            com_cache(index, 'add_y');
+          }
+        }
+      },
+      com_x: function(index) {
+        x = this.stat[index]
+        if (this.headerCn.includes('病种')) {
+          index = `${x[0]}_${x[1]}_${x[2]}`;
+        } else {
+          index = `${x[0]}_${x[1]}`;
+        }
+        if (this.clickedX.includes(index)) {
+          this.clickedX.splice(this.clickedX.indexOf(index), 1)
+          com_cache(index, 'del_x')
+        } else {
+          this.clickedX.push(index);
+          com_cache(index, 'add_x')
+        }
+        if (this.clickedX.length > 0) {
+          this.statInfo = this.clickedX[this.clickedX.length - 1]
+        }
+      },
+      stat_info: function() {
+        window.location.href = `/hospitals/stat_info?id=${this.statInfo}`;
+      },
+    }
+  })
+});
+//调用缓存操作
+function com_cache(id, type){
+  $.ajax({
+    type: "post",
+    url: '/stat/contrast',
+    data: {username: '<%=@user.username%>', field: id, url: 'page=<%=@page_num%>&type=<%= @type %>&tool_type=<%=@tool_type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&order_type=<%=@order_type%>&page_type=<%= @page_type%>', com_type: type},
+    async: false,
+    dataType: 'json'
+  });
+}
+//对比方法
+function com(type){
+  window.location.href = '/hospitals/contrast';
+}
+// 清空对比
+function com_clear(){
   $.ajax({
     type: "get",
-    url: '/stat/contrast_info?username='+'<%=@user.username%>',
+    url: '/stat/contrast_clear?username=<%=@user.username%>',
     async: false,
     success: function(data){
-      if(data['x'].length > 0 || data['y'].length > 0){
-        data['x'].forEach(function(val){
-          x_arr.push(val+'');
-        })
-        data['y'].forEach(function(val){
-          y_arr.push(val+'');
-        })
-        data['x'].forEach(function(val){
-          x_comarr.push(val);
-        })
-        data['y'].forEach(function(val){
-          y_comarr.push(val);
-        })
-      }
-      //如果选中超过两行,出现对比按钮
-      if(x_arr.length > 0){
-        $("#combut").css('display','block');
-      }
-      if(data['x'].length > 0 || data['y'].length > 0){
-        $("#com_table").css('display','table');
-      }else{
-        $("#com_table").css('display','none');
-      }
-      //如果行有选中,显示最后一条详情按钮
-      if(data['x'].length > 0){
-        $("#stat_info").css('display','block');
-        info = data['x'][data['x'].length-1];
-        $("#stat_info_but").html(info+'&nbsp;详情');
-        $("#stat_info_but").attr('name', info);
-      }
-      //重写已经加入对比的表格
-      write_stat(x_comarr, y_comarr);
+      location.reload();
     },
     dataType: 'json'
   });
-  //写现有对比网页
-  function write_stat(x, y){
-    html = '';
-    x.forEach(function(i){
-      html = html+'<a class="ui label">'+i+'<i title ="点击删除该条件" class="delete icon" onclick="com_x(\''+i+'\')"></i> </a>&nbsp;';
-    })
-    $('#x_comarr').html(html);
-    html = '';
-    y.forEach(function(i){
-      html = html+'<a class="ui label">'+i+'<i title ="点击删除该条件" class="delete icon" onclick="com_y(\''+i+'\')"></i> </a>&nbsp;';
-    })
-    $('#y_comarr').html(html);
-    if(y.length == 0 && x.length > 0){
-      $('#y_comarr').html('<a class="ui label">全部指标</a>&nbsp;');
-    }
+}
+//菜单按钮
+function change(type){
+  if(type == 'mdc' | type == 'adrg' | type == 'drg' | type == 'year_time' | type == 'half_year' | type == 'month_time' | type == 'season_time' | type == 'org' | type == 'department'){
+    window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type=<%=@page_type%>&type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
+  }else if(type == 'defined'){
+    window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type='+type+'&type=<%=@type%>&tool_type='+type+'&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
+  }else{
+    window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type=<%=@page_type%>&type=<%=@type%>&tool_type='+type+'&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
+  }
+}
+//下载
+function download(){
+  $.ajax({
+    type: "get",
+    url: '/stat/download_stat?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&username=<%=@user.username%>',
+    async: false,
+    success: function(data){
+      window.open(data['path']);
+    },
+    dataType: 'json'
+  });
+}
+//去除选择
+function del(type){
+  if(type == 'org'){
+    window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
+  }else if(type == 'time'){
+    window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
+  }else if(type == 'drg'){
+    window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
   }
 
-  //行选择
-  function com_x(id){
-    //判断是否选中
-    if(array_in(x_arr, id)){
-      //删除选中
-      $('#'+id).attr('class', 'center aligned');
-      //从行集中删除
-      x_arr = remove(x_arr, id);
-      //调用缓存
-      com_cache(id, 'del_x');
-      //对比表格显示
-      x_comarr = remove(x_comarr, id);
-      //如果没有任何一行,隐藏详情按钮
-      if(x_arr.length == 0){
-        $("#stat_info").css('display','none');
-      }else{
-        $("#stat_info").css('display','block');
-        info = x_comarr[x_comarr.length-1];
-        $("#stat_info_but").html(info+'&nbsp;详情');
-        $("#stat_info_but").attr('name', info);
-      }
-      write_stat(x_comarr, y_comarr);
-    }else{
-      //显示选中
-      $('#'+id).attr('class', 'active center aligned');
-      //添加到当前行集
-      x_arr.push(id);
-      x_arr = Array.from(new Set(x_arr));
-      //调用缓存
-      com_cache(id, 'add_x');
-      //对比表格显示
-      x_comarr.push(id);
-      //如果增加,显示最后一条详情按钮
-      if(x_comarr.length > 0){
-        $("#stat_info").css('display','block');
-        info = x_comarr[x_comarr.length-1];
-        $("#stat_info_but").html(info+'&nbsp;详情');
-        // $("#stat_info_but").attr('name', info.id);
-      }
-      write_stat(x_comarr, y_comarr);
-    }
-    //如果选中超过两行,出现对比按钮
-    if(x_arr.length >= 1){
-      $("#combut").css('display','block');
-    }else{
-      $("#combut").css('display','none');
-    }
-    //如果选中超过两行,出现对比按钮
-    if(x_arr.length == 0 & y_arr.length == 0){
-      $("#com_table").css('display','none');
-    }else{
-      $("#com_table").css('display','table');
-    }
-  }
-  //列选择
-  function com_y(id){
-    //取得id并设置样式
-    //判断是否选中
-    if(array_in(y_arr, id)){
-      //删除选中
-      $('.'+id).attr('class', id);
-      //从行集中删除
-      y_arr = remove(y_arr, id);
-      //操作记录
-      y_comarr = remove(y_comarr, id);
-      write_stat(x_comarr, y_comarr);
-      //调用缓存
-      com_cache(id, 'del_y');
-    }else{
-      //显示选中
-      $('.'+id).attr('class', 'active '+id);
-      //添加到当前行集
-      y_arr.push(id);
-      y_arr = Array.from(new Set(y_arr));
-      //操作记录
-      y_comarr.push(id);
-      write_stat(x_comarr, y_comarr);
-      //调用缓存
-      com_cache(id, 'add_y');
-    }
-    //如果选中超过两行,出现对比按钮
-    if(y_arr.length >= 1){
-      $("#combut").css('display','block');
-    }else{
-      $("#combut").css('display','none');
-    }
-    //如果选中超过两行,出现对比按钮
-    if(x_arr.length == 0 & y_arr.length == 0){
-      $("#com_table").css('display','none');
-    }else{
-      $("#com_table").css('display','table');
-    }
-  }
-  //调用缓存操作
-  function com_cache(id, type){
-    $.ajax({
-      type: "post",
-      url: '/stat/contrast',
-      data: {username: '<%=@user.username%>', field: id, url: 'page=<%=@page_num%>&type=<%= @type %>&tool_type=<%=@tool_type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&order_type=<%=@order_type%>&page_type=<%= @page_type%>', com_type: type},
-      async: false,
-      success: function(data){
-        // location.reload();
-      },
-      dataType: 'json'
-    });
-  }
-  //对比方法
-  function com(type){
-    window.location.href = '/hospitals/contrast';
-  }
-  //清除对比
-  function com_clear(){
-    $.ajax({
-      type: "get",
-      url: '/stat/contrast_clear?username=<%=@user.username%>',
-      async: false,
-      success: function(data){
-        location.reload();
-      },
-      dataType: 'json'
-    });
-  }
-  //菜单按钮
-  function change(type){
-    if(type == 'mdc' | type == 'adrg' | type == 'drg' | type == 'year_time' | type == 'half_year' | type == 'month_time' | type == 'season_time' | type == 'org' | type == 'department'){
-      window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type=<%=@page_type%>&type='+type+'&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
-    }else if(type == 'defined'){
-      window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type='+type+'&type=<%=@type%>&tool_type='+type+'&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
-    }else{
-      window.location.href = '/hospitals/stat_html?page=<%=@page_num%>&page_type=<%=@page_type%>&type=<%=@type%>&tool_type='+type+'&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%=@order%>&order_type=<%=@order_type%>';
-    }
-  }
-  //去除选择
-  function del(type){
-    if(type == 'org'){
-      window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
-    }else if(type == 'time'){
-      window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
-    }else if(type == 'drg'){
-      window.location.href = '/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
-    }
-
-  }
-  //分析详情
-  function stat_info(){
-    name = $('#stat_info_but').attr('name');
-    window.location.href = '/hospitals/stat_info?id='+name;
-  }
-  //跳转自定义
-  function redefined(){
-    window.location.href = '/hospitals/defined';
-  }
-  //下载
-  function download(){
-    $.ajax({
-      type: "get",
-      url: '/stat/download_stat'+'?'+'type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&username=<%=@user.username%>',
-      async: false,
-      success: function(data){
-        window.open(data['path']);
-      },
-      dataType: 'json'
-    });
-  }
-  //数组验证是否存在
-  function array_in(arr, code){
-    if(arr.indexOf(code) < 0){
-      return false;
-    }else {
-      return true;
-    }
-  }
-  //从数组删除
-  function remove(arr, item) {
-    for(var i = arr.length - 1; i >= 0; i--){
-      if(arr[i] === item){
-        arr.splice(i, 1);
-        return arr;
-      }
-    }
-  }
-  //复杂从数组删除
-  function obj_remove(arr, item) {
-    for(var i = arr.length - 1; i >= 0; i--){
-      if(arr[i].id === item){
-        arr.splice(i, 1);
-        return arr;
-      }
-    }
-  }
-</script>
-<script>
-  //分析获取
-  function getstat(url){
-    $.ajax({
-      type: "get",
-      url: url,
-      async: false,
-      success: function(data) {
-        stats = data.stat;
-        stat_th_en = stats[0];
-        stat_th_cn = stats[1];
-        let html = '';
-        let i = 0;
-        //左侧list
-        if(["org", "department", "heal", "case"].includes('<%=@type%>')){
-          data.list[0][0].forEach(function(i){
-            html = html+'<a class="item" href="/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org='+i+'&time=<%=@time%>&drg=<%=@drg%>&order_type=<%=@order_type%>" >'+i+'</a>';
-          });
-        }else if(["year_time", "half_year", "season_time", "month_time"].includes('<%=@type%>')){
-          data.list[0][0].forEach(function(i){
-            html = html+'<a class="item" href="/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&time='+i+'&drg=<%=@drg%>&order_type=<%=@order_type%>" >'+i+'</a>';
-          });
-        }else if(["mdc", "adrg", "drg"].includes('<%=@type%>')){
-          data.list[0][0].forEach(function(i){
-            html = html+'<a class="item" href="/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg='+i+'&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>" >'+i+'</a>';
-          });
-        }
-        $('#left_list').html(html);
-        //表头
-        html = '<tr class="center aligned">';
-        for(i;i<stat_th_cn.length;i++){
-          html = html+'<th>'
-          if(data.order == stat_th_en[i] && data.order_type == 'asc'){
-            html = html+'<a style="color:black"><i style="float:left;margin-top:2%" class="sort content ascending icon"></i></a>'
-          }else{
-            html = html+'<a style="color:#D9D9D9"><i style="float:left;margin-top:2%" class="sort content ascending icon"></i></a>'
-          }
-          html = html+'<span onclick="com_y(\''+stat_th_cn[i]+'\')">'+stat_th_cn[i]+'</span>';
-          if(data.order == stat_th_en[i] && data.order_type == 'desc'){
-            html = html+'<a style="color:black"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>'
-          }else{
-            html = html+'<a style="color:#D9D9D9"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>'
-          }
-          html = html+'</th>';
-        }
-        $('#stat_th').html(html+'</tr>');
-        //表格
-        html = '';
-        stats = remove(stats, stat_th_en);
-        stats = remove(stats, stat_th_cn);
-        stats.forEach(function(stat){
-          id = stat[0]+'_'+stat[1];
-          html = html+'<tr class="center aligned" id ="'+id+'" onclick = "com_x(\''+id+'\')">';
-          for(i=0;i<stat.length;i++){
-            if(stat[i] == null){
-              stat[i] = '-';
-            }
-            html = html+'<td class="'+stat_th_cn[i]+'">'+stat[i]+'</td>';
-          }
-          html = html+'</tr>';
-        });
-        $('#stat_body').html(html);
-        //分页列表
-        html = '';
-        data.page_list.forEach(function(page){
-          if(page.page == parseInt(data.page)){
-            html = html+'<a class="disabled item">'+page.num+'</a>'
-          }else {
-            html = html+'<a class="item" href="/hospitals/stat_html?page='+page.page+'&type=<%= @type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>" title = "'+page.page+'">'+page.num+'</a>'
-          }
-        });
-        $('#page_list').html(html);
-      },
-      dataType: 'json'
-    });
-  }
-
-  getstat('/stat/stat_json'+'?'+'page=<%=@page_num%>&type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>');
+}
 </script>

@@ -55,7 +55,7 @@ defmodule Repos.Application do
 
   defp init_peer() do
     init_peer = %Repos.Peer{
-      host:  "127.0.0.1",
+      host:  "139.129.165.56",
       port:  "4000",
       connect: true
     }
