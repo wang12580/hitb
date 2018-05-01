@@ -1,18 +1,18 @@
 <div id="app">
-<div class="ui padded grid"  id="div">
-  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
-    <div class="ui secondary vertical menu">
-      <%= cond do%>
-        <% @type in ["org", "department", "heal", "case"] -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&time=<%=@time%>&drg=<%=@drg%>&order_type=<%=@order_type%>&org='+x">{{ x }}</a>
-        <% @type in ["year_time", "half_year", "season_time", "month_time"] -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&drg=<%=@drg%>&order_type=<%=@order_type%>&time='+x">{{ x }}</a>
-        <% @type in ["mdc", "adrg", "drg"] -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&order_type=<%=@order_type%>&drg='+x">{{ x }}</a>
-        <% end %>
+  <div class="ui padded grid"  id="div">
+    <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
+      <div class="ui secondary vertical menu">
+        <%= cond do%>
+          <% @type in ["org", "department", "heal", "case"] -> %>
+            <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&time=<%=@time%>&drg=<%=@drg%>&order_type=<%=@order_type%>&org='+x">{{ x }}</a>
+          <% @type in ["year_time", "half_year", "season_time", "month_time"] -> %>
+            <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&drg=<%=@drg%>&order_type=<%=@order_type%>&time='+x">{{ x }}</a>
+          <% @type in ["mdc", "adrg", "drg"] -> %>
+            <a class="item" v-for="x in leftList" :href="'/hospitals/stat_html?page_type=<%=@page_type%>&type=<%=@type%>&tool_type=<%=@tool_type%>&org=<%=@org%>&time=<%=@time%>&order_type=<%=@order_type%>&drg='+x">{{ x }}</a>
+          <% end %>
+      </div>
     </div>
-  </div>
-  <div class="fourteen wide column" id="div_out">
+    <div class="fourteen wide column" id="div_out">
     <div class="ui big breadcrumb" style="background:#ffffff;">
       <a class="section" href="/hospitals">主页</a>
       <i class="right chevron icon divider"></i>
@@ -104,7 +104,7 @@
           <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}"
             :href="'/hospitals/stat_html?type=<%= @type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&page='+p.page">{{p.num}}</a>
        </div>
-     </div>
+</div>
   <!--分析表格-->
 <script>
 $(document).ready(function() {

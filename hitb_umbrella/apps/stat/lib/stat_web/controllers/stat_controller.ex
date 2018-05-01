@@ -305,10 +305,11 @@ defmodule StatWeb.StatController do
 
   #对比页新增对比
   def com_add(conn, %{"url" => url, "username" => username})do
-    {{_, type}, {_, tool_type}, {_, org}, {_, time}, {_, drg}} =
-      String.split(url, "&")
-      |>Enum.map(fn x -> List.to_tuple(String.split(x, "=")) end)
-      |>List.to_tuple
+    # {{_, type}, {_, tool_type}, {_, org}, {_, time}, {_, drg}} =
+    #   String.split(url, "&")
+    #   |>Enum.map(fn x -> List.to_tuple(String.split(x, "=")) end)
+    #   |>List.to_tuple
+    [type, org, time, drg, tool_type] = url
     #拆解url路径和参数
     {page, _, _, _, _, _, order, order_type, page_type} =
       case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do

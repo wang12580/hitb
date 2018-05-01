@@ -1,7 +1,8 @@
-<div class="ui padded grid"  id="div">
-  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;" id="div_left">
-    <div class="ui secondary vertical menu" id="add_list">
-
+<div id="app">
+  <div class="ui padded grid"  id="div">
+  <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;">
+    <div class="ui secondary vertical menu">
+      <div class="item" v-for="x in leftList" v-on:click="addContrast('<%=@type%>',x,'<%=@time%>','<%=@drg%>')">{{x}}<a class="ui label"><i class="plus icon"></i></a></div>
     </div>
   </div>
   <div class="fourteen wide column">
@@ -55,10 +56,15 @@
         </div>
         <div class="sixteen wide column">
             <table class="ui single line celled table">
-              <thead id="stat_th">
+              <thead>
+                <tr class="center aligned">
+                  <th v-for="(a, index) in headerCn">{{ a }}</th>
+                </tr>
               </thead>
-              <tbody id="stattable">
-
+              <tbody>
+                <tr v-for="(xs, i) in stat" class="center aligned">
+                  <td v-for="(x, index) in xs"> {{ x }} </td>
+                </tr>
               </tbody>
             </table>
         </div>
@@ -67,369 +73,283 @@
     </div>
 
   </div>
-<script>
-  //样式
-  $('.href_index').attr('class', 'href_index item');
-  $('#stat').attr('class','ui active dropdown icon item');
-
-  //添加对比
-  function add(type, org, time, drg){
-    console.log('----------------------------');
-    url = 'type='+type+'&tool_type=@tool_type&org='+org+'&time='+time+'&drg='+drg;
-    $.ajax({
-      type: "post",
-      url: '/stat/com_add/',
-      data: {url: url, username: '<%=@user.username%>'},
-      async: false,
-      success: function(data){
-        if(data['result']){
-          window.location.reload()
-          // window.location.href = `/hospitals/com_html?username = ${'<%=@user.username%>'}`;
-        }
-      },
-      dataType: 'json'
-    });
-  }
-  change('<%=@type%>');
-  //菜单按钮
-  function change(type){
-    if(type == 'year_time' | type == 'half_year' | type == 'month_time' | type == 'season_time'){
-      href = 'type='+type+'&tool_type=@tool_type&org=@org&time=&drg=@drg';
-    }else if(type == 'org'){
-      href = 'type='+type+'&tool_type=@tool_type&org=@org&time=@time&drg=@drg';
-    }else if(type == 'org' | type == 'department'){
-      href = 'type='+type+'&tool_type=@tool_type&org=@org&time=@time&drg=@drg';
-    }else if(type == 'mdc' | type == 'adrg' | type == 'drg'){
-      href = 'type='+type+'&tool_type=@tool_type&org=@org&time=@time&drg=';
-    }else if(type == 'heal'){
-      href = 'type='+type+'&tool_type=@tool_type&org=@org&time=@time&drg=@drg';
-    }else{
-      href = 'type=case&tool_type=@tool_type&org=@org&time=@time&drg=';
-    }
-    html = '';
-    $.ajax({
-      type: "get",
-      url: '/stat/contrast_list?username='+'<%=@user.username%>',
-      // data: {url: href},
-      async: false,
-      success: function(data){
-        data['list'].forEach((val) => {
-          // console.log('<%=@drg%>');
-          // if(is_add == '1'){
-            html = html + `<div class="item">${val}<a class="ui label" onclick="add('${type}','${val}','${'<%=@time%>'}','${'<%=@drg%>'}')"><i class="plus icon"></i></a></div>`
-            // html = html+'<div class="item">'+val+'<a class="ui label" onclick="add(\''+type+'\',\''+val+'\',\'<%= @time%>\',\'<%= @drg%>\')"><i class="plus icon"></i></a></div>';
-          // }else{
-            // html = html+'<div class="item">'+val+'</div>';
-          // }
-
-        });
-      },
-      dataType: 'json'
-    });
-    $('#add_list').html(html);
-  }
-</script>
+</div>
 <script src="<%= static_path(@conn, "/css/echarts/echarts.min.js") %>"></script>
 <script src="<%= static_path(@conn, "/css/echarts/ecStat.js") %>"></script>
-<script type="text/javascript">
-  $.ajax({
-    type: "get",
-    url: '/stat/contrast_chart?chart_type=radar&username='+'<%=@user.username%>',
-    async: false,
-    success: function(data){
-      chart_data = data.data;
-      chart_key = data.chart_key;
-      indicator = data.indicator;
+<script>
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#app',
+    data: {
+      stat: [],
+      statX: [],
+      statInfo: '',
+      headerCn: [],
+      headerEn: [],
+      leftList: [],
+      pages: [],
+      page: 1,
+      order: 0,
+      order_type: 'asc',
+      clickedY: [],
+      clickedX: []
     },
-    dataType: 'json'
-  });
-  var myChart = echarts.init(document.getElementById('charts'));
-  option = {
-      title: {
-          text: ''
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross'
-        }
-      },
-      legend: {
-          data: chart_key,
-          type: 'scroll',
-          width: '80%'
-      },
-      radar: {
-          //scale: 'true',
-          name: {
-              formatter:'{value}',
-              textStyle: {color:'#000000'},
-              textStyle: {
-                  color: '#fff',
-                  backgroundColor: '#999',
-                  borderRadius: 3,
-                  padding: [1, 5]
-             }
-          },
-          indicator: indicator
-      },
-      series: [{
-          name: '对比',
-          type: 'radar',
-          data : chart_data
-      }]
-  };
-  myChart.setOption(option);
-</script>
-<script>
-  $.ajax({
-    type: "get",
-    url: '/stat/contrast_chart?chart_type=bar&username='+'<%=@user.username%>',
-    async: false,
-    success: function(data){
-      series = data.series;
-      chart_key = data.chart_key;
-      xAxis = data.xAxis;
+    created: function () {
+      this.getList();
+      this.getContrast();
+      this.chartRadar('charts');
+      this.chartBar('charts2');
     },
-    dataType: 'json'
-  });
-  var myChart2 = echarts.init(document.getElementById('charts2'));
-  option2 = {
-      tooltip : {trigger: 'axis'},
-      legend: {
-        data: chart_key,
-        type: 'scroll',
-        width: '60%' },
-      toolbox: {
-        show: true,
-        feature:{
-          magicType: {type: ['bar','line','stack','tiled']},
-          saveAsImage: {}
-        }
-      },
-      calculable : true,
-      xAxis : [xAxis],
-      yAxis : [{type : 'value'}],
-      series : series
-  };
-  myChart2.setOption(option2);
-</script>
-<script>
-  scatter = [];
-  col = "-1"
-  function pie(value) {
-    if (["org","time","drg2"].indexOf(value) == -1) {
-      if (scatter.indexOf(value) != -1) {
-        scatter.splice(scatter.indexOf(value),1);
-      } else {
-        scatter.push(value)
-      }
-      if (scatter.length > 2) {
-        scatter.splice(0,1);
-      }
-      $('#stattable').children().children().css("background","");
-      scatter.forEach ((n) => {
-        $('.'+ n).css("background","#e0e0e0");
-      })
-      type = 'bar'
-      col = '';
-      if (scatter.length  == 0) {
-        type = 'bar'
-        col = '';
-        $('#fatherchart').children().remove();
-        $('#fatherchart').append("<div id = 'charts2' style ='height: 100%'></div>")
-        var myChart2 = echarts.init(document.getElementById('charts2'));
-      } else if (scatter.length  == 1) {
-        type = 'pie'
-        col = scatter[0];
-        $('#fatherchart').children().remove();
-        $('#fatherchart').append("<div id = 'charts3' style ='height: 100%'></div>")
-        var myChart3 = echarts.init(document.getElementById('charts3'));
-      } else if (scatter.length  == 2) {
-        type = 'scatter'
-        col = scatter[0] +'-'+scatter[1];
-        $('#fatherchart').children().remove();
-        $('#fatherchart').append("<div id = 'charts4' style ='height: 100%'></div>")
-        var myChart4 = echarts.init(document.getElementById('charts4'));
-      }
-      data_name = [];
-      series = [];
-      data4 = [];
-      data4_name = '';
-      data4_x = 0;
-      data4_y = 0;
-      $.ajax({
-        type: "get",
-        url: '/hospitals/com_chart?chart_type='+type+'&chart_key=' + col,
-        async: false,
-        success: function(data){
-          if (type == 'pie') {
-            data_name = data.data;
-            series = data.series;
-          } else if (type == 'scatter'){
-            data4 = data.data;
-            data4_name = data.xkey;
-            data4_x = data.xSeries;
-            data4_y = data.ySeries;
+    methods: {
+      getList: function() {
+        this.$ajax({
+          type: 'GET',
+          url: `/stat/contrast_list?username=${'<%=@user.username%>'}`,
+          dataType: 'json',
+          success: (res)=> {
+            this.leftList = res.list;
           }
-        },
-        dataType: 'json'
-      });
-      option3 = {
-        tooltip : {
-            trigger: 'item',
-            formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
-            data: data_name
-        },
-        series : [
-            {
-                name: '访问来源',
-                type: 'pie',
-                radius : '55%',
-                center: ['50%', '60%'],
-                data: series,
-                itemStyle: {
-                    emphasis: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
-                }
-            }
-        ]
-      };
-      // See https://github.com/ecomfe/echarts-stat
-      var myRegression = ecStat.regression('polynomial', data4, 3)
-      myRegression.points.sort(function(a, b) {
-          return a[0] - b[0];
-      });
-      option4 = {
-          tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                  type: 'cross'
-              }
-          },
-          xAxis: {
-              type: 'value',
-              min: data4_x,
-              splitLine: {
-                  lineStyle: {
-                      type: 'dashed'
-                  }
-              },
-              splitNumber: 20
-          },
-          yAxis: {
-              type: 'value',
-              min: data4_y-100,
-              splitLine: {
-                  lineStyle: {
-                      type: 'dashed'
-                  }
-              }
-          },
-          grid: {
-              top: 90
-          },
-          series: [{
-              name: data4_name,
-              type: 'scatter',
-              label: {
-                  emphasis: {
-                      show: true,
-                      position: 'right',
-                      textStyle: {
-                          color: 'blue',
-                          fontSize: 16
-                      }
-                  }
-              },
-              data: data4
-          }, {
-              name: '曲线值',
-              type: 'line',
-              smooth: true,
-              showSymbol: false,
-              data: myRegression.points,
-              markPoint: {
-                  itemStyle: {
-                      normal: {
-                          color: 'transparent'
-                      }
-                  },
-                  label: {
-                      normal: {
-                          show: true,
-                          position: 'left',
-                          formatter: myRegression.expression,
-                          textStyle: {
-                              color: '#333',
-                              fontSize: 14
-                          }
-                      }
-                  },
-                  data: [{
-                      coord: myRegression.points[myRegression.points.length - 1]
-                  }]
-              }
-          }]
-      };
-      if (scatter.length  == 0) {
-        myChart2.setOption(option2);
-      } else if (scatter.length  == 1) {
-        myChart3.setOption(option3);
-      } else if (scatter.length  == 2) {
-        myChart4.setOption(option4);
-      }
-    }
-  }
-</script>
-<script>
-  //从数组删除
-  function remove(arr, item) {
-    for(var i = arr.length - 1; i >= 0; i--){
-      if(arr[i] === item){
-        arr.splice(i, 1);
-        return arr;
-      }
-    }
-  }
-  //调用
-  $.ajax({
-    type: "get",
-    url: '/stat/contrast?username='+'<%=@user.username%>',
-    async: false,
-    success: function(data){
-      let html = '';
-      stat_th = data.stat[0];
-      stat = remove(data.stat, stat_th);
-      //表头
-      html = '<tr class="center aligned">';
-      stat_th.forEach(function(s){
-        html = html+'<th>'+s+'</th>';
-      });
-      $('#stat_th').html(html+'</tr>');
-      //表格
-      html = '';
-      console.log(stat)
-      stat.forEach(function(x){
-        html = html+'<tr class="center aligned">';
-        x.forEach(function(i){
-          if (i === null) {
-            i = "--"
-          }
-          html = html+'<td>'+i+'</td>';
         });
-        html = html+'</tr>';
-      });
-      $('#stattable').html(html);
-    },
-    dataType: 'json'
-  });
-
+      },
+      getContrast: function() {
+        this.$ajax({
+          type: 'GET',
+          url: `/stat/contrast?username=${'<%=@user.username%>'}`,
+          dataType: 'json',
+          success: (res)=> {
+            this.stat = res.stat;
+            this.headerCn = this.stat[0];
+            this.stat.splice(0, 1);
+          }
+        });
+      },
+      addContrast: function(type, org, time, drg) {
+        url = 'type='+type+'&tool_type=@tool_type&org='+org+'&time='+time+'&drg='+drg;
+        this.$ajax({
+          type: 'POST',
+          url: `/stat/com_add/`,
+          data: {url: [type, org, time, drg, ''], username: '<%=@user.username%>'},
+          dataType: 'json',
+          success: (res)=> {
+            if(res['result']){
+              window.location.reload()
+            }
+          }
+        });
+      },
+      chartRadar: function(id) {
+        this.$ajax({
+          type: 'GET',
+          url: `/stat/contrast_chart?chart_type=radar&username=${'<%=@user.username%>'}`,
+          dataType: 'json',
+          success: (res)=> {
+            option = {
+                title: {text: ''},
+                tooltip: {trigger: 'axis', axisPointer:{ type: 'cross' }},
+                legend: {data: res.chart_key, type: 'scroll', width: '80%'},
+                radar: {name: {formatter:'{value}', textStyle: {color:'#000000'}, textStyle: {color: '#fff', backgroundColor: '#999', borderRadius: 3, padding: [1, 5]}}, indicator: res.indicator},
+                series: [{name: '对比', type: 'radar', data : res.data}]
+            };
+            setOption(id, option)
+          }
+        });
+      },
+      chartBar: function(id) {
+        this.$ajax({
+          type: 'GET',
+          url: `/stat/contrast_chart?chart_type=bar&username=${'<%=@user.username%>'}`,
+          dataType: 'json',
+          success: (res)=> {
+            option = {tooltip : {trigger: 'axis'},
+                legend: {data: res.chart_key, type: 'scroll', width: '60%' },
+                toolbox: {show: true, feature:{magicType: {type: ['bar','line','stack','tiled']}, saveAsImage: {}}},
+                calculable : true,
+                xAxis : [res.xAxis],
+                yAxis : [{type : 'value'}],
+                series : res.series};
+            setOption(id, option)
+          }
+        });
+      },
+    }
+  })
+});
+function setOption(id, option) {
+  myChart = echarts.init(document.getElementById(id));
+  myChart.setOption(option);
+}
+// scatter = [];
+// col = "-1"
+// function pie(value) {
+//   if (["org","time","drg2"].indexOf(value) == -1) {
+//     if (scatter.indexOf(value) != -1) {
+//       scatter.splice(scatter.indexOf(value),1);
+//     } else {
+//       scatter.push(value)
+//     }
+//     if (scatter.length > 2) {
+//       scatter.splice(0,1);
+//     }
+//     $('#stattable').children().children().css("background","");
+//     scatter.forEach ((n) => {
+//       $('.'+ n).css("background","#e0e0e0");
+//     })
+//     type = 'bar'
+//     col = '';
+//     if (scatter.length  == 0) {
+//       type = 'bar'
+//       col = '';
+//       $('#fatherchart').children().remove();
+//       $('#fatherchart').append("<div id = 'charts2' style ='height: 100%'></div>")
+//       var myChart2 = echarts.init(document.getElementById('charts2'));
+//     } else if (scatter.length  == 1) {
+//       type = 'pie'
+//       col = scatter[0];
+//       $('#fatherchart').children().remove();
+//       $('#fatherchart').append("<div id = 'charts3' style ='height: 100%'></div>")
+//       var myChart3 = echarts.init(document.getElementById('charts3'));
+//     } else if (scatter.length  == 2) {
+//       type = 'scatter'
+//       col = scatter[0] +'-'+scatter[1];
+//       $('#fatherchart').children().remove();
+//       $('#fatherchart').append("<div id = 'charts4' style ='height: 100%'></div>")
+//       var myChart4 = echarts.init(document.getElementById('charts4'));
+//     }
+//     data_name = [];
+//     series = [];
+//     data4 = [];
+//     data4_name = '';
+//     data4_x = 0;
+//     data4_y = 0;
+//     $.ajax({
+//       type: "get",
+//       url: '/hospitals/com_chart?chart_type='+type+'&chart_key=' + col,
+//       async: false,
+//       success: function(data){
+//         if (type == 'pie') {
+//           data_name = data.data;
+//           series = data.series;
+//         } else if (type == 'scatter'){
+//           data4 = data.data;
+//           data4_name = data.xkey;
+//           data4_x = data.xSeries;
+//           data4_y = data.ySeries;
+//         }
+//       },
+//       dataType: 'json'
+//     });
+//     option3 = {
+//       tooltip : {
+//           trigger: 'item',
+//           formatter: "{a} <br/>{b} : {c} ({d}%)"
+//       },
+//       legend: {
+//           orient: 'vertical',
+//           left: 'left',
+//           data: data_name
+//       },
+//       series : [
+//           {
+//               name: '访问来源',
+//               type: 'pie',
+//               radius : '55%',
+//               center: ['50%', '60%'],
+//               data: series,
+//               itemStyle: {
+//                   emphasis: {
+//                       shadowBlur: 10,
+//                       shadowOffsetX: 0,
+//                       shadowColor: 'rgba(0, 0, 0, 0.5)'
+//                   }
+//               }
+//           }
+//       ]
+//     };
+//     // See https://github.com/ecomfe/echarts-stat
+//     var myRegression = ecStat.regression('polynomial', data4, 3)
+//     myRegression.points.sort(function(a, b) {
+//         return a[0] - b[0];
+//     });
+//     option4 = {
+//         tooltip: {
+//             trigger: 'axis',
+//             axisPointer: {
+//                 type: 'cross'
+//             }
+//         },
+//         xAxis: {
+//             type: 'value',
+//             min: data4_x,
+//             splitLine: {
+//                 lineStyle: {
+//                     type: 'dashed'
+//                 }
+//             },
+//             splitNumber: 20
+//         },
+//         yAxis: {
+//             type: 'value',
+//             min: data4_y-100,
+//             splitLine: {
+//                 lineStyle: {
+//                     type: 'dashed'
+//                 }
+//             }
+//         },
+//         grid: {
+//             top: 90
+//         },
+//         series: [{
+//             name: data4_name,
+//             type: 'scatter',
+//             label: {
+//                 emphasis: {
+//                     show: true,
+//                     position: 'right',
+//                     textStyle: {
+//                         color: 'blue',
+//                         fontSize: 16
+//                     }
+//                 }
+//             },
+//             data: data4
+//         }, {
+//             name: '曲线值',
+//             type: 'line',
+//             smooth: true,
+//             showSymbol: false,
+//             data: myRegression.points,
+//             markPoint: {
+//                 itemStyle: {
+//                     normal: {
+//                         color: 'transparent'
+//                     }
+//                 },
+//                 label: {
+//                     normal: {
+//                         show: true,
+//                         position: 'left',
+//                         formatter: myRegression.expression,
+//                         textStyle: {
+//                             color: '#333',
+//                             fontSize: 14
+//                         }
+//                     }
+//                 },
+//                 data: [{
+//                     coord: myRegression.points[myRegression.points.length - 1]
+//                 }]
+//             }
+//         }]
+//     };
+//     if (scatter.length  == 0) {
+//       myChart2.setOption(option2);
+//     } else if (scatter.length  == 1) {
+//       myChart3.setOption(option3);
+//     } else if (scatter.length  == 2) {
+//       myChart4.setOption(option4);
+//     }
+//   }
+// }
 </script>
