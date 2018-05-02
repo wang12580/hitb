@@ -13,6 +13,17 @@ defmodule HitbserverWeb.PageController do
     end
   end
 
+  def index2(conn, _params) do
+    user = get_session(conn, :user)
+    login = MyUser.is_login(conn)
+    if(login)do
+      %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
+      render conn, "index2.html", user: user, page_num: page
+    else
+      redirect conn, to: "/hospitals/login"
+    end
+  end
+
   def login_html(conn, _params)do
     user = MyUser.user_info(conn)
     render conn, "login.html", user: user

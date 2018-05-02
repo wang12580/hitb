@@ -1,4 +1,4 @@
-<div class="ui grid">
+<div class="ui grid" id="index">
   <!-- 上层设计 -->
   <!-- 上层设计 -->
   <!-- 下层设计 -->
@@ -72,17 +72,15 @@
     </div>
     <div class="ui grid">
       <div class="six wide column">
-        <div class="ui action input" id="select">
-          <select class="ui compact selection dropdown" id="select1">
+          <select id="select">
             <option value="icd9">ICD9</option>
             <option value="icd10">ICD10</option>
             <option selected="" value="mdc">MDC</option>
             <option value="adrg">ADRG</option>
             <option value="drg">DRG</option>
           </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <input type="text" placeholder="输入编码或名称以搜索..."  onkeydown="keyDown(event)">
-          <div type="submit" class="ui button" onclick="search()">搜索</div>
-        </div>
+          <input id="input" type="text" placeholder="输入编码或名称以搜索..."  onkeydown="keyDown(event)">
+          <div type="submit" class="ui button" v-on:click="search()">搜索</div>
         <div style="display:none;" id="tishi1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
         <br/>
 
@@ -139,71 +137,37 @@
 </div>
 
 <script>
-//样式
-var result = {};
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#index',
+    data: {
+    },
+    // created: function () {
+    //   this.getRule();
+    //   // this.getContrast();
+    // },
+    methods: {
+      search: function() {
+        select = $("#select").children("option:selected").val()
+        input = $("#input").val();
+        console.log(select);
+        console.log(input);
+        // this.$ajax({
+        //   type: 'GET',
+        //   url: `/library`,
+        //   dataType: 'json',
+        //   success: (res)=> {
+        //   }
+        // });
+      },
+    }
+  })
+});
 
-// get();
+
 $("#users").change(function(){
   burying_user = $("#users").children("option:selected").val();
-  console.log(burying_user);
   window.location.href = '/hospitals?page=<%= @page_num %>&burying_user='+burying_user;
 });
-function search(){
-  select = $("#select1").children("option:selected").val()
-  search1 = $("#select").children("input").val();
-  if(search1 == ''){
-    $('#tishi2').text("请输入后进行查询...");
-    $('#tishi1').show();
-  }else{
-    $.ajax({
-      type: "get",
-      url: '/library/search?table=' + select + '&code=' + search1 ,
-      async: false,
-      success: function(data) {
-        $("#search_table").css('display','inline-table');
-        str = ""
-        data.table.forEach((n,key)=> {
-          str = str + '<tr>' +
-            '<td>' + n.code + '</td>' +
-            '<td>' + n.name + '</td>' +
-            '<td>' + n.year + '</td>' +
-            '<td>' + n.version + '</td>' +
-            '<td><a class="ui red label" onClick="jump(\''+n.code+'\',\''+n.name+'\',\''+ n.version+'\',\''+select +'\')">详情</a></td>' +
-          '</tr>'
-        });
-        $("#search_table").children("tbody").children("tr").remove();
-        $("#search_table").children("tbody").append(str);
-      },
-      dataType: 'json'
-    });
-  }
-}
-function keyDown(event) {
-  if (event.keyCode == 13) {
-    search();
-  }
-}
-
-function jump(code, name, version, select){
-  window.location.href = '/hospitals/details?code=' + code + '&name=' + name +'&table=' + select + '&version=' + version;
-}
-
-
-//$.ajax({
-//  type: "POST",
-//  url: 'https://baas.trustsql.qq.com/idm_v1/api/user_cert/fetch',
-//  async: false,
-//  headers: {
-//      'Content-Length': 12,
-//      'Content-Type': 'application/json;charset=UTF-8'
-//  },
-//  data: {user_id: "gb71aa6cb6e55989d", sign_type: "ECDSA", mch_id: "gb71aa6cb6e55989d", mch_sign: ""},
-//  success: function(data) {
-//    $("#mes_header").html('你的科室停用成功!');
-//    $("#mes").css('display','block');
-//    setTimeout("reload()",2000);
-//  },
-//  dataType: 'json'
-//});
-
 </script>

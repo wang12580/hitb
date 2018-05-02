@@ -61,6 +61,7 @@ defmodule HitbserverWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/ss/", PageController, :index2
 
     #登录页面
     get "/login", PageController, :login_html
@@ -81,6 +82,7 @@ defmodule HitbserverWeb.Router do
     get "/rule", RuleController, :rule
     get "/rule_contrast", RuleController, :contrast
     get "/details", RuleController, :details
+    get "/details2", RuleController, :details2
 
     #统计分析
     get "/stat_html", StatController, :stat
