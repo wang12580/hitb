@@ -29,7 +29,7 @@ defmodule StatWeb.ClientController do
       {stat, list, tool, page_list, _, count, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
       #存储在自定义之前最后一次url
       Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
-      stat = Stat.Rand.rand(stat)
+      # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       json conn, %{stat: stat, count: count, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end

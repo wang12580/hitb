@@ -6,3 +6,5 @@ erl_crash.dump
 /.elixir_ls
 /Mnesia*
 /mix.lock
+/.cache/*
+/.erlang.cookie

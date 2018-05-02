@@ -16,5 +16,5 @@ config :stat, Stat.Repo,
   password: "postgres",
   database: "stat_test",
   port: 5432,
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox

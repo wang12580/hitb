@@ -53,5 +53,5 @@ config :library, Library.Repo,
   username: "postgres",
   password: "postgres",
   database: "library_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10

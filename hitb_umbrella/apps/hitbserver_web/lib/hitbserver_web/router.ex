@@ -110,7 +110,7 @@ defmodule HitbserverWeb.Router do
   scope "/hospitals", HitbserverWeb do
     pipe_through :api
 
-    
+
     post "/login", PageController, :login
     #省市县三级联动
     get "/province", ServerController, :province

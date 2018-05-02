@@ -54,5 +54,5 @@ config :stat, Stat.Repo,
   username: "postgres",
   password: "postgres",
   database: "stat_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10

@@ -15,5 +15,5 @@ config :library, Library.Repo,
   username: "postgres",
   password: "postgres",
   database: "library_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox

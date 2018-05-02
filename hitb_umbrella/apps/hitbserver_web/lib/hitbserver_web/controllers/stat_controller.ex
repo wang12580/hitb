@@ -25,15 +25,6 @@ defmodule HitbserverWeb.StatController do
     end
   end
 
-  # def contrast(conn, %{"table" => table, "id" => id}) do
-  #   user = get_session(conn, :user)
-  #   login = MyUser.is_login(conn)
-  #   if(login)do
-  #     render conn, "contrast.html", user: user, table: table, id: id
-  #   else
-  #     redirect conn, to: "/hospitals/login"
-  #   end
-  # end
   def contrast(conn, _params) do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
