@@ -125,18 +125,18 @@
                 <label>所属机构</label>
                 <input type="text" id = "org" placeholder="所属机构" value = "">
               </div>
-                <!-- <div class="field">
-                  <label>所属专科</label>
-                  <select class="ui dropdown" id="my_class"></select>
-                </div> -->
-              <!-- <div class="field">
+              <div class="field">
+                <label>所属专科</label>
+                <select class="ui dropdown" id="my_class"></select>
+              </div>
+              <div class="field">
                 <label>所属科室</label>
                 <select class="ui dropdown" id="this_department"></select>
               </div>
               <div class="field">
                 <label>科室主任</label>
                 <input type="text" id="cherf_department" placeholder="科室主任" value = "">
-              </div> -->
+              </div>
               <div class="field">
                 <label>科室副主任</label>
                 <input type="text" id="professor" placeholder="科室副主任" value = "">
@@ -238,7 +238,13 @@ $.ajax({
       $('#professor').val(data.data.professor);
       $('#is_spe').val(data.data.is_spe);
       $('#is_imp').val(data.data.is_imp);
-    }else{
+    }else if('<%=@type%>' == 'user'){
+      $('#username').val(data.data.username);
+      $('#org').val(data.data.org);
+      $('#name').val(data.data.name);
+      $('#tel').val(data.data.tel);
+      $('#email').val(data.data.email);
+      $('#age').val(data.data.age);
     }
   },
   dataType: 'json'
@@ -348,57 +354,36 @@ function save(){
 <% end %>
 <%= if(@type == "department")do %>
 <script>
+let this_departments = {}
 function write_html(){
   //获取数据
-  // $.ajax({
-  //   type: "GET",
-  //   url: '/servers/department',
-  //   async: false,
-  //   success: function(data) {
-  //     console.log(data);
-  //     wt4_department = data['department'];
-  //   },
-  //   dataType: 'json'
-  // });
+  $.ajax({
+    type: "GET",
+    url: '/servers/department',
+    async: false,
+    success: function(data) {
+      console.log(data);
+      wt4_department = data;
+    },
+    dataType: 'json'
+  });
   //输出wt4科室列表
+  var html1 = '';
+  wt4_department.class_list.forEach(function(obj){
+    html1 = html1+'<option value="'+obj.class_code+'">'+obj.class_code+'</option>'
+  })
+  $('#my_class').html(html1)
+  this_departments = wt4_department.result
+  getDepartments(this_departments)
+}
+$("#my_class").change(function(){getDepartments(this_departments)});
+function getDepartments(value) {
+  const class_code = $('#my_class').find("option:selected").text()
   var html = '';
-  // wt4_department.forEach(function(obj){
-  //   html = html+'<option value="'+obj.code+'">'+obj.code+'</option>'
-  // })
+  value[class_code].forEach(function(obj){
+    html = html+'<option value="'+obj.class_code+'">'+obj.department_name+'</option>'
+  })
   $("#this_department").html(html);
-  //获取科室数据
-  // $.ajax({
-  //   type: "GET",
-  //   url: '/hospitals/department',
-  //   async: false,
-  //   success: function(data) {
-  //     class_codes = data['class_list'];
-  //     result = data['result'];
-  //   },
-  //   dataType: 'json'
-  // });
-  //输出科室类列表
-  // var html = '';
-  // class_codes.forEach(function(obj){
-  //   html = html+'<option value="'+obj.class_code+'">'+obj.class_name+'</option>'
-  // })
-  // $("#my_class").html(html);
-  <!--//获取医院数据
-  // $.ajax({
-  //   type: "GET",
-  //   url: '/hospitals/org',
-  //   async: false,
-  //   success: function(data) {
-  //     org_list = data['org'];
-  //   },
-  //   dataType: 'json'
-  // });
-  // //输出科室类列表
-  // var html = '';
-  // org_list.forEach(function(val){
-  //   html = html+'<option value="'+val+'">'+val+'</option>'
-  // })-->
-  $("#org").html(html);
 }
 //保存
 function save(){
@@ -417,7 +402,7 @@ function save(){
   obj = {wt_code:wt_code, wt_name:wt_name, class:my_class, department:department, org:org,  cherf_department:cherf_department, professor:professor, is_spe:is_spe, is_imp:is_imp}
   $.ajax({
     type: "POST",
-    url: '/hospitals/customize_department/'+id,
+    url: '/servers/customize_department/'+id,
     async: false,
     data: {customize_department: obj},
     success: function(data) {
@@ -472,7 +457,7 @@ function save(){
       $("#last").css('display','none');
       $("#mes_header").html('你的用户创建成功!');
       $("#mes").css('display','block');
-      setTimeout("reload()",2000);
+      setTimeout("reload('user_html')",2000);
     },
     error: function(){
       $("#error_mes_header").html('你的用户创建失败!');
@@ -495,6 +480,6 @@ function re(){
 }
 //重载
 function reload(type){
-  window.location.href= '/hospitals/'+'org_set';
+  window.location.href= '/hospitals/'+type;
 }
 </script>
