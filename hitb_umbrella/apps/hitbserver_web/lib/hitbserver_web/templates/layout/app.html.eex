@@ -12,6 +12,7 @@
       <link rel="stylesheet" href="<%= static_path(@conn, "/css/semantic-ui/semantic.min.css") %>">
       <script src="<%= static_path(@conn, "/css/semantic-ui/semantic.min.js") %>"></script>
       <script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
+      <script src="<%= static_path(@conn, "/css/vue.min.js") %>"></script>
   </head>
   <!-- <div class="ui inverted segment" style="height:50px;padding:0px;"> -->
     <!-- <div class="ui inverted secondary pointing menu"> -->

@@ -1,48 +1,50 @@
-<div class="ui huge breadcrumb" style="background:#ffffff;">
-  <a class="section" href="/hospitals">主页</a>
-  <i class="right chevron icon divider"></i>
-  <div class="active section">机构管理</div>
-</div>
-<div class="ui divider"></div>
-<div class="ui menu" id="div_menu">
-  <div class="item">
-    <button class="ui primary labeled icon button" onclick = "add_button()"><i class="add icon"></i>新建</button>
+<%= if(@user.type == 2)do %>
+  <div class="ui massive negative message">
+    <div class="header">非常抱歉,您没有管理权限。</div>
+    <p>3秒后会跳转到首页。</p>
   </div>
-  <div class="item">
-    <button class="ui disabled labeled icon button" onclick = "edit()" id="edit"><i class="edit icon"></i>编辑</button>
+  <script>
+  setTimeout("reload()",2000);
+  //重载
+  function reload(){
+    window.location.href = "/hospitals";
+  }
+  </script>
+<% else %>
+<div id="org">
+  <div class="ui huge breadcrumb" style="background:#ffffff;">
+    <a class="section" href="/hospitals">主页</a>
+    <i class="right chevron icon divider"></i>
+    <div class="active section">机构管理</div>
   </div>
-  <div class="item" id="ban_div">
-    <button class="ui disabled orange labeled icon button" onclick = "ban()" id="ban"><i class="ban icon"></i>停用</button>
-  </div>
-  <div class="item">
-    <button class="ui disabled red labeled icon button" onclick = "remove()" id="remove"><i class="remove icon"></i>删除</button>
-  </div>
-</div>
-  <%= if(@user.type == 2)do %>
-    <div class="ui massive negative message">
-      <div class="header">非常抱歉,您没有管理权限。</div>
-      <p>3秒后会跳转到首页。</p>
+  <div class="ui divider"></div>
+  <div class="ui menu" id="div_menu">
+    <div class="item">
+      <button class="ui primary labeled icon button" onclick = "add_button()"><i class="add icon"></i>新建</button>
     </div>
-    <script>
-    setTimeout("reload()",2000);
-    //重载
-    function reload(){
-      window.location.href = "/hospitals";
-    }
-    </script>
-    <% else %>
-    <div class="ui success message" id = "mes" style="display:none;">
-      <div class="header" id = "mes_header">你的机构创建成功!</div>
-      <p>2秒后页面将自动刷新。</p>
+    <div class="item">
+      <button class="ui labeled icon button" v-on:click = "edit()" id="edit"  v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="edit icon"></i>编辑</button>
     </div>
-    <div class="ui negative message" id = "error_mes" style="display:none;">
+    <div class="item" id="ban_div">
+      <button class="ui orange labeled icon button" v-on:click = "ban()" id="ban" v-bind:class="{'ui orange disabled labeled icon button': tableTr === null}" v-if="tableBan === false"><i class="ban icon"></i>停用</button>
+      <button v-else  class="ui orange labeled icon button" onclick = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>
+    </div>
+    <div class="item">
+      <button class="ui red labeled icon button" v-on:click = "remove()" id="remove" v-bind:class="{'ui red disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
+    </div>
+  </div>
+  <div class="ui success message" id = "mes" style="display:none;">
+    <div class="header" id = "mes_header">你的机构创建成功!</div>
+    <p>2秒后页面将自动刷新。</p>
+  </div>
+  <div class="ui negative message" id = "error_mes" style="display:none;">
       <div class="header" id = "error_mes_header">你的机构创建失败!</div>
       <p id = "error_mes_info">机构名称重复。</p>
     </div>
-    <table class="ui fixed single line celled table">
+  <table class="ui fixed single line celled table">
       <thead>
         <tr class="center aligned">
-          <th class = "one wide">组织机构代码</th>
+          <th class = "one wide">组织机构代</th>
           <th class = "one wide">医院名称</th>
           <th class = "one wide">机构等级</th>
           <th class = "one wide">机构类别</th>
@@ -53,130 +55,106 @@
           <th class = "one wide">入盟时间</th>
         </tr>
       </thead>
-      <tbody id="tbody">
+      <tbody>
+        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, false)" v-bind:class="{'active center aligned': tableTr === itme.id}">
+        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="!itme.is_ban" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, true)" v-bind:class="{'active center aligned': tableTr === itme.id}">
+          <!-- <td>{{itme.is_ban}}</td> -->
+          <td>{{itme.code}}</td>
+          <td>{{itme.name}}</td>
+          <td>{{itme.level}}</td>
+          <td>{{itme.type}}</td>
+          <td>{{itme.province}}-{{itme.city}}-{{itme.county}}</td>
+          <td>{{itme.person_name}}</td>
+          <td>{{itme.tel}}</td>
+          <td>{{itme.email}}</td>
+          <td>{{itme.inserted_at}}</td>
+        </tr>
       </tbody>
     </table>
 </div>
 <script>
-$.ajax({
-  type: "get",
-  url: '/servers/org/',
-  async: false,
-  success: function(data) {
-    let html = '';
-    data.data.forEach(function(obj){
-      if(obj.is_ban){
-        html = html + '<tr class="center aligned" style="color:#708090" id ="'+obj.id+'" onclick="myclick(\''+obj.id+'\', \'true\')">'
-      }else{
-        html = html + '<tr class="center aligned" id ="'+obj.id+'" onclick="myclick(\''+obj.id+'\', \'false\')">'
+  $(document).ready(function() {
+    Vue.prototype.$ajax = $.ajax;
+    common = new Vue({
+      el: '#org',
+      data: {
+        orgList: [],
+        tableTr: null,
+        tableBan: false
+      },
+      created: function () {
+        this.org_list()
+      },
+      methods: {
+        org_list: function() {
+          $.ajax({
+            type: "get",
+            url: `/servers/org/`,
+            async: false,
+            success: (res)=> {
+              this.orgList = res.data
+            }
+          });
+        },
+        myclick: function (value, bol) {
+          this.tableBan = bol
+          if (this.tableTr === value) {
+            this.tableTr = null
+          } else {
+            this.tableTr = value
+          }
+        },
+        // 编辑
+        edit: function () {
+          window.location.href= '/hospitals/server_edit?type=org&id='+this.tableTr;
+        },
+        remove: function () {
+          $.ajax({
+            type: "delete",
+            url: '/hospitals/org/'+this.tableTr,
+            async: false,
+            success: (data) => {
+              $("#error_mes").css('display','none');
+              $("#mes_header").html('你的机构删除成功!');
+              $("#mes").css('display','block');
+              setTimeout("reload()",2000);
+            },
+            dataType: 'json'
+          });
+        },
+        // 停用
+        ban: function () {
+          $.ajax({
+            type: "PUT",
+            url: '/hospitals/org/'+this.tableTr,
+            async: false,
+            data: {org: {is_ban: true}},
+            success: (data) => {
+              $("#error_mes").css('display','none');
+              $("#mes_header").html('你的机构停用成功!');
+              $("#mes").css('display','block');
+              setTimeout("reload()",2000);
+            },
+            dataType: 'json'
+          });
+        },
+        refresh: function () {
+          $.ajax({
+            type: "PUT",
+            url: '/hospitals/org/'+this.tableTr,
+            async: false,
+            data: {org: {is_ban: false}},
+            success: function(data) {
+              $("#error_mes").css('display','none');
+              $("#mes_header").html('你的机构启用成功!');
+              $("#mes").css('display','block');
+              setTimeout("reload()",2000);
+            },
+            dataType: 'json'
+          });
+        }
       }
-      html = html + '<td>'+obj.code+'</td><td>'+obj.name+'</td><td>'+obj.level+'</td><td>'+obj.type+'</td><td>'+obj.province+'-'+obj.city+'-'+obj.county+'</td><td>'+obj.person_name+'</td><td>'+obj.tel+'</td><td>'+obj.email+'</td><td>'+obj.inserted_at+'</td></tr>'
-    })
-    $('#tbody').html(html)
-  },
-  dataType: 'json'
-});
-</script>
-<script>
-//样式
-$('.ui.checkbox').checkbox();
-$('.ui.modal').modal('hidden');
-var sid = 0;
-//点击事件
-function myclick(id, ban){
-  tr_class = $('#'+id).attr('class');
-  if(tr_class == 'center aligned'){
-    if(id != sid){
-      clear(sid);
-      sid = id;
-    }
-    $('#'+id).attr('class', 'active center aligned');
-    $('#edit').attr('class', 'ui labeled icon button');
-    // $('#ban').attr('class', 'ui orange labeled icon button');
-    $('#remove').attr('class', 'ui red labeled icon button');
-    if(ban == 'true'){
-      $('#ban_div').html('<button class="ui orange labeled icon button" onclick = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>');
-    }else {
-      $('#ban').attr('class', 'ui orange labeled icon button');
-      $('#ban_div').html('<button class="ui orange labeled icon button" onclick = "ban()" id="ban"><i class="ban icon"></i>停用</button>');
-    }
-  }else{
-    $('#'+id).attr('class', 'center aligned');
-    $('#edit').attr('class', 'ui disabled labeled icon button');
-    $('#remove').attr('class', 'ui disabled red labeled icon button');
-    if(ban == 'true'){
-      $('#refresh').attr('class', 'ui disabled orange labeled icon button');
-    }else {
-      $('#ban').attr('class', 'ui disabled orange labeled icon button');
-    }
-  }
-}
-//设置所有class为未点击
-function clear(id){
-  $('#'+id).attr('class', 'center aligned');
-}
-//新建
-function add_button(){
-  window.location.href= '/hospitals/add?type=org';
-}
-//编辑
-function edit(){
-  window.location.href= '/hospitals/server_edit?type=org&id='+sid;
-}
-//停用
-function ban(){
-  $.ajax({
-    type: "PUT",
-    url: '/hospitals/org/'+sid,
-    async: false,
-    data: {org: {is_ban: true}},
-    success: function(data) {
-      $("#error_mes").css('display','none');
-      $("#mes_header").html('你的机构停用成功!');
-      $("#mes").css('display','block');
-      setTimeout("reload()",2000);
-    },
-    dataType: 'json'
-  });
-}
-//重新启用
-function refresh(){
-  $.ajax({
-    type: "PUT",
-    url: '/hospitals/org/'+sid,
-    async: false,
-    data: {org: {is_ban: false}},
-    success: function(data) {
-      $("#error_mes").css('display','none');
-      $("#mes_header").html('你的机构启用成功!');
-      $("#mes").css('display','block');
-      setTimeout("reload()",2000);
-    },
-    dataType: 'json'
-  });
-}
-//删除
-function remove(){
-  $.ajax({
-    type: "delete",
-    url: '/hospitals/org/'+sid,
-    async: false,
-    success: function(data) {
-      $("#error_mes").css('display','none');
-      $("#mes_header").html('你的机构删除成功!');
-      $("#mes").css('display','block');
-      setTimeout("reload()",2000);
-    },
-    dataType: 'json'
-  });
-}
-//重载
-function reload(){
-  location.reload();
-}
-//设置所有class为未点击
-function clear(id){
-  $('#'+id).attr('class', 'center aligned');
-}
+    });
+  })
 </script>
 <% end %>
