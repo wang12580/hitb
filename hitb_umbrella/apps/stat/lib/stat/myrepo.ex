@@ -70,7 +70,6 @@ defmodule Stat.MyRepo do
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])
             end
           query = if(stat_type == "download")do query else limit(query, [p], ^rows_num)|>offset([p], ^skip) end
-          IO.inspect query
           stat = Repo.all(query)
             |>Enum.map(fn x ->
                 key
@@ -88,7 +87,7 @@ defmodule Stat.MyRepo do
                   end)
             end)
           stat = [key, cnkey] ++ stat
-          Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat})
+          if(stat_type != "download")do Hitbserver.ets_insert(:stat, [page, type, org, time, drg, to_string(order), to_string(order_type), key, rows_num, Hitbserver.Time.sdata_date()], {list, count, skip, stat}) end
           tool = []
           {list, count, skip, stat, tool}
         true ->
