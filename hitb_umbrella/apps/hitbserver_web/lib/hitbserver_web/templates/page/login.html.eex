@@ -29,15 +29,6 @@
     </div>
   </div>
 </div>
-<script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
-<script>
-const secret = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
-const keys = AschJS.crypto.getKeys(secret)
-// 通过公钥获得地址
-const publicKey = keys.publicKey
-const privateKey = keys.privateKey
-const address =  AschJS.crypto.getAddress(publicKey)
-</script>
 <script>
   $(document).ready(function() {
     Vue.prototype.$ajax = $.ajax;

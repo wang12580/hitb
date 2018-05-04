@@ -78,8 +78,8 @@
               <option value="adrg">ADRG</option>
               <option value="drg">DRG</option>
             </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="text" placeholder="输入编码或名称以搜索..."  v-model="searchInfo" @keyup.13="search()">
-            <div type="submit" class="ui button" v-on:click="search()">搜索</div>
+            <input type="text" placeholder="输入编码或名称以搜索..."  v-model="searchInfo" @keyup.13="search(1)">
+            <div type="submit" class="ui button" v-on:click="search(1)">搜索</div>
           </div>
           <div style="display:none;" id="tishi1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
           <br/>
@@ -106,6 +106,10 @@
               </tr>
             </tbody>
           </table>
+          <div class="ui right floated pagination menu mini">
+            <a v-for="p in page_list" v-bind:class="{'disabled item': p.page == page_num, 'item': p.page !== page_num}" v-on:click="search(p.page)"
+            >{{p.num}}</a>
+          </div>
         </div>
         <div class="ten wide column">
         </div>
@@ -151,24 +155,28 @@
       data: {
         selectSearch: '',
         searchInfo: '',
-        searchTable: []
+        searchTable: [],
+        page_num: 1,
+        page_list: []
       },
       created: function () {
         // this.department_list()
       },
       methods: {
-        search: function () {
+        search: function (page) {
           if(this.searchInfo === ''){
             $('#tishi2').text("请输入后进行查询...");
             $('#tishi1').show();
           }else{
             $.ajax({
               type: "get",
-              url: '/library/search?table=' + this.selectSearch + '&code=' + this.searchInfo ,
+              url: '/library/search?table=' + this.selectSearch + '&code=' + this.searchInfo +'&page='+ page,
               async: false,
               success: (data) => {
                 console.log(data);
                 this.searchTable = data.table
+                this.page_num = data.page_num
+                this.page_list = data.page_list
                 $("#search_table").css('display','inline-table');
               },
               dataType: 'json'
