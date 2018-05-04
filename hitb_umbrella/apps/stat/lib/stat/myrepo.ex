@@ -125,11 +125,12 @@ defmodule Stat.MyRepo do
     case code do
       "" -> w
       _ ->
+        code = if(String.contains? code, "-")do String.split(code, "-")|>hd else code end
         case type do
           "heal" ->
             code = code <> "%"
-            where(w, [p], like(p.drg2, ^code))
-           _ -> where(w, [p], p.drg2 == ^code and p.etype == ^type)
+            where(w, [p], like(p.drg, ^code))
+           _ -> where(w, [p], p.drg == ^code and p.etype == ^type)
         end
     end
   end
