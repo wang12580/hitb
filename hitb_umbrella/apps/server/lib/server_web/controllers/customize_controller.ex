@@ -55,6 +55,7 @@ defmodule ServerWeb.CustomizeDepartmentController do
   end
 
   def delete(conn, %{"id" => id}) do
+    IO.inspect id
     customize_department = SchemaHospitals.get_customize_department!(id)
     with {:ok, %CustomizeDepartment{}} <- SchemaHospitals.delete_customize_department(customize_department) do
       # user = get_session(conn, :user)

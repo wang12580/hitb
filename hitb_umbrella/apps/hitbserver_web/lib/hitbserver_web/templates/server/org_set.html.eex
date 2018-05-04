@@ -26,8 +26,8 @@
       <button class="ui labeled icon button" v-on:click = "edit()" id="edit"  v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="edit icon"></i>编辑</button>
     </div>
     <div class="item" id="ban_div">
-      <button class="ui orange labeled icon button" v-on:click = "ban()" id="ban" v-bind:class="{'ui orange disabled labeled icon button': tableTr === null}" v-if="tableBan === false"><i class="ban icon"></i>停用</button>
-      <button v-else  class="ui orange labeled icon button" onclick = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>
+      <button class="ui orange labeled icon button" v-on:click ="ban()" id="ban" v-bind:class="{'ui orange disabled labeled icon button': tableTr === null}" v-if="tableBan === false"><i class="ban icon"></i>停用</button>
+      <button v-else  class="ui orange labeled icon button" v-on:click = "refresh()" id="refresh" v-bind:class="{'ui orange disabled labeled icon button': tableTr === null}"><i class="refresh icon"></i>重新启用</button>
     </div>
     <div class="item">
       <button class="ui red labeled icon button" v-on:click = "remove()" id="remove" v-bind:class="{'ui red disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
@@ -56,8 +56,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, false)" v-bind:class="{'active center aligned': tableTr === itme.id}">
-        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="!itme.is_ban" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, true)" v-bind:class="{'active center aligned': tableTr === itme.id}">
+        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban === true" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, true)" v-bind:class="{'active center aligned': tableTr === itme.id}">
+          <td>{{itme.code}}</td>
+          <td>{{itme.name}}</td>
+          <td>{{itme.level}}</td>
+          <td>{{itme.type}}</td>
+          <td>{{itme.province}}-{{itme.city}}-{{itme.county}}</td>
+          <td>{{itme.person_name}}</td>
+          <td>{{itme.tel}}</td>
+          <td>{{itme.email}}</td>
+          <td>{{itme.inserted_at}}</td>
+        </tr>
+        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban === false" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, false)" v-bind:class="{'active center aligned': tableTr === itme.id}">
           <!-- <td>{{itme.is_ban}}</td> -->
           <td>{{itme.code}}</td>
           <td>{{itme.name}}</td>
@@ -92,11 +102,13 @@
             url: `/servers/org/`,
             async: false,
             success: (res)=> {
+              console.log(res.data)
               this.orgList = res.data
             }
           });
         },
         myclick: function (value, bol) {
+          console.log(bol)
           this.tableBan = bol
           if (this.tableTr === value) {
             this.tableTr = null
