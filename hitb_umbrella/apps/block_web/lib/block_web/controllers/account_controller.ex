@@ -1,5 +1,6 @@
 defmodule BlockWeb.AccountController do
   use BlockWeb, :controller
+  plug BlockWeb.Access
   alias Hitb
   @moduledoc """
     Functionality for managing peers
