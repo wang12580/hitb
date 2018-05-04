@@ -33,8 +33,9 @@ defmodule HitbserverWeb.ServerController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      # org = MyUser.user_info(conn).org
-      render conn, "add.html", user: user, type: type
+      org = MyUser.user_info(conn).org
+      IO.inspect MyUser.user_info(conn)
+      render conn, "add.html", user: user, type: type, org: org
     else
       redirect conn, to: "/hospitals/login"
     end

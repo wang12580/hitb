@@ -75,5 +75,8 @@ defmodule ServerWeb.Router do
     post "/user_update", UserController, :update
     #用户
     resources "/user", UserController, except: [:new, :edit]
+    # 科室列表
+    get "/wt4_department_list", PageController, :wt4_department_list
+
   end
 end

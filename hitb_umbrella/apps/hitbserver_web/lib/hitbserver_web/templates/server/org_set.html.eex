@@ -20,7 +20,7 @@
   <div class="ui divider"></div>
   <div class="ui menu" id="div_menu">
     <div class="item">
-      <button class="ui primary labeled icon button" onclick = "add_button()"><i class="add icon"></i>新建</button>
+      <button class="ui primary labeled icon button" v-on:click = "add_button()"><i class="add icon"></i>新建</button>
     </div>
     <div class="item">
       <button class="ui labeled icon button" v-on:click = "edit()" id="edit"  v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="edit icon"></i>编辑</button>
@@ -104,6 +104,9 @@
             this.tableTr = value
           }
         },
+        add_button: function (){
+          window.location.href= '/hospitals/add?type=org';
+        },
         // 编辑
         edit: function () {
           window.location.href= '/hospitals/server_edit?type=org&id='+this.tableTr;
@@ -111,7 +114,7 @@
         remove: function () {
           $.ajax({
             type: "delete",
-            url: '/hospitals/org/'+this.tableTr,
+            url: '/servers/org/'+this.tableTr,
             async: false,
             success: (data) => {
               $("#error_mes").css('display','none');
@@ -126,7 +129,7 @@
         ban: function () {
           $.ajax({
             type: "PUT",
-            url: '/hospitals/org/'+this.tableTr,
+            url: '/servers/org/'+this.tableTr,
             async: false,
             data: {org: {is_ban: true}},
             success: (data) => {
@@ -141,7 +144,7 @@
         refresh: function () {
           $.ajax({
             type: "PUT",
-            url: '/hospitals/org/'+this.tableTr,
+            url: '/servers/org/'+this.tableTr,
             async: false,
             data: {org: {is_ban: false}},
             success: function(data) {
@@ -156,5 +159,8 @@
       }
     });
   })
+  function reload(){
+    location.reload();
+  }
 </script>
 <% end %>

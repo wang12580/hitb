@@ -123,7 +123,8 @@
               </div>
               <div class="field">
                 <label>所属机构</label>
-                <input type="text" id = "org" placeholder="所属机构">
+                <select class="ui dropdown" id="org"></select>
+                <!-- <input type="text" id = "org" placeholder="所属机构"> -->
               </div>
                 <div class="field">
                   <label>所属专科</label>
@@ -295,11 +296,12 @@ function save(){
 <% end %>
 <%= if(@type == "department")do %>
 <script>
+console.log('<%=@org %>');
 function write_html(){
   //获取数据
   $.ajax({
     type: "GET",
-    url: '/servers/wt4_department_list?org=',
+    url: '/servers/wt4_department_list?org=<%= @org %>',
     async: false,
     success: function(data) {
       wt4_department = data['department'];
@@ -311,15 +313,16 @@ function write_html(){
   wt4_department.forEach(function(obj){
     html = html+'<option value="'+obj.code+'">'+obj.code+'</option>'
   })
+
   $("#wt4_department").html(html);
   //获取科室数据
   $.ajax({
     type: "GET",
-    url: '/hospitals/department',
+    url: '/servers/department',
     async: false,
     success: function(data) {
       class_codes = data['class_list'];
-      result = data['result'];
+      this_departments = data['result'];
     },
     dataType: 'json'
   });
@@ -328,6 +331,7 @@ function write_html(){
   class_codes.forEach(function(obj){
     html = html+'<option value="'+obj.class_code+'">'+obj.class_name+'</option>'
   })
+
   $("#my_class").html(html);
   //获取医院数据
   $.ajax({
@@ -335,19 +339,26 @@ function write_html(){
     url: '/servers/org',
     async: false,
     success: function(data) {
-      console.log(data);
-      org_list = data['org'];
+      org_list = data.data;
     },
     dataType: 'json'
   });
   //输出科室类列表
   var html = '';
   org_list.forEach(function(val){
-    console.log(val);
-    html = html+'<option value="'+val+'">'+val+'</option>'
+    html = html+'<option value="'+val.name+'">'+val.name+'</option>'
   })
-  console.log(html);
   $("#org").html(html);
+  getDepartments(this_departments)
+}
+$("#my_class").change(function(){getDepartments(this_departments)});
+function getDepartments(value) {
+  const class_code = $('#my_class').find("option:selected").val()
+  var html = '';
+  value[class_code].forEach(function(obj){
+    html = html+'<option value="'+obj.class_code+'">'+obj.department_name+'</option>'
+  })
+  $("#department").html(html);
 }
 //保存
 function save(){
@@ -362,7 +373,8 @@ function save(){
   is_imp = $('#is_imp').is(':checked');
   if(is_spe){is_spe = true}else{is_spe = false}
   if(is_imp){is_imp = true}else{is_imp = false}
-  obj = {wt_code:wt_code, wt_name:wt_name, class:my_class, department:department, org:org,  cherf_department:cherf_department, professor:professor, is_spe:is_spe, is_imp:is_imp}
+  console.log('<%=@user.username%>');
+  obj = {wt_code:wt_code, wt_name:wt_name, class:my_class, department:department, org:org,  cherf_department:cherf_department, professor:professor, is_spe:is_spe, is_imp:is_imp, c_user: '<%=@user.username%>'}
   $.ajax({
     type: "POST",
     url: '/servers/customize_department',

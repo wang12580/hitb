@@ -14,10 +14,10 @@
     </div>
     <div class="item" id="ban_div">
       <button class="ui orange labeled icon button" v-on:click = "ban()" id="ban" v-bind:class="{'ui disabled labeled icon button': tableTr === null}" v-if="tableban === false"><i class="ban icon"></i>停用</button>
-      <button v-else  class="ui orange labeled icon button" onclick = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>
+      <button v-else  class="ui orange labeled icon button" v-on:click = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>
     </div>
     <div class="item">
-      <button class="ui red labeled icon button" v-on:onclick = "remove()" id="remove" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
+      <button class="ui red labeled icon button" v-on:click = "remove()" id="remove" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
     </div>
   </div>
 
@@ -59,7 +59,7 @@
       </tbody>
     </table>
   <div class="ui right floated pagination menu" id = "page">
-    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" :href = "'/hospitals/department_set_1?page=' + item.num" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
+    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" :href = "'/hospitals/department_set?page=' + item.num" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
   </div>
 </div>
 <script>
@@ -111,7 +111,7 @@
         ban: function(){
           $.ajax({
             type: "PUT",
-            url: '/hospitals/customize_department/'+this.tableTr,
+            url: '/servers/customize_department/'+this.tableTr,
             async: false,
             data: {customize_department: {is_ban: true}},
             success: function(data) {
@@ -126,7 +126,7 @@
         remove: function(){
           $.ajax({
             type: "delete",
-            url: '/hospitals/customize_department/'+sid,
+            url: '/servers/customize_department/'+this.tableTr,
             async: false,
             success: function(data) {
               $("#mes_header").html('你的科室删除成功!');
@@ -139,4 +139,7 @@
       }
     })
   })
+  function reload(){
+    location.reload();
+  }
 </script>
