@@ -31,6 +31,12 @@ defmodule StatWeb.ClientController do
       Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
+      #计算客户端提示
+      {clinet_stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
+      # clinet_stat = [0, 1]|>Enum.map(fn x -> List.delete_at(x) end)
+      # num = stat|>List.delete_at(0)Enum.map(fn x -> )
+      # num =
+      IO.inspect clinet_stat
       json conn, %{stat: stat, count: count, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end
