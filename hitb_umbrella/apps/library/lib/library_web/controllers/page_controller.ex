@@ -233,8 +233,11 @@ defmodule LibraryWeb.PageController do
     end)
     json conn, %{result: result, result1: List.first(result1), table: table}
   end
-
-  def search(conn, %{"table" => table, "code" => code}) do
+# 迷糊搜索
+  def search(conn, _params) do
+    %{"page" => page, "table" => table, "code" => code} = Map.merge(%{"page" => "1", "table" => "", "code" => ""}, conn.params)
+    skip = Library.Page.skip(page, 15)
+    IO.inspect page
     tab =
       cond do
         table == "icd9" -> RuleIcd9
@@ -244,10 +247,17 @@ defmodule LibraryWeb.PageController do
         table == "drg" -> RuleDrg
       end
     code = "%" <> code <> "%"
-    result = Repo.all(from p in tab, where: like(p.code, ^code) or like(p.name, ^code))
+    result = from(w in tab, where: like(w.code, ^code) or like(w.name, ^code))
+      |> limit([w], 10)
+      |> offset([w], ^skip)
+      |> order_by([w], [asc: w.id])
+      |> Repo.all
+      query = from w in tab, where: like(w.code, ^code) or like(w.name, ^code), select: count(w.id)
+    count = hd(Repo.all(query))
+    {page_num, page_list, _} = Library.Page.page_list(page, count, 10)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
-    json conn, %{"table" => result}
+    json conn, %{"table" => result, "page_num" => page_num, "page_list" => page_list}
   end
 end
