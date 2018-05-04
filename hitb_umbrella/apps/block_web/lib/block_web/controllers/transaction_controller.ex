@@ -1,5 +1,6 @@
 defmodule BlockWeb.TransactionController do
   use BlockWeb, :controller
+  plug BlockWeb.Access
   alias Block
   alias Repos
   @moduledoc """
