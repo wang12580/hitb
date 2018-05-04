@@ -16,15 +16,14 @@ defmodule HitbserverWeb.RuleController do
   end
 
   def details(conn, _params) do
+    %{"code" => code, "table" => table, "version" => version, "name" => name} = Map.merge(%{"code" => "", "table" => "", "version" => "", "name" => ""}, conn.params)
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      render conn, "details.html", user: user
+      render conn, "details.html", user: user, code: code, name: name, table: table, version: version
     else
       redirect conn, to: "/hospitals/login"
     end
   end
-
-
 
 end

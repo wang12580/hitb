@@ -8,7 +8,6 @@
       <a class="section" href="/hospitals">主页</a>
       <i class="right chevron icon divider"></i>
       <div class="active section" id="deta_1">
-
       </div>
     </div>
     <div class="ui divider"></div>
@@ -24,7 +23,7 @@
           <div class="ui orange button" onclick="change('anatomy')">解剖部位</div>
           &nbsp;&nbsp;
         </div>
-         <div class="item" id = "details_button" style="display:none">
+         <div class="item" id = "details_button" v-show="showContrast">
           <div class="ui red button" onclick="details()">对比</div>
          </div>
       </div>
@@ -33,20 +32,46 @@
       <div class="ui grid" style="width:100%;overflow-x:auto;">
         <div class="five wide column">
           <h4 style ="display: inline">编码：</h4>
+          <span><%=@code%></span>
         </div>
         <div class="five wide column">
           <h4 style ="display: inline">名称：</h4>
+          <span><%=@name%></span>
         </div>
         <div class="five wide column">
           <h4 style ="display: inline">版本号：</h4>
+          <span><%=@version%></span>
         </div>
         <div id="deta_2" class="ui grid" style="width:100%;overflow-x:auto;">
         </div>
       </div>
-
     </div>
-    <div id="contrast_ui" class="ui menu" style="width:100%;padding:10px;display:none">
-      <div id="contrast" class="ui grid" style="width:100%;overflow-x:auto;">
+    <div class="ui menu" style="width:100%;padding:10px;" v-show="showContrast">
+      <div class="ui grid" style="width:100%;overflow-x:auto;">
+        <div class="five wide column">
+          <h4 style ="display: inline">编码：</h4>
+          <span>{{contrast.code}}<span>
+        </div>
+        <div class="five wide column">
+          <h4 style ="display: inline">名称：</h4>
+          <span>{{contrast.name}}<span>
+        </div>
+        <div class="five wide column">
+          <h4 style ="display: inline">版本号：</h4>
+          <span>{{contrast.version}}<span>
+        </div>
+        <div class="five wide column">
+          <h4 style ="display: inline">类别：</h4>
+          <span>{{contrast.type}}<span>
+        </div>
+        <div class="five wide column">
+          <h4 style ="display: inline">录入选项：</h4>
+          <span><span>
+        </div>
+        <div class="five wide column">
+          <h4 style ="display: inline">解剖部位：</h4>
+          <span><span>
+        </div>
       </div>
     </div>
     <div class="ui grid">
@@ -61,8 +86,10 @@
               <th>修改情况</th>
             </tr>
           </thead>
-          <tbody id="deta_4">
-
+          <tbody>
+            <tr v-for="(xs, i) in rule" v-on:click = "addContrast('<%=@table%>', xs)"  v-bind:class="{'center aligned active': xs.id === statX, 'center aligned': xs.id != statX}">
+              <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.year }}</td><td>{{ xs.version }}</td><td></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -94,135 +121,60 @@
   </div>
 </div>
 <script>
-let info = {}
-$.ajax({
-  type: "get",
-  url: `/library/details?table=icd9&code=92.41001&version=BJ`,
-  async: false,
-  success: function(data){
-    info = data
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
-$('#deta_1').html(
-  `${info.result1.version}-${info.result1.code}`
-)
-let str=""
-if (info.table == "icd9") {
-  let stra = ""
-  let strb = ""
-  if (info.result1.property) {
-    stra = `<span>${info.result1.property}</span>`
-  } else {
-    stra = `无`
-  }
-  if (info.result1.option) {
-    strb = `<span>${info.result1.option}</span>`
-  } else {
-    strb = `无`
-  }
-  str = `<div class="five wide column"><h4 style ="display: inline">类别：</h4>${stra}</div><div class="five wide column"><h4 style ="display: inline">录入选项：</h4>${strb}</div>`
-}
-let str1=""
-if (["icd9", "icd10"].includes(info.table)) {
-  stra=""
-  if (info.result1.dissect) {
-    stra=`<span>${info.result1.dissect}</span>`
-  } else {
-    stra = `无`
-  }
-  str1 = `<div class="five wide column"><h4 style ="display: inline">解剖部位：</h4>${stra}</div>`
-}
-$('#deta_2').html(str+str1)
-let str2 = ""
-info.result.forEach((n,index) => {
-  let stra=""
-  if (info.table == "icd9") {
-    stra=` <tr id =${n.id} onclick = "contrast('${info.table}','${n.id}','${n.code}','${n.name}', '${n.version}','${n.property}','${n.option}','${n.dissect}')">`
-  } else if (info.table == "icd10") {
-    stra=` <tr id =${n.id} onclick = "contrast('${info.table}','${n.id}','${n.code}','${n.name}', '${n.version}','${n.dissect}')">`
-  } else {
-    stra=` <tr id =${n.id} onclick = "contrast('${info.table}','${n.id}','${n.code}','${n.name}', '${n.version}')">`
-  }
-  str2 = "<tr>"+ str2 + stra+ `<td>${n.code}</td><td>${n.name}</td><td>${n.year}</td><td>${n.version}</td><td></td></tr>`
-})
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#div',
+    data: {
+      rule: [],
+      headerCn: [],
+      leftList: [],
+      pages: [],
+      page: 1,
+      tool: [],
+      statX: '',
+      contrast: {},
+      showContrast: false
+    },
+    created: function () {
+      this.getRule();
+      // this.getContrast();
+    },
+    methods: {
+      getRule: function() {
+        this.$ajax({
+          type: 'GET',
+          url: `/library/details?table=<%=@table%>&code=<%=@code%>&version=<%=@version%>`,
+          dataType: 'json',
+          success: (res)=> {
+            console.log(res);
+            this.rule = res.result;
+          }
+        });
+      },
+      addContrast: function(table, obj) {
+        if (this.statX === obj.id) {
+          this.statX = ''
+          this.showContrast = false
+        } else {
+          this.showContrast = true
+          this.statX = obj.id;
+          this.contrast = obj;
+        }
 
-$('#deta_4').html(str2)
-console.log(info);
-</script>
-<script>
-var contrast_arr = [info.result1.id];
-// 对比
-var height = -1;
-function contrast(type,id,value,value1,value2,value3,value4,value5) {
-  $('#'+height).css('background','')
-  if (id !== height) {
-    height = id
-  } else {
-    height = -1;
-  }
-  $('#'+ height).css('background','#E0E0E0')
-  if (height !== -1) {
-    $('#details_button').css('display','inline-table')
-  } else {
-    $('#details_button').css('display','none')
-  }
-  $('#contrast_ui').css('display','inline-table')
-  $('#contrast').children().remove();
-  str =
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">编码：</h4>' +
-      '<span>'+ value +'<span>'+
-    '</div>'+
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">名称：</h4>' +
-      '<span>'+ value1 +'<span>'+
-    '</div>'+
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">版本号：</h4>' +
-      '<span>'+ value2 +'<span>'+
-    '</div>';
-  str1 = '';
-  $('#contrast').append(str);
-  if (value3 == '') {
-    value3 = "无"
-  }
-  if (value4 == '') {
-    value4 = "无"
-  }
-  if (value5 == '') {
-    value5 = "无"
-  }
-  if (type == 'icd9') {
-    str1 =
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">类别：</h4>' +
-      '<span>'+ value3 +'<span>'+
-    '</div>'+
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">录入选项：</h4>' +
-      '<span>'+ value4 +'<span>'+
-    '</div>'+
-    '<div class="five wide column">' +
-      '<h4 style ="display: inline">解剖部位：</h4>' +
-      '<span>'+ value5 +'<span>'+
-    '</div>';
-  } else if (type == 'icd10') {
-    str1 =
-      '<div class="five wide column">' +
-        '<h4 style ="display: inline">解剖部位：</h4>' +
-        '<span>'+ value5 +'<span>'+
-      '</div>';
-  }
-  $('#contrast').append(str1);
-  contrast_arr.push(id);
-}
-function details() {
-  id = '';
-  id = contrast_arr[0] + '-' + contrast_arr[contrast_arr.length - 1]
-  window.location.href = '/hospitals/rule_contrast?table='+info.table+'&id='+id;
-}
+        console.log(table);
+        console.log(obj);
+        // this.$ajax({
+        //   type: 'GET',
+        //   url: `/library/details?table=<%=@table%>&code=<%=@code%>&version=<%=@version%>`,
+        //   dataType: 'json',
+        //   success: (res)=> {
+        //     console.log(res);
+        //     this.rule = res.result;
+        //   }
+        // });
+      },
+    }
+  })
+});
 </script>
