@@ -1,5 +1,6 @@
 defmodule BlockWeb.PageController do
   use BlockWeb, :controller
+  plug BlockWeb.Access
   alias Hitb
   alias Repos
   alias Peers

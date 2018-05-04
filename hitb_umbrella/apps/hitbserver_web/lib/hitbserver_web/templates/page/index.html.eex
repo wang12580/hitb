@@ -1,209 +1,185 @@
-<div class="ui grid">
-  <!-- 上层设计 -->
-  <!-- 上层设计 -->
-  <!-- 下层设计 -->
-  <div class="twelve wide column">
-    <div class="ui grid">
-     <div class="sixteen wide column">
-        <div class="ui steps">
-          <div class="completed step">
-            <i class="building icon"></i>
-            <div class="content">
-              <a href="/hospitals/org_set">
-                <div class="title" style="color:black">添加机构</div>
-                <div class="description">请求管理员添加机构</div>
-              </a>
+<div id="index_1">
+  <div class="ui grid">
+    <div class="twelve wide column">
+      <div class="ui grid">
+        <div class="sixteen wide column">
+          <div class="ui steps">
+            <div class="completed step">
+              <i class="building icon"></i>
+              <div class="content">
+                <a href="/hospitals/org_set">
+                  <div class="title" style="color:black">添加机构</div>
+                  <div class="description">请求管理员添加机构</div>
+                </a>
+              </div>
+            </div>
+            <div class="completed step">
+              <i class="add user icon"></i>
+              <div class="content">
+                <a href="/hospitals/user_html">
+                  <div class="title" style="color:black">添加用户</div>
+                  <div class="description">管理员会为您的机构添加用户</div>
+                </a>
+              </div>
+            </div>
+            <div class="step">
+              <i class="user outline icon"></i>
+              <div class="content">
+                <div class="title">登录</div>
+                <div class="description">使用管理员提供的账号密码登录</div>
+              </div>
+            </div>
+            <div class="step">
+              <i class="upload icon"></i>
+              <div class="content">
+                <a href="/hospitals/wt4_json">
+                <div class="title" style="color:black">病案上传</div>
+                <div class="description">使用网页或客户端上传病历文件</div>
+                </a>
+              </div>
             </div>
           </div>
-          <div class="completed step">
-            <i class="add user icon"></i>
-            <div class="content">
-              <a href="/hospitals/user_html">
-                <div class="title" style="color:black">添加用户</div>
-                <div class="description">管理员会为您的机构添加用户</div>
-              </a>
+          <div class="ui steps">
+            <div class="step">
+              <i class="settings icon"></i>
+              <div class="content">
+                <a href="/hospitals/department_set">
+                <div class="title" style="color:black">设置科室</div>
+                <div class="description">给上传病历设置标准科室</div>
+                </a>
+              </div>
             </div>
-          </div>
-          <div class="step">
-            <i class="user outline icon"></i>
-            <div class="content">
-              <div class="title">登录</div>
-              <div class="description">使用管理员提供的账号密码登录</div>
+            <div class="step">
+              <i class="connectdevelop icon"></i>
+              <div class="content">
+                  <div class="title">统计计算</div>
+                  <div class="description">开始进行统计计算</div>
+              </div>
             </div>
-          </div>
-          <div class="step">
-            <i class="upload icon"></i>
-            <div class="content">
-              <a href="/hospitals/wt4_json">
-              <div class="title" style="color:black">病案上传</div>
-              <div class="description">使用网页或客户端上传病历文件</div>
-              </a>
+            <div class="step">
+              <i class="download icon"></i>
+              <div class="content">
+                <a href="/hospitals/stat_html">
+                <div class="title" style="color:black">结果查看或下载</div>
+                <div class="description">对统计分析结果进行下载或对比查看</div>
+                </a>
+              </div>
             </div>
-          </div>
+          </div><br/>
         </div>
-        <div class="ui steps">
-          <div class="step">
-            <i class="settings icon"></i>
-            <div class="content">
-              <a href="/hospitals/department_set">
-              <div class="title" style="color:black">设置科室</div>
-              <div class="description">给上传病历设置标准科室</div>
-              </a>
-            </div>
+      </div>
+      <div class="ui grid">
+        <div class="six wide column">
+          <div class="ui action input" id="select">
+            <select class="ui compact selection" v-model="selectSearch">
+              <option value="icd9">ICD9</option>
+              <option value="icd10">ICD10</option>
+              <option selected="" value="mdc">MDC</option>
+              <option value="adrg">ADRG</option>
+              <option value="drg">DRG</option>
+            </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text" placeholder="输入编码或名称以搜索..."  v-model="searchInfo" @keyup.13="search()">
+            <div type="submit" class="ui button" v-on:click="search()">搜索</div>
           </div>
-          <div class="step">
-            <i class="connectdevelop icon"></i>
-            <div class="content">
-                <div class="title">统计计算</div>
-                <div class="description">开始进行统计计算</div>
-            </div>
-          </div>
-          <div class="step">
-            <i class="download icon"></i>
-            <div class="content">
-              <a href="/hospitals/stat_html">
-              <div class="title" style="color:black">结果查看或下载</div>
-              <div class="description">对统计分析结果进行下载或对比查看</div>
-              </a>
-            </div>
-          </div>
-        </div><br/>
+          <div style="display:none;" id="tishi1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
+          <br/>
+
+          <table id="search_table" class="ui celled table" style="display: none">
+            <thead>
+              <tr class="center aligned">
+                <th>编码</th>
+                <th>名称</th>
+                <th>年份</th>
+                <th>版本</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in searchTable">
+                <td>{{item.code}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.year}}</td>
+                <td>{{item.version}}</td>
+                <td>
+                  <a class="ui red label" v-on:click="jump(item.code, item.version,selectSearch)">详情</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ten wide column">
+        </div>
       </div>
     </div>
-    <div class="ui grid">
-      <div class="six wide column">
-        <div class="ui action input" id="select">
-          <select class="ui compact selection dropdown" id="select1">
-            <option value="icd9">ICD9</option>
-            <option value="icd10">ICD10</option>
-            <option selected="" value="mdc">MDC</option>
-            <option value="adrg">ADRG</option>
-            <option value="drg">DRG</option>
-          </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <input type="text" placeholder="输入编码或名称以搜索..."  onkeydown="keyDown(event)">
-          <div type="submit" class="ui button" onclick="search()">搜索</div>
-        </div>
-        <div style="display:none;" id="tishi1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
-        <br/>
-
-        <table id="search_table" class="ui celled table" style="display: none">
-          <thead>
-            <tr class="center aligned">
-              <th>编码</th>
-              <th>名称</th>
-              <th>年份</th>
-              <th>版本</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-      <div class="ten wide column">
-      </div>
-    </div>
-  </div>
-
-  <div class="four wide column">
-    <div class="ui card" style="width:100%">
-      <div class="content" style="background:#F5F5F5">
-        <div class="header">公告</div>
-      </div>
-      <div class="content"style="overflow-y:auto;height:300px;width:100%">
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。</p>
-      </div>
-      <div class="content">
-        <p style="float:right;padding-right:5%;padding-bottom:2%">发布时间:2017-12-05 12:21:22</p>
-        <p style="float:right;padding-right:5%;padding-bottom:2%">发布人:管理员</p>
-      </div>
-      </div>
+    <div class="four wide column">
       <div class="ui card" style="width:100%">
-      <div class="content" style="background:#F5F5F5">
-        <div class="header">更新日志</div>
-      </div>
-      <div class="content"style="overflow-y:auto;height:300px;width:100%">
-        <div style="font-size:16px">1、增加对比---(2017-12-25)</div>
-            <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实现统计分析查询对比功能，并增加图标显示。</div><br/>
-        <div style="font-size:16px">2、增加新的功能---(2017-12-05)</div>
-            <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实现数据查询条件点击按钮重置的功能。</div><br/>
-          <div style="font-size:16px">3、修复页面bug---(2017-12-03)</div>
-            <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;修改页面显示尺寸，保持所有页面的格式统一。</div><br/>
-          <div style="font-size:16px">4、新增查询数据---(2017-12-02)</div>
-            <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机构查询页面增加科室和机构查询信息。</div><br/>
+        <div class="content" style="background:#F5F5F5">
+          <div class="header">公告</div>
+        </div>
+        <div class="content"style="overflow-y:auto;height:300px;width:100%">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。实现数据查询条件点击按钮重置的功能。</p>
+        </div>
+        <div class="content">
+          <p style="float:right;padding-right:5%;padding-bottom:2%">发布时间:2017-12-05 12:21:22</p>
+          <p style="float:right;padding-right:5%;padding-bottom:2%">发布人:管理员</p>
+        </div>
+        </div>
+        <div class="ui card" style="width:100%">
+        <div class="content" style="background:#F5F5F5">
+          <div class="header">更新日志</div>
+        </div>
+        <div class="content"style="overflow-y:auto;height:300px;width:100%">
+          <div style="font-size:16px">1、增加对比---(2017-12-25)</div>
+              <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实现统计分析查询对比功能，并增加图标显示。</div><br/>
+          <div style="font-size:16px">2、增加新的功能---(2017-12-05)</div>
+              <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实现数据查询条件点击按钮重置的功能。</div><br/>
+            <div style="font-size:16px">3、修复页面bug---(2017-12-03)</div>
+              <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;修改页面显示尺寸，保持所有页面的格式统一。</div><br/>
+            <div style="font-size:16px">4、新增查询数据---(2017-12-02)</div>
+              <div class="summary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机构查询页面增加科室和机构查询信息。</div><br/>
+        </div>
       </div>
     </div>
   </div>
-  <!-- 下层设计 -->
 </div>
-
 <script>
-//样式
-var result = {};
-
-// get();
-$("#users").change(function(){
-  burying_user = $("#users").children("option:selected").val();
-  console.log(burying_user);
-  window.location.href = '/hospitals?page=<%= @page_num %>&burying_user='+burying_user;
-});
-function search(){
-  select = $("#select1").children("option:selected").val()
-  search1 = $("#select").children("input").val();
-  if(search1 == ''){
-    $('#tishi2').text("请输入后进行查询...");
-    $('#tishi1').show();
-  }else{
-    $.ajax({
-      type: "get",
-      url: '/library/search?table=' + select + '&code=' + search1 ,
-      async: false,
-      success: function(data) {
-        $("#search_table").css('display','inline-table');
-        str = ""
-        data.table.forEach((n,key)=> {
-          str = str + '<tr>' +
-            '<td>' + n.code + '</td>' +
-            '<td>' + n.name + '</td>' +
-            '<td>' + n.year + '</td>' +
-            '<td>' + n.version + '</td>' +
-            '<td><a class="ui red label" onClick="jump(\''+n.code+'\',\''+n.name+'\',\''+ n.version+'\',\''+select +'\')">详情</a></td>' +
-          '</tr>'
-        });
-        $("#search_table").children("tbody").children("tr").remove();
-        $("#search_table").children("tbody").append(str);
+  $(document).ready(function() {
+    Vue.prototype.$ajax = $.ajax;
+    common = new Vue({
+      el: '#index_1',
+      data: {
+        selectSearch: '',
+        searchInfo: '',
+        searchTable: []
       },
-      dataType: 'json'
-    });
-  }
-}
-function keyDown(event) {
-  if (event.keyCode == 13) {
-    search();
-  }
-}
+      created: function () {
+        // this.department_list()
+      },
+      methods: {
+        search: function () {
+          if(this.searchInfo === ''){
+            $('#tishi2').text("请输入后进行查询...");
+            $('#tishi1').show();
+          }else{
+            $.ajax({
+              type: "get",
+              url: '/library/search?table=' + this.selectSearch + '&code=' + this.searchInfo ,
+              async: false,
+              success: (data) => {
+                console.log(data);
+                this.searchTable = data.table
+                $("#search_table").css('display','inline-table');
+              },
+              dataType: 'json'
+            });
+          }
+        },
+        jump: function (a, b, c) {
+          window.location.href = '/hospitals/rule_details?code=' + a +'&table=' + c + '&version=' + b;
+        },
 
-function jump(code, name, version, select){
-  window.location.href = '/hospitals/details?code=' + code + '&name=' + name +'&table=' + select + '&version=' + version;
-}
-
-
-//$.ajax({
-//  type: "POST",
-//  url: 'https://baas.trustsql.qq.com/idm_v1/api/user_cert/fetch',
-//  async: false,
-//  headers: {
-//      'Content-Length': 12,
-//      'Content-Type': 'application/json;charset=UTF-8'
-//  },
-//  data: {user_id: "gb71aa6cb6e55989d", sign_type: "ECDSA", mch_id: "gb71aa6cb6e55989d", mch_sign: ""},
-//  success: function(data) {
-//    $("#mes_header").html('你的科室停用成功!');
-//    $("#mes").css('display','block');
-//    setTimeout("reload()",2000);
-//  },
-//  dataType: 'json'
-//});
-
+      }
+    })
+  })
 </script>
