@@ -1,30 +1,32 @@
-<div class="ui grid" style="margin-top:200px;">
-  <div class="six wide column">
-  </div>
-  <div class="four wide column">
-        <h2 class="ui center aligned header"> 登录到您的帐户</h2>
-        <form class="ui form">
-          <div class="ui segment">
-            <div class="field">
-              <div class="ui left icon input">
-                <input type="username" id="username" placeholder="账号">
-                <i class="user icon"></i>
-              </div>
-              <div style="display:none;" id="name_tishi1"><div class="ui basic red pointing prompt label transition visible" id="name_tishi2"></div></div>
+<div id="login_page">
+  <div class="ui grid" style="margin-top:200px;">
+    <div class="six wide column">
+    </div>
+    <div class="four wide column">
+      <h2 class="ui center aligned header"> 登录到您的帐户</h2>
+      <form class="ui form">
+        <div class="ui segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <input type="username" id="username" placeholder="账号" v-model="username">
+              <i class="user icon"></i>
             </div>
-            <div class="field">
-              <div class="ui left icon input">
-                <input type="password" id="password" placeholder="密码">
-                <i class="lock icon"></i>
-              </div>
-              <div style="display:none;" id="tishi1"><div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
-            </div>
-            <div class="ui fluid primary submit button" onclick="login()"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登录</font></font></div>
-            <!-- <div class="ui blue submit button" onclick="login()">登录</div> -->
+            <div style="display:none;" id="name_tishi1"><div class="ui basic red pointing prompt label transition visible" id="name_tishi2"></div></div>
           </div>
-        </form>
-      </div>
-  <div class="six wide column">
+          <div class="field">
+            <div class="ui left icon input">
+              <input type="password" id="password" placeholder="密码" v-model="password" @keyup.13="login()">
+              <i class="lock icon"></i>
+            </div>
+            <div style="display:none;" id="tishi1"><div class="ui basic red pointing prompt label transition visible" id="tishi2"></div></div>
+          </div>
+          <div class="ui fluid primary submit button" v-on:click="login()"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登录</font></font></div>
+          <!-- <div class="ui blue submit button" onclick="login()">登录</div> -->
+        </div>
+      </form>
+    </div>
+    <div class="six wide column">
+    </div>
   </div>
 </div>
 <script src="<%= static_path(@conn, "/css/asch/asch-min.js") %>"></script>
@@ -37,50 +39,56 @@ const privateKey = keys.privateKey
 const address =  AschJS.crypto.getAddress(publicKey)
 </script>
 <script>
-function login() {
-  username = $('#username').val();
-  password = $('#password').val();
-  //用户名
-  if(username == ""){
-    $("#name_tishi2").text("请输入用户名");
-    $("#name_tishi1").show();
-  }else{
-    $('#name_tishi1').css('display','none');
-  }
-  //密码
-  if(password == ""){
-    $("#tishi2").text("请输入密码");
-    $("#tishi1").show();
-  }else{
-    $('#tishi1').css('display','none');
-  }
-  if (password != "" & username != "") {
-    $.ajax({
-      type: "POST",
-      url: '/hospitals/login',
-      data: {user: {username:username, password:password, publicKey:publicKey, privateKey:privateKey,address: address, secret: secret}},
-      async: false,
-      success: function(data) {
-        if(data.login){
-          window.location.href = "/hospitals"
-        }else{
-          $("#tishi2").text("用户名密码错误");
-          $("#tishi1").show();
-        }
+  $(document).ready(function() {
+    Vue.prototype.$ajax = $.ajax;
+    common = new Vue({
+      el: '#login_page',
+      data: {
+        username: '',
+        password: '',
+        usernameLength: 0,
+        passwordLength: 0
       },
-      dataType: 'json'
-    });
-  }
-}
-// 键盘回车事件
-$(function() {
-  $("#password").keydown(function(event) {
-    if (event.which == "13") {
-      login();
-    }
-  });
-});
-
-
-
+      created: function () {
+        // this.department_list()
+      },
+      methods: {
+        login: function () {
+          this.usernameLength = this.username.length
+          this.passwordLength = this.password.length
+          if(this.usernameLength === 0){
+            $("#name_tishi2").text("请输入用户名");
+            $("#name_tishi1").show();
+          }else{
+            $('#name_tishi1').css('display','none');
+          }
+          //密码
+          if(this.passwordLength === 0){
+            $("#tishi2").text("请输入密码");
+            $("#tishi1").show();
+          }else{
+            $('#tishi1').css('display','none');
+          }
+          if (this.usernameLength !== 0 || this.passwordLength !== 0) {
+            $.ajax({
+              type: "POST",
+              url: '/hospitals/login',
+              data: {user: {username:this.username, password:this.password}},
+              async: false,
+              success: function(data) {
+                console.log(data);
+                if(data.login){
+                  window.location.href = "/hospitals"
+                }else{
+                  $("#tishi2").text("用户名密码错误");
+                  $("#tishi1").show();
+                }
+              },
+              dataType: 'json'
+            });
+          }
+        }
+      }
+    })
+  })
 </script>
