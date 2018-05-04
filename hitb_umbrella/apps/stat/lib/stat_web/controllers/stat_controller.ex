@@ -13,7 +13,6 @@ defmodule StatWeb.StatController do
     {stat, list, tool, page_list, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     #存储在自定义之前最后一次url
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
-    # IO.inspect stat
     # stat = Stat.Rand.rand(stat)
     json conn, %{stat: stat, page: page, tool: tool, list: [[list]], page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
@@ -64,13 +63,14 @@ defmodule StatWeb.StatController do
     stat = [staty] ++ statx
     #按照字段取值
     #存储在自定义之前最后一次url
+    url = "page=#{page}&type=#{type}&org=#{org}&time=#{time}&drg=#{drg}&order=#{order}&page_type=#{page_type}&order_type=#{order_type}"
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
-    json conn, %{stat: stat, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
+    json conn, %{stat: stat, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, url: url}
   end
 
   #对比缓存读取和删除
   def contrast_operate(conn, %{"username" => username, "field" => field, "com_type" => com_type})do
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type] = conn.params["url"]
     #获取分析结果
     {stat, _, _, _,  _,_, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     cond do
@@ -82,7 +82,13 @@ defmodule StatWeb.StatController do
         id = field
         # |>String.to_integer
         #求当前id记录
-        stat = Enum.reject(stat, fn x -> List.first(x) <> "_" <> List.first(List.delete_at(x, 0)) != id end)
+        stat =
+          case length(String.split(id, "_")) do
+            2 -> Enum.reject(stat, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}" != id end)
+            3 -> Enum.reject(stat, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}" != id end)
+            _ -> []
+          end
+        # stat = Enum.reject(stat, fn x -> List.first(x) <> "_" <> List.first(List.delete_at(x, 0)) != id end)
         #根据情况处理缓存
         case com_type do
           "add_x" ->
@@ -200,10 +206,14 @@ defmodule StatWeb.StatController do
           staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
           {unless(statx)do [] else statx end, unless(staty)do [] else staty end}
       end
+    {page, type, tool_type, drg, order, order_type, page_type, org} = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
+    header = Stat.Key.key(username, drg, type, tool_type, page_type)
     comtabx = Enum.map(statx, fn x ->
-      List.first(x) <> "_" <> List.first(List.delete_at(x, 0))
+      case "drg2" in header or "病种" in header or "drg" in header do
+        false -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}"
+        true -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}"
+      end
     end)
-    # comtaby = Enum.map(staty, fn x -> Key.cnkey(x) end)
     comtaby = staty
     json conn, %{x: comtabx, y: comtaby}
   end

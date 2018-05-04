@@ -7,6 +7,7 @@ defmodule Stat.Chart do
     #数据data
     data = stat
       |>Enum.map(fn x ->
+          IO.inspect x
           case Map.get(x, :drg2) do
             nil -> %{name: x.org <> " " <> x.time, value: Map.values(Map.drop(x, [:org, :time]))}
             _ -> %{name: x.org <> " " <> x.time <> " " <> x.drg2, value: Map.values(Map.drop(x, [:org, :time, :drg2]))}
@@ -17,6 +18,7 @@ defmodule Stat.Chart do
     #返回数据
     case chart_type do
       "radar" ->
+        # IO.inspect stat
         #字段设置(自动判断字段数值限制)
         indicator = stat
           |>Enum.reduce(hd(stat), fn x, res ->
