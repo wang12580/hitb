@@ -109,7 +109,7 @@
 <script>
 $(document).ready(function() {
   Vue.prototype.$ajax = $.ajax;
-  const url = '/stat/stat_json'+'?'+'page=<%=@page_num%>&type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>';
+  const url = '/stat/stat_json'+'?'+'page=<%=@page_num%>&type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&username=<%=@user.username%>';
   common = new Vue({
     el: '#app',
     data: {
@@ -211,7 +211,7 @@ function com_cache(id, type){
   $.ajax({
     type: "post",
     url: '/stat/contrast',
-    data: {username: '<%=@user.username%>', field: id, url: 'page=<%=@page_num%>&type=<%= @type %>&tool_type=<%=@tool_type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&order_type=<%=@order_type%>&page_type=<%= @page_type%>', com_type: type},
+    data: {username: '<%=@user.username%>', field: id, url: ['<%=@page_num%>', '<%= @page_type%>', '<%= @type %>', '<%=@tool_type %>', '<%= @org%>', '<%=@time%>', '<%=@drg%>', '<%= @order%>', '<%=@order_type%>'], com_type: type},
     async: false,
     dataType: 'json'
   });

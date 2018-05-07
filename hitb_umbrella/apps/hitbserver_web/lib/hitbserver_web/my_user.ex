@@ -29,7 +29,8 @@ defmodule HitbserverWeb.MyUser do
       user == nil -> %{login: false, username: "", type: 2, key: [], org: ""}
       user.username == nil ->  %{login: false, username: "", type: 2, key: [], org: ""}
       true ->
-        %{username: user.username, type: 2, key: [], org: ""}
+        db_user = Server.Repo.get_by(Server.User, username: user.username)
+        %{username: user.username, type: 2, key: [], org: db_user.org}
         # case blockchain do
           # nil ->
             # %{login: false, username: "", type: 2, key: []}

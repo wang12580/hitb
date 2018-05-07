@@ -14,10 +14,10 @@
     </div>
     <div class="item" id="ban_div">
       <button class="ui orange labeled icon button" v-on:click = "ban()" id="ban" v-bind:class="{'ui disabled labeled icon button': tableTr === null}" v-if="tableban === false"><i class="ban icon"></i>停用</button>
-      <button v-else  class="ui orange labeled icon button" onclick = "refresh()" id="refresh"><i class="refresh icon"></i>重新启用</button>
+      <button v-else  class="ui orange labeled icon button" v-on:click = "refresh()" id="refresh" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="refresh icon"></i>重新启用</button>
     </div>
     <div class="item">
-      <button class="ui red labeled icon button" v-on:onclick = "remove()" id="remove" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
+      <button class="ui red labeled icon button" v-on:click = "remove()" id="remove" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="remove icon"></i>删除</button>
     </div>
   </div>
 
@@ -43,6 +43,17 @@
       <tbody id="tbody">
         <tr v-for="(item, index) in departmentList" v-bind:key="index"
         v-if="item.is_ban" v-on:click="myclick(item.id, true)" v-bind:class="{'active center aligned': tableTr === item.id}">
+        <td>{{item.id}}</td>
+          <td>{{item.wt_code}}</td>
+          <td>{{item.wt_name}}</td>
+          <td>{{item.org}}</td>
+          <td>{{item.class}}</td>
+          <td>{{item.department}}</td>
+          <td>{{item.cherf_department}}</td>
+          <td>{{item.professor}}</td>
+          <td>{{item.is_spe}}</td>
+          <td>{{item.is_imp}}</td>
+        </tr>
         <tr v-for="(item, index) in departmentList" v-bind:key="index"
         v-if="!item.is_ban" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id}">
           <td>{{item.id}}</td>
@@ -59,7 +70,7 @@
       </tbody>
     </table>
   <div class="ui right floated pagination menu" id = "page">
-    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" :href = "'/hospitals/department_set_1?page=' + item.num" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
+    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" :href = "'/hospitals/department_set?page=' + item.num" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
   </div>
 </div>
 <script>
@@ -111,7 +122,7 @@
         ban: function(){
           $.ajax({
             type: "PUT",
-            url: '/hospitals/customize_department/'+this.tableTr,
+            url: '/servers/customize_department/'+this.tableTr,
             async: false,
             data: {customize_department: {is_ban: true}},
             success: function(data) {
@@ -122,11 +133,26 @@
             dataType: 'json'
           });
         },
+        // 重新启用
+        refresh: function () {
+          $.ajax({
+            type: "PUT",
+            url: '/servers/customize_department/'+this.tableTr,
+            async: false,
+            data: {customize_department: {is_ban: false}},
+            success: function(data) {
+              $("#mes_header").html('你的科室启用成功!');
+              $("#mes").css('display','block');
+              setTimeout("reload()",2000);
+            },
+            dataType: 'json'
+          });
+        },
         //删除
         remove: function(){
           $.ajax({
             type: "delete",
-            url: '/hospitals/customize_department/'+sid,
+            url: '/servers/customize_department/'+this.tableTr,
             async: false,
             success: function(data) {
               $("#mes_header").html('你的科室删除成功!');
@@ -139,4 +165,7 @@
       }
     })
   })
+  function reload(){
+    location.reload();
+  }
 </script>

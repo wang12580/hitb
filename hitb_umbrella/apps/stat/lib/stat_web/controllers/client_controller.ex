@@ -33,11 +33,13 @@ defmodule StatWeb.ClientController do
       stat = stat|>List.delete_at(0)
       #计算客户端提示
       {clinet_stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
-      # clinet_stat = [0, 1]|>Enum.map(fn x -> List.delete_at(x) end)
-      # num = stat|>List.delete_at(0)Enum.map(fn x -> )
-      # num =
-      IO.inspect clinet_stat
-      json conn, %{stat: stat, count: count, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
+      header = Enum.at(clinet_stat, 1)
+      clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
+      num = clinet_stat|>Enum.map(fn x -> List.last(x) end)|>Enum.sum
+      org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
+      time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
+      drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
+      json conn, %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end
 

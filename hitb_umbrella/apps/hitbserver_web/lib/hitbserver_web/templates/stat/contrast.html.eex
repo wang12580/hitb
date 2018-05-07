@@ -9,7 +9,7 @@
     <div class="ui big breadcrumb" style="background:#ffffff;">
       <a class="section" href="/hospitals">主页</a>
       <i class="right chevron icon divider"></i>
-      <a class="section" href="/hospitals/stat_html?">基础分析</a>
+      <a class="section":href="'/hospitals/stat_html?'+url">基础分析</a>
       <i class="right chevron icon divider"></i>
       <div class="active section">对比</div>
     </div>
@@ -93,7 +93,8 @@ $(document).ready(function() {
       order: 0,
       order_type: 'asc',
       clickedY: [],
-      clickedX: []
+      clickedX: [],
+      url: ''
     },
     created: function () {
       this.getList();
@@ -121,6 +122,7 @@ $(document).ready(function() {
             this.stat = res.stat;
             this.headerCn = this.stat[0];
             this.stat.splice(0, 1);
+            this.url = res.url;
           }
         });
       },

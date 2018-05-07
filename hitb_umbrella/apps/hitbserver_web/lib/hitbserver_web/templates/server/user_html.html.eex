@@ -122,17 +122,16 @@
               $("#error_mes").css('display','none');
               $("#mes_header").html('用户删除成功!');
               $("#mes").css('display','block');
-              setTimeout(this.reload(),2000);
+              setTimeout("reload()",2000);
             },
             dataType: 'json'
           });
-        },
-        //重载
-        reload: function(){
-          location.reload();
         }
       }
     })
   })
+  function reload(){
+    location.reload();
+  }
   </script>
 <%end%>

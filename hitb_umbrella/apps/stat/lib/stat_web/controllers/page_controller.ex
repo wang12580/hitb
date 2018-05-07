@@ -27,7 +27,6 @@ defmodule StatWeb.PageController do
           # a2 = a2|>Enum.join(",")
           # a3 = a3|>Enum.join(",")
           x = "#{space}res := array[[#{[a1, a2, a3]|>Enum.join("],[")}"
-          # IO.inspect x
         end
 
         # if (res := res || array[[r.org,r.time,cast(r.num_num as text))
