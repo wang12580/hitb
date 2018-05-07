@@ -56,19 +56,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban === true" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, true)" v-bind:class="{'active center aligned': tableTr === itme.id}">
-          <td>{{itme.code}}</td>
-          <td>{{itme.name}}</td>
-          <td>{{itme.level}}</td>
-          <td>{{itme.type}}</td>
-          <td>{{itme.province}}-{{itme.city}}-{{itme.county}}</td>
-          <td>{{itme.person_name}}</td>
-          <td>{{itme.tel}}</td>
-          <td>{{itme.email}}</td>
-          <td>{{itme.inserted_at}}</td>
-        </tr>
-        <tr v-for="(itme, index) in orgList" v-bind:key="index" v-if="itme.is_ban === false" class="center aligned" :id = "itme.id" v-on:click="myclick(itme.id, false)" v-bind:class="{'active center aligned': tableTr === itme.id}">
-          <!-- <td>{{itme.is_ban}}</td> -->
+        <tr v-for="(itme, index) in orgList" v-bind:key="index" :id = "itme.id" v-on:click="myclick(itme.id, itme.is_ban)" v-bind:class="{'ban active center aligned': tableTr === itme.id && itme.is_ban, 'active center aligned': tableTr === itme.id, 'ban center aligned': itme.is_ban, 'center aligned': true}">
           <td>{{itme.code}}</td>
           <td>{{itme.name}}</td>
           <td>{{itme.level}}</td>
@@ -175,4 +163,12 @@
     location.reload();
   }
 </script>
+<style>
+.ban.active.center.aligne{
+  color: #708090
+}
+.ban.center.aligned{
+  color: #708090
+}
+</style>
 <% end %>
