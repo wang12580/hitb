@@ -93,6 +93,7 @@ defmodule HitbserverWeb.Router do
     get "/department_set", ServerController, :department
     get "/add", ServerController, :add
     get "/server_edit", ServerController, :server_edit
+    get "/server_edit2", ServerController, :server_edit2
     get "/comp_info", ServerController, :comp_info
     get "/record", ServerController, :record
     get "/doctors", ServerController, :doctors

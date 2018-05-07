@@ -13,6 +13,7 @@ defmodule ServerWeb.CustomizeDepartmentView do
     %{id: customize_department.id,
       cherf_department: customize_department.cherf_department,
       class: customize_department.class,
+      department_class: customize_department.class,
       department: customize_department.department,
       is_imp: customize_department.is_imp,
       is_spe: customize_department.is_spe,
