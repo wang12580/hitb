@@ -72,11 +72,11 @@
         <div class="six wide column">
           <div class="ui action input" id="select">
             <select class="ui compact selection" v-model="selectSearch">
-              <option value="icd9">ICD9</option>
-              <option value="icd10">ICD10</option>
-              <option selected="" value="mdc">MDC</option>
+              <option value="mdc">MDC</option>
               <option value="adrg">ADRG</option>
               <option value="drg">DRG</option>
+              <option value="icd9">ICD9</option>
+              <option value="icd10">ICD10</option>
             </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="text" placeholder="输入编码或名称以搜索..."  v-model="searchInfo" @keyup.13="search(1)">
             <div type="submit" class="ui button" v-on:click="search(1)">搜索</div>
@@ -106,7 +106,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="ui right floated pagination menu mini">
+          <div class="ui right floated pagination menu mini"  v-show="page_list.length > 0">=
             <a v-for="p in page_list" v-bind:class="{'disabled item': p.page == page_num, 'item': p.page !== page_num}" v-on:click="search(p.page)"
             >{{p.num}}</a>
           </div>
@@ -148,19 +148,18 @@
   </div>
 </div>
 <script>
-  $(document).ready(function() {
+$(document).ready(function() {
     Vue.prototype.$ajax = $.ajax;
     common = new Vue({
       el: '#index_1',
       data: {
-        selectSearch: '',
+        selectSearch: 'mdc',
         searchInfo: '',
         searchTable: [],
         page_num: 1,
         page_list: []
       },
       created: function () {
-        // this.department_list()
       },
       methods: {
         search: function (page) {
