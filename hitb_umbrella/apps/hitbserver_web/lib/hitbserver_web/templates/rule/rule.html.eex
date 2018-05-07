@@ -3,9 +3,11 @@
     <div class="ui secondary vertical menu">
       <%= cond do%>
         <% @type == "year" -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&year='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
+        <% @type == "version" -> %>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?year=<%=@year%>&dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&type=<%=@type%>&version='+x">{{ x }}</a>
         <% true -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?year=<%=@year%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&dissect='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?year=<%=@year%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
       <% end %>
     </div>
   </div>
@@ -16,12 +18,22 @@
       <div class="active section">字典查询</div>
     </div>
     <div class="ui divider"></div>
-    <div class="ui menu" id="div_menu">
+    <div class="ui menu" id="div_menu" v-if="tool.length !== 0">
       <div class="item" v-for="x in tool">
-        <div class="ui primary button" v-on:click="change(x)">{{x}}</div>&nbsp;&nbsp;
+        <div class="ui primary button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
       </div>
     </div>
-    <div id= "rule_tit" ></div>
+    <div id= "rule_tit">
+      <a class='ui red label' v-if="tit.year !== ''">{{tit.year}}年
+        <i class='delete icon' v-on:click="del('year')"></i>
+      </a>
+      <a class='ui orange label' v-if="tit.version !== ''">{{tit.version}}
+        <i class='delete icon' v-on:click="del('version')"></i>
+      </a>
+      <a class='ui yellow label' v-if="tit.dissect !== ''">{{tit.dissect}}
+        <i class='delete icon' v-on:click="del('dissect')"></i>
+      </a>
+    </div>
     <table class="ui celled table">
       <thead>
         <tr class="center aligned">
@@ -65,16 +77,21 @@ $(document).ready(function() {
       pages: [],
       page: 1,
       tools: {
-        '基本信息': ['行政区划', '性别', '婚姻状况', '职业代码', '联系人关系', '国籍'],
-        '手术血型': ['切口愈合', '手术级别', '麻醉方式', '血型', 'Rh'],
-        '出入院编码': ['入院病情', '入院途径', '住院计划'],
-        '肿瘤编码': ['0～Ⅳ肿瘤分期', 'TNM肿瘤分期', '分化程度编码'],
-        '医保诊断依据': ['最高诊断依据', '药物过敏', '重症监护室', '医疗付费方式', '病案质量'],
-        'icd9': ['版本', '年份', '诊断性操作', '治疗性操作', '手术室手术', '中医性操作', '解剖部位'],
-        'icd10': ['版本', '年份', '解剖部位'],
-        'mdc': [], 'adrg': [], 'drg': []
+        '基本信息': [['行政区划', '行政区划'], ['性别', '性别'], ['婚姻状况', '婚姻状况'], ['职业代码', '职业代码'], ['联系人关系', '联系人关系'], ['国籍', '国籍']],
+        '手术血型': [['切口愈合', '切口愈合'], ['手术级别', '手术级别'], ['麻醉方式', '麻醉方式'], ['血型', '血型'], ['Rh', 'Rh']],
+        '出入院编码': [['入院病情', '入院病情'], ['入院途径', '入院途径'], ['住院计划', '住院计划']],
+        '肿瘤编码': [['0～Ⅳ肿瘤分期', '0～Ⅳ肿瘤分期'], ['TNM肿瘤分期', 'TNM肿瘤分期'], ['分化程度编码', '分化程度编码']],
+        '医保诊断依据': [['最高诊断依据', '最高诊断依据'], ['药物过敏', '药物过敏'], ['重症监护室', '重症监护室'], ['医疗付费方式', '医疗付费方式'], ['病案质量', '病案质量']],
+        'icd9': [['版本', 'version'], ['年份', 'year'], ['诊断性操作', '诊断性操作'], ['治疗性操作', '治疗性操作'], ['手术室手术', '手术室手术'], ['中医性操作', '中医性操作'], ['解剖部位', 'dissect']],
+        'icd10': [['版本', 'version'], ['年份', 'year'], ['解剖部位', 'dissect']],
+        'mdc': [['版本', 'version'], ['年份', 'year']],
+        'adrg': [['版本', 'version'], ['年份', 'year']],
+        'drg': [['版本', 'version'], ['年份', 'year']]
       },
-      tool: []
+      tool: [],
+      tit: {},
+      titTypes: [],
+      titType: false
     },
     created: function () {
       this.getRule();
@@ -87,9 +104,10 @@ $(document).ready(function() {
           url: `/library/rule?page=${"<%=@page %>"}&type=${"<%=@type %>"}&tab_type=${"<%=@tab_type %>"}&version=${"<%=@version %>"}&year=${"<%=@year %>"}&dissect=${"<%=@dissect %>"}`,
           dataType: 'json',
           success: (res)=> {
+            console.log(res);
             this.rule = res.result;
             if (['icd9', 'icd10'].includes('<%=@tab_type%>')) {
-              this.headerCn = ['名称', '编码', '版本']
+              this.headerCn = ['编码', '名称', '年份', '版本']
             } else if (['基本信息', '手术血型', '出入院编码', '肿瘤编码', '医保诊断依据'].includes('<%=@tab_type%>')) {
               this.headerCn = ['名称', '编码', '类型']
             } else {
@@ -99,8 +117,9 @@ $(document).ready(function() {
             this.pages = res.page_list;
             this.page = res.page_num;
             this.tool = this.tools[res.tab_type];
-            console.log(res.tab_type);
-            console.log(this.tool);
+            this.tit['year'] = res.year
+            this.tit['version'] = res.version
+            this.tit['dissect'] = res.dissect
           }
         });
       },
@@ -113,10 +132,14 @@ function change(type){
   window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&type=${type}&tab_type=${"<%=@tab_type%>"}&year=${"<%=@year%>"}&version=${"<%=@version%>"}`;
 }
 //去除选择
-function del(tab_type){
-  if(tab_type == 'year'){
+function del(type){
+  console.log(type);
+  if(type == 'year'){
     window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&tab_type=${"<%=@tab_type%>"}&version=${"<%=@version%>"}&type=${"<%= @type %>"}`;
-  }else{
+  }else if(type == 'version') {
+    window.location.href =
+    `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&tab_type=${"<%=@tab_type%>"}&version=&type=${"<%= @type %>"}&year=${"<%=@year%>"}`;
+  } else {
     window.location.href = `/hospitals/rule?year=${"<%=@year%>"}&page=${"<%= @page %>"}&tab_type=${"<%=@tab_type%>"}&version=${"<%=@version%>"}&type=${"<%= @type %>"}`;
   }
 }
