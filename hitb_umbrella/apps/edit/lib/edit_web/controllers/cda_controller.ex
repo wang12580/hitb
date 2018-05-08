@@ -25,8 +25,8 @@ defmodule EditWeb.CdaController do
 
   def update(conn, %{"content" => content, "file_name" => file_name, "username" => username}) do
     file_name =
-      if(String.contains? file_name, username <> "-")do
-        List.last(String.split(file_name, username <> "-"))
+      if(String.contains? file_name, "-")do
+        List.last(String.split(file_name, "-"))
       else
         file_name
       end

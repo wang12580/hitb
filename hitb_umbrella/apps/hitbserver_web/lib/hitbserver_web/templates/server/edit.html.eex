@@ -23,177 +23,162 @@
           <p id = "error_mes_info">机构名称重复。</p>
         </div>
           <%= if(@type == "org")do %>
-          <div class="ui blue segment">
-            <div class="ui form">
+            <div id="vueOrg">
+              <div class="ui blue segment">
+              <div class="ui form">
               <div class="field">
                 <label>组织机构代码</label>
-                <input type="text" id="code" placeholder="组织机构代码" >
+                <input type="text"  v-model="org.code" placeholder="组织机构代码" >
               </div>
               <div class="field">
                 <label>机构名称</label>
-                <input type="text" id="org_name" placeholder="机构名称">
+                <input type="text" v-model="org.name" placeholder="机构名称">
               </div>
               <div class="field">
                 <label>机构等级</label>
-                <select class="ui dropdown" id="level" style="width:100%">
-                  <option value="">机构等级</option>
-                  <option value="三级特等" if(result.level == "三级特等") selected="selected">三级特等</option>
-                  <option value="三级甲等" if(result.level == "三级甲等") selected="selected">三级甲等</option>
-                  <option value="三级乙等" if(result.level == "三级乙等") selected="selected">三级乙等</option>
-                  <option value="三级丙等" if(result.level == "三级丙等") selected="selected">三级丙等</option>
-                  <option value="二级甲等" if(result.level == "二级甲等") selected="selected">二级甲等</option>
-                  <option value="二级乙等" if(result.level == "二级乙等") selected="selected">二级乙等</option>
-                  <option value="二级丙等" if(result.level == "二级丙等") selected="selected">二级丙等</option>
-                  <option value="一级甲等" if(result.level == "一级甲等") selected="selected">一级甲等</option>
-                  <option value="一级乙等" if(result.level == "一级乙等") selected="selected">一级乙等</option>
-                  <option value="一级丙等" if(result.level == "一级丙等") selected="selected">一级丙等</option>
+                <select v-model="org.level"  style="width:100%">
+                  <option v-for="x in level" v-bind:value="x">{{ x }}</option>
                 </select>
               </div>
               <div class="field">
                 <label>机构类型</label>
-                <select class="ui dropdown" id="type" style="width:100%">
-                  <option value="">机构类型</option>
-                  <option value="按摩医院" if(result.type == "按摩医院") selected="selected" >按摩医院</option>
-                  <option value="藏医院" if(result.type == "藏医院") selected="selected" >藏医院</option>
-                  <option value="传染病医院" if(result.type == "传染病医院") selected="selected" >传染病医院</option>
-                  <option value="儿童医院" if(result.type == "儿童医院") selected="selected" >儿童医院</option>
-                  <option value="妇幼保健院" if(result.type == "妇幼保健院") selected="selected" >妇幼保健院</option>
-                  <option value="骨科医院" if(result.type == "骨科医院") selected="selected" >骨科医院</option>
-                  <option value="骨伤医院" if(result.type == "骨伤医院") selected="selected" >骨伤医院</option>
-                  <option value="精神病医院" if(result.type == "精神病医院") selected="selected" >精神病医院</option>
-                  <option value="康复医院" if(result.type == "康复医院") selected="selected" >康复医院</option>
-                  <option value="口腔医院" if(result.type == "口腔医院") selected="selected" >口腔医院</option>
-                  <option value="其他专科疾病防治院" if(result.type == "其他专科疾病防治院") selected="selected" >其他专科疾病防治院</option>
-                  <option value="其他专科医院" if(result.type == "其他专科医院") selected="selected" >其他专科医院</option>
-                  <option value="其他中医专科医院" if(result.type == "其他中医专科医院") selected="selected" >其他中医专科医院</option>
-                  <option value="心血管病医院" if(result.type == "心血管病医院") selected="selected" >心血管病医院</option>
-                  <option value="胸科医院" if(result.type == "胸科医院") selected="selected" >胸科医院</option>
-                  <option value="针灸医院" if(result.type == "针灸医院") selected="selected" >针灸医院</option>
-                  <option value="整形外科医院" if(result.type == "整形外科医院") selected="selected" >整形外科医院</option>
-                  <option value="职业病防治院" if(result.type == "职业病防治院") selected="selected" >职业病防治院</option>
-                  <option value="中西医结合医院" if(result.type == "中西医结合医院") selected="selected" >中西医结合医院</option>
-                  <option value="中医（综合）医院" if(result.type == "中医（综合）医院") selected="selected" >中医（综合）医院</option>
-                  <option value="肿瘤医院" if(result.type == "肿瘤医院") selected="selected" >肿瘤医院</option>
-                  <option value="综合医院" if(result.type == "综合医院") selected="selected" >综合医院</option>
+                <select v-model="org.type"  style="width:100%">
+                  <option v-for="x in type" v-bind:value="x">{{ x }}</option>
                 </select>
               </div>
               <div class="three fields">
                 <div class="field">
                   <label>地区</label>
-                  <select class="ui dropdown" name="province" id="province"></select>
+                  <select v-model="org.province"  @change="changeProvince()">
+                    <option v-for="x in allProvinces" v-bind:value="x">{{ x }}</option>
+                  </select>
                 </div>
                 <div class="field">
                   <label>&nbsp;</label>
-                  <select class="ui dropdown" name="city" id="city"></select>
+                  <select v-model="org.city"  @change="changeCity()">
+                    <option v-for="x in citys" v-bind:value="x">{{ x }}</option>
+                  </select>
                 </div>
                 <div class="field">
                   <label>&nbsp;</label>
-                  <select class="ui dropdown" name="county" id="county"></select>
+                  <select v-model="org.county">
+                    <option v-for="x in countys" v-bind:value="x">{{ x }}</option>
+                  </select>
                 </div>
               </div>
               <div class="field">
                 <label>联系人</label>
-                <input type="text" id="person_name" placeholder="联系人" value = "">
+                <input type="text" v-model="org.person_name" placeholder="联系人" value = "">
               </div>
               <div class="field">
                 <label>联系人手机号</label>
-                <input type="text" id="tel" placeholder="联系人手机号" value = "">
+                <input type="text" v-model="org.tel" placeholder="联系人手机号" value = "">
               </div>
               <div class="field">
                 <label>联系人邮箱</label>
-                <input type="text" id="email" placeholder="联系人邮箱" value = "">
+                <input type="text" v-model="org.email" placeholder="联系人邮箱" value = "">
               </div>
               <div class="field">
                 <button class="ui button" type="button" onclick="re()">清空</button>
-                <button class="ui primary button" type="button" onclick="save()">确定</button>
+                <button class="ui primary button" type="button" v-on:click="updateOrg()">确定</button>
               </div>
+            </div>
             </div>
           </div>
           <% end %>
           <%= if(@type == "department")do %>
-          <div class="ui blue segment">
-            <div class="ui form">
-              <div class="field">
-                <label>内部科室编码</label>
-                <input class=" text" id="wt4_department">
-              </div>
-              <div class="field">
-                <label>内部科室名称</label>
-                <input type="text" id="wt_name" placeholder="内部科室名称" value = "">
-              </div>
-              <div class="field">
-                <label>所属机构</label>
-                <input type="text" id = "org" placeholder="所属机构" value = "">
-              </div>
-              <div class="field">
-                <label>所属专科</label>
-                <select class="ui dropdown" id="my_class"></select>
-              </div>
-              <div class="field">
-                <label>所属科室</label>
-                <select class="ui dropdown" id="this_department"></select>
-              </div>
-              <div class="field">
-                <label>科室主任</label>
-                <input type="text" id="cherf_department" placeholder="科室主任" value = "">
-              </div>
-              <div class="field">
-                <label>科室副主任</label>
-                <input type="text" id="professor" placeholder="科室副主任" value = "">
-              </div>
-              <div class="field">
-                <label>特色科室</label>
-                <input type="checkbox" tabindex="0" id="is_spe">
-              </div>
-              <div class="field">
-                <label>重点科室</label>
-                <input type="checkbox" tabindex="0" id="is_imp" >
-              </div>
-              <div class="field">
-                <button class="ui button" type="button" onclick="re()">清空</button>
-                <button class="ui primary button" type="button" onclick="save()">确定</button>
+            <div id="vueDepartment">
+              <div class="ui blue segment">
+                <div class="ui form">
+                  <div class="field">
+                    <label>内部科室编码</label>
+                    <input class=" text" v-model="department.wt_code">
+                  </div>
+                  <div class="field">
+                    <label>内部科室名称</label>
+                    <input type="text" placeholder="内部科室名称" v-model="department.wt_name">
+                  </div>
+                  <div class="field">
+                    <label>所属机构</label>
+                    <input type="text" placeholder="所属机构" v-model="department.org">
+                  </div>
+                  <div class="field">
+                    <label>所属专科</label>
+                    <select v-model="department.class" style="width:100%" @change="changeClass()">
+                      <option v-for="x in allClass" v-bind:value="x">{{ x }}</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>所属科室</label>
+                    <select v-model="department.department" style="width:100%">
+                      <option v-for="x in res" v-bind:value="x">{{ x }}</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>科室主任</label>
+                    <input type="text" placeholder="科室主任" v-model="department.cherf_department">
+                  </div>
+                  <div class="field">
+                    <label>科室副主任</label>
+                    <input type="text" placeholder="科室副主任" v-model="department.professor">
+                  </div>
+                  <div class="field">
+                    <label>特色科室</label>
+                    <input type="checkbox" tabindex="0" v-model="department.is_spe">
+                  </div>
+                  <div class="field">
+                    <label>重点科室</label>
+                    <input type="checkbox" tabindex="0" v-model="department.is_imp">
+                  </div>
+                  <div class="field">
+                    <button class="ui button" type="button" onclick="re()">清空</button>
+                    <button class="ui primary button" type="button" v-on:click="updateDepartment()">确定</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           <% end %>
           <%= if(@type == "user")do %>
-          <div class="ui blue segment">
-            <div class="ui form">
-              <div class="field">
-                <label>用户名</label>
-                <input type="text" placeholder="用户名" value="" id="username">
-              </div>
-              <div class="field">
-                <label>密码</label>
-                <input type="password" id="password" placeholder="密码">
-              </div>
-              <div class="field">
-                <label>机构</label>
-                <select class="ui dropdown" id="org" style="width:100%">
-                </select>
-              </div>
-              <div class="field">
-                <label>姓名</label>
-                <input type="text" id = "name" placeholder="姓名" value="">
-              </div>
-              <div class="field">
-                <label>电话</label>
-                <input type="text" id = "tel" placeholder="电话" value="">
-              </div>
-              <div class="field">
-                <label>电子邮箱</label>
-                <input type="text" id="email" placeholder="电子邮箱" value="">
-              </div>
-              <div class="field">
-                <label>年龄</label>
-                <input type="text"  id="age" placeholder="年龄" value="">
-              </div>
-              <div class="field">
-                <button class="ui button" type="button" onclick="re()">清空</button>
-                <button class="ui primary button" type="button" onclick="save()">确定</button>
+            <div id="vueUser">
+              <div class="ui blue segment">
+                <div class="ui form">
+                  <div class="field">
+                    <label>用户名</label>
+                    <input type="text" placeholder="用户名" v-model="user.username">
+                  </div>
+                  <div class="field">
+                    <label>密码</label>
+                    <input type="password" placeholder="密码" v-model="user.password">
+                  </div>
+                  <div class="field">
+                    <label>机构</label>
+                    <select v-model="user.org" style="width:100%">
+                      <option v-for="x in org" v-bind:value="x">{{ x }}</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>姓名</label>
+                    <input type="text" placeholder="姓名" v-model="user.name">
+                  </div>
+                  <div class="field">
+                    <label>电话</label>
+                    <input type="text" placeholder="电话" v-model="user.tel">
+                  </div>
+                  <div class="field">
+                    <label>电子邮箱</label>
+                    <input type="text" placeholder="电子邮箱" v-model="user.email">
+                  </div>
+                  <div class="field">
+                    <label>年龄</label>
+                    <input type="text" placeholder="年龄" v-model="user.age">
+                  </div>
+                  <div class="field">
+                    <button class="ui button" type="button" onclick="re()">清空</button>
+                    <button class="ui primary button" type="button" onclick="save()">确定</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
           <% end %>
         </div>
         <div class="three wide column"></div>
@@ -202,282 +187,241 @@
   <div class="one wide column"></div>
 </div>
 
-<script>
-var url = '/servers'
-if('<%=@type%>' == 'org'){
-  url = url + '/org/'+'<%=@id%>';
-}else if('<%=@type%>' == 'department'){
-  url = url + '/customize_department/'+'<%=@id%>';
-}else{
-  url = url + '/user/'+'<%=@id%>';
-}
-$.ajax({
-  type: "GET",
-  url: url,
-  async: false,
-  success: function(data) {
-    let html = '';
-    if('<%=@type%>' == 'org'){
-      $('#code').val(data.data.code);
-      $('#org_name').val(data.data.name);
-      $('#level').val(data.data.level);
-      $('#type').val(data.data.type);
-      $('#province').val(data.data.province);
-      $('#city').val(data.data.city);
-      $('#county').val(data.data.county);
-      $('#person_name').val(data.data.person_name);
-      $('#tel').val(data.data.tel);
-      $('#email').val(data.data.email);
-    }else if('<%=@type%>' == 'department'){
-      $('#wt4_department').val(data.data.wt_code);
-      $('#wt_name').val(data.data.wt_name);
-      $('#org').val(data.data.org);
-      $('#my_class').val(data.data.my_class);
-      $('#this_department').val(data.data.this_department);
-      $('#cherf_department').val(data.data.cherf_department);
-      $('#professor').val(data.data.professor);
-      $('#is_spe').val(data.data.is_spe);
-      $('#is_imp').val(data.data.is_imp);
-    }else if('<%=@type%>' == 'user'){
-      $('#username').val(data.data.username);
-      $('#org').val(data.data.org);
-      $('#name').val(data.data.name);
-      $('#tel').val(data.data.tel);
-      $('#email').val(data.data.email);
-      $('#age').val(data.data.age);
-    }
-  },
-  dataType: 'json'
-});
-</script>
 <%= if(@type == "org")do %>
 <script>
-function write_html(){
-  // province
-  $.ajax({
-    type: "GET",
-    url: '/hospitals/province',
-    async: false,
-    success: function(data) {
-      province = data['province'];
-      city = data['city'];
-      county = data['county'];
+// org部分
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#vueOrg',
+    data: {
+      org: {},
+      allProvinces: [],
+      allCitys: [],
+      allCountys: [],
+      citys: [],
+      countys: [],
+      level: ['三级特等','三级甲等','三级乙等','三级丙等','二级甲等','二级乙等','二级丙等','一级甲等','一级乙等','一级丙等'],
+      type: ['按摩医院','藏医院','传染病医院','儿童医院','妇幼保健院','骨科医院','骨伤医院','精神病医院','康复医院','口腔医院','其他专科疾病防治院','其他专科医院','其他中医专科医院','心血管病医院','胸科医院','针灸医院','整形外科医院','职业病防治院','中西医结合医院','中医（综合）医院','肿瘤医院','综合医院']
     },
-    dataType: 'json'
-  });
-  //输出科省份列表
-  var html = '';
-  province.forEach(function(value){
-    if('result.province' == value){
-      html = html+'<option value="'+value+'" selected="selected">'+value+'</option>'
-    }else{
-      html = html+'<option value="'+value+'">'+value+'</option>'
+    created: function () {
+      this.getProvince();
+      this.getOrg();
+    },
+    methods: {
+      getProvince: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/hospitals/province',
+          dataType: 'json',
+          success: (res)=> {
+            this.allProvinces = res.province;
+            this.allCitys = res.city;
+            this.allCountys = res.county;
+          }
+        });
+      },
+      getOrg: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/org/<%=@id%>',
+          dataType: 'json',
+          success: (res)=> {
+            this.org = res.data;
+            this.citys = this.allCitys[this.org.province];
+            this.countys = this.allCountys[this.org.city];
+          }
+        });
+      },
+      updateOrg: function() {
+        this.$ajax({
+          type: "PUT",
+          url: '/servers/org/<%=@id%>',
+          async: false,
+          data: {org: this.org},
+          success: function(data) {
+            $("#error_mes").css('display','none');
+            $("#last").css('display','none');
+            $("#mes_header").html('机构修改成功!');
+            $("#mes").css('display','block');
+            setTimeout("reload('org_set')",2000);
+          },
+          error: function(){
+            $("#error_mes_header").html('机构修改失败!');
+            $("#error_mes_info").html('机构编码重复。');
+            $("#error_mes").css('display','block');
+          },
+          dataType: 'json'
+        });
+      },
+      changeProvince: function() {
+        this.citys = this.allCitys[this.org.province];
+        if (this.citys.length > 0) {
+          this.org.city = this.citys[0];
+          this.countys = this.allCountys[this.org.city];
+          if (this.countys > 0) {
+            this.org.county = this.countys[0];
+          }
+        }
+      },
+      changeCity: function() {
+        this.countys = this.allCountys[this.org.city];
+        if (this.countys > 0) {
+          this.org.county = this.countys[0];
+        }
+      },
     }
   })
-  $("#province").html(html);
-  get_city(city,county);
-}
-//获取市列表
-$("#province").change(function(){get_city(city,county)});
-function get_city(city,county){
-  city_list = city[$("#province").val()];
-  var html = '';
-  city_list.forEach(function(val){
-    if('result.city' == val){
-      html = html+'<option value="'+val+'" selected="selected">'+val+'</option>'
-    }else{
-      html = html+'<option value="'+val+'">'+val+'</option>'
-    }
-  })
-  $("#city").html(html);
-  get_county(county);
-}
-//获取县列表
-$("#city").change(function(){get_county(county)});
-function get_county(county){
-  county_list = county[$("#city").val()];
-  var html = '';
-  county_list.forEach(function(val){
-    if('result.county' == val){
-      html = html+'<option value="'+val+'" selected="selected">'+val+'</option>'
-    }else{
-      html = html+'<option value="'+val+'">'+val+'</option>'
-    }
-  })
-  $("#county").html(html);
-}
-//保存
-function save(){
-  id = 'result.id';
-  code = $('#code').val();
-  name = $('#org_name').val();
-  city = $('#city').val();
-  county = $('#county').val();
-  email = $('#email').val();
-  level = $('#level').val();
-  person_name = $('#person_name').val();
-  province = $('#province').val();
-  tel = $('#tel').val();
-  type = $('#type').val();
-  user_type = $('#user_type').val();
-  username = $('#username').val();
-  is_show = $('#is_show').is(':checked');
-  if(is_show){is_show = true}else{is_show = false}
-  obj = {code:code, name: name, city:city, county:county, email:email, is_show:is_show, level:level, person_name:person_name, province:province, tel:tel, type:type, user_type:user_type}
-  if(tel.length == "11" && (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(tel))){
-      $.ajax({
-        type: "PUT",
-        url: '/hospitals/org/'+id,
-        async: false,
-        data: {org: obj},
-        success: function(data) {
-          $("#error_mes").css('display','none');
-          $("#last").css('display','none');
-          $("#mes_header").html('你的机构修改成功!');
-          $("#mes").css('display','block');
-          setTimeout("reload('org_set')",2000);
-        },
-        error: function(){
-          $("#error_mes_header").html('你的机构修改失败!');
-          $("#error_mes_info").html('机构编码重复。');
-          $("#error_mes").css('display','block');
-        },
-        dataType: 'json'
-      });
-  }else{
-    $("#error_mes_header").html('你的机构修改失败!');
-    $("#error_mes_info").html('手机号码格式错误。');
-    $("#error_mes").css('display','block');
-  }
-}
+});
 </script>
 <% end %>
 <%= if(@type == "department")do %>
 <script>
-let this_departments = {}
-function write_html(){
-  //获取数据
-  $.ajax({
-    type: "GET",
-    url: '/servers/department',
-    async: false,
-    success: function(data) {
-      console.log(data);
-      wt4_department = data;
+// department部分
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#vueDepartment',
+    data: {
+      department: {},
+      allClass: [],
+      allRes: [],
+      res: []
     },
-    dataType: 'json'
-  });
-  //输出wt4科室列表
-  var html1 = '';
-  wt4_department.class_list.forEach(function(obj){
-    html1 = html1+'<option value="'+obj.class_code+'">'+obj.class_code+'</option>'
-  })
-  $('#my_class').html(html1)
-  this_departments = wt4_department.result
-  getDepartments(this_departments)
-}
-$("#my_class").change(function(){getDepartments(this_departments)});
-function getDepartments(value) {
-  const class_code = $('#my_class').find("option:selected").text()
-  var html = '';
-  value[class_code].forEach(function(obj){
-    html = html+'<option value="'+obj.class_code+'">'+obj.department_name+'</option>'
-  })
-  $("#this_department").html(html);
-}
-//保存
-function save(){
-  id = ''
-  wt_code = $('#wt4_department').val();
-  wt_name = $('#wt_name').val();
-  my_class = $("#my_class").val()+'-'+$("#my_class").find("option:selected").text();
-  department = $('#department').val()+'-'+$("#department").find("option:selected").text();
-  cherf_department = $('#cherf_department').val();
-  professor = $('#professor').val();
-  org = $("#org").val();
-  is_spe = $('#is_spe').is(':checked');
-  is_imp = $('#is_imp').is(':checked');
-  if(is_spe){is_spe = true}else{is_spe = false}
-  if(is_imp){is_imp = true}else{is_imp = false}
-  obj = {wt_code:wt_code, wt_name:wt_name, class:my_class, department:department, org:org,  cherf_department:cherf_department, professor:professor, is_spe:is_spe, is_imp:is_imp}
-  $.ajax({
-    type: "POST",
-    url: '/servers/customize_department/'+id,
-    async: false,
-    data: {customize_department: obj},
-    success: function(data) {
-      $("#last").css('display','none');
-      $("#mes_header").html('你的科室创建成功!');
-      $("#mes").css('display','block');
-      setTimeout("reload('department_set')",2000);
+    created: function () {
+      this.getDepartment();
+      this.getCustomizeDepartment();
     },
-    dataType: 'json'
-  });
-}
+    methods: {
+      getDepartment: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/department',
+          dataType: 'json',
+          success: (res)=> {
+            this.allClass = []
+            res.class_list.forEach((x) => {
+              this.allClass.push(`${x.class_code}-${x.class_name}`)
+            });
+            this.allRes = res.result;
+          }
+        });
+      },
+      getCustomizeDepartment: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/customize_department/<%=@id%>',
+          dataType: 'json',
+          success: (res)=> {
+            // console.log(res.data);
+            this.department = res.data;
+            this.allRes[this.department.class.split('-')[0]].forEach((x) => {
+              this.res.push(`${x.department_code}-${x.department_name}`)
+            });
+          }
+        });
+      },
+      updateDepartment: function() {
+        this.$ajax({
+          type: "PUT",
+          url: '/servers/customize_department/<%=@id%>',
+          async: false,
+          data: {customize_department: this.department},
+          success: function(data) {
+            $("#last").css('display','none');
+            $("#mes_header").html('科室修改成功!');
+            $("#mes").css('display','block');
+            setTimeout("reload('department_set')",2000);
+          },
+          error: function(){
+            $("#error_mes_header").html('你的科室修改失败!');
+            $("#error_mes").css('display','block');
+          },
+          dataType: 'json'
+        });
+      },
+      changeClass: function() {
+        if (this.department.class) {
+          code = this.department.class.split('-')[0]
+          this.res = []
+          if (this.allRes[code]) {
+            this.allRes[code].forEach((x) => {
+              x['x'] = `${x.class_code}-${x.class_name}`
+              this.res.push(`${x.department_code}-${x.department_name}`)
+            });
+            this.department.department = this.res[0];
+          }
+        }
+      },
+    }
+  })
+});
 </script>
 <% end %>
 <%= if(@type == "user")do %>
 <script>
-function write_html(){
-  //获取数据
-  $.ajax({
-    type: "GET",
-    url: '/servers/org',
-    async: false,
-    success: function(data) {
-      org_list = data['data'];
+// user部分
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#vueUser',
+    data: {
+      org: [],
+      user: {},
     },
-    dataType: 'json'
-  });
-  //输出科室类列表
-  var html = '';
-  org_list.forEach(function(val){
-    html = html+'<option value="'+val.name+'">'+val.name+'</option>'
+    created: function () {
+      this.getOrg();
+      this.getUser();
+      // this.getCustomizeDepartment();
+    },
+    methods: {
+      getOrg: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/org',
+          dataType: 'json',
+          success: (res)=> {
+            this.org = res.data.map(x => x.name);
+          }
+        });
+      },
+      getUser: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/user/<%=@id%>',
+          dataType: 'json',
+          success: (res)=> {
+            this.user = res.data;
+          }
+        });
+      },
+      updateUser: function() {
+        this.$ajax({
+          type: "PUT",
+          url: '/servers/user/<%=@id%>',
+          async: false,
+          data: {user: this.department},
+          success: function(data) {
+            $("#error_mes").css('display','none');
+            $("#last").css('display','none');
+            $("#mes_header").html('用户创修改成功!');
+            $("#mes").css('display','block');
+            setTimeout("reload('user_html')",2000);
+          },
+          error: function(){
+            $("#error_mes_header").html('用户修改失败!');
+            $("#error_mes_info").html('用户名重复。');
+            $("#error_mes").css('display','block');
+          },
+          dataType: 'json'
+        });
+      },
+    }
   })
-  $("#org").html(html);
-}
-//保存
-function save(){
-  id = $("#this_id").val();
-  username = $('#username').val();
-  password = $('#password').val();
-  org = $('#org').val();
-  age = $('#age').val();
-  email = $('#email').val();
-  tel = $('#tel').val();
-  name = $('#name').val();
-  obj = {username:username, password:password, org:org, age:age, email:email, tel:tel, name:name}
-  $.ajax({
-    type: "PUT",
-    url: `/servers/user/${'<%=@id%>'}`,
-    async: false,
-    data: {user: obj},
-    success: function(data) {
-      $("#error_mes").css('display','none');
-      $("#last").css('display','none');
-      $("#mes_header").html('你的用户创建成功!');
-      $("#mes").css('display','block');
-      setTimeout("reload('user_html')",2000);
-    },
-    error: function(){
-      $("#error_mes_header").html('你的用户创建失败!');
-      $("#error_mes_info").html('用户名重复。');
-      $("#error_mes").css('display','block');
-    },
-    dataType: 'json'
-  });
-}
+});
 </script>
 <% end %>
 <script>
-$('.ui.checkbox').checkbox();
-$('.ui.modal').modal('hidden');
-write_html();
-//清空
-function re(){
-  $('.ui.form input').val("");
-  $('.ui.form select').val("");
-}
 //重载
 function reload(type){
   window.location.href= '/hospitals/'+type;

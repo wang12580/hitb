@@ -209,7 +209,7 @@ defmodule StatWeb.StatController do
     {page, type, tool_type, drg, order, order_type, page_type, org} = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
     header = Stat.Key.key(username, drg, type, tool_type, page_type)
     comtabx = Enum.map(statx, fn x ->
-      case "drg2" in header or "病种" in header or "drg" in header do
+      case is_bitstring(Enum.at(x, 2)) or Enum.at(x, 2) == "-" do
         false -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}"
         true -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}"
       end

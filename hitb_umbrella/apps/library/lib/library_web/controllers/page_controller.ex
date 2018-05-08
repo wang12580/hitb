@@ -100,7 +100,7 @@ defmodule LibraryWeb.PageController do
         #取list
         list =
           cond do
-            type in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
+            to_string(type) in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
               i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year)))
                 |>Enum.reject(fn x -> x == nil end)
               case i do
@@ -108,6 +108,7 @@ defmodule LibraryWeb.PageController do
                 _ -> List.first(i)|>Enum.sort
               end
             true ->
+              IO.inspect tab
               i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
                 |>Enum.reject(fn x -> x == nil end)
               case i do

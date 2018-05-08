@@ -82,7 +82,6 @@ defmodule HitbserverWeb.Router do
     get "/rule", RuleController, :rule
     get "/rule_contrast", RuleController, :contrast
     get "/details", RuleController, :details
-    get "/details2", RuleController, :details2
 
     #统计分析
     get "/stat_html", StatController, :stat
