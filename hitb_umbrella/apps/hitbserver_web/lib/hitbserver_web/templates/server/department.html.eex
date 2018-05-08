@@ -56,7 +56,7 @@
       </tbody>
     </table>
   <div class="ui right floated pagination menu" id = "page">
-    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" :href = "'/hospitals/department_set?page=' + item.num" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
+    <a v-for="(item, index) in pageList" class="item" v-bind:key="index" v-bind:href = "generateUrl(item.page)" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === page}" >{{item.num}}</a>
   </div>
 </div>
 <script>
@@ -67,7 +67,7 @@
       data: {
         departmentList: [],
         pageList: [],
-        pagenum: 1,
+        page: 1,
         tableTr: null,
         tableban: false,
       },
@@ -147,7 +147,16 @@
             },
             dataType: 'json'
           });
-        }
+        },
+        generateUrl: function(num) {
+          let url = '';
+          if(this.page === parseInt(num)) {
+            url = '###'
+          } else {
+            url = `/hospitals/department_set?page=${num}`
+          }
+          return url
+        },
       }
     })
   })
