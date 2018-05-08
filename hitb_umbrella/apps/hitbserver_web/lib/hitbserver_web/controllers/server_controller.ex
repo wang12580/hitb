@@ -34,7 +34,6 @@ defmodule HitbserverWeb.ServerController do
     login = MyUser.is_login(conn)
     if(login)do
       org = MyUser.user_info(conn).org
-      IO.inspect MyUser.user_info(conn)
       render conn, "add.html", user: user, type: type, org: org
     else
       redirect conn, to: "/hospitals/login"
@@ -45,12 +44,6 @@ defmodule HitbserverWeb.ServerController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      # result =
-      #   case type do
-      #     "org" -> Repo.get!(Org, id)
-      #     "department" -> Repo.get!(CustomizeDepartment, id)
-      #     "user" -> Repo.get!(User, id)
-      #   end
       org = MyUser.user_info(conn).org
       render conn, "edit.html", user: user, type: type, org: org, id: id
     else
@@ -86,7 +79,6 @@ defmodule HitbserverWeb.ServerController do
   def record(conn, _params)do
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
     user = get_session(conn, :user)
-    IO.inspect page
     render conn, "record.html", user: user, page: page
   end
 
