@@ -56,16 +56,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(itme, index) in orgList" v-bind:key="index" :id = "itme.id" v-on:click="myclick(itme.id, itme.is_ban)" v-bind:class="{'ban active center aligned': tableTr === itme.id && itme.is_ban, 'active center aligned': tableTr === itme.id, 'ban center aligned': itme.is_ban, 'center aligned': true}">
-          <td>{{itme.code}}</td>
-          <td>{{itme.name}}</td>
-          <td>{{itme.level}}</td>
-          <td>{{itme.type}}</td>
-          <td>{{itme.province}}-{{itme.city}}-{{itme.county}}</td>
-          <td>{{itme.person_name}}</td>
-          <td>{{itme.tel}}</td>
-          <td>{{itme.email}}</td>
-          <td>{{itme.inserted_at}}</td>
+        <tr v-for="(item, index) in orgList" v-bind:key="index" :id = "item.id" v-on:click="myclick(item.id, item.is_ban)" v-bind:class="{'ban active center aligned': tableTr === item.id && item.is_ban, 'active center aligned': tableTr === item.id, 'ban center aligned': item.is_ban, 'center aligned': true}">
+          <td>{{item.code}}</td>
+          <td>{{item.name}}</td>
+          <td>{{item.level}}</td>
+          <td>{{item.type}}</td>
+          <td>{{item.province}}-{{item.city}}-{{item.county}}</td>
+          <td>{{item.person_name}}</td>
+          <td>{{item.tel}}</td>
+          <td>{{item.email}}</td>
+          <td>{{item.inserted_at}}</td>
         </tr>
       </tbody>
     </table>

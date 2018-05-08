@@ -54,7 +54,7 @@
         </tr>
       </thead>
       <tbody id="user_tbody">
-        <tr v-for="(item, index) in userList" v-bind:key="index" :id ="item.id" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id, 'center aligned': 1 === 1}">
+        <tr v-for="(item, index) in userList" v-bind:key="index" :id ="item.id" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id, 'center aligned': true}">
           <td>{{item.id}}</td>
           <td>{{item.username}}</td>
           <td>{{item.org}}</td>

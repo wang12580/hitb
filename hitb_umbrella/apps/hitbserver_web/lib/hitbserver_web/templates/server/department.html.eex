@@ -41,21 +41,7 @@
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr v-for="(item, index) in departmentList" v-bind:key="index"
-        v-if="item.is_ban" v-on:click="myclick(item.id, true)" v-bind:class="{'active center aligned': tableTr === item.id}">
-        <td>{{item.id}}</td>
-          <td>{{item.wt_code}}</td>
-          <td>{{item.wt_name}}</td>
-          <td>{{item.org}}</td>
-          <td>{{item.class}}</td>
-          <td>{{item.department}}</td>
-          <td>{{item.cherf_department}}</td>
-          <td>{{item.professor}}</td>
-          <td>{{item.is_spe}}</td>
-          <td>{{item.is_imp}}</td>
-        </tr>
-        <tr v-for="(item, index) in departmentList" v-bind:key="index"
-        v-if="!item.is_ban" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id}">
+        <tr v-for="(item, index) in departmentList" v-bind:key="index" :id = "item.id" v-on:click="myclick(item.id, item.is_ban)" v-bind:class="{'ban active center aligned': tableTr === item.id && item.is_ban, 'active center aligned': tableTr === item.id, 'ban center aligned': item.is_ban, 'center aligned': true}">
           <td>{{item.id}}</td>
           <td>{{item.wt_code}}</td>
           <td>{{item.wt_name}}</td>
@@ -169,3 +155,11 @@
     location.reload();
   }
 </script>
+<style>
+.ban.active.center.aligne{
+  color: #708090
+}
+.ban.center.aligned{
+  color: #708090
+}
+</style>
