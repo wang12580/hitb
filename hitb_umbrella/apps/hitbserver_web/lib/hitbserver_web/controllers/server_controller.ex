@@ -58,23 +58,6 @@ defmodule HitbserverWeb.ServerController do
     end
   end
 
-  def server_edit2(conn, %{"type" => type, "id" => id})do
-    user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
-    if(login)do
-      # result =
-      #   case type do
-      #     "org" -> Repo.get!(Org, id)
-      #     "department" -> Repo.get!(CustomizeDepartment, id)
-      #     "user" -> Repo.get!(User, id)
-      #   end
-      org = MyUser.user_info(conn).org
-      render conn, "edit2.html", user: user, type: type, org: org, id: id
-    else
-      redirect conn, to: "/hospitals/login"
-    end
-  end
-
   def user_html(conn, _params)do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)

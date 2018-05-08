@@ -82,7 +82,6 @@ defmodule HitbserverWeb.Router do
     get "/rule", RuleController, :rule
     get "/rule_contrast", RuleController, :contrast
     get "/details", RuleController, :details
-    get "/details2", RuleController, :details2
 
     #统计分析
     get "/stat_html", StatController, :stat
@@ -93,7 +92,6 @@ defmodule HitbserverWeb.Router do
     get "/department_set", ServerController, :department
     get "/add", ServerController, :add
     get "/server_edit", ServerController, :server_edit
-    get "/server_edit2", ServerController, :server_edit2
     get "/comp_info", ServerController, :comp_info
     get "/record", ServerController, :record
     get "/doctors", ServerController, :doctors
