@@ -3,11 +3,11 @@
     <div class="ui secondary vertical menu">
       <%= cond do%>
         <% @type == "year" -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@year%>'}" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
         <% @type == "version" -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?year=<%=@year%>&dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&type=<%=@type%>&version='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@version%>'}" :href="'/hospitals/rule?year=<%=@year%>&dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&type=<%=@type%>&version='+x">{{ x }}</a>
         <% true -> %>
-          <a class="item" v-for="x in leftList" :href="'/hospitals/rule?year=<%=@year%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@dissect%>'}" :href="'/hospitals/rule?year=<%=@year%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
       <% end %>
     </div>
   </div>
