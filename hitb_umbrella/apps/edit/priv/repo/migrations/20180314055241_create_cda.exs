@@ -6,7 +6,8 @@ defmodule Edit.Repo.Migrations.CreateCda do
       add :username, :string
       add :name, :string
       add :content, :string
-
+      add :is_change, :boolean, default: false
+      add :is_show, :boolean, default: false
       timestamps()
     end
 

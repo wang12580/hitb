@@ -82,6 +82,16 @@ defmodule HitbserverWeb.ServerController do
     render conn, "record.html", user: user, page: page
   end
 
+  def myset(conn, _params) do
+    %{"type" => type} = Map.merge(%{"type" => "info"}, conn.params)
+    user = get_session(conn, :user)
+    login = MyUser.is_login(conn)
+    if(login)do
+      render conn, "myset.html", user: user, type: type
+    else
+      redirect conn, to: "/hospitals/login"
+    end
+  end
 
   def upload_html(conn, _params)do
     user = get_session(conn, :user)

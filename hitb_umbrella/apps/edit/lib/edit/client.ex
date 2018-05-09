@@ -62,6 +62,7 @@ defmodule Edit.Client do
 
   """
   def create_cda(attrs \\ %{}) do
+    attrs = Map.merge(%{"is_change" => false, "is_show" => false})
     %Cda{}
     |> Cda.changeset(attrs)
     |> Repo.insert()

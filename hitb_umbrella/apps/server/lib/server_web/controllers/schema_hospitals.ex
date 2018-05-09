@@ -168,7 +168,7 @@ defmodule ServerWeb.SchemaHospitals do
         |> User.changeset(attrs)
         |> Repo.insert()
       _ ->
-        attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"])}, attrs)
+        attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "is_show" => false}, attrs)
         changeset = User.changeset(%User{}, attrs)
         # changeset = %{changeset | :errors => ["error": "用户名已存在！"]}
         {:error, changeset}
