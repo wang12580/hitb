@@ -29,5 +29,6 @@ defmodule LibraryWeb.Router do
     get "/search", RuleController, :search
     get "/wt4", Wt4Controller, :index
     get "/stat_wt4", Wt4Controller, :stat_wt4
+    get "/server_rule", PageController, :server_rule
   end
 end
