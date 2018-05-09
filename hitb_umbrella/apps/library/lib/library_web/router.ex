@@ -21,12 +21,12 @@ defmodule LibraryWeb.Router do
 
   scope "/library", LibraryWeb do
     pipe_through :api
-    get "/rule_client", PageController, :rule_client
-    get "/rule_file", PageController, :rule_file
-    get "/rule", PageController, :rule
-    get "/contrast", PageController, :contrast
-    get "/details", PageController, :details
-    get "/search", PageController, :search
+    get "/rule_client", RuleController, :rule_client
+    get "/rule_file", RuleController, :rule_file
+    get "/rule", RuleController, :rule
+    get "/contrast", RuleController, :contrast
+    get "/details", RuleController, :details
+    get "/search", RuleController, :search
     get "/wt4", Wt4Controller, :index
     get "/stat_wt4", Wt4Controller, :stat_wt4
   end

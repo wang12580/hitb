@@ -14,7 +14,7 @@ defmodule ServerWeb.Router do
     plug :fetch_session
   end
 
-  scope "/", ServerWeb do
+  scope "servers/", ServerWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
