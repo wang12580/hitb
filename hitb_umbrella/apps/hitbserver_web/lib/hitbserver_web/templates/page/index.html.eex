@@ -101,12 +101,12 @@
                 <td>{{item.year}}</td>
                 <td>{{item.version}}</td>
                 <td>
-                  <a class="ui red label" v-on:click="jump(item.code, item.version,selectSearch)">详情</a>
+                  <a class="ui red label" v-on:click="jump(item.code, item.version,selectSearch,item.name)">详情</a>
                 </td>
               </tr>
             </tbody>
           </table>
-          <div class="ui right floated pagination menu mini"  v-show="page_list.length > 0">=
+          <div class="ui right floated pagination menu mini"  v-show="page_list.length > 0">
             <a v-for="p in page_list" v-bind:class="{'disabled item': p.page == page_num, 'item': p.page !== page_num}" v-on:click="search(p.page)"
             >{{p.num}}</a>
           </div>
@@ -182,8 +182,8 @@ $(document).ready(function() {
             });
           }
         },
-        jump: function (a, b, c) {
-          window.location.href = '/hospitals/rule_details?code=' + a +'&table=' + c + '&version=' + b;
+        jump: function (a, b, c, d) {
+          window.location.href = '/hospitals/details?code=' + a +'&table=' + c + '&version=' + b + '&name=' + d;
         },
 
       }
