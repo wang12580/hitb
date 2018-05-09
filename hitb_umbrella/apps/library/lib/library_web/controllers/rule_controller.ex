@@ -12,7 +12,6 @@ defmodule LibraryWeb.RuleController do
   def rule(conn, _params) do
     params = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
     {result, page_list, page_num, count, tab_type, type, dissect, list, version, year} = rule(params)
-    IO.inspect count
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -29,7 +28,6 @@ defmodule LibraryWeb.RuleController do
   def rule_client(conn, _params) do
     params = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
     {result, page_list, page_num, count, _, _, _, list, _, _} = rule(params)
-    # IO.inspect dissect
     result = result
       |>Enum.map(fn x ->
           Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc])
@@ -64,8 +62,6 @@ defmodule LibraryWeb.RuleController do
       if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
         type = String.to_atom(type)
         #判断值
-        IO.inspect year
-        IO.inspect dissect
         query =
           cond do
             year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
@@ -105,7 +101,6 @@ defmodule LibraryWeb.RuleController do
                 _ -> List.first(i)|>Enum.sort
               end
             true ->
-              IO.inspect tab
               i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
                 |>Enum.reject(fn x -> x == nil end)
               case i do
