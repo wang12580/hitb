@@ -37,7 +37,7 @@ defmodule HitbserverWeb.PageController do
         {:ok, result} ->
           %{body: body} = result
           body = Poison.decode!(body)
-          {put_session(conn, :user, %{login: body["login"], username: body["username"], type: body["type"], key: body["key"]}), body["username"], body["login"]}
+          {put_session(conn, :user, %{id: body["id"], login: body["login"], username: body["username"], type: body["type"], key: body["key"]}), body["username"], body["login"]}
         {:error, _} ->
           {put_session(conn, :user, %{login: false, username: "", type: 2, key: []}), "", false}
       end

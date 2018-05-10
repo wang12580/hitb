@@ -14,13 +14,14 @@ defmodule Server.User do
     field :username, :string #用户名
     field :type, :integer #用户类型 1-管理员 2-普通用户
     field :key, {:array, :string}
+    field :is_show, :boolean, default: false
     timestamps()
   end
 
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:username, :hashpw, :org, :age, :email, :tel, :name, :type, :key])
-    |> validate_required([:username, :hashpw, :org, :age, :email, :tel, :name, :type])
+    |> cast(attrs, [:username, :hashpw, :org, :age, :email, :tel, :name, :type, :key, :is_show])
+    |> validate_required([:username, :hashpw, :org, :age, :email, :tel, :name, :type, :is_show])
   end
 end

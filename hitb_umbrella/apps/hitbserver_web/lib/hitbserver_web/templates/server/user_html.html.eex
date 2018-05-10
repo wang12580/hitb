@@ -54,7 +54,7 @@
         </tr>
       </thead>
       <tbody id="user_tbody">
-        <tr v-for="(item, index) in userList" v-bind:key="index" :id ="item.id" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id}">
+        <tr v-for="(item, index) in userList" v-bind:key="index" :id ="item.id" v-on:click="myclick(item.id, false)" v-bind:class="{'active center aligned': tableTr === item.id, 'center aligned': true}">
           <td>{{item.id}}</td>
           <td>{{item.username}}</td>
           <td>{{item.org}}</td>
@@ -66,7 +66,7 @@
       </tbody>
     </table>
     <div class="ui right floated pagination menu" id="user_footer">
-      <a v-for="(item, index) in pageList" class="item" v-bind:key="index" href = `/hospitals/department_set?page=item.num` title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === pagenum}" >{{item.num}}</a>
+      <a v-for="(item, index) in pageList" class="item" v-bind:key="index" v-bind:href = "generateUrl(item.num)" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === page}" >{{item.num}}</a>
     </div>
   </div>
   <script>
@@ -77,7 +77,7 @@
       data: {
         userList: [],
         pageList: [],
-        pagenum: 1,
+        page: 1,
         tableTr: null,
         tableban: false,
       },
@@ -103,7 +103,6 @@
           } else {
             this.tableTr = value
           }
-          console.log(this.tableTr);
         },
         //新建
         add_button: function(){
@@ -126,7 +125,16 @@
             },
             dataType: 'json'
           });
-        }
+        },
+        generateUrl: function(num) {
+          let url = '';
+          if(this.page === parseInt(num)) {
+            url = '###'
+          } else {
+            url = `/hospitals/department_set?page=${num}`
+          }
+          return url
+        },
       }
     })
   })

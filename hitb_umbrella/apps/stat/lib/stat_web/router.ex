@@ -15,7 +15,7 @@ defmodule StatWeb.Router do
     plug :fetch_flash
   end
 
-  scope "/", StatWeb do
+  scope "/stat", StatWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index

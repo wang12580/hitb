@@ -1,0 +1,221 @@
+<div class="ui padded grid">
+  <div class="one wide column"></div>
+  <div class="sixteen wide column">
+    <div class="ui huge breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section">
+        <a class="section" href="/hospitals/user_html">用户管理</a><i class="right chevron icon divider"></i>个人信息
+      </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui grid">
+      <div class="three wide column"></div>
+      <div class="ten wide column">
+        <div class="ui success message" id = "mes" style="display:none;">
+          <div class="header" id = "mes_header">你的机构修改成功!</div>
+          <p>2秒后页面将自动刷新。</p>
+        </div>
+        <div class="ui negative message" id = "error_mes" style="display:none;">
+          <div class="header" id = "error_mes_header">你的机构修改失败!</div>
+          <p id = "error_mes_info">机构名称重复。</p>
+        </div>
+          <%= if(@type == "info")do %>
+            <div id="vueUser">
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>用户名</h3></div>
+                    <div class="five wide column"><p>{{user.username}}</p></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>机构</h3></div>
+                    <div class="five wide column"><p>{{user.org}}</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"><a href="/hospitals/myset?id=<%=@user.id%>&type=update_org">修改</a></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>姓名</h3></div>
+                    <div class="five wide column"><p>{{user.name}}</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"><a href="/hospitals/myset?id=<%=@user.id%>&type=update_name">修改</a></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>电话</h3></div>
+                    <div class="five wide column"><p>{{user.tel}}</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"><a href="/hospitals/myset?id=<%=@user.id%>&type=update_tel">修改</a></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>电子邮箱</h3></div>
+                    <div class="five wide column"><p>{{user.email}}</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>年龄</h3></div>
+                    <div class="five wide column"><p>{{user.age}}</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"><a href="/hospitals/myset?id=<%=@user.id%>&type=update_age">修改</a></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ui horizontal segments">
+                <div class="ui segment" style = "background-color:#f3f4f5">
+                  <div class="ui grid">
+                    <div class="five wide column"><h3>允许他人查看文档</h3></div>
+                    <div class="five wide column" v-if="user.is_show == true"><p>是</p></div>
+                    <div class="five wide column" v-else><p>否</p></div>
+                    <div class="four wide column"></div>
+                    <div class="one wide column"><a href="/hospitals/myset?id=<%=@user.id%>&type=update_show">修改</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <div id="vueUser">
+              <div class="ui blue segment">
+                <div class="ui form">
+                  <%= if(@type == "update")do %>
+                    <div class="field">
+                      <label>密码</label>
+                      <input type="password" placeholder="密码" v-model="user.password">
+                    </div>
+                  <% end %>
+                  <%= if(@type == "update_org")do %>
+                    <div class="field">
+                      <label><h2>修改机构</h2></label>
+                      <select v-model="user.org" style="width:100%">
+                        <option v-for="x in org" v-bind:value="x">{{ x }}</option>
+                      </select>
+                    </div>
+                  <% end %>
+                  <%= if(@type == "update_name")do %>
+                    <div class="field">
+                      <label><h2>修改姓名</h2></label>
+                      <input type="text" placeholder="姓名" v-model="user.name">
+                    </div>
+                  <% end %>
+                  <%= if(@type == "update_tel")do %>
+                    <div class="field">
+                      <label><h2>修改电话</h2></label>
+                      <input type="text" placeholder="电话" v-model="user.tel">
+                    </div>
+                  <% end %>
+                  <%= if(@type == "update_age")do %>
+                    <div class="field">
+                      <label><h2>修改年龄</h2></label>
+                      <input type="number" placeholder="年龄" v-model="user.age">
+                    </div>
+                  <% end %>
+                  <%= if(@type == "update_show")do %>
+                    <div class="field">
+                      <label><h2>是否允许他人查看文档</h2></label>
+                      <select v-model="user.is_show" style="width:100%">
+                        <option value="true">是</option>
+                        <option value="false">否</option>
+                      </select>
+                    </div>
+                  <% end %>
+                  <div class="field">
+                    <button class="ui button" type="button" onclick="reload()">返回</button>
+                    <button class="ui primary button" type="button" v-on:click="updateUser()">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="three wide column"></div>
+      </div>
+  </div>
+  <div class="one wide column"></div>
+</div>
+
+<script>
+// user部分
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#vueUser',
+    data: {
+      org: [],
+      user: {},
+    },
+    created: function () {
+      this.getOrg();
+      this.getUser();
+      // this.getCustomizeDepartment();
+    },
+    methods: {
+      getOrg: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/org',
+          dataType: 'json',
+          success: (res)=> {
+            this.org = res.data.map(x => x.name);
+          }
+        });
+      },
+      getUser: function() {
+        this.$ajax({
+          type: 'GET',
+          url: '/servers/user/<%=@user.id%>',
+          dataType: 'json',
+          success: (res)=> {
+            this.user = res.data;
+          }
+        });
+      },
+      updateUser: function() {
+        this.$ajax({
+          type: "PUT",
+          url: '/servers/user/<%=@user.id%>',
+          async: false,
+          data: {user: this.user},
+          success: function(data) {
+            $("#error_mes").css('display','none');
+            $("#last").css('display','none');
+            $("#mes_header").html('用户修改成功!');
+            $("#mes").css('display','block');
+            setTimeout("reload()",2000);
+          },
+          error: function(){
+            $("#error_mes_header").html('用户修改失败!');
+            $("#error_mes_info").html('用户名重复。');
+            $("#error_mes").css('display','block');
+          },
+          dataType: 'json'
+        });
+      },
+    }
+  })
+});
+</script>
+<script>
+//重载
+function reload(){
+  window.location.href= '/hospitals/myset';
+}
+</script>

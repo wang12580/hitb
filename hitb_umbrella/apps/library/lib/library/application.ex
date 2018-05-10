@@ -11,8 +11,7 @@ defmodule Library.Application do
       # Start the Ecto repository
       supervisor(Library.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(LibraryWeb.Endpoint, []),
-      worker(Library.Rule, [])
+      supervisor(LibraryWeb.Endpoint, [])
       # Start your own worker by calling: Library.Worker.start_link(arg1, arg2, arg3)
       # worker(Library.Worker, [arg1, arg2, arg3]),
     ]

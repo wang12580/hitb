@@ -18,6 +18,7 @@ defmodule ServerWeb.UserView do
       age: user.age,
       email: user.email,
       tel: user.tel,
+      is_show: user.is_show,
       name: user.name}
   end
 end

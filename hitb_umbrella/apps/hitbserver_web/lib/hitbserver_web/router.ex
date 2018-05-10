@@ -55,6 +55,7 @@ defmodule HitbserverWeb.Router do
     get "/comp_html", ServerController, :comp_html
     # 字典审核
     get "/rule_auditing_html", ServerController, :auditing_html
+    get "/myset", ServerController, :myset
   end
 
   scope "/hospitals", HitbserverWeb do
@@ -103,6 +104,7 @@ defmodule HitbserverWeb.Router do
     # 字典审核
     get "/rule_auditing_html", ServerController, :auditing_html
     get "/user_html", ServerController, :user_html
+    get "/myset", ServerController, :myset
 
 
   end

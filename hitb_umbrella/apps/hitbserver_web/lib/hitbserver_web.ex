@@ -23,7 +23,6 @@ defmodule HitbserverWeb do
       import Plug.Conn
       import HitbserverWeb.Router.Helpers
       import HitbserverWeb.Gettext
-      alias Hitbserver.Repo
     end
   end
 

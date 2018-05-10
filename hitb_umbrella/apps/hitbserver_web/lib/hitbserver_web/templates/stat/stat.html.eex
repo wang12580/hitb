@@ -102,7 +102,7 @@
       </table>
         <div class="ui right floated pagination menu">
           <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}"
-            :href="'/hospitals/stat_html?type=<%= @type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&page='+p.page">{{p.num}}</a>
+            v-bind:href="generateUrl(p.page)">{{p.num}}</a>
        </div>
 </div>
   <!--分析表格-->
@@ -202,6 +202,15 @@ $(document).ready(function() {
       },
       stat_info: function() {
         window.location.href = `/hospitals/stat_info?id=${this.statInfo}`;
+      },
+      generateUrl: function(num) {
+        let url = '';
+        if(this.page === parseInt(num)) {
+          url = '###'
+        } else {
+          url = `/hospitals/stat_html?type=<%= @type %>&org=<%= @org%>&time=<%=@time%>&drg=<%=@drg%>&order=<%= @order%>&page_type=<%= @page_type%>&order_type=<%=@order_type%>&page=${num}`
+        }
+        return url
       },
     }
   })

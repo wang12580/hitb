@@ -472,6 +472,7 @@
       </div>
 
       <div class="right menu" id="menu2">
+        <a class = "item" id="logout" href="/hospitals/myset">欢迎您, <%=@user.username%></a>
         <a class = "item" id="logout" href="/hospitals/logout">退出</a>
       </div>
       <div class="right menu" id="login_href" style="display:none">

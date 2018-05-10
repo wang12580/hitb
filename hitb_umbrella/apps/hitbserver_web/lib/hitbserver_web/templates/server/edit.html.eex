@@ -174,7 +174,7 @@
                   </div>
                   <div class="field">
                     <button class="ui button" type="button" onclick="re()">清空</button>
-                    <button class="ui primary button" type="button" onclick="save()">确定</button>
+                    <button class="ui primary button" type="button" v-on:click="updateUser()">确定</button>
                   </div>
                 </div>
               </div>
@@ -400,11 +400,11 @@ $(document).ready(function() {
           type: "PUT",
           url: '/servers/user/<%=@id%>',
           async: false,
-          data: {user: this.department},
+          data: {user: this.user},
           success: function(data) {
             $("#error_mes").css('display','none');
             $("#last").css('display','none');
-            $("#mes_header").html('用户创修改成功!');
+            $("#mes_header").html('用户修改成功!');
             $("#mes").css('display','block');
             setTimeout("reload('user_html')",2000);
           },

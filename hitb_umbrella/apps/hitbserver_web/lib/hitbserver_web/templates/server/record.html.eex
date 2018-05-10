@@ -1,72 +1,75 @@
-<div class="ui huge breadcrumb" style="background:#ffffff;">
-  <a class="section" href="/hospitals">主页</a>
-  <i class="right chevron icon divider"></i>
-  <div class="active section">操作记录</div>
-</div>
-<div class="ui divider"></div>
-<table class="ui celled compact table">
-  <thead>
-    <tr class="center aligned">
-      <th>序号</th>
-      <th>类型</th>
-      <th>操作</th>
-      <th>旧值</th>
-      <th>新值</th>
-      <th>用户</th>
-      <th>时间</th>
-    </tr>
-  </thead>
-  <tbody id ="record_table">
-</tbody>
-</table>
-<div class="ui right floated pagination menu" id="record_footer">
-
+<div id="vueRecord">
+  <div class="ui huge breadcrumb" style="background:#ffffff;">
+    <a class="section" href="/hospitals">主页</a>
+    <i class="right chevron icon divider"></i>
+    <div class="active section">操作记录</div>
+  </div>
+  <div class="ui divider"></div>
+  <table class="ui celled compact table">
+    <thead>
+      <tr class="center aligned">
+        <th>序号</th>
+        <th>类型</th>
+        <th>操作</th>
+        <th>旧值</th>
+        <th>新值</th>
+        <th>用户</th>
+        <th>时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in record" class="center aligned">
+        <td>{{item.id}}</td>
+        <td>{{item.type}}</td>
+        <td>{{item.mode}}</td>
+        <td>{{item.old_value}}</td>
+        <td>{{item.value}}</td>
+        <td>{{item.username}}</td>
+        <td>{{item.inserted_at}}</td>
+      </tr>
+  </tbody>
+  </table>
+  <div class="ui right floated pagination menu">
+    <a v-for="(item, index) in pageList" v-bind:key="index" v-bind:href = "generateUrl(pageNum)" v-bind:class="{'disabled item': parseInt(item.num, 10) === pageNum, 'item': true}" >{{item.num}}</a>
+  </div>
 </div>
 <script>
-console.log('<%=@page%>')
-let info = {};
-$.ajax({
-  type: "get",
-  url: `/servers/record?page=${'<%=@page%>'}`,
-  async: false,
-  success: function(data){
-    info = data
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
-
-let str = "";
-info.data.forEach((n) => {
-  str = str + `<tr><td class="center aligned">${n.id}</td><td class="center aligned">${n.type}</td><td class="center aligned">${n.mode}</td><td class="center aligned">${n.old_value}</td><td class="center aligned">${n.value}</td><td class="center aligned">${n.username}</td><td class="center aligned">${n.inserted_at}</td></tr>`
-});
-console.log(info)
-$('#record_table').html(str)
-let str1 = "";
-info.page_list.forEach((n) => {
-  if (info.page_num.toString() == n.num) {
-    str1 = str1 + `<a class="disabled item" href="">${n.num}</a>`
-  } else {
-    str1 = str1 + `<a class="item" href="/record?page=${n.page}" onclick=page(${n.page}) > ${n.num}</a>`
-  }
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#vueRecord',
+    data: {
+      record: [],
+      pageList: [],
+      pageNum: 1
+    },
+    created: function () {
+      this.getRecord()
+    },
+    methods: {
+      getRecord: function() {
+        $.ajax({
+          type: "get",
+          url: `/servers/record?page=${'<%=@page%>'}`,
+          async: false,
+          success: (res)=> {
+            this.record = res.data;
+            this.pageList = res.page_list;
+            this.pageNum = res.page_num;
+          }
+        });
+      },
+      generateUrl: function(num) {
+        let url = '';
+        if(this.pageNum === parseInt(num)) {
+          url = '###'
+        } else {
+          url = `/hospitals/record?page=${num}`
+        }
+        return url
+      },
+    }
+  });
+  $('.disabled.item.item').attr(':href', '#');
 })
-$('#record_footer').html(str1)
-// record_footer
-console.log(info);
-// $('.page_button').each(function(){
-//   page_num = $(this).attr('href');
-//   href = window.location.href;
-//   split_href = href.split("/");
-//   console.log(split_href[split_href.length - 1]);
-//   if(split_href[split_href.length - 1] == "record"){
-//     href = href+'?page=' + page_num;
-//   }
-//   // href = window.location.href.split("/");
-//   console.log(href);
-//   // href = href[href.length - 1] + '&page=' + page_num;
-//   $(this).attr('href', href);
-// })
-
 </script>

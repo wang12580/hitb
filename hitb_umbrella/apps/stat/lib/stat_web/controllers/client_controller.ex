@@ -21,7 +21,27 @@ defmodule StatWeb.ClientController do
     files = Repo.all(from p in Stat.ClientStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
     if(page_type <> ".csv" in files)do
       stat = Repo.get_by(Stat.ClientStat, filename: page_type <> ".csv", username: username)
-      json conn, %{stat: Poison.decode!(stat.data)}
+      stat = Poison.decode!(stat.data)
+      header = Enum.at(stat, 0)
+      #求病历总数
+      num_index = Enum.find_index(header, fn(x) -> x == "病历数" or x == "病例数" end)
+      {num, org_num, time_num, drg_num} =
+        if(num_index)do
+          num = stat|>Enum.map(fn x -> Enum.at(x, num_index) end)|>Enum.reject(fn x -> not is_integer(x) end)|>Enum.sum
+          #求机构总数
+          index = Enum.find_index(header, fn(x) -> x == "机构" end)
+          org_num = stat|>List.delete_at(0)|>Enum.map(fn x -> Enum.at(x, index) end)|>:lists.usort|>length
+          #求时间总数
+          index = Enum.find_index(header, fn(x) -> x == "时间" end)
+          time_num = stat|>List.delete_at(0)|>Enum.map(fn x -> Enum.at(x, index) end)|>:lists.usort|>length
+          #求病种数
+          index = Enum.find_index(header, fn(x) -> x == "病种" end)
+          drg_num = if("病种" in header)do stat|>List.delete_at(0)|>Enum.map(fn x -> Enum.at(x, index) end)|>:lists.usort|>length else 0 end
+          {num, org_num, time_num, drg_num}
+        else
+          {length(stat) - 1, 0, 0, 0}
+        end
+      json conn, %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}
     else
       page_type = Stat.page_en(page_type)
       rows = to_string(rows)|>String.to_integer
@@ -39,6 +59,7 @@ defmodule StatWeb.ClientController do
       org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
       time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
       drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
+      # IO.inspect {num, org_num, time_num, drg_num}
       json conn, %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end

@@ -12,9 +12,6 @@ defmodule Hitbserver.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
     Hitbserver.ets_new()
-    Supervisor.start_link([
-      # worker(Hitbserver.Ets, []),
-      supervisor(Hitbserver.Repo, []),
-    ], strategy: :one_for_one, name: Hitbserver.Supervisor)
+    Supervisor.start_link([], strategy: :one_for_one, name: Hitbserver.Supervisor)
   end
 end

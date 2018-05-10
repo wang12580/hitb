@@ -32,8 +32,12 @@ defmodule Stat.MyRepo do
                   true ->
                     from(p in Stat.StatWt4)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
                 end
-              type in ["year_time", "month_time", "season_time", "half_year"] ->
-                from(p in Stat.StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+              type in ["year_time", "month_time", "season_time", "half_year", "time", "drg2"] ->
+                case type do
+                  "time" -> from(p in Stat.StatOrg)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+                  "drg2" -> []
+                  _ -> from(p in Stat.StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+                end
             end
           query =
             cond do

@@ -24,20 +24,32 @@ defmodule EditWeb.CdaController do
   end
 
   def update(conn, %{"content" => content, "file_name" => file_name, "username" => username}) do
-    file_name =
+    {file_username, file_name} =
       if(String.contains? file_name, "-")do
-        List.last(String.split(file_name, "-"))
+        String.split(file_name, "-")
       else
-        file_name
+        {username, file_name}
       end
-    cda = Repo.get_by(Cda, name: file_name, username: username)
-    case cda do
-      nil -> json conn, %{success: false, info: "没有操作权限"}
-      _ ->
-        cda
-        |>Cda.changeset(%{content: content})
-        |>Repo.update
-        json conn, %{success: true, info: "保存成功"}
+    cda = Repo.get_by(Cda, name: file_name, username: file_username)
+    if(cda)do
+      cond do
+        username == file_username ->
+          cda
+          |>Cda.changeset(%{content: content})
+          |>Repo.update
+          json conn, %{success: true, info: "保存成功"}
+        true ->
+          case cda.is_change do
+            false -> json conn, %{success: false, info: "用户设置该文件不允许其他用户修改,请联系该文件拥有者"}
+            true ->
+              cda
+              |>Cda.changeset(%{content: content})
+              |>Repo.update
+              json conn, %{success: true, info: "保存成功"}
+          end
+      end
+    else
+      json conn, %{success: false, info: "没有操作权限"}
     end
   end
 end
