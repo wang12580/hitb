@@ -353,10 +353,10 @@
                       <i class="dropdown icon"></i>
                       <span class="text">基本信息</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=基本信息&version=BJ">基本信息</a>
-                        <a class="item" href="/hospitals/rule?tab_type=街道乡镇代码&version=BJ">街道乡镇代码</a>
-                        <a class="item" href="/hospitals/rule?tab_type=民族&version=BJ">民族</a>
-                        <a class="item" href="/hospitals/rule?tab_type=区县编码&version=BJ">区县编码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=基本信息&version=">基本信息</a>
+                        <a class="item" href="/hospitals/rule?tab_type=街道乡镇代码&version=">街道乡镇代码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=民族&version=">民族</a>
+                        <a class="item" href="/hospitals/rule?tab_type=区县编码&version=">区县编码</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -364,7 +364,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">手术血型</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=手术血型&version=BJ">手术血型</a>
+                        <a class="item" href="/hospitals/rule?tab_type=手术血型&version=">手术血型</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -372,7 +372,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">出入院编码</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=出入院编码&version=BJ">出入院编码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=出入院编码&version=">出入院编码</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -380,7 +380,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">肿瘤编码</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=肿瘤编码&version=BJ">肿瘤编码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=肿瘤编码&version=">肿瘤编码</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -388,7 +388,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">科别</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=科别代码&version=BJ">科别代码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=科别代码&version=">科别代码</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -396,7 +396,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">病理诊断编码</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=病理诊断编码&version=BJ">病理诊断编码</a>
+                        <a class="item" href="/hospitals/rule?tab_type=病理诊断编码&version=">病理诊断编码</a>
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -404,7 +404,7 @@
                       <i class="dropdown icon"></i>
                       <span class="text">医保，诊断依据</span>
                       <div class="menu">
-                        <a class="item" href="/hospitals/rule?tab_type=医保诊断依据&version=BJ">医保，诊断依据</a>
+                        <a class="item" href="/hospitals/rule?tab_type=医保诊断依据&version=">医保，诊断依据</a>
                       </div>
                     </div>
                   </div>
