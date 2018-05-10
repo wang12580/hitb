@@ -29,7 +29,6 @@ defmodule ServerWeb.PageController do
     #未设置科室
     department = department -- customize_department
     department = Enum.map(department, fn x -> %{code: x} end)
-    IO.inspect department
     json conn, %{department: department}
   end
 end
