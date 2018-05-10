@@ -40,4 +40,10 @@ defmodule HitbserverWeb.MyUser do
     end
   end
 
+  #求当前页的skip值(当前页码,每页条数)
+  def skip(page, num) do
+    #定义每页条目数量
+    # num = 15
+    (elem(Integer.parse(page),0)-1)*num
+  end
 end

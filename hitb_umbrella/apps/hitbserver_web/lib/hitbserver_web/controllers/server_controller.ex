@@ -2,6 +2,7 @@ defmodule HitbserverWeb.ServerController do
   use HitbserverWeb, :controller
   alias HitbserverWeb.MyUser
   alias Hitbserver.Province
+  alias Hitbserver.File
 
 
   def org_set(conn, _params) do
@@ -121,5 +122,44 @@ defmodule HitbserverWeb.ServerController do
   def province(conn, _params)do
     json conn, %{province: Province.province(), city: Province.city(), county: Province.county()}
   end
-
+  def json_check(conn, %{"file_path" => file_path})do
+    user = MyUser.user_info(conn)
+    file_json = File.check(file_path)
+    Hitbserver.ets_insert(:json, :json, file_json)
+    # ConCache.put(:json, :json, file_json)
+    json conn, %{result: true}
+  end
+  def check_html(conn, %{"page" => page})do
+    user = get_session(conn, :user)
+    login = MyUser.is_login(conn)
+    if(login)do
+      # SchemaHospitals.butying_insert("WT4检查", user.username)
+      #求skip
+      skip = Hitbserver.Page.skip(page, 15)
+      #求json
+      {json, skip, count} = get_json(skip)
+      #求分页列表
+      {page_num, page_list, count} = Hitbserver.Page.page_list(page, count, 15)
+      IO.inspect "-----------------------"
+      file_info = Map.merge(%{:count => count}, Hitbserver.ets_get(:json, :file_info))
+      json =
+        Enum.map(json, fn x ->
+          case x do
+            nil -> []
+            _ -> x
+          end
+        end)
+      json = List.flatten(json)
+      render conn, "check.html", user: user, file_info: file_info, json: json, page_num: page_num, page_list: page_list
+    else
+      redirect conn, to: "/login"
+    end
+  end
+  defp get_json(skip) do
+    #定义每页条目数量
+    num = 15
+    jsons = Hitbserver.ets_get(:json, :json)
+    json = Enum.map(skip..skip+num, fn x -> Enum.at(jsons, x) end)
+    {json, skip, length(jsons)}
+  end
 end
