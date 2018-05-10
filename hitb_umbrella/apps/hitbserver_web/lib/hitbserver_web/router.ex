@@ -99,6 +99,8 @@ defmodule HitbserverWeb.Router do
 
     #json处理
     get "/wt4_json", ServerController, :upload_html
+    #json处理
+    get "/wt4_json2", ServerController, :upload_html2
     #统计分析页面
     get "/comp_html", ServerController, :comp_html
     # 字典审核

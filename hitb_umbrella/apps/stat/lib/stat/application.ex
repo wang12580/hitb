@@ -10,6 +10,7 @@ defmodule Stat.Application do
       # Start the Ecto repository
       supervisor(Stat.Repo, []),
       supervisor(StatWeb.Endpoint, []),
+      worker(Stat.Postgres, []),
       # Start the endpoint when the application starts
       # Start your own worker by calling: Stat.Worker.start_link(arg1, arg2, arg3)
       # worker(Stat.Worker, [arg1, arg2, arg3]),

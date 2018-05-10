@@ -98,6 +98,11 @@ defmodule HitbserverWeb.ServerController do
     render conn, "upload.html", user: user
   end
 
+  def upload_html2(conn, _params)do
+    user = get_session(conn, :user)
+    render conn, "upload2.html", user: user
+  end
+
   def comp_html(conn, _params) do
     user = get_session(conn, :user)
     render conn, "comp_html.html", user: user
