@@ -7,20 +7,20 @@ defmodule EditWeb.CdaController do
 
   def cda_user(conn, _params) do
     # %{"type" => type} = Map.merge(%{"type" => "user"}, conn.params)
-    cda = Client.list_cda("user", "")
-    json conn, cda
+    [cda, info] = Client.list_cda("user", "")
+    json conn, %{cda: cda, info: info}
   end
 
   def cda_file(conn, _params) do
     %{"username" => username} = Map.merge(%{"username" => ""}, conn.params)
-    cda = Client.list_cda("file", username)
-    json conn, cda
+    [cda, info] = Client.list_cda("file", username)
+    json conn, %{cda: cda, info: info}
   end
 
   def index(conn, _params) do
     %{"filename" => filename, "username" => username} = Map.merge(%{"filename" => "", "username" => ""}, conn.params)
-    cda = Client.list_cda("filename", {filename, username})
-    json conn, cda
+    [cda, info] = Client.list_cda("filename", {filename, username})
+    json conn, %{cda: cda, info: info}
   end
 
   def update(conn, %{"content" => content, "file_name" => file_name, "username" => username}) do
