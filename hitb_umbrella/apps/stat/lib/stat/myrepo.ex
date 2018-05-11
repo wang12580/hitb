@@ -39,28 +39,33 @@ defmodule Stat.MyRepo do
                   _ -> from(p in Stat.StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
                 end
             end
-          query =
+          {query, drg} =
             cond do
               type in ["mdc", "adrg", "drg"] ->
                 query = from(p in Stat.StatDrg)
                   |>mywhere(type, org, time)
                   |>where([p], p.etype == ^type)
-                list = select(query, [p], fragment("distinct ?", p.drg2))|>Repo.all|>Enum.sort
-                if(type == "mdc")do
-                  list = Enum.map(list, fn x -> "MDC" <> x end)
-                  drg = String.slice(drg, 3, 1)
-                end
-                query
-                |>drgwhere(type, drg)
+                drg =
+                  if(type == "mdc")do
+                    String.slice(drg, 3, 1)
+                  else
+                    drg
+                  end
+                query = query
+                  |>drgwhere(type, drg)
+                {query, drg}
               type == "heal" ->
-                myfrom(drg)
-                |>mywhere(type, org, time)
+                query = myfrom(drg)
+                  |>mywhere(type, org, time)
+                {query, drg}
               type == "case" ->
-                from(p in Stat.StatWt4)
-                |>mywhere(type, org, time)
+                query = from(p in Stat.StatWt4)
+                  |>mywhere(type, org, time)
+                {query, drg}
               true ->
-                from(p in Stat.StatOrg)
-                |>mywhere(type, org, time)
+                query = from(p in Stat.StatOrg)
+                  |>mywhere(type, org, time)
+                {query, drg}
             end
           #求总数
           num = select(query, [p], count(p.id))

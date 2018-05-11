@@ -35,7 +35,8 @@ defmodule Peers.MixProject do
       {:websocket_client, "~> 1.2"},
       {:poison, "~> 2.0"},
       {:distillery, "~> 1.5", runtime: false},
-      {:excoveralls, "~> 0.7", only: :test}
+      {:excoveralls, "~> 0.7", only: :test},
+      {:repos, in_umbrella: true}
     ]
   end
 end

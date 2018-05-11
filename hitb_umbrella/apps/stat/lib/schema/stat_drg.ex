@@ -1,7 +1,6 @@
 defmodule Stat.StatDrg do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Stat.StatDrg
 
 
   schema "stat_drg" do

@@ -7,7 +7,7 @@ defmodule Transaction do
   end
 
   def newTransaction(transaction) do
-    transaction = Map.merge(%{fee: 0, type: 1, id: generateId}, transaction)
+    transaction = Map.merge(%{fee: 0, type: 1, id: generateId()}, transaction)
     latest_block = Block.BlockService.get_latest_block()
     sender = Account.getAccountByPublicKey(transaction.publicKey)
     case sender do
@@ -111,9 +111,9 @@ defmodule Transaction do
   end
 
   def generateId do
-    {megaSecs, secs, microSecs} = :erlang.now()
-    randMegaSecs = :random.uniform(megaSecs)
-    randSecs = :random.uniform(secs)
+    {megaSecs, secs, _} = :erlang.now()
+    randMegaSecs = :rand.uniform(megaSecs)
+    randSecs = :rand.uniform(secs)
     # randMicroSecs = :random.uniform(microSecs)
     randSec = :os.system_time(:seconds)
     Enum.sort([randSec, randSecs, randMegaSecs]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
