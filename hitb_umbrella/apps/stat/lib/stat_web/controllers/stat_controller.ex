@@ -2,7 +2,7 @@ defmodule StatWeb.StatController do
   use StatWeb, :controller
   plug StatWeb.Access
   alias Stat.Key
-  alias Stat.MyRepo
+  alias Stat.Query
   alias Stat.Chart
 
 
@@ -10,9 +10,9 @@ defmodule StatWeb.StatController do
     {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
     page = String.to_integer(page)
     #获取分析结果
-    {stat, list, tool, page_list, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {stat, list, tool, page_list, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     #存储在自定义之前最后一次url
-    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
+    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
     # stat = Stat.Rand.rand(stat)
     json conn, %{stat: stat, page: page, tool: tool, list: [[list]], page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
@@ -47,13 +47,13 @@ defmodule StatWeb.StatController do
   def contrast(conn, %{"username" => username}) do
     {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
     #获取分析结果
-    {_, _, tool, page_list, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {_, _, tool, page_list, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     # 拆解url路径和参数
     #拿到缓存中所有数据
     statx = Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)
     staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
     #取当前key
-    {_, list, _, _, _, _, _, cnkey, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {_, list, _, _, _, _, _, cnkey, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     staty =
       cond do
         is_list(staty) and staty != [] -> ["org", "time"] ++ staty
@@ -68,7 +68,7 @@ defmodule StatWeb.StatController do
     #按照字段取值
     #存储在自定义之前最后一次url
     url = "page=#{page}&type=#{type}&org=#{org}&time=#{time}&drg=#{drg}&order=#{order}&page_type=#{page_type}&order_type=#{order_type}"
-    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
+    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
     json conn, %{stat: stat, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, url: url}
   end
 
@@ -81,7 +81,7 @@ defmodule StatWeb.StatController do
     end
     # [page, page_type, type, tool_type, org, time, drg, order, order_type] = conn.params["url"]
     #获取分析结果
-    {stat, _, _, _,  _,_, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {stat, _, _, _,  _,_, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     cond do
       com_type == "add_x" or com_type == "del_x" ->
         #拿到缓存中所有数据
@@ -148,7 +148,7 @@ defmodule StatWeb.StatController do
     #存储url
     Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
     #取数据
-    {_, list, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {_, list, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     com_list =
       case Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username) do
         nil -> []
@@ -215,7 +215,7 @@ defmodule StatWeb.StatController do
           staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
           {unless(statx)do [] else statx end, unless(staty)do [] else staty end}
       end
-    {page, type, tool_type, drg, order, order_type, page_type, org} =
+    [page, type, tool_type, drg, order, order_type, page_type, org] =
       case Hitbserver.ets_get(:stat_drg, "defined_url_" <> username) do
         nil -> {"1", "org", "total", "", "org", "asc", "base", ""}
         _ -> Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
@@ -242,7 +242,7 @@ defmodule StatWeb.StatController do
   def download_stat(conn, %{"username" => username})do
     #取对比分析
     {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
-    {stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
+    {stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
     #按照字段取值
     str = stat
       |>List.delete_at(0)
@@ -344,8 +344,8 @@ defmodule StatWeb.StatController do
       end
     Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
     #获取分析结果
-    # IO.inspect MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
-    {stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    # IO.inspect Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    {stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     #拿到缓存中所有数据
     cache = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
     cache = if (cache) do cache else [] end
@@ -377,7 +377,7 @@ defmodule StatWeb.StatController do
           []
         else
           {org, time} = List.to_tuple(mm_stat)
-          {mm_stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
+          {mm_stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
           ["环比记录"] ++ List.last(mm_stat)
         end
       yy_stat =
@@ -385,7 +385,7 @@ defmodule StatWeb.StatController do
           []
         else
           {org, time} = List.to_tuple(yy_stat)
-          {yy_stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
+          {yy_stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
           ["环比记录"] ++ List.last(yy_stat)
         end
       stats = ([stat] ++ [mm_stat] ++ [yy_stat])|>Enum.reject(fn x -> x == [] end)
