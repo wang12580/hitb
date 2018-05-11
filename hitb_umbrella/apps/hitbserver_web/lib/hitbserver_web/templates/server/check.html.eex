@@ -1,0 +1,106 @@
+<div id="check">
+  <div class="ui huge breadcrumb" style="background:#ffffff;">
+    <a class="section" href="/hospitals">主页</a>
+    <i class="right chevron icon divider"></i>
+    <a class="section" href="/hospitals/wt4_json">病案上传</a>
+    <i class="right chevron icon divider"></i>
+    <div class="active section">病案校验</div>
+  </div>
+  <div class="ui divider"></div>
+  <table class="ui fixed single line celled small table">
+    <thead>
+    <tr>
+      <td colspan="9">
+        <p><b>文件名:</b><%= @file_info.file_name %></p>
+        <p><b>文件大小:</b><%= @file_info.file_size %></p>
+        <p><b>记录数目:</b><%= @file_info.count %></p>
+      </td>
+      <td colspan="3">
+        <a href="/hospitals/wt4_json"><button type="button" class="btn btn-primary" >重新上传</button><a/>
+      </td>
+    </tr>
+    </thead>
+  </table>
+  <div id="loading" class="loading" style="display:none;">正在校验,请稍等...</div>
+  <table class="ui celled table" id="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>住院天数</th>
+        <th>总费用</th>
+        <th>主要诊断</th>
+        <th>医院</th>
+        <th>科室</th>
+        <th>年份</th>
+        <th>季度</th>
+        <th>月度</th>
+        <th>半年</th>
+        <th>DRG</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <%= for json <- @json do %>
+        <%=if(length(json["error"]) > 0)do %>
+          <tr class="negative">
+        <% else %>
+          <tr>
+        <% end %>
+          <td><%= json["b_wt4_v1_id"] %></td>
+          <td><%= json["acctual_days"] %></td>
+          <td><%= json["total_expense"] %></td>
+          <td><%= json["disease_code"] %></td>
+          <td><%= json["org_name"] %></td>
+          <td><%= json["department"] %></td>
+          <td><%= json["year_time"] %></td>
+          <td><%= json["season_time"] %></td>
+          <td><%= json["month_time"] %></td>
+          <td><%= json["half_year"] %></td>
+          <td><%= json["drg"] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr><th colspan="11">
+        <div class="ui right floated pagination menu">
+          <button class="ui primary button" v-on:click="save()">Save </button>
+        </div>
+      </th>
+    </tr></tfoot>
+  </table>
+  <div class="ui right floated pagination menu">
+    <%= for page <- @page_list do %>
+      <%=if(to_string(@page_num) == page.num)do %>
+        <a class="disabled item"><%= page.num %></a>
+      <% else %>
+      <a class="item" href="/hospitals/check_html?page=<%= page.page %>"><%= page.num %></a>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  Vue.prototype.$ajax = $.ajax;
+  common = new Vue({
+    el: '#check',
+    data: {
+    },
+    methods: {
+      save: function() {
+        $.ajax({
+          type: "GET",
+          url: '/servers/wt4_insert',
+          async: true,
+          success: function(data){
+            if(data['result']){
+              alert("上传成功,即将为您跳转至科室设置页!")
+              console.log(data['org']);
+              window.location.href= '/hospitals/department_set';
+            }
+          },
+          dataType: 'json'
+        });
+      }
+    }
+  })
+})
+</script>

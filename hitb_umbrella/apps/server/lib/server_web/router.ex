@@ -77,6 +77,6 @@ defmodule ServerWeb.Router do
     resources "/user", UserController, except: [:new, :edit]
     # 科室列表
     get "/wt4_department_list", PageController, :wt4_department_list
-
+    get "/wt4_insert", PageController, :wt4_insert
   end
 end

@@ -11,6 +11,7 @@ defmodule ServerWeb.PageController do
   def wt4_upload(conn, _params)do
     file_path = System.user_home() <> "/wt4/"
     %{:path => file_path, file_name: file_name, file_size: file_size} = Hitbserver.File.upload_file(file_path, conn.params["file"])
+    Hitbserver.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
     json conn, %{file_path: file_path, file_name: file_name, file_size: file_size}
   end
 
@@ -30,5 +31,34 @@ defmodule ServerWeb.PageController do
     department = department -- customize_department
     department = Enum.map(department, fn x -> %{code: x} end)
     json conn, %{department: department}
+  end
+  def wt4_insert(conn, _params) do
+    json = Hitbserver.ets_get(:json, :json)
+    keys = Map.keys(hd(json))
+    org_name = 
+      cond do
+        keys == nil -> ""
+        keys == [] -> ""
+        "org" in keys -> hd(json)["org"]
+        "org_name" in keys -> hd(json)["org_name"]
+        true -> ""
+      end
+    org = Repo.get_by(Server.Org, name: org_name)
+    org =
+      case org do
+          nil -> %{stat_org_name: "未知", code: "未知"}
+          _ -> org
+      end
+    stat_org_name = "医院" <> to_string(org.stat_org_name)
+    result = Enum.map(json, fn x ->
+        if(x != [])do
+          x = Map.merge(x, %{"stat_org_name" => stat_org_name, "org_code" => org.code})
+          # IO.inspect Wt4.changeset(%Wt4{}, x)
+          %Library.Wt4{}
+          |> Library.Wt4.changeset(x)
+          |> Library.Repo.insert
+        end
+      end)
+    json conn, %{result: length(result)}
   end
 end
