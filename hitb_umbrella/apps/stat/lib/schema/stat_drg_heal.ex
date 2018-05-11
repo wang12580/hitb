@@ -1,7 +1,6 @@
 defmodule Stat.StatDrgHeal do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Stat.StatDrgHeal
 
 
   schema "stat_drg_heal" do

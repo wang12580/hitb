@@ -31,7 +31,6 @@ defmodule Edit.Client do
         end
       "filename" ->
         {filename, username} = val
-        edit = Repo.all(from p in Cda, where: p.username == ^username and p.name == ^filename, select: %{content: p.content, is_show: p.is_show, is_change: p.is_change})
         edit = Repo.get_by(Cda, username: username, name: filename)
         cond do
           edit.is_show == false -> [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
@@ -70,7 +69,7 @@ defmodule Edit.Client do
 
   """
   def create_cda(attrs \\ %{}) do
-    attrs = Map.merge(%{"is_change" => false, "is_show" => false})
+    attrs = Map.merge(attrs, %{"is_change" => false, "is_show" => false})
     %Cda{}
     |> Cda.changeset(attrs)
     |> Repo.insert()

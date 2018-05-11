@@ -26,7 +26,6 @@ defmodule Block.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:repos, in_umbrella: true},
     ]
   end
 end

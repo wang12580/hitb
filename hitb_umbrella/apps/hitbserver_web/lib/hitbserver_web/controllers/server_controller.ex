@@ -124,7 +124,6 @@ defmodule HitbserverWeb.ServerController do
     json conn, %{province: Province.province(), city: Province.city(), county: Province.county()}
   end
   def json_check(conn, %{"file_path" => file_path})do
-    user = MyUser.user_info(conn)
     file_json = File.check(file_path)
     Hitbserver.ets_insert(:json, :json, file_json)
     # ConCache.put(:json, :json, file_json)
@@ -138,7 +137,7 @@ defmodule HitbserverWeb.ServerController do
       #求skip
       skip = Hitbserver.Page.skip(page, 15)
       #求json
-      {json, skip, count} = get_json(skip)
+      {json, _, count} = get_json(skip)
       #求分页列表
       {page_num, page_list, count} = Hitbserver.Page.page_list(page, count, 15)
       IO.inspect "-----------------------"

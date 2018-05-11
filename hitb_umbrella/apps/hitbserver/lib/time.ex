@@ -16,7 +16,7 @@ defmodule Hitbserver.Time do
   #当前日期字符串string
   def sdata_date2() do
     time = :calendar.local_time()
-    {year, month, day, hour, minute, second} = gb_time(time)
+    {year, month, day, _, _, _} = gb_time(time)
     to_string(year) <> to_string(month) <> to_string(day)
   end
 
