@@ -45,7 +45,8 @@ defmodule HitbserverWeb.Mixfile do
       {:gettext, "~> 0.11"},
       {:hitbserver, in_umbrella: true},
       {:distillery, "~> 1.5", runtime: false},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:json, "~> 1.0"}
     ]
   end
 

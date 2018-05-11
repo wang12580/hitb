@@ -8,7 +8,7 @@ defmodule Hitbserver.Page do
     end
   end
 
-  #求分页列表(当前页码,数据库skip,总计条数,每页条数)
+  #求分页列表(当前页码,总计条数,每页条数)
   def page_list(page, count, num) do
     #定义每页条目数量
     page =
