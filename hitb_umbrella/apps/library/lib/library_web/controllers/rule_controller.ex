@@ -64,14 +64,29 @@ defmodule LibraryWeb.RuleController do
         #判断值
         query =
           cond do
-            year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
-            version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-            year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
-            dissect != "" and year == "" -> from(w in tab)|>where([w], w.dissect == ^dissect)
-            year == "" or dissect == "" -> from(w in tab)
-            dissect != "" and year != ""-> from(w in tab)|>where([w], w.dissect == ^dissect and w.year == ^year)
+            year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
+
+            year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
+
+            year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
+
+            year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
+
+            year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
+
+            year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
+
+            year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
+
+            # year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
+            # version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
+            # year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
+            # dissect != "" and year == "" -> from(w in tab)|>where([w], w.dissect == ^dissect)
+            # year == "" or dissect == "" -> from(w in tab)
+            # dissect != "" and year != ""-> from(w in tab)|>where([w], w.dissect == ^dissect and w.year == ^year)
             true -> from(w in tab)
           end
+        IO.inspect query
         query = if(type != "" and tab == LibWt4)do query|>where([w], w.type == ^type) else query end
         query =
           if(type != "" and tab != LibWt4)do
