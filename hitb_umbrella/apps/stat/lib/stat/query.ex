@@ -39,19 +39,20 @@ defmodule Stat.Query do
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
             end
           #缓存
+          Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
           Hitbserver.ets_insert(:stat, cache_key, [list, count, skip, stat])
           [list, count, skip, stat]
         true ->
           Hitbserver.ets_get(:stat, cache_key)
       end
-    stat = Stat.Convert.obj2list(stat, key)
+    stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
     {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
     # #如果有下载任务,进行下载查询
     # # stat = if(stat_type == "download")do stat else [] end
     # # 返回结果(分析结果, 列表, 页面工具, 页码列表, 当前页码, 字段, 中文字段, 表头字段)
-    {stat, list, [], page_list, page_num, count_page, key, cnkey, thkey}
+    [stat, list, [], page_list, page_num, count_page, key, cnkey, thkey]
     # {[],[],[],[],1,0,[],[],[]}
   end
 

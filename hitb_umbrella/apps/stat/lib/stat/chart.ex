@@ -7,7 +7,6 @@ defmodule Stat.Chart do
     #数据data
     data = stat
       |>Enum.map(fn x ->
-          IO.inspect x
           case Map.get(x, :drg2) do
             nil -> %{name: x.org <> " " <> x.time, value: Map.values(Map.drop(x, [:org, :time]))}
             _ -> %{name: x.org <> " " <> x.time <> " " <> x.drg2, value: Map.values(Map.drop(x, [:org, :time, :drg2]))}
