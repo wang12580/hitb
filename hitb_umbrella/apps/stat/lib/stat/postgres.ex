@@ -34,8 +34,8 @@ defmodule Stat.Postgres do
     {_, password} = List.keyfind(opts, :password, 0)
     {_, database} = List.keyfind(opts, :database, 0)
     {_, port} = List.keyfind(opts, :port, 0)
-    {:ok, pid} = Postgrex.start_link(hostname: hostname, port: port, username: username, password: password, database: database)
-    Hitbserver.ets_insert(:postgresx, :pid, pid)
+    # {:ok, pid} = Postgrex.start_link(hostname: hostname, port: port, username: username, password: password, database: database)
+    # Hitbserver.ets_insert(:postgresx, :pid, pid)
     {:ok, Map.new}
   end
 

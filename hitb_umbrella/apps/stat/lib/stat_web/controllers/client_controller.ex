@@ -1,7 +1,7 @@
 defmodule StatWeb.ClientController do
   use StatWeb, :controller
   plug StatWeb.Access
-  alias Stat.MyRepo
+  alias Stat.Query
 
   def stat_create(conn, %{"data" => data, "username" => username}) do
     filename = Hitbserver.Time.sdata_date2() <> "对比分析.csv"
@@ -46,13 +46,13 @@ defmodule StatWeb.ClientController do
       page_type = Stat.page_en(page_type)
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
-      {stat, list, tool, page_list, _, count, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
+      {stat, list, tool, page_list, _, count, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
       #存储在自定义之前最后一次url
       Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, {page, type, tool_type, drg, order, order_type, page_type, org})
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #计算客户端提示
-      {clinet_stat, _, _, _, _, _, _, _, _} = MyRepo.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
+      {clinet_stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
       header = Enum.at(clinet_stat, 1)
       clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
       num = clinet_stat|>Enum.map(fn x -> List.last(x) end)|>Enum.sum
