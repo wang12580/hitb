@@ -3,6 +3,7 @@ defmodule HitbserverWeb.ServerController do
   alias HitbserverWeb.MyUser
   alias Hitbserver.Province
   alias Hitbserver.File
+  plug HitbserverWeb.Access
 
 
   def org_set(conn, _params) do

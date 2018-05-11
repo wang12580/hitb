@@ -19,17 +19,25 @@ defmodule Edit.Client do
   """
   def list_cda(type, val) do
     case type do
-      "user" -> Repo.all(from p in Cda, select: p.username)|>:lists.usort
+      "user" ->
+        users = Repo.all(from p in Cda, select: p.username)|>:lists.usort
+        [users -- Server.Repo.all(from p in Server.User, where: p.is_show == false, select: p.username), "读取成功"]
       "file" ->
         case val do
           "" ->
-            Repo.all(from p in Cda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end)
+            [Repo.all(from p in Cda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
           _ ->
-          Repo.all(from p in Cda, where: p.username == ^val, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end)
+          [Repo.all(from p in Cda, where: p.username == ^val, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
         end
       "filename" ->
         {filename, username} = val
-        Repo.all(from p in Cda, where: p.username == ^username and p.name == ^filename, select: p.content)
+        edit = Repo.all(from p in Cda, where: p.username == ^username and p.name == ^filename, select: %{content: p.content, is_show: p.is_show, is_change: p.is_change})
+        edit = Repo.get_by(Cda, username: username, name: filename)
+        cond do
+          edit.is_show == false -> [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
+          edit.is_change == false -> [[edit.content],["文件读取成功,但文件拥有者不允许修改"]]
+          true -> [[edit.content],["文件读取成功"]]
+        end
     end
   end
 

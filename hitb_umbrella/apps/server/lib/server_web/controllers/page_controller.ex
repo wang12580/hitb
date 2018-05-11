@@ -34,14 +34,21 @@ defmodule ServerWeb.PageController do
   end
   def wt4_insert(conn, _params) do
     json = Hitbserver.ets_get(:json, :json)
-    org_name = hd(json)["org_name"]
+    keys = Map.keys(hd(json))
+    org_name = 
+      cond do
+        keys == nil -> ""
+        keys == [] -> ""
+        "org" in keys -> hd(json)["org"]
+        "org_name" in keys -> hd(json)["org_name"]
+        true -> ""
+      end
     org = Repo.get_by(Server.Org, name: org_name)
     org =
-    case org do
-        nil -> %{stat_org_name: "未知", code: "未知"}
-        _ -> org
-    end
-    IO.inspect org
+      case org do
+          nil -> %{stat_org_name: "未知", code: "未知"}
+          _ -> org
+      end
     stat_org_name = "医院" <> to_string(org.stat_org_name)
     result = Enum.map(json, fn x ->
         if(x != [])do

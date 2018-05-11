@@ -1,8 +1,8 @@
 defmodule LibraryWeb.Wt4View do
   use LibraryWeb, :view
 
-  def render("index.json", %{wt4: wt4, page_num: page_num, page_list: page_list}) do
-    %{data: render_many(wt4, LibraryWeb.Wt4View, "wt4.json"), page_num: page_num, page_list: page_list}
+  def render("index.json", %{wt4: wt4, page_num: page_num, page_list: page_list, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}) do
+    %{data: render_many(wt4, LibraryWeb.Wt4View, "wt4.json"), page_num: page_num, page_list: page_list, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}
   end
 
   def render("show.json", %{wt4: wt4}) do
