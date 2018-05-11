@@ -20,7 +20,10 @@
     <div class="ui divider"></div>
     <div class="ui menu" id="div_menu" v-if="tool.length !== 0">
       <div class="item" v-for="x in tool">
-        <div class="ui primary button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
+        <div v-if="x[0] === '年份'" class="ui red button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
+        <div v-else-if="x[0] === '版本'" class="ui orange button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
+        <div v-else-if="x[0] === '解剖部位'" class="ui yellow button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
+        <div class="ui primary button" v-on:click="change(x[1])" v-else>{{x[0]}}</div>&nbsp;&nbsp;
       </div>
     </div>
     <div id= "rule_tit">
