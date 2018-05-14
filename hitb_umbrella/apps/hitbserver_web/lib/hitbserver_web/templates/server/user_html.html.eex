@@ -93,6 +93,7 @@
             success: (data) => {
               this.userList = data.data
               this.pageList = data.page_list
+              this.page = data.page_num
             }
           })
         },

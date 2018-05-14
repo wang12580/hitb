@@ -3,11 +3,11 @@
     <div class="ui secondary vertical menu">
       <%= cond do%>
         <% @type == "year" -> %>
-          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@year%>'}" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@year%>'}" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=1&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
         <% @type == "version" -> %>
-          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@version%>'}" :href="'/hospitals/rule?year=<%=@year%>&dissect=<%=@dissect%>&page=<%=@page%>&tab_type=<%=@tab_type%>&type=<%=@type%>&version='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@version%>'}" :href="'/hospitals/rule?year=<%=@year%>&dissect=<%=@dissect%>&page=1&tab_type=<%=@tab_type%>&type=<%=@type%>&version='+x">{{ x }}</a>
         <% true -> %>
-          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@dissect%>'}" :href="'/hospitals/rule?year=<%=@year%>&page=<%=@page%>&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
+          <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@dissect%>'}" :href="'/hospitals/rule?year=<%=@year%>&page=1&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
       <% end %>
     </div>
   </div>
@@ -18,7 +18,7 @@
       <div class="active section">字典查询</div>
     </div>
     <div class="ui divider"></div>
-    <div class="ui menu" id="div_menu" v-if="tool.length !== 0">
+    <div class="ui menu" id="div_menu" v-if="tool.length !== 1">
       <div class="item" v-for="x in tool">
         <div class="ui primary button" v-on:click="change(x[1])">{{x[0]}}</div>&nbsp;&nbsp;
       </div>
@@ -61,7 +61,7 @@
     </table>
     <div class="ui right floated pagination menu">
       <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}"
-        :href="'/hospitals/rule?dissect=<%=@dissect%>&tab_type=<%=@tab_type%>&year=<%=@year%>&page='+p.page">{{p.num}}</a>
+        :href="'/hospitals/rule?dissect=<%=@dissect%>&tab_type=<%=@tab_type%>&year=<%=@year%>&version=<%=@version%>&page='+p.page">{{p.num}}</a>
     </div>
   </div>
 </div>
@@ -86,7 +86,9 @@ $(document).ready(function() {
         'icd10': [['版本', 'version'], ['年份', 'year'], ['解剖部位', 'dissect']],
         'mdc': [['版本', 'version'], ['年份', 'year']],
         'adrg': [['版本', 'version'], ['年份', 'year']],
-        'drg': [['版本', 'version'], ['年份', 'year']]
+        'drg': [['版本', 'version'], ['年份', 'year']],
+        '科别代码': [[]],
+        '病理诊断编码': [[]],
       },
       tool: [],
       tit: {},
@@ -104,7 +106,6 @@ $(document).ready(function() {
           url: `/library/rule?page=${"<%=@page %>"}&type=${"<%=@type %>"}&tab_type=${"<%=@tab_type %>"}&version=${"<%=@version %>"}&year=${"<%=@year %>"}&dissect=${"<%=@dissect %>"}`,
           dataType: 'json',
           success: (res)=> {
-            console.log(res);
             this.rule = res.result;
             if (['icd9', 'icd10'].includes('<%=@tab_type%>')) {
               this.headerCn = ['编码', '名称', '年份', '版本']
@@ -129,7 +130,7 @@ $(document).ready(function() {
 
 // year_time
 function change(type){
-  window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=${"<%=@page %>"}&type=${type}&tab_type=${"<%=@tab_type%>"}&year=${"<%=@year%>"}&version=${"<%=@version%>"}`;
+  window.location.href = `/hospitals/rule?dissect=${"<%=@dissect%>"}&page=1&type=${type}&tab_type=${"<%=@tab_type%>"}&year=${"<%=@year%>"}&version=${"<%=@version%>"}`;
 }
 //去除选择
 function del(type){

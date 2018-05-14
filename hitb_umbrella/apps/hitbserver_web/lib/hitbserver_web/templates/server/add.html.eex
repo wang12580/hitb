@@ -80,7 +80,7 @@
               </div>
               <div class="field">
                 <button class="ui button" type="button" onclick="re()">清空</button>
-                <button class="ui primary button" type="button" v-on:click="updateOrg()">确定</button>
+                <button class="ui primary button" type="button" v-on:click="createOrg()">确定</button>
               </div>
             </div>
             </div>
@@ -237,11 +237,17 @@ $(document).ready(function() {
             async: false,
             data: {org: this.org},
             success: function(data) {
-              $("#error_mes").css('display','none');
-              $("#last").css('display','none');
-              $("#mes_header").html('机构创建成功!');
-              $("#mes").css('display','block');
-              setTimeout("reload('org_set')",2000);
+              if (data.success === true) {
+                $("#error_mes").css('display','none');
+                $("#last").css('display','none');
+                $("#mes_header").html('机构创建成功!');
+                $("#mes").css('display','block');
+                setTimeout("reload('org_set')",2000);
+              } else {
+                $("#error_mes_header").html('机构创建失败!');
+                $("#error_mes_info").html('机构编码重复。');
+                $("#error_mes").css('display','block');
+              }
             },
             error: function(){
               $("#error_mes_header").html('机构创建失败!');
@@ -291,7 +297,7 @@ $(document).ready(function() {
   common = new Vue({
     el: '#vueDepartment',
     data: {
-      department: {},
+      department: {c_user: '<%=@user.username%>'},
       allClass: [],
       allRes: [],
       res: []
@@ -318,16 +324,22 @@ $(document).ready(function() {
         });
       },
       createDepartment: function() {
+        console.log('<%=@user.username%>')
         this.$ajax({
           type: "POST",
           url: '/servers/customize_department/',
           async: false,
           data: {customize_department: this.department},
           success: function(data) {
-            $("#last").css('display','none');
-            $("#mes_header").html('科室新建成功!');
-            $("#mes").css('display','block');
-            setTimeout("reload('department_set')",2000);
+            if (data.success === true) {
+              $("#last").css('display','none');
+              $("#mes_header").html('科室新建成功!');
+              $("#mes").css('display','block');
+              setTimeout("reload('department_set')",2000);
+            } else {
+              $("#error_mes_header").html('你的科室新建失败!');
+              $("#error_mes").css('display','block');
+            }
           },
           error: function(){
             $("#error_mes_header").html('你的科室新建失败!');
@@ -396,11 +408,17 @@ $(document).ready(function() {
             async: false,
             data: {user: this.user},
             success: function(data) {
-              $("#error_mes").css('display','none');
-              $("#last").css('display','none');
-              $("#mes_header").html('用户创建成功!');
-              $("#mes").css('display','block');
-              setTimeout("reload('user_html')",2000);
+              if (data.success === true) {
+                $("#error_mes").css('display','none');
+                $("#last").css('display','none');
+                $("#mes_header").html('用户创建成功!');
+                $("#mes").css('display','block');
+                setTimeout("reload('user_html')",2000);
+              } else {
+                $("#error_mes_header").html('用户创建失败!');
+                $("#error_mes_info").html('用户名重复。');
+                $("#error_mes").css('display','block');
+              }
             },
             error: function(){
               $("#error_mes_header").html('用户创建失败!');
