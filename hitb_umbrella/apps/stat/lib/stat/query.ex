@@ -60,7 +60,7 @@ defmodule Stat.Query do
   def info(username, rows_num) do
     [page, type, tool_type, drg, order, order_type, page_type, org, time] = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
     case Hitbserver.ets_get(:stat_drg, "comx_" <> username) do
-      nil -> []
+      nil -> [[], []]
       _ ->
         stat = Hitbserver.ets_get(:stat_drg, "comx_" <> username)|>List.last
         mm_time = Convert.mm_time(Enum.at(stat, 1))

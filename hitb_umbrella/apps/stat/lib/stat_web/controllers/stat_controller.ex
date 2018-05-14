@@ -27,10 +27,14 @@ defmodule StatWeb.StatController do
     #获取keys
     keys = ["info_type"] ++ Key.key(username, drg, type, tool_type, page_type)
     keys = if (chart_type == "pie") do ["org", "time", chart_key] else keys end
-    {stats, _} = stat_info_p(username, keys)
+    [_, stat] = Stat.Query.info(username, 13)
+    stat = stat
+      |>Enum.map(fn x ->
+          Enum.map(x, fn x-> x.val end)
+        end)
     #处理数据结构
     #按照字段取值
-    stats = stats
+    stat = stat
       |>Enum.map(fn x ->
           Enum.reduce(0..length(x)-1, %{stat: x, key: keys, map: %{}}, fn x2, acc ->
             val = List.first(acc.stat)
@@ -38,7 +42,7 @@ defmodule StatWeb.StatController do
             %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
           end)|>Map.get(:map)
         end)
-    result = Chart.chart(stats, chart_type)
+    result = Chart.chart(stat, chart_type)
     json conn, result
   end
 
