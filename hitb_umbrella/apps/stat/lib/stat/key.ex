@@ -343,6 +343,7 @@ defmodule Stat.Key do
       "num_num" -> "病历数"
       "num_sum" -> "病历数"
       "death_rate" -> "死亡率"
+      "death_age_avg" -> "平均死亡年龄"
       #机构分析指标
       "weight_count" -> "总权重"
       "zdxg_num" -> "诊断相关组数"

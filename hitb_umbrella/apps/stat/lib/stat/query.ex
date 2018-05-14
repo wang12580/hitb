@@ -1,6 +1,7 @@
 defmodule Stat.Query do
   use StatWeb, :controller
   alias Stat.Key
+  alias Stat.Convert
 
   #自定义取数据库
   def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type) do
@@ -39,20 +40,63 @@ defmodule Stat.Query do
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
             end
           #缓存
+          Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
           Hitbserver.ets_insert(:stat, cache_key, [list, count, skip, stat])
           [list, count, skip, stat]
         true ->
           Hitbserver.ets_get(:stat, cache_key)
       end
-    stat = Stat.Convert.obj2list(stat, key)
+    stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
     {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
     # #如果有下载任务,进行下载查询
     # # stat = if(stat_type == "download")do stat else [] end
     # # 返回结果(分析结果, 列表, 页面工具, 页码列表, 当前页码, 字段, 中文字段, 表头字段)
-    {stat, list, [], page_list, page_num, count_page, key, cnkey, thkey}
+    [stat, list, [], page_list, page_num, count_page, key, cnkey, thkey]
     # {[],[],[],[],1,0,[],[],[]}
+  end
+
+  def info(username, rows_num) do
+    [page, type, tool_type, drg, order, order_type, page_type, org, time] = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
+    case Hitbserver.ets_get(:stat_drg, "comx_" <> username) do
+      nil -> []
+      _ ->
+        stat = Hitbserver.ets_get(:stat_drg, "comx_" <> username)|>List.last
+        mm_time = Convert.mm_time(Enum.at(stat, 1))
+        yy_time = Convert.yy_time(Enum.at(stat, 1))
+        #取缓存stat
+        key = Key.key(username, drg, type, tool_type, page_type)
+        struct = Hitbserver.ets_get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Hitbserver.Time.sdata_date()])|>List.last|>List.first|>Map.get(:__struct__)
+        #记录转换
+        stat =
+          [Map.merge(%{info_type: "当前记录"}, Repo.get_by(struct, time: Enum.at(stat, 1), org: Enum.at(stat, 0))),
+          Map.merge(%{info_type: "环比记录"}, Repo.get_by(struct, time: mm_time, org: Enum.at(stat, 0))),
+          Map.merge(%{info_type: "同比记录"}, Repo.get_by(struct, time: yy_time, org: Enum.at(stat, 0)))]
+        #去除多余的key
+        stat = stat
+          |>Enum.map(fn x ->
+              Enum.map(["info_type"]++key, fn y -> String.to_atom(y) end)
+              |>Enum.reduce(%{}, fn y, acc ->
+                  cond do
+                    Map.get(x, y) == nil -> Map.put(acc, y, "无数据")
+                    is_float(Map.get(x, y)) -> Map.put(acc, y, Float.round(Map.get(x, y), 4))
+                    true -> Map.put(acc, y, Map.get(x, y))
+                  end
+              end)
+            end)
+        stat2 = Enum.map(stat, fn x ->
+          Enum.map(["info_type"]++key, fn y ->
+            y = String.to_atom(y)
+            cond do
+              Map.get(x, y) == nil -> %{info: "", key: y, val: "无数据"}
+              is_float(Map.get(x, y)) -> %{info: "", key: y, val: Float.round(Map.get(x, y), 4)}
+              true -> %{info: "", key: y, val: Map.get(x, y)}
+            end
+          end)
+        end)
+        [stat, stat2]
+    end
   end
 
   #左侧list

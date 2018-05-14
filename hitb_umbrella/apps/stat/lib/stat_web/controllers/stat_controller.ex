@@ -7,21 +7,19 @@ defmodule StatWeb.StatController do
 
 
   def stat_json(conn, _params) do
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     page = String.to_integer(page)
     #获取分析结果
-    {stat, list, tool, page_list, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
-    #存储在自定义之前最后一次url
-    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
+    [stat, list, tool, page_list, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     # stat = Stat.Rand.rand(stat)
     json conn, %{stat: stat, page: page, tool: tool, list: [[list]], page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
   #详情页图表获取
   def stat_info_chart(conn, %{"chart_type" => chart_type, "username" => username})do
-    {_, type, tool_type, _, _, drg, _, _, page_type} =
+    [_, type, tool_type, _, _, drg, _, _, page_type] =
       case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
-        nil -> {"", "org", "", "", "", "drg", "", "", "base"}
+        nil -> ["", "org", "", "", "", "drg", "", "", "base"]
         _ ->  Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
     params = Map.merge(%{"chart_type" => "", "chart_key" => ""}, conn.params)
@@ -45,15 +43,15 @@ defmodule StatWeb.StatController do
   end
 
   def contrast(conn, %{"username" => username}) do
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     #获取分析结果
-    {_, _, tool, page_list, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [_, _, tool, page_list, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     # 拆解url路径和参数
     #拿到缓存中所有数据
     statx = Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)
     staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
     #取当前key
-    {_, list, _, _, _, _, _, cnkey, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [_, list, _, _, _, _, _, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     staty =
       cond do
         is_list(staty) and staty != [] -> ["org", "time"] ++ staty
@@ -68,25 +66,23 @@ defmodule StatWeb.StatController do
     #按照字段取值
     #存储在自定义之前最后一次url
     url = "page=#{page}&type=#{type}&org=#{org}&time=#{time}&drg=#{drg}&order=#{order}&page_type=#{page_type}&order_type=#{order_type}"
-    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
+    Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
     json conn, %{stat: stat, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, url: url}
   end
 
   #对比缓存读取和删除
   def contrast_operate(conn, %{"username" => username, "field" => field, "com_type" => com_type})do
     [page, page_type, type, tool_type, org, time, drg, order, order_type] =
-    case conn.params["url"] do
-      [] -> ["1", "base", "org", "total", "", "", "", "org", "asc"]
-      _ -> conn.params["url"]
-    end
-    # [page, page_type, type, tool_type, org, time, drg, order, order_type] = conn.params["url"]
+      case conn.params["url"] do
+        [] -> ["1", "base", "org", "total", "", "", "", "org", "asc"]
+        _ -> conn.params["url"]
+      end
     #获取分析结果
-    {stat, _, _, _,  _,_, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [stat, _, _, _,  _,_, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     cond do
-      com_type == "add_x" or com_type == "del_x" ->
+      com_type in ["add_x", "del_x"] ->
         #拿到缓存中所有数据
-        cache = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
-        cache = unless(cache)do [] else cache end
+        cache = unless(Hitbserver.ets_get(:stat_drg, "comx_" <> username))do [] else Hitbserver.ets_get(:stat_drg, "comx_" <> username) end
         #求真实id
         id = field
         # |>String.to_integer
@@ -97,81 +93,67 @@ defmodule StatWeb.StatController do
             3 -> Enum.reject(stat, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}" != id end)
             _ -> []
           end
-        # stat = Enum.reject(stat, fn x -> List.first(x) <> "_" <> List.first(List.delete_at(x, 0)) != id end)
         #根据情况处理缓存
         case com_type do
           "add_x" ->
-            #处理缓存
             Hitbserver.ets_insert(:stat_drg, "comx_" <> username, cache ++ stat)
           "del_x" ->
-            #去除当前id记录
-            cache = Enum.reject(cache, fn x -> List.first(x) <> "_" <> List.first(List.delete_at(x, 0)) == id end)
-            #处理缓存
-            Hitbserver.ets_insert(:stat_drg, "comx_" <> username, cache)
+            Hitbserver.ets_insert(:stat_drg, "comx_" <> username, Enum.reject(cache, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}" == id end))
         end
-      com_type == "add_y" or com_type == "del_y" ->
+      com_type in ["add_y", "del_y"] ->
+        #拿到缓存中所有数据
+        cache = unless(Hitbserver.ets_get(:stat_drg, "comy_" <> username))do [] else Hitbserver.ets_get(:stat_drg, "comy_" <> username) end
         yid =
           case com_type do
             "add_y" ->
-              #拿到缓存中所有数据
-              cache = Hitbserver.ets_get(:stat_drg, "comy_" <> username)
-              cache = unless(cache)do [] else cache end
               cond do
                 type in ["mdc", "adrg", "drg"] ->
                   ["drg2"] ++ :lists.usort(cache ++ [field])
-                true -> :lists.usort(cache ++ [field])
+                true ->
+                  :lists.usort(cache ++ [field])
               end
             "del_y" ->
-              #拿到缓存中所有数据
-              cache = Hitbserver.ets_get(:stat_drg, "comy_" <> username)
-              cache = unless(cache)do [] else cache end
               :lists.usort(cache -- [field])
           end
         #处理缓存
         Hitbserver.ets_insert(:stat_drg, "comy_" <> username, yid)
       true -> []
     end
-    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
+    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
     json conn, %{result: true}
   end
 
   #获取list
   def contrast_list(conn, %{"username" => username})do
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     #拆解url路径和参数
-    {page, _, _, _, _, _, order, order_type, page_type} =
-    case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
-      nil -> {"1", "", "", "", "", "", "org", "desc", "base"}
-      _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
-    end
+    [page, _, _, _, _, _, order, order_type, page_type] =
+      case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
+        nil -> ["1", "", "", "", "", "", "org", "desc", "base"]
+        _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+      end
     # {page, _, _, _, _, _, order, order_type, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
     #存储url
-    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
+    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
     #取数据
-    {_, list, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [_, list, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     com_list =
       case Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username) do
         nil -> []
         _ -> Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)|>Enum.map(fn x -> List.first(x) end)
       end
-    # com_list = Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)|>Enum.map(fn x -> List.first(x) end)
-    list =
-      Enum.reduce(com_list, list, fn x, acc ->
-        acc -- [x]
-      end)
+    list = Enum.reduce(com_list, list, fn x, acc -> acc -- [x] end)
     json conn, %{list: list}
   end
 
   def contrast_chart(conn, %{"chart_type" => chart_type, "username" => username})do
     params = Map.merge(%{"chart_type" => "", "chart_key" => ""}, conn.params)
     %{"chart_key" => chart_key} = params
-    # user = get_session(conn, :user)
-    {_, type, tool_type, _, _, drg, _, _, page_type} =
-    case Hitbserver.ets_get(:stat_drg, "comurl_" <> username)do
-      nil->{"", "org", "", "", "", "drg", "", "", "base"}
-        _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
-    end
-    # {_, type, tool_type, _, _, drg, _, _, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+    [_, type, tool_type, _, _, drg, _, _, page_type] =
+      case Hitbserver.ets_get(:stat_drg, "comurl_" <> username)do
+        nil-> ["", "org", "", "", "", "drg", "", "", "base"]
+          _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+      end
     #取key
     staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
 
@@ -215,20 +197,19 @@ defmodule StatWeb.StatController do
           staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
           {unless(statx)do [] else statx end, unless(staty)do [] else staty end}
       end
-    [page, type, tool_type, drg, order, order_type, page_type, org] =
+    [page, type, tool_type, drg, order, order_type, page_type, org, time] =
       case Hitbserver.ets_get(:stat_drg, "defined_url_" <> username) do
-        nil -> {"1", "org", "total", "", "org", "asc", "base", ""}
+        nil -> ["1", "org", "total", "", "org", "asc", "base", "", ""]
         _ -> Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
       end
 
-    # {page, type, tool_type, drg, order, order_type, page_type, org} = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
     header = Stat.Key.key(username, drg, type, tool_type, page_type)
     comtabx = Enum.map(statx, fn x ->
-      case is_bitstring(Enum.at(x, 2)) or Enum.at(x, 2) == "-" do
-        false -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}"
-        true -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}"
-      end
-    end)
+                case is_bitstring(Enum.at(x, 2)) or Enum.at(x, 2) == "-" do
+                  false -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}"
+                  true -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}"
+                end
+              end)
     comtaby = staty
     json conn, %{x: comtabx, y: comtaby}
   end
@@ -241,8 +222,8 @@ defmodule StatWeb.StatController do
 
   def download_stat(conn, %{"username" => username})do
     #取对比分析
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username} = conn_merge(conn.params)
-    {stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
+    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
     #按照字段取值
     str = stat
       |>List.delete_at(0)
@@ -255,43 +236,14 @@ defmodule StatWeb.StatController do
   end
 
   def stat_info(conn, %{"username" => username}) do
-    {_, type, tool_type, _, _, drg, _, _, page_type} =
+    [_, type, tool_type, _, _, drg, _, _, page_type] =
       case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
-        nil -> {"", "org", "", "", "", "drg", "", "", "base"}
+        nil -> ["", "org", "", "", "", "drg", "", "", "base"]
         _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
-    # {_, type, tool_type, _, _, drg, _, _, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
     #获取keys
     keys = ["info_type"] ++ Key.key(username, drg, type, tool_type, page_type)
-    {stats, _} = stat_info_p(username, keys)
-    stats2 = stats
-      |>Enum.map(fn x ->
-          Enum.reduce(0..length(x)-1, %{stat: x, key: keys, map: %{}}, fn x2, acc ->
-            val = List.first(acc.stat)
-            key = String.to_atom(List.first(acc.key))
-            %{acc | :stat => List.delete_at(acc.stat, x2-x2), :key => List.delete_at(acc.key, x2-x2), :map => Map.put(acc.map, key, val)}
-          end)|>Map.get(:map)
-        end)
-    #环比和同比判断
-    #去除多余的key
-    stats2 = stats2
-    |>Enum.map(fn x ->
-        Enum.map(keys, fn y -> String.to_atom(y) end)
-        |>Enum.map(fn y ->
-            cond do
-              Map.get(x, y) == nil -> %{info: "", key: y, val: "无数据"}
-              is_float(Map.get(x, y)) -> %{info: "", key: y, val: Float.round(Map.get(x, y), 4)}
-              true -> %{info: "", key: y, val: Map.get(x, y)}
-            end
-        end)
-      end)
-    com = stats2
-      |>Enum.map(fn x ->
-          Enum.reduce(x, %{}, fn x2, acc ->
-            val = if(x2.val == "无数据" and x2.key not in [:org, :drg2, :time])do 0.0 else x2.val end
-            Map.put(acc, x2.key, val)
-          end)
-        end)
+    [com, stats] = Stat.Query.info(username, 13)
     com =
       Enum.map(List.delete_at(com, 0), fn x ->
         type =
@@ -308,13 +260,11 @@ defmodule StatWeb.StatController do
                 cond do
                   i <= 0.0 -> nil
                   true ->
-                    res =
-                      cond do
-                        (j-i)/i == 0.0 -> "无变化"
-                        (j-i)/i < 0.0 -> "降低" <> to_string(Float.round((j-i)/i*100*-1, 2)) <> "%"
-                        (j-i)/i > 0.0 -> "增长" <> to_string(Float.round((j-i)/i*100, 2)) <> "%"
-                      end
-                    Key.cnkey(to_string(key)) <> type <> res
+                    cond do
+                      (j-i)/i == 0.0 -> "#{Key.cnkey(to_string(key))}#{type}无变化"
+                      (j-i)/i < 0.0 -> "#{Key.cnkey(to_string(key))}#{type}降低#{to_string(Float.round((j-i)/i*100*-1, 2))}%"
+                      (j-i)/i > 0.0 -> "#{Key.cnkey(to_string(key))}#{type}增长#{to_string(Float.round((j-i)/i*100, 2))}%"
+                    end
                 end
               end
             end)
@@ -324,7 +274,6 @@ defmodule StatWeb.StatController do
       end)
     cnkey = Enum.map(keys, fn x -> Key.cnkey(x) end)
     stats = [cnkey] ++ stats
-      # , tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type
     json conn, %{stat: stats, com: com}
   end
 
@@ -334,18 +283,17 @@ defmodule StatWeb.StatController do
     #   String.split(url, "&")
     #   |>Enum.map(fn x -> List.to_tuple(String.split(x, "=")) end)
     #   |>List.to_tuple
-    IO.inspect url
     [type, org, time, drg, tool_type] = url
     #拆解url路径和参数
-    {page, _, _, _, _, _, order, order_type, page_type} =
+    [page, _, _, _, _, _, order, order_type, page_type] =
       case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
-        nil -> {"1", "", "", "", "", "", "org", "desc", "base"}
+        nil -> ["1", "", "", "", "", "", "org", "desc", "base"]
         _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
-    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, {page, type, tool_type, org, time, drg, order, order_type, page_type})
+    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
     #获取分析结果
     # IO.inspect Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
-    {stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     #拿到缓存中所有数据
     cache = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
     cache = if (cache) do cache else [] end
@@ -370,14 +318,18 @@ defmodule StatWeb.StatController do
       sql = "select contrast('" <> org <> "', '" <> time <> "', '')"
       # IO.inspect sql
       res = hd(hd(Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows))
-      {page, type, tool_type, _, _, drg, order, order_type, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+      [page, type, tool_type, _, _, drg, order, order_type, page_type] = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
+
+
+      # IO.inspect res
+
       {_, mm_stat, yy_stat} = List.to_tuple(res)
       mm_stat =
         if(nil in mm_stat)do
           []
         else
           {org, time} = List.to_tuple(mm_stat)
-          {mm_stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
+          [mm_stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
           ["环比记录"] ++ List.last(mm_stat)
         end
       yy_stat =
@@ -385,7 +337,7 @@ defmodule StatWeb.StatController do
           []
         else
           {org, time} = List.to_tuple(yy_stat)
-          {yy_stat, _, _, _, _, _, _, _, _} = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
+          [yy_stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
           ["环比记录"] ++ List.last(yy_stat)
         end
       stats = ([stat] ++ [mm_stat] ++ [yy_stat])|>Enum.reject(fn x -> x == [] end)
@@ -398,6 +350,6 @@ defmodule StatWeb.StatController do
   #调取条件初始化
   defp conn_merge(params) do
     %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc", "username" => ""}, params)
-    {page, page_type, type, tool_type, org, time, drg, order, order_type, username}
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username]
   end
 end
