@@ -62,13 +62,13 @@ defmodule LibraryWeb.RuleController do
       if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
         rules = %{"year" => year, "version" => version, "dissect" => dissect, "tab" => tab, "type" => type,
         "page" => page, "rows" => rows}
-        [result, list, page_list, page_num, count_page, type] = ruleWT4(rules)
+        ruleWT4(rules)
       else
         rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
-        [result, list, page_list, page_num, count_page, type] = ruleOther(rules)
+        ruleOther(rules)
       end
 
-    {result, page_list, page_num, count, tab_type, type, dissect, list, version, year}
+    [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
 
   def contrast(conn, %{"table" => table, "id" => id}) do
@@ -190,7 +190,7 @@ defmodule LibraryWeb.RuleController do
       end
     num = select(query, [w], count(w.id))
     count = hd(Repo.all(num, [timeout: 1500000]))
-    skip = Library.Page.skip(page, rows)
+    skip = Hitbserver.Page.skip(page, rows)
     query = order_by(query, [w], asc: w.code)
         |>limit([w], ^rows)
         |>offset([w], ^skip)
@@ -259,7 +259,7 @@ defmodule LibraryWeb.RuleController do
       |>Repo.all
       |>hd
 
-    skip = Library.Page.skip(page, rows)
+    skip = Hitbserver.Page.skip(page, rows)
     #查询
     result = query
       |>limit([p], ^rows)
