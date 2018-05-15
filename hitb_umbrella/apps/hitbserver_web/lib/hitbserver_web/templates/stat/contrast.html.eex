@@ -130,7 +130,7 @@ $(document).ready(function() {
         const time = this.stat[this.stat.length - 1][1]
         this.$ajax({
           type: 'POST',
-          url: `/stat/com_add/`,
+          url: `/stat/stat_add/`,
           data: {url: ['<%=@page_num%>', '<%=@type%>', '<%=@tool_type%>', org, time, '<%=@drg%>', '<%=@order%>', '<%=@order_type%>', '<%=@page_type%>'], username: '<%=@user.username%>'},
           dataType: 'json',
           success: (res)=> {

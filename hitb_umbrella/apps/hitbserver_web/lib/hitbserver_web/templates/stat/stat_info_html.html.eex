@@ -2,7 +2,7 @@
   <div class="ui padded grid"  id="div">
     <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;">
       <div class="ui secondary vertical menu">
-        <div class="item" v-for="x in leftList" v-on:click="addContrast('<%=@type%>',x,'<%=@time%>','<%=@drg%>')">{{x}}<a class="ui label"><i class="plus icon"></i></a></div>
+        <a class="item" v-for="x in leftList">{{x}}<a class="ui label"></a>
       </div>
     </div>
     <div class="fourteen wide column">
@@ -64,7 +64,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(xs, i) in stat" class="center aligned">
-                    <td v-for="(x, index) in xs"> {{ x.val }} </td>
+                    <td v-for="(x, index) in xs"> {{ x }} </td>
                   </tr>
                 </tbody>
               </table>
@@ -111,16 +111,16 @@ $(document).ready(function() {
             this.stat = res.stat;
             this.headerCn = this.stat[0];
             this.stat.splice(0, 1);
-            this.suggest = res.com.join(' ; ');
+            this.suggest = res.suggest.join(' ; ');
           }
         });
       },
-      addContrast: function(type, org, time, drg) {
-        url = 'type='+type+'&tool_type=@tool_type&org='+org+'&time='+time+'&drg='+drg;
+      addContrast: function(org) {
+        const time = this.stat[this.stat.length - 1][1]
         this.$ajax({
           type: 'POST',
-          url: `/stat/com_add/`,
-          data: {url: [type, org, time, drg, ''], username: '<%=@user.username%>'},
+          url: `/stat/stat_add/`,
+          data: {url: ['<%=@page_num%>', '<%=@type%>', '<%=@tool_type%>', org, time, '<%=@drg%>', '<%=@order%>', '<%=@order_type%>', '<%=@page_type%>'], username: '<%=@user.username%>'},
           dataType: 'json',
           success: (res)=> {
             if(res['result']){
