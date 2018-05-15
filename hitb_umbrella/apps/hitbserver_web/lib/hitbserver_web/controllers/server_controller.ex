@@ -137,10 +137,9 @@ defmodule HitbserverWeb.ServerController do
       #求skip
       skip = Hitbserver.Page.skip(page, 15)
       #求json
-      {json, _, count} = get_json(skip)
+      [json, _, count] = get_json(skip)
       #求分页列表
-      {page_num, page_list, count} = Hitbserver.Page.page_list(page, count, 15)
-      IO.inspect "-----------------------"
+      [page_num, page_list, count] = Hitbserver.Page.page_list(page, count, 15)
       file_info = Map.merge(%{:count => count}, Hitbserver.ets_get(:json, :file_info))
       json =
         Enum.map(json, fn x ->
@@ -155,11 +154,12 @@ defmodule HitbserverWeb.ServerController do
       redirect conn, to: "/login"
     end
   end
+  
   defp get_json(skip) do
     #定义每页条目数量
     num = 15
     jsons = Hitbserver.ets_get(:json, :json)
     json = Enum.map(skip..skip+num, fn x -> Enum.at(jsons, x) end)
-    {json, skip, length(jsons)}
+    [json, skip, length(jsons)]
   end
 end

@@ -48,7 +48,7 @@ defmodule Stat.Query do
       end
     stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
-    {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows_num)
+    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
     # #如果有下载任务,进行下载查询
     # # stat = if(stat_type == "download")do stat else [] end

@@ -9,9 +9,8 @@ defmodule ServerWeb.RecordController do
 
   def index(conn, %{"page"=> page}) do
     skip = Hitbserver.Page.skip(page, 15)
-    record = SchemaHospitals.list_record(skip, 15)
-    {count, record} = record
-    {page_num, page_list, _} = Hitbserver.Page.page_list(page, count, 15)
+    [count, record] = SchemaHospitals.list_record(skip, 15)
+    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
     record = Enum.map(record, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)

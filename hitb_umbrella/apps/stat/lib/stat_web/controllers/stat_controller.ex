@@ -105,7 +105,6 @@ defmodule StatWeb.StatController do
         nil -> ["1", "", "", "", "", "", "org", "desc", "base"]
         _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
-    # {page, _, _, _, _, _, order, order_type, page_type} = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
     #存储url
     Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
     #取数据

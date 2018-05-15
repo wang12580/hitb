@@ -30,7 +30,7 @@ defmodule Hitbserver.File do
     end
     #读取文件信息
     {:ok, file_info}  = :file.read_file_info(file_path <> file_name)
-    {_, file_size, _, access, atime, mtime, ctime, _, _, _, _, _, _, _} = file_info
+    [_, file_size, _, access, atime, mtime, ctime, _, _, _, _, _, _, _] = file_info
     #识别文件大小
     file_size =
       cond do
@@ -39,7 +39,7 @@ defmodule Hitbserver.File do
         file_size > 1048576 and file_size < 1073741824 -> to_string(Float.round((file_size/1048576), 2)) <> "MB"
         true -> to_string(Float.round((file_size/1073741824), 2)) <> "GB"
       end
-    %{path: file_path <> file_name, #文件存放路径
+    %{path: "#{file_path}#{file_name}", #文件存放路径
       file_name: file_name, #文件名
       file_size: file_size, #文件大小
       file_type: content_type, #文件类型
@@ -48,6 +48,7 @@ defmodule Hitbserver.File do
       mtime: Hitbserver.Time.ttime_to_stime(mtime), #最后一次修改时间
       ctime: Hitbserver.Time.ttime_to_stime(ctime)} #创建时间
   end
+
   def check(file_path) do
     #解json串
     {:ok, str} = File.read(file_path)

@@ -31,15 +31,15 @@ defmodule HitbserverWeb.PageController do
 
   def login(conn, %{"user" => user}) do
     params = Poison.encode!(%{user: user})
-    {conn, username, login} =
+    [conn, username, login] =
       case HTTPoison.request(:post, "http://127.0.0.1:8040/login/",
       params, [{"X-API-Key", "foobar"}, {"Content-Type", "application/json"}]) do
         {:ok, result} ->
           %{body: body} = result
           body = Poison.decode!(body)
-          {put_session(conn, :user, %{id: body["id"], login: body["login"], username: body["username"], type: body["type"], key: body["key"]}), body["username"], body["login"]}
+          [put_session(conn, :user, %{id: body["id"], login: body["login"], username: body["username"], type: body["type"], key: body["key"]}), body["username"], body["login"]]
         {:error, _} ->
-          {put_session(conn, :user, %{login: false, username: "", type: 2, key: []}), "", false}
+          [put_session(conn, :user, %{login: false, username: "", type: 2, key: []}), "", false]
       end
     json conn, %{login: login, username: username}
   end

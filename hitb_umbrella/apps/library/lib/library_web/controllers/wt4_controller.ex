@@ -15,13 +15,13 @@ defmodule LibraryWeb.Wt4Controller do
       |> order_by([w], [asc: w.id])
       |> Repo.all
     count = hd(Repo.all(from p in Wt4, select: count(p.id)))
-    {page_num, page_list, _} = Library.Page.page_list(page, count, 15)
+    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
     render(conn, "index.json", %{wt4: result, page_num: page_num, page_list: page_list, num: count, org_num: 0, time_num: 0, drg_num: 0})
   end
 
   def stat_wt4(conn, %{"time" => time, "org" => org, "drg" => drg}) do
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
-    skip = Library.Page.skip(page, 15)
+    skip = Hitbserver.Page.skip(page, 15)
     query = from(w in Wt4) |> where([w], w.year_time == ^time or w.half_year == ^time or w.month_time == ^time or w.season_time == ^time)
     query = if(drg == "")do query else query |> where([w], w.drg == ^drg) end
     query = if(org == "")do query else query |> where([w], w.org == ^org) end

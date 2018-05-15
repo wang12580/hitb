@@ -25,7 +25,7 @@ defmodule StatWeb.ClientController do
       header = Enum.at(stat, 0)
       #求病历总数
       num_index = Enum.find_index(header, fn(x) -> x == "病历数" or x == "病例数" end)
-      {num, org_num, time_num, drg_num} =
+      [num, org_num, time_num, drg_num] =
         if(num_index)do
           num = stat|>Enum.map(fn x -> Enum.at(x, num_index) end)|>Enum.reject(fn x -> not is_integer(x) end)|>Enum.sum
           #求机构总数
@@ -37,9 +37,9 @@ defmodule StatWeb.ClientController do
           #求病种数
           index = Enum.find_index(header, fn(x) -> x == "病种" end)
           drg_num = if("病种" in header)do stat|>List.delete_at(0)|>Enum.map(fn x -> Enum.at(x, index) end)|>:lists.usort|>length else 0 end
-          {num, org_num, time_num, drg_num}
+          [num, org_num, time_num, drg_num]
         else
-          {length(stat) - 1, 0, 0, 0}
+          [length(stat) - 1, 0, 0, 0]
         end
       json conn, %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}
     else

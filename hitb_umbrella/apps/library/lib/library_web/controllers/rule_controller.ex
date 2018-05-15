@@ -11,7 +11,7 @@ defmodule LibraryWeb.RuleController do
 
   def rule(conn, _params) do
     params = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    {result, page_list, page_num, count, tab_type, type, dissect, list, version, year} = rule(params)
+    [result, page_list, page_num, count, tab_type, type, dissect, list, version, year] = rule(params)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -27,7 +27,7 @@ defmodule LibraryWeb.RuleController do
 
   def rule_client(conn, _params) do
     params = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    {result, page_list, page_num, count, _, _, _, list, _, _} = rule(params)
+    [result, page_list, page_num, count, _, _, _, list, _, _] = rule(params)
     result = result
       |>Enum.map(fn x ->
           Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc])
@@ -58,18 +58,19 @@ defmodule LibraryWeb.RuleController do
         tab_type == "icd9" -> RuleIcd9
         true -> LibWt4
       end
-    {result, list, page_list, page_num, count, type} =
+    [result, list, page_list, page_num, count, type] =
       if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
         rules = %{"year" => year, "version" => version, "dissect" => dissect, "tab" => tab, "type" => type,
         "page" => page, "rows" => rows}
-        {result, list, page_list, page_num, count_page, type} = ruleWT4(rules)
+        [result, list, page_list, page_num, count_page, type] = ruleWT4(rules)
       else
         rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
-        {result, list, page_list, page_num, count_page, type} = ruleOther(rules)
+        [result, list, page_list, page_num, count_page, type] = ruleOther(rules)
       end
 
     {result, page_list, page_num, count, tab_type, type, dissect, list, version, year}
   end
+
   def contrast(conn, %{"table" => table, "id" => id}) do
     tab =
       cond do
@@ -85,7 +86,7 @@ defmodule LibraryWeb.RuleController do
           Repo.all(from p in tab, where: p.id == ^x)
         end)
       |>List.flatten
-    {result, c} =
+    [result, c] =
       if(result != [])do
         a1 = List.first(result)
         a2 = List.last(result)
@@ -103,22 +104,22 @@ defmodule LibraryWeb.RuleController do
         result = Enum.map(result, fn x ->
           Map.drop(x, [:__meta__, :__struct__])
         end)
-        {result, c}
+        [result, c]
       else
-        {[], []}
+        [[], []]
       end
     json conn, %{result: result, table: table, contrast: c}
   end
 
   def details(conn, %{"code" => code, "table" => table, "version" => version}) do
     tab =
-    cond do
-      table == "icd9" -> RuleIcd9
-      table == "icd10" -> RuleIcd10
-      table == "mdc" -> RuleMdc
-      table == "adrg" -> RuleAdrg
-      table == "drg" -> RuleDrg
-    end
+      cond do
+        table == "icd9" -> RuleIcd9
+        table == "icd10" -> RuleIcd10
+        table == "mdc" -> RuleMdc
+        table == "adrg" -> RuleAdrg
+        table == "drg" -> RuleDrg
+      end
     result = Repo.all(from p in tab, where: p.code == ^code)
     result1 = Repo.all(from p in tab, where: p.code == ^code and p.version == ^version)
     result = Enum.map(result, fn x ->
@@ -132,7 +133,7 @@ defmodule LibraryWeb.RuleController do
 # 模糊搜索
   def search(conn, _params) do
     %{"page" => page, "table" => table, "code" => code} = Map.merge(%{"page" => "1", "table" => "", "code" => ""}, conn.params)
-    skip = Library.Page.skip(page, 10)
+    skip = Hitbserver.Page.skip(page, 10)
     tab =
       cond do
         table == "icd9" -> RuleIcd9
@@ -149,7 +150,7 @@ defmodule LibraryWeb.RuleController do
       |> Repo.all
     query = from w in tab, where: like(w.code, ^code) or like(w.name, ^code), select: count(w.id)
     count = hd(Repo.all(query))
-    {page_num, page_list, _} = Library.Page.page_list(page, count, 10)
+    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 10)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -157,7 +158,7 @@ defmodule LibraryWeb.RuleController do
   end
   defp ruleWT4(params) do
     %{"version" => version, "year" => year, "dissect" => dissect, "tab" =>tab, "type" => type,
-    "page" => page, "rows" => rows } = params
+    "page" => page, "rows" => rows} = params
     type = String.to_atom(type)
     query =
       cond do
@@ -211,9 +212,8 @@ defmodule LibraryWeb.RuleController do
             _ -> List.first(i)|>Enum.sort
           end
       end
-    {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
-    {result, list, page_list, page_num, count_page, type}
-    # {params}
+    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows)
+    [result, list, page_list, page_num, count_page, type]
   end
   defp ruleOther(params) do
     %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows} = params
@@ -265,8 +265,8 @@ defmodule LibraryWeb.RuleController do
       |>limit([p], ^rows)
       |>offset([w], ^skip)
       |>Repo.all
-    {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows)
     list = []
-    {result, list, page_list, page_num, count_page, type}
+    [result, list, page_list, page_num, count_page, type]
   end
 end

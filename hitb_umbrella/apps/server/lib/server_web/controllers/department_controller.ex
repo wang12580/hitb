@@ -8,7 +8,7 @@ defmodule ServerWeb.DepartmentController do
   action_fallback ServerWeb.FallbackController
 
   def index(conn, _params) do
-    {class_list, result} = SchemaHospitals.list_department()
+    [class_list, result] = SchemaHospitals.list_department()
     # render(conn, "index.json", department: department)
     json conn, %{class_list: class_list, result: result}
   end
