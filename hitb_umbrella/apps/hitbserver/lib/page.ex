@@ -58,6 +58,6 @@ defmodule Hitbserver.Page do
      end)
     #整个列表
     page_list = [first] ++ [up] ++ page_list3 ++ [down] ++ [last]
-    {page, Enum.reject(page_list, fn (x) -> x == nil end), page_count}
+    [page, Enum.reject(page_list, fn (x) -> x == nil end), page_count]
   end
 end

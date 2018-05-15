@@ -10,7 +10,7 @@ defmodule ServerWeb.PageController do
 
   def wt4_upload(conn, _params)do
     file_path = System.user_home() <> "/wt4/"
-    %{:path => file_path, file_name: file_name, file_size: file_size} = Hitbserver.File.upload_file(file_path, conn.params["file"])
+    %{:path => file_path, :file_name => file_name, :file_size => file_size} = Hitbserver.File.upload_file(file_path, conn.params["file"])
     Hitbserver.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
     json conn, %{file_path: file_path, file_name: file_name, file_size: file_size}
   end
@@ -35,7 +35,7 @@ defmodule ServerWeb.PageController do
   def wt4_insert(conn, _params) do
     json = Hitbserver.ets_get(:json, :json)
     keys = Map.keys(hd(json))
-    org_name = 
+    org_name =
       cond do
         keys == nil -> ""
         keys == [] -> ""

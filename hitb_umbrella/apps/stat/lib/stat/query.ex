@@ -48,7 +48,7 @@ defmodule Stat.Query do
       end
     stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
-    {page_num, page_list, count_page} = Hitbserver.Page.page_list(page, count, rows_num)
+    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
     # #如果有下载任务,进行下载查询
     # # stat = if(stat_type == "download")do stat else [] end
@@ -74,28 +74,17 @@ defmodule Stat.Query do
           Map.merge(%{info_type: "环比记录"}, Repo.get_by(struct, time: mm_time, org: Enum.at(stat, 0))),
           Map.merge(%{info_type: "同比记录"}, Repo.get_by(struct, time: yy_time, org: Enum.at(stat, 0)))]
         #去除多余的key
-        stat = stat
-          |>Enum.map(fn x ->
-              Enum.map(["info_type"]++key, fn y -> String.to_atom(y) end)
-              |>Enum.reduce(%{}, fn y, acc ->
-                  cond do
-                    Map.get(x, y) == nil -> Map.put(acc, y, "无数据")
-                    is_float(Map.get(x, y)) -> Map.put(acc, y, Float.round(Map.get(x, y), 4))
-                    true -> Map.put(acc, y, Map.get(x, y))
-                  end
-              end)
+        stat
+        |>Enum.map(fn x ->
+            Enum.map(["info_type"]++key, fn y -> String.to_atom(y) end)
+            |>Enum.reduce(%{}, fn y, acc ->
+                cond do
+                  Map.get(x, y) == nil -> Map.put(acc, y, "无数据")
+                  is_float(Map.get(x, y)) -> Map.put(acc, y, Float.round(Map.get(x, y), 4))
+                  true -> Map.put(acc, y, Map.get(x, y))
+                end
             end)
-        stat2 = Enum.map(stat, fn x ->
-          Enum.map(["info_type"]++key, fn y ->
-            y = String.to_atom(y)
-            cond do
-              Map.get(x, y) == nil -> %{info: "", key: y, val: "无数据"}
-              is_float(Map.get(x, y)) -> %{info: "", key: y, val: Float.round(Map.get(x, y), 4)}
-              true -> %{info: "", key: y, val: Map.get(x, y)}
-            end
           end)
-        end)
-        [stat, stat2]
     end
   end
 

@@ -52,7 +52,7 @@ defmodule StatWeb.Router do
     get "/target", CompController, :target
 
     get "/target1", CompController, :target1
-    post "/com_add", StatController, :com_add
+    post "/stat_add", StatController, :stat_add
     get "/com_html", ComController, :com_html
 
     post "/stat_create", ClientController, :stat_create

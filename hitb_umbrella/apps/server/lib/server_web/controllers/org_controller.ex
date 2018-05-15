@@ -8,8 +8,8 @@ defmodule ServerWeb.OrgController do
   def index(conn, _params) do
     %{"name" => name, "page" => page} = Map.merge(%{"name" => "", "page" => "1"}, conn.params)
     skip = Hitbserver.Page.skip(page, 15)
-    {count, result} = SchemaHospitals.list_org(name, skip, 15)
-    {page_num, page_list, _} = Hitbserver.Page.page_list(page, count, 15)
+    [count, result] = SchemaHospitals.list_org(name, skip, 15)
+    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
     render(conn, "index.json", %{org: result, page_num: page_num, page_list: page_list})
   end
 

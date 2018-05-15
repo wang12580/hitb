@@ -7,7 +7,7 @@ defmodule HitbserverWeb.StatController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc"}, conn.params)
+      %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc", "username" => ""}, conn.params)
       render conn, "stat.html", user: user, type: type, tool_type: tool_type, order_type: order_type, org: org, time: time, drg: drg, order: order, page_type: page_type, page_num: page
     else
       redirect conn, to: "/hospitals/login"
@@ -18,8 +18,8 @@ defmodule HitbserverWeb.StatController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
-      %{"type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "id" => id} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc"}, conn.params)
-      render conn, "stat_info_html.html", user: user, id: id, type: type, org: org, time: time, drg: drg, tool_type: tool_type
+      %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username, "id" => id} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc", "username" => ""}, conn.params)
+      render conn, "stat_info_html.html", user: user, type: type, tool_type: tool_type, order_type: order_type, org: org, time: time, drg: drg, order: order, page_type: page_type, page_num: page, id: id
     else
       redirect conn, to: "/hospitals/login"
     end
@@ -29,8 +29,9 @@ defmodule HitbserverWeb.StatController do
     user = get_session(conn, :user)
     login = MyUser.is_login(conn)
     if(login)do
+      %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc", "username" => ""}, conn.params)
       [_, type, _, _, time, drg, _, _, _] = Hitbserver.ets_get(:stat_drg, "comurl_" <> user.username)
-      render conn, "contrast.html", user: user, time: time, drg: drg, type: type
+      render conn, "contrast.html", user: user, type: type, tool_type: tool_type, order_type: order_type, org: org, time: time, drg: drg, order: order, page_type: page_type, page_num: page
     else
       redirect conn, to: "/hospitals/login"
     end

@@ -16,7 +16,7 @@ defmodule ServerWeb.SchemaHospitals do
         x2 = Repo.all(from p in Department, where: p.class_code == ^class_code, select: %{class_code: p.class_code, department_code: p.department_code, department_name: p.department_name}, order_by: [asc: p.department_code])
         Map.merge(%{class_code => x2}, acc)
       end)
-    {class_list, result}
+    [class_list, result]
   end
 
   def create_department(attrs \\ %{}) do
@@ -53,7 +53,7 @@ defmodule ServerWeb.SchemaHospitals do
       |> limit([w], ^num)
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
-    {count, query|>Repo.all}
+    [count, query|>Repo.all]
   end
 
   def create_customize_department(attrs \\ %{}) do
@@ -90,7 +90,7 @@ defmodule ServerWeb.SchemaHospitals do
       |> limit([w], ^num)
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
-    {count, query|>Repo.all}
+    [count, query|>Repo.all]
   end
 
   def create_org(attrs \\ %{}) do
@@ -154,7 +154,7 @@ defmodule ServerWeb.SchemaHospitals do
       |> offset([w], ^skip)
       |> Repo.all
     count = hd(Repo.all(from p in User, select: count(p.id)))
-    {count, query}
+    [count, query]
     # Repo.all(User)
   end
 
@@ -193,7 +193,7 @@ defmodule ServerWeb.SchemaHospitals do
       |> offset([w], ^skip)
       |> Repo.all
     count = hd(Repo.all(from p in Record, select: count(p.id)))
-    {count, query}
+    [count, query]
     # query = Repo.all(from p in Record)
   end
 
