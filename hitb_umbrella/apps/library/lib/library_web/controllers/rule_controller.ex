@@ -60,128 +60,16 @@ defmodule LibraryWeb.RuleController do
       end
     {result, list, page_list, page_num, count, type} =
       if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
-        type = String.to_atom(type)
-        #判断值
-        query =
-          cond do
-            year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
-
-            year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
-
-            year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
-
-            year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
-
-            year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-
-            year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
-
-            year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
-
-            # year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
-            # version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-            # year != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
-            # dissect != "" and year == "" -> from(w in tab)|>where([w], w.dissect == ^dissect)
-            # year == "" or dissect == "" -> from(w in tab)
-            # dissect != "" and year != ""-> from(w in tab)|>where([w], w.dissect == ^dissect and w.year == ^year)
-            true -> from(w in tab)
-          end
-        IO.inspect query
-        query = if(type != "" and tab == LibWt4)do query|>where([w], w.type == ^type) else query end
-        query =
-          if(type != "" and tab != LibWt4)do
-            query_type = to_string(type)
-            cond do
-              query_type in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] -> query|>where([w], w.property == ^query_type)
-              true -> query
-            end
-          else
-            query
-          end
-        num = select(query, [w], count(w.id))
-        count = hd(Repo.all(num, [timeout: 1500000]))
-        skip = Library.Page.skip(page, rows)
-        query = order_by(query, [w], asc: w.code)
-            |>limit([w], ^rows)
-            |>offset([w], ^skip)
-        result = Repo.all(query)
-        #取list
-        list =
-          cond do
-            to_string(type) in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
-              i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year)))
-                |>Enum.reject(fn x -> x == nil end)
-              case i do
-                [] -> []
-                _ -> List.first(i)|>Enum.sort
-              end
-            true ->
-              i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
-                |>Enum.reject(fn x -> x == nil end)
-              case i do
-                [] -> []
-                _ -> List.first(i)|>Enum.sort
-              end
-          end
-        {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
-        {result, list, page_list, page_num, count_page, type}
+        rules = %{"year" => year, "version" => version, "dissect" => dissect, "tab" => tab, "type" => type,
+        "page" => page, "rows" => rows}
+        {result, list, page_list, page_num, count_page, type} = ruleWT4(rules)
       else
-        query =
-          cond do
-            type != "year" and type != "" ->
-              from(p in tab)
-              |>where([p], p.type == ^type)
-            tab_type == "基本信息" ->
-              from(p in tab)
-              |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
-            tab_type == "街道乡镇代码"->
-              from(p in tab)
-              |>where([p], p.type == "街道乡镇代码")
-            tab_type == "民族"->
-              from(p in tab)
-              |>where([p], p.type == "民族")
-            tab_type == "区县编码"->
-              from(p in tab)
-              |>where([p], p.type == "区县编码")
-            tab_type == "手术血型"->
-              from(p in tab)
-              |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
-            tab_type == "出入院编码"->
-              from(p in tab)
-              |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
-            tab_type == "肿瘤编码"->
-              from(p in tab)
-              |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
-            tab_type == "科别代码"->
-              from(p in tab)
-              |>where([p], p.type == "科别")
-            tab_type == "病理诊断编码"->
-              from(p in tab)
-              |>where([p], p.type == "病理诊断编码(M码)")
-            tab_type == "医保诊断依据"->
-              from(p in tab)
-              |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
-          end
-        #计数
-        count = query
-          |>select([p], count(p.id))
-          |>Repo.all
-          |>hd
-
-        skip = Library.Page.skip(page, rows)
-        #查询
-        result = query
-          |>limit([p], ^rows)
-          |>offset([w], ^skip)
-          |>Repo.all
-        {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
-        list = []
-        {result, list, page_list, page_num, count_page, type}
+        rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
+        {result, list, page_list, page_num, count_page, type} = ruleOther(rules)
       end
 
     {result, page_list, page_num, count, tab_type, type, dissect, list, version, year}
   end
-
   def contrast(conn, %{"table" => table, "id" => id}) do
     tab =
       cond do
@@ -266,5 +154,119 @@ defmodule LibraryWeb.RuleController do
       Map.drop(x, [:__meta__, :__struct__])
     end)
     json conn, %{"table" => result, "page_num" => page_num, "page_list" => page_list}
+  end
+  defp ruleWT4(params) do
+    %{"version" => version, "year" => year, "dissect" => dissect, "tab" =>tab, "type" => type,
+    "page" => page, "rows" => rows } = params
+    type = String.to_atom(type)
+    query =
+      cond do
+        year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
+
+        year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
+
+        year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
+
+        year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
+
+        year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
+
+        year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
+
+        year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
+        true -> from(w in tab)
+      end
+    query = if(type != "" and tab == LibWt4)do query|>where([w], w.type == ^type) else query end
+    query =
+      if(type != "" and tab != LibWt4)do
+        query_type = to_string(type)
+        cond do
+          query_type in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] -> query|>where([w], w.property == ^query_type)
+          true -> query
+        end
+      else
+        query
+      end
+    num = select(query, [w], count(w.id))
+    count = hd(Repo.all(num, [timeout: 1500000]))
+    skip = Library.Page.skip(page, rows)
+    query = order_by(query, [w], asc: w.code)
+        |>limit([w], ^rows)
+        |>offset([w], ^skip)
+    result = Repo.all(query)
+    list =
+      cond do
+        to_string(type) in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
+          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year)))
+            |>Enum.reject(fn x -> x == nil end)
+          case i do
+            [] -> []
+            _ -> List.first(i)|>Enum.sort
+          end
+        true ->
+          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
+            |>Enum.reject(fn x -> x == nil end)
+          case i do
+            [] -> []
+            _ -> List.first(i)|>Enum.sort
+          end
+      end
+    {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
+    {result, list, page_list, page_num, count_page, type}
+    # {params}
+  end
+  defp ruleOther(params) do
+    %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows} = params
+    query =
+      cond do
+        type != "year" and type != "" ->
+          from(p in tab)
+          |>where([p], p.type == ^type)
+        tab_type == "基本信息" ->
+          from(p in tab)
+          |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
+        tab_type == "街道乡镇代码"->
+          from(p in tab)
+          |>where([p], p.type == "街道乡镇代码")
+        tab_type == "民族"->
+          from(p in tab)
+          |>where([p], p.type == "民族")
+        tab_type == "区县编码"->
+          from(p in tab)
+          |>where([p], p.type == "区县编码")
+        tab_type == "手术血型"->
+          from(p in tab)
+          |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
+        tab_type == "出入院编码"->
+          from(p in tab)
+          |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
+        tab_type == "肿瘤编码"->
+          from(p in tab)
+          |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
+        tab_type == "科别代码"->
+          from(p in tab)
+          |>where([p], p.type == "科别")
+        tab_type == "病理诊断编码"->
+          from(p in tab)
+          |>where([p], p.type == "病理诊断编码(M码)")
+        tab_type == "医保诊断依据"->
+          from(p in tab)
+          |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
+      end
+    #计数
+    count = query
+      |>select([p], count(p.id))
+      |>Repo.all
+      |>hd
+
+    skip = Library.Page.skip(page, rows)
+    #查询
+    result = query
+      |>limit([p], ^rows)
+      |>offset([w], ^skip)
+      |>Repo.all
+    {page_num, page_list, count_page} = Library.Page.page_list(page, count, rows)
+    list = []
+    {result, list, page_list, page_num, count_page, type}
   end
 end
