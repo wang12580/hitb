@@ -83,7 +83,7 @@
             success: (data) => {
               this.departmentList = data.data
               this.pageList = data.page_list
-              this.pagenum = data.page_num
+              this.page = data.page_num
             },
             dataType: 'json'
           });
