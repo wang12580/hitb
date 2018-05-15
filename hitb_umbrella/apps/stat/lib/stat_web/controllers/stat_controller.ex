@@ -283,72 +283,15 @@ defmodule StatWeb.StatController do
 
   #对比页新增对比
   def com_add(conn, %{"url" => url, "username" => username})do
-    # {{_, type}, {_, tool_type}, {_, org}, {_, time}, {_, drg}} =
-    #   String.split(url, "&")
-    #   |>Enum.map(fn x -> List.to_tuple(String.split(x, "=")) end)
-    #   |>List.to_tuple
-    [type, org, time, drg, tool_type] = url
-    #拆解url路径和参数
-    [page, _, _, _, _, _, order, order_type, page_type] =
-      case Hitbserver.ets_get(:stat_drg, "comurl_" <> username) do
-        nil -> ["1", "", "", "", "", "", "org", "desc", "base"]
-        _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
-      end
-    Hitbserver.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
+    [page, type, tool_type, org, time, drg, order, order_type, page_type] = url
     #获取分析结果
-    # IO.inspect Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    stat = stat|>List.delete_at(0)|>List.delete_at(0)
     #拿到缓存中所有数据
     cache = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
     cache = if (cache) do cache else [] end
     Hitbserver.ets_insert(:stat_drg, "comx_" <> username, cache ++ stat)
     json conn, %{result: true}
-  end
-
-  #提供分析
-  defp stat_info_p(username, keys) do
-    #拿到缓存中所有数据
-    stat = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
-    unless(stat)do
-      {[], []}
-    else
-      #求当前id记录
-      #去除当前id记录
-      stat = List.last(stat)
-      org = List.first(stat)
-      time = List.first(List.delete_at(stat, 0))
-      stat = ["当前记录"] ++ stat
-      #取得记录
-      sql = "select contrast('" <> org <> "', '" <> time <> "', '')"
-      # IO.inspect sql
-      res = hd(hd(Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows))
-      [page, type, tool_type, _, _, drg, order, order_type, page_type] = Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
-
-
-      # IO.inspect res
-
-      {_, mm_stat, yy_stat} = List.to_tuple(res)
-      mm_stat =
-        if(nil in mm_stat)do
-          []
-        else
-          {org, time} = List.to_tuple(mm_stat)
-          [mm_stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
-          ["环比记录"] ++ List.last(mm_stat)
-        end
-      yy_stat =
-        if(nil in yy_stat)do
-          []
-        else
-          {org, time} = List.to_tuple(yy_stat)
-          [yy_stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 1, "download")
-          ["环比记录"] ++ List.last(yy_stat)
-        end
-      stats = ([stat] ++ [mm_stat] ++ [yy_stat])|>Enum.reject(fn x -> x == [] end)
-      # IO.inspect stats|>Enum.reject(fn x -> x == [] end)
-      cnkey = Enum.map(keys, fn x -> Key.cnkey(x) end)
-      {stats, cnkey}
-    end
   end
 
   #调取条件初始化

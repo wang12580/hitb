@@ -64,7 +64,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(xs, i) in stat" class="center aligned">
-                    <td v-for="(x, index) in xs"> {{ x }} </td>
+                    <td v-for="(x, index) in xs"> {{ x.val }} </td>
                   </tr>
                 </tbody>
               </table>
