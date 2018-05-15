@@ -30,7 +30,7 @@
   </tbody>
   </table>
   <div class="ui right floated pagination menu">
-    <a v-for="(item, index) in pageList" v-bind:key="index" v-bind:href = "generateUrl(pageNum)" v-bind:class="{'disabled item': parseInt(item.num, 10) === pageNum, 'item': true}" >{{item.num}}</a>
+    <a v-for="(item, index) in pageList" v-bind:key="index" v-bind:href = "generateUrl(item.page)" v-bind:class="{'disabled item': parseInt(item.num, 10) === pageNum, 'item': true}" >{{item.num}}</a>
   </div>
 </div>
 <script>
@@ -53,6 +53,7 @@ $(document).ready(function() {
           url: `/servers/record?page=${'<%=@page%>'}`,
           async: false,
           success: (res)=> {
+            console.log(res)
             this.record = res.data;
             this.pageList = res.page_list;
             this.pageNum = res.page_num;
@@ -60,6 +61,7 @@ $(document).ready(function() {
         });
       },
       generateUrl: function(num) {
+        console.log(num)
         let url = '';
         if(this.pageNum === parseInt(num)) {
           url = '###'

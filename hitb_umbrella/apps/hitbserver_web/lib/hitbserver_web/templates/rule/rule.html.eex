@@ -55,6 +55,10 @@
             <tr v-for="(xs, i) in rule">
               <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.type }}</td>
             </tr>
+          <% @tab_type in ["科别代码", "病理诊断编码",] -> %>
+            <tr v-for="(xs, i) in rule">
+              <td>{{ xs.code }}</td><td>{{ xs.name }}</td>
+            </tr>
           <% true -> %>
           <tr v-for="(xs, i) in rule">
             <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.year }}</td><td>{{ xs.version }}</td>
@@ -63,8 +67,7 @@
       </tbody>
     </table>
     <div class="ui right floated pagination menu">
-      <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}"
-        :href="'/hospitals/rule?dissect=<%=@dissect%>&tab_type=<%=@tab_type%>&year=<%=@year%>&version=<%=@version%>&page='+p.page">{{p.num}}</a>
+      <a v-for="p in pages" v-bind:class="{'disabled item': p.page == page, 'item': p.page !== page}" v-bind:href="generateUrl(p.page)">{{p.num}}</a>
     </div>
   </div>
 </div>
@@ -114,6 +117,8 @@ $(document).ready(function() {
               this.headerCn = ['编码', '名称', '年份', '版本']
             } else if (['基本信息', '手术血型', '出入院编码', '肿瘤编码', '医保诊断依据'].includes('<%=@tab_type%>')) {
               this.headerCn = ['名称', '编码', '类型']
+            } else if (['科别代码', '病理诊断编码'].includes('<%=@tab_type%>')) {
+              this.headerCn = ['名称', '编码']
             } else {
               this.headerCn = ['名称', '编码', '年份', '版本']
             }
@@ -127,6 +132,16 @@ $(document).ready(function() {
           }
         });
       },
+      // 翻页
+      generateUrl: function(value) {
+        let url = ""
+        if (parseInt(value) === this.page) {
+          url = '###'
+        } else {
+          url = '/hospitals/rule?dissect=<%=@dissect%>&tab_type=<%=@tab_type%>&year=<%=@year%>&version=<%=@version%>&page='+parseInt(value)
+        }
+        return url
+      }
     }
   })
 });
