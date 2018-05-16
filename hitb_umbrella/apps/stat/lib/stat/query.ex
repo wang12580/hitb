@@ -74,17 +74,19 @@ defmodule Stat.Query do
           Map.merge(%{info_type: "环比记录"}, Repo.get_by(struct, time: mm_time, org: Enum.at(stat, 0))),
           Map.merge(%{info_type: "同比记录"}, Repo.get_by(struct, time: yy_time, org: Enum.at(stat, 0)))]
         #去除多余的key
-        stat
+        a = stat
         |>Enum.map(fn x ->
             Enum.map(["info_type"]++key, fn y -> String.to_atom(y) end)
             |>Enum.reduce(%{}, fn y, acc ->
                 cond do
-                  Map.get(x, y) == nil -> Map.put(acc, y, "无数据")
+                  Map.get(x, y) == nil -> acc
                   is_float(Map.get(x, y)) -> Map.put(acc, y, Float.round(Map.get(x, y), 4))
                   true -> Map.put(acc, y, Map.get(x, y))
                 end
             end)
           end)
+        # IO.inspect a
+        a
     end
   end
 

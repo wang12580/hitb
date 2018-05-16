@@ -214,8 +214,10 @@ defmodule StatWeb.StatController do
         _ -> Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
     #获取keys
-    keys = ["info_type"] ++ Key.key(username, drg, type, tool_type, page_type)
+    key = ["info_type"] ++ Key.key(username, drg, type, tool_type, page_type)
     stat = Stat.Query.info(username, 13)
+    stat_key = Enum.map(stat, fn x -> Map.keys(x) end)|>List.flatten|>:lists.usort
+    key = Enum.reject(key, fn x -> String.to_atom(x) not in stat_key end)
     suggest =
       Enum.map(List.delete_at(stat, 0), fn x ->
         type =
@@ -224,17 +226,17 @@ defmodule StatWeb.StatController do
             "同比记录" -> "同比"
           end
         #判断体
-        Enum.map(Map.keys(x), fn key ->
-          i = Map.get(x, key)
+        Enum.map(Map.key(x), fn k ->
+          i = Map.get(x, k)
           if(is_float(i))do
-            j = Map.get(hd(stat), key)
+            j = Map.get(hd(stat), k)
             cond do
               i <= 0.0 -> nil
               true ->
                 cond do
-                  (j-i)/i == 0.0 -> "#{Key.cnkey(to_string(key))}#{type}无变化"
-                  (j-i)/i < 0.0 -> "#{Key.cnkey(to_string(key))}#{type}降低#{to_string(Float.round((j-i)/i*100*-1, 2))}%"
-                  (j-i)/i > 0.0 -> "#{Key.cnkey(to_string(key))}#{type}增长#{to_string(Float.round((j-i)/i*100, 2))}%"
+                  (j-i)/i == 0.0 -> "#{Key.cnkey(to_string(k))}#{type}无变化"
+                  (j-i)/i < 0.0 -> "#{Key.cnkey(to_string(k))}#{type}降低#{to_string(Float.round((j-i)/i*100*-1, 2))}%"
+                  (j-i)/i > 0.0 -> "#{Key.cnkey(to_string(k))}#{type}增长#{to_string(Float.round((j-i)/i*100, 2))}%"
                 end
             end
           end
