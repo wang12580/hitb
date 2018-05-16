@@ -93,10 +93,7 @@ defmodule StatWeb.ClientController do
               "财务指标_机构收入" -> ["财务指标_机构收入_医疗收入", "财务指标_机构收入_医疗治疗收入", "财务指标_机构收入_管理收入", "财务指标_机构收入_耗材收入", "财务指标_机构收入_西药制品收入", "财务指标_机构收入_中药收入"]
             end
           data = Enum.map(csv, fn x ->
-                  sql = "select gettool('', '', '', '', '', '" <> Stat.page_en(x) <> "')"
-                  tool = Postgrex.query!(Hitbserver.ets_get(:postgresx, :pid), sql, [], [timeout: 15000000]).rows
-                    |>List.flatten
-                    |>Enum.reject(fn x -> x == "" end)
+                  tool = Stat.Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
                   case length(tool) do
                     0 -> x <> ".csv"
                     _ -> Enum.map(tool, fn x2 -> x <> "_" <> x2 <> ".csv" end)
