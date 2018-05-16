@@ -454,7 +454,7 @@
               </div>
               <div class="item">
                 <i class="dropdown icon"></i>
-                <span class="text">系统帮组</span>
+                <span class="text">系统帮助</span>
                 <div class="menu">
                   <a class = "item" id="comp_info" href="/hospitals/comp_info">指标说明</a>
                   <a class = "item" id="record" href="/hospitals/record">操作记录</a>
