@@ -17,7 +17,6 @@ defmodule Stat.Chart do
     #返回数据
     case chart_type do
       "radar" ->
-        # IO.inspect stat
         #字段设置(自动判断字段数值限制)
         indicator = stat
           |>Enum.reduce(hd(stat), fn x, res ->
@@ -32,14 +31,15 @@ defmodule Stat.Chart do
           |>Map.drop([:org, :time, :drg2])
           |>Map.keys
           |>Enum.map(fn x ->
-              %{name: Key.cnkey(to_string(x)), max: Map.get(indicator, x)}
+              %{name: x, max: Map.get(indicator, x)}
             end)
-          |>Enum.reject(fn x -> x == nil end)
+          |>Enum.reject(fn x ->
+            x == nil end)
         %{data: data, chart_key: chart_key, indicator: indicator}
       "bar" ->
         keys = Map.keys(hd(stat)) -- [:org, :time, :drg2]
         #横轴数据
-        xAxis = %{type: "category", data: Enum.map(keys, fn x -> Key.cnkey(to_string(x)) end) -- ["机构","时间"]}
+        xAxis = %{type: "category", data: Enum.map(keys, fn x -> x end) -- ["org","time"]}
         #纵轴数据
         series = Enum.map(data, fn x ->
             %{name: x.name, type: "bar", data: x.value}
