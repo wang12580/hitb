@@ -18,24 +18,30 @@ defmodule StatWeb.StatController do
   def contrast(conn, %{"username" => username}) do
     [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     #获取分析结果
-    [_, _, tool, page_list, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [all_list, list, tool, page_list, _, _, _, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    all_list = all_list|>List.delete_at(0)
     # 拆解url路径和参数
     #拿到缓存中所有数据
     statx = Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username)
     staty = Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)
     #取当前key
-    [_, list, _, _, _, _, _, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
     staty =
       cond do
-        is_list(staty) and staty != [] -> ["org", "time"] ++ staty
+        is_list(staty) and staty != [] -> ["机构", "时间"] ++ staty
         staty == nil or staty == [] -> cnkey
       end
     statx =
       case statx do
-        nil -> []
-        _ -> statx
+        nil -> all_list
+        [] -> all_list
+        _ -> List.insert_at(statx, 0, hd(all_list))
       end
-    stat = [staty] ++ statx
+    stat = statx
+    header = hd(stat)
+    index = Enum.map(staty, fn x -> Enum.find_index(header, fn x2 -> x == x2 end) end)|>:lists.usort
+    stat = Enum.map(stat, fn x ->
+      Enum.map(index, fn i -> Enum.at(x, i) end)
+    end)
     #按照字段取值
     #存储在自定义之前最后一次url
     url = "page=#{page}&type=#{type}&org=#{org}&time=#{time}&drg=#{drg}&order=#{order}&page_type=#{page_type}&order_type=#{order_type}"
@@ -138,10 +144,24 @@ defmodule StatWeb.StatController do
         true -> key
       end
     #取缓存
+    [all_list, list, tool, page_list, _, _, _, cnkey, _] = Query.getstat(username, 1, type, tool_type, "", "", drg, "org", "asc", page_type, 13, "stat")
+    all_list = all_list|>List.delete_at(0)
     statx = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
-    cnkey = Enum.reject(key, fn x -> x == "" end)|>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
+    # cnkey = Enum.reject(key, fn x -> x == "" end)
+    # |>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
     #按照字段取值
-    statx = if (statx) do statx else [] end
+    statx =
+      case statx do
+        nil -> all_list
+        [] -> all_list
+        _ -> List.insert_at(statx, 0, hd(all_list))
+      end
+    header = hd(statx)
+    index = Enum.map(cnkey, fn x -> Enum.find_index(header, fn x2 -> x == x2 end) end)|>:lists.usort
+    statx = Enum.map(statx, fn x ->
+      Enum.map(index, fn i -> Enum.at(x, i) end)
+    end)
+    # statx = if (statx) do statx else [] end
     stat = statx |> Enum.reject(fn x -> x == cnkey or x == key end)
       |>Enum.map(fn x ->
           map = Enum.reduce(0..length(x)-1, %{stat: x, key: key, map: %{}}, fn x2, acc ->

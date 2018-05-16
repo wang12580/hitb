@@ -83,12 +83,20 @@
       <table class="ui single line celled table">
         <thead>
           <tr class="center aligned">
-            <th v-for="(a, index) in headerCn" v-on:click="com_y(index)">
-              <a style="color:black" v-if="index === order && order_type === 'asc'"><i style="float:left;margin-top:2%" class="sort content ascending icon"></i></a>
-              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=asc&order='+headerEn[index]"><i style="float:left;margin-top:2%" class="sort content ascending icon" ></i></a>
-              {{ a }}
-              <a style="color:black" v-if="index === order && order_type === 'desc'"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>
-              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=desc&order='+headerEn[index]"><i style="float:right;margin-top:2%" class="sort content descending icon"></i></a>
+            <th v-for="(a, index) in headerCn">
+              <a style="color:black" v-if="index === order && order_type === 'asc'">
+                <i style="float:left;margin-top:2%" class="sort content ascending icon"></i>
+              </a>
+              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=asc&order='+headerEn[index]">
+                <i style="float:left;margin-top:2%" class="sort content ascending icon" ></i>
+              </a>
+              <span v-on:click="com_y(index)">{{ a }}</span>
+              <a style="color:black" v-if="index === order && order_type === 'desc'">
+                <i style="float:right;margin-top:2%" class="sort content descending icon"></i>
+              </a>
+              <a style="color:#D9D9D9" v-else :href="'/hospitals/stat_html?type=<%=@type%>&org=<%=@org%>&time=<%=@time%>&drg=<%=@drg%>&page_type=<%= @page_type%>&order_type=desc&order='+headerEn[index]">
+                <i style="float:right;margin-top:2%" class="sort content descending icon"></i>
+              </a>
             </th>
           </tr>
         </thead>
