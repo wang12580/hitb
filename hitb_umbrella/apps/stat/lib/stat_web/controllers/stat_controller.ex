@@ -244,8 +244,8 @@ defmodule StatWeb.StatController do
         |>Enum.reject(fn x -> x == nil end)
         |>Enum.join("，")
       end)
-    cnkey = Enum.map(keys, fn x -> Key.cnkey(x) end)
-    stat = Enum.reduce(stat, [cnkey], fn x, acc -> acc ++ [Enum.map(keys, fn k -> Map.get(x, String.to_atom(k)) end)] end)
+    cnkey = Enum.map(key, fn x -> Key.cnkey(x) end)
+    stat = Enum.reduce(stat, [cnkey], fn x, acc -> acc ++ [Enum.map(key, fn k -> Map.get(x, String.to_atom(k)) end)] end)
     json conn, %{stat: stat, suggest: suggest}
   end
 
