@@ -87,7 +87,7 @@ $(document).ready(function() {
     },
     created: function () {
       this.getList();
-      this.getContrast();
+      this.getStatInfo();
       this.chartRadar('charts');
       this.chartBar('charts2');
     },
@@ -102,7 +102,7 @@ $(document).ready(function() {
           }
         });
       },
-      getContrast: function() {
+      getStatInfo: function() {
         this.$ajax({
           type: 'GET',
           url: `/stat/stat_info?username=${'<%=@user.username%>'}`,

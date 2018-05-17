@@ -2,7 +2,7 @@ defmodule HitbserverWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", HitbserverWeb.RoomChannel
+  channel "room:*", HitbserverWeb.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
