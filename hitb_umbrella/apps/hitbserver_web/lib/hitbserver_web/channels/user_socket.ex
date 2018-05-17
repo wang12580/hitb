@@ -19,7 +19,10 @@ defmodule HitbserverWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
+  def connect(params, socket) do
+    # {:ok, socket}
+    IO.inspect params
+    # socket = assign(socket, :user_id, "ssss")
     {:ok, socket}
   end
 

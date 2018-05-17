@@ -8,6 +8,7 @@ defmodule HitbserverWeb.Application do
     children = [
       # Start the endpoint when the application starts
       supervisor(HitbserverWeb.Endpoint, []),
+      worker(HitbserverWeb.ChannelWatcher, [:rooms])
       # Start your own worker by calling: HitbserverWeb.Worker.start_link(arg1, arg2, arg3)
       # worker(HitbserverWeb.Worker, [arg1, arg2, arg3]),
     ]
