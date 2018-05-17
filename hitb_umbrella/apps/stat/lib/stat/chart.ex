@@ -46,6 +46,7 @@ defmodule Stat.Chart do
           end)
         %{series: series, chart_key: chart_key, xAxis: xAxis}
       "pie" ->
+        IO.inspect data
         series = Enum.map(data, fn x -> %{x | :value => hd(x.value)} end)
         data = Enum.map(data, fn x -> x.name end)
         %{series: series, data: data}

@@ -33,6 +33,21 @@
             <div class="ui mini teal  button" onclick="change('adrg')">ADRG</div>
             &nbsp;&nbsp;
             <div class="ui mini teal  button" onclick="change('drg')">DRG</div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <select class="ui compact selection button red" value="左图选择" v-model="lEchar" v-on:click="echarts('l')">
+              <option value="">左图选择</option>
+              <option value="bar">左《柱状图》</option>
+              <option value="pie">左《饼图》</option>
+              <option value="radar">左《雷达图》</option>
+            </select>
+            &nbsp;&nbsp;
+            <select class="ui compact selection button green" value="右图选择" v-model="rEchar" v-on:click="echarts('r')">
+              <option value="mdc">右图选择</option>
+              <option value="bar">右《柱状图》</option>
+              <option value="pie">右《饼图》</option>
+              <option value="radar">右《雷达图》</option>
+            </select>
+            &nbsp;&nbsp;
           </div>
         </div>
       <div class="ui grid">
@@ -59,7 +74,7 @@
               <table class="ui single line celled table">
                 <thead>
                   <tr class="center aligned">
-                    <th v-for="(a, index) in headerCn">{{ a }}</th>
+                    <th v-for="(a, index) in headerCn" v-on:click="tableTh( index)">{{ a }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -83,7 +98,9 @@ $(document).ready(function() {
       stat: [],
       headerCn: [],
       leftList: [],
-      suggest: ''
+      suggest: '',
+      lEchar: 'radar',
+      rEchar: 'bar'
     },
     created: function () {
       this.getList();
@@ -108,6 +125,8 @@ $(document).ready(function() {
           url: `/stat/stat_info?username=${'<%=@user.username%>'}`,
           dataType: 'json',
           success: (res)=> {
+            console.log(res);
+            this.stat_key =res.stat_key;
             this.stat = res.stat;
             this.headerCn = this.stat[0];
             this.stat.splice(0, 1);
@@ -163,11 +182,94 @@ $(document).ready(function() {
           }
         });
       },
+      chartPie: function(id, url) {
+        this.$ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: (res)=> {
+            data_name = res.data_name
+            series = res.series
+            option = {
+              tooltip : {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b} : {c} ({d}%)"
+              },
+              legend: {
+                  orient: 'vertical',
+                  left: 'left',
+                  data: data_name
+              },
+              series : [
+                  {
+                      name: '访问来源',
+                      type: 'pie',
+                      radius : '55%',
+                      center: ['50%', '60%'],
+                      data: series,
+                      itemStyle: {
+                          emphasis: {
+                              shadowBlur: 10,
+                              shadowOffsetX: 0,
+                              shadowColor: 'rgba(0, 0, 0, 0.5)'
+                          }
+                      }
+                  }
+              ]
+            };
+            setOption(id, option)
+          }
+        });
+      },
+      echarts: function (value) {
+        const url = `/stat/contrast_chart?chart_type=pie&chart_key=${this.stat_key[3]}&username=${'<%=@user.username%>'}`
+        if (value === 'l') {
+          switch (this.lEchar) {
+            case 'bar':
+              this.chartBar('charts')
+              break;
+            case 'pie':
+              this.chartPie('charts', url)
+              break;
+            case 'radar':
+              this.chartRadar('charts')
+              break;
+            case 'line':
+              this.chartLine('charts')
+              break;
+            default:
+          }
+        } else {
+          switch (this.rEchar) {
+            case 'bar':
+              this.chartBar('charts2')
+              break;
+            case 'pie':
+              this.chartPie('charts2', url)
+              break;
+            case 'radar':
+              this.chartRadar('charts2')
+              break;
+            case 'line':
+              this.chartLine('charts2')
+              break;
+            default:
+          }
+        }
+      },
+      tableTh: function (index) {
+        url = `/stat/stat_info_chart?chart_type=pie&chart_key=${this.stat_key[index]}&id=<%=@id%>&username=${'<%=@user.username%>'}`
+        if (this.lEchar === 'pie') {
+          this.chartPie('charts', url)
+        } else if (this.rEchar === 'pie') {
+          this.chartPie('charts2', url)
+        }
+      }
     }
   })
 });
 function setOption(id, option) {
   myChart = echarts.init(document.getElementById(id));
-  myChart.setOption(option);
+  myChart.setOption(option, true);
 }
 </script>

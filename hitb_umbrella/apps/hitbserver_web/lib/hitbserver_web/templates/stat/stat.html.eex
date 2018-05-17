@@ -102,7 +102,7 @@
         </thead>
         <tbody>
           <tr v-for="(xs, i) in stat" v-on:click="com_x(i)" v-bind:class="{'center aligned active': clickedX.includes(statX[i]), 'center aligned': !clickedX.includes(statX[i])}">
-            <td v-for="(x, index) in xs" v-bind:class="{'center aligned active': clickedY.includes(headerCn[index]), 'center aligned': !clickedY.includes(headerCn[index])}">
+            <td v-for="(x, index) in xs" v-bind:class="{'center aligned active': clickedY.includes(headerEn[index]) || clickedY.includes(headerCn[index]), 'center aligned': !clickedY.includes(headerCn[index])}">
                 {{ x }}
             </td>
           </tr>
@@ -179,14 +179,15 @@ $(document).ready(function() {
         });
       },
       com_y: function(index) {
-        index = this.headerCn[index]
-        if (!['机构','时间','病种'].includes(index)) {
-          if (this.clickedY.includes(index)) {
-            this.clickedY.splice(this.clickedY.indexOf(index), 1)
-            com_cache(index, 'del_y')
+        index1 = this.headerCn[index]
+        index2 = this.headerEn[index]
+        if (!['机构','时间','病种'].includes(index1)) {
+          if (this.clickedY.includes(index1)) {
+            this.clickedY.splice(this.clickedY.indexOf(index1), 1)
+            com_cache(index2, 'del_y')
           } else {
-            this.clickedY.push(index);
-            com_cache(index, 'add_y');
+            this.clickedY.push(index1);
+            com_cache(index2, 'add_y');
           }
         }
       },
