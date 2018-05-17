@@ -19,6 +19,7 @@ defmodule StatWeb.StatController do
     [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     #获取分析结果
     [all_list, list, tool, page_list, _, _, _, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    list_key = hd(all_list)
     all_list = all_list|>List.delete_at(0)
     # 拆解url路径和参数
     #拿到缓存中所有数据
@@ -27,7 +28,9 @@ defmodule StatWeb.StatController do
     #取当前key
     staty =
       cond do
-        is_list(staty) and staty != [] -> ["机构", "时间"] ++ staty
+        is_list(staty) and staty != [] ->
+          list = ["org", "time"] ++ staty
+          list1 = Enum.reject(list, fn x -> x == "" end)|>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
         staty == nil or staty == [] -> cnkey
       end
     statx =
@@ -46,7 +49,7 @@ defmodule StatWeb.StatController do
     #存储在自定义之前最后一次url
     url = "page=#{page}&type=#{type}&org=#{org}&time=#{time}&drg=#{drg}&order=#{order}&page_type=#{page_type}&order_type=#{order_type}"
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
-    json conn, %{stat: stat, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, url: url}
+    json conn, %{stat: stat, list_key: list_key, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, url: url}
   end
 
   #对比缓存读取和删除
@@ -147,6 +150,7 @@ defmodule StatWeb.StatController do
     [all_list, list, tool, page_list, _, _, _, cnkey, _] = Query.getstat(username, 1, type, tool_type, "", "", drg, "org", "asc", page_type, 13, "stat")
     all_list = all_list|>List.delete_at(0)
     statx = Hitbserver.ets_get(:stat_drg, "comx_" <> username)
+    cnkey = Enum.reject(key, fn x -> x == "" end)|>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
     # cnkey = Enum.reject(key, fn x -> x == "" end)
     # |>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
     #按照字段取值
@@ -202,7 +206,7 @@ defmodule StatWeb.StatController do
                   true -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 2)}"
                 end
               end)
-    comtaby = staty
+    comtaby = Enum.reject(staty, fn x -> x == "" end)|>Enum.map(fn x -> Key.cnkey(to_string(x)) end)
     json conn, %{x: comtabx, y: comtaby}
   end
 
@@ -246,7 +250,7 @@ defmodule StatWeb.StatController do
             "同比记录" -> "同比"
           end
         #判断体
-        Enum.map(Map.key(x), fn k ->
+        Enum.map(Map.keys(x), fn k ->
           i = Map.get(x, k)
           if(is_float(i))do
             j = Map.get(hd(stat), k)
@@ -266,7 +270,7 @@ defmodule StatWeb.StatController do
       end)
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end)
     stat = Enum.reduce(stat, [cnkey], fn x, acc -> acc ++ [Enum.map(key, fn k -> Map.get(x, String.to_atom(k)) end)] end)
-    json conn, %{stat: stat, suggest: suggest}
+    json conn, %{stat: stat, suggest: suggest, stat_key: key}
   end
 
   #详情页图表获取
@@ -277,7 +281,12 @@ defmodule StatWeb.StatController do
         _ ->  Hitbserver.ets_get(:stat_drg, "comurl_" <> username)
       end
     %{"chart_key" => chart_key} = Map.merge(%{"chart_type" => "", "chart_key" => ""}, conn.params)
-    result = Stat.Chart.chart(Stat.Query.info(username, 13), chart_type)
+    stat =
+    case chart_key do
+      "" -> Stat.Query.info(username, 13)
+      _ -> []
+    end
+    result = Stat.Chart.chart(stat, chart_type)
     json conn, result
   end
 
