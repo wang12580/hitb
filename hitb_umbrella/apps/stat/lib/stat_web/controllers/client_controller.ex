@@ -2,9 +2,10 @@ defmodule StatWeb.ClientController do
   use StatWeb, :controller
   plug StatWeb.Access
   alias Stat.Query
+  alias Hitbserver.Time
 
   def stat_create(conn, %{"data" => data, "username" => username}) do
-    filename = Hitbserver.Time.sdata_date2() <> "对比分析.csv"
+    filename = Hitbserver.Time.stimehour_number <> "对比分析.csv"
     case Repo.get_by(Stat.ClientStat, filename: filename, username: username) do
       nil ->
         %Stat.ClientStat{}
@@ -59,7 +60,6 @@ defmodule StatWeb.ClientController do
       org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
       time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
       drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
-      # IO.inspect {num, org_num, time_num, drg_num}
       json conn, %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end
