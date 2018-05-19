@@ -3,6 +3,7 @@ defmodule EditWeb.CdaController do
 
   alias Edit.Client
   alias Edit.Client.Cda
+  alias Hitbserver.Time
   plug EditWeb.Access
 
   def cda_user(conn, _params) do
@@ -23,10 +24,11 @@ defmodule EditWeb.CdaController do
     json conn, %{cda: cda, info: info}
   end
 
-  def update(conn, %{"content" => content, "file_name" => file_name, "username" => username}) do
+  def update(conn, %{"content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype}) do
+    IO.inspect (String.contains? file_name, "-")
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
-        String.split(file_name, "-")
+        List.to_tuple(String.split(file_name, "-"))
       else
         {username, file_name}
       end
@@ -49,7 +51,12 @@ defmodule EditWeb.CdaController do
           end
       end
     else
-      json conn, %{success: false, info: "没有操作权限"}
+      namea = doctype <>"_"<>Time.stime_number<>".cda"
+      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true}
+      %Cda{}
+      |> Cda.changeset(body)
+      |> Repo.insert()
+      json conn, %{success: false, info: "新建成功"}
     end
   end
 end

@@ -46,7 +46,14 @@ defmodule Stat.Query do
         true ->
           Hitbserver.ets_get(:stat, cache_key)
       end
-    stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
+      IO.inspect username
+      case Hitbserver.ets_get(:stat, page_type) do
+        nil -> 
+          stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
+          Hitbserver.ets_insert(:stat, page_type, stat)
+        _ -> stat = Hitbserver.ets_get(:stat, page_type) 
+      end
+    # stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
     [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
