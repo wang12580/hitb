@@ -11,7 +11,6 @@ defmodule StatWeb.StatControllerTest do
   end
   test "GET /stat/contrast", %{conn: conn} do
     conn = get conn, "/stat/contrast", username: "sss"
-    # IO.inspect assert json_response(conn, 200)
     assert json_response(conn, 200)["tool"] == []
   end
   test "POST /stat/contrast", %{conn: conn} do
@@ -24,7 +23,6 @@ defmodule StatWeb.StatControllerTest do
   end
   test "GET /stat/contrast_chart", %{conn: conn} do
     conn = get conn, "/stat/contrast_chart", chart_type: "pie", username: "sss"
-    # IO.inspect assert json_response(conn, 200)
     assert json_response(conn, 200)["data"] == []
   end
   test "GET /stat/contrast_info", %{conn: conn} do

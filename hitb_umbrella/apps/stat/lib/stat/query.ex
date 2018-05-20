@@ -46,14 +46,6 @@ defmodule Stat.Query do
         true ->
           Hitbserver.ets_get(:stat, cache_key)
       end
-      IO.inspect username
-      case Hitbserver.ets_get(:stat, page_type) do
-        nil -> 
-          stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
-          Hitbserver.ets_insert(:stat, page_type, stat)
-        _ -> stat = Hitbserver.ets_get(:stat, page_type) 
-      end
-    # stat = [key, cnkey] ++ Stat.Convert.obj2list(stat, key)
     # #求分页列表
     [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows_num)
     # #按照字段取值
@@ -70,18 +62,17 @@ defmodule Stat.Query do
       nil -> [[], []]
       _ ->
         stat = Hitbserver.ets_get(:stat_drg, "comx_" <> username)|>List.last
-        mm_time = Convert.mm_time(Enum.at(stat, 1))
-        yy_time = Convert.yy_time(Enum.at(stat, 1))
+        mm_time = Convert.mm_time(stat.time)
+        yy_time = Convert.yy_time(stat.time)
         #取缓存stat
         key = Key.key(username, drg, type, tool_type, page_type)
-        struct = Hitbserver.ets_get(:stat, [page, type, org, time, drg, order, order_type, key, rows_num, Hitbserver.Time.sdata_date()])|>List.last|>List.first|>Map.get(:__struct__)
         #记录转换
         stat =
-          [Map.merge(%{info_type: "当前记录"}, Repo.get_by(struct, time: Enum.at(stat, 1), org: Enum.at(stat, 0))),
-          Map.merge(%{info_type: "环比记录"}, Repo.get_by(struct, time: mm_time, org: Enum.at(stat, 0))),
-          Map.merge(%{info_type: "同比记录"}, Repo.get_by(struct, time: yy_time, org: Enum.at(stat, 0)))]
+          [Map.merge(%{info_type: "当前记录"}, stat),
+          Map.merge(%{info_type: "环比记录"}, Repo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org)),
+          Map.merge(%{info_type: "同比记录"}, Repo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org))]
         #去除多余的key
-        a = stat
+        stat
         |>Enum.map(fn x ->
             Enum.map(["info_type"]++key, fn y -> String.to_atom(y) end)
             |>Enum.reduce(%{}, fn y, acc ->
@@ -92,8 +83,6 @@ defmodule Stat.Query do
                 end
             end)
           end)
-        # IO.inspect a
-        a
     end
   end
 
