@@ -30,26 +30,23 @@ defmodule Stat.Chart do
         indicator = hd(stat)
           |>Map.drop([:org, :time, :drg2])
           |>Map.keys
-          |>Enum.map(fn x ->
-              %{name: x, max: Map.get(indicator, x)}
-            end)
-          |>Enum.reject(fn x ->
-            x == nil end)
+          |>Enum.map(fn x -> %{name: Key.cnkey(x), max: Map.get(indicator, x)} end)
+          |>Enum.reject(fn x -> x == nil end)
         %{data: data, chart_key: chart_key, indicator: indicator}
       "bar" ->
         keys = Map.keys(hd(stat)) -- [:org, :time, :drg2]
         #横轴数据
-        xAxis = %{type: "category", data: Enum.map(keys, fn x -> x end) -- ["org","time"]}
+        xAxis = %{type: "category", data: (Enum.map(keys, fn x -> Key.cnkey(x) end) -- ["时间", "机构"]) -- ["病种"]}
         #纵轴数据
         series = Enum.map(data, fn x ->
             %{name: x.name, type: "bar", data: x.value}
           end)
         %{series: series, chart_key: chart_key, xAxis: xAxis}
       "pie" ->
-        IO.inspect data
+        key = Map.keys(stat|>List.first) -- [:org, :time, :drg2]|>Enum.map(fn x -> Key.cnkey(x) end)
         series = Enum.map(data, fn x -> %{x | :value => hd(x.value)} end)
         data = Enum.map(data, fn x -> x.name end)
-        %{series: series, data: data}
+        %{series: series, data: data, name: hd(key)}
       "scatter" ->
         chart_data = Enum.map(data, fn x -> x.value end)
         key = Map.keys(hd(stat)) -- [:org, :time, :drg2]

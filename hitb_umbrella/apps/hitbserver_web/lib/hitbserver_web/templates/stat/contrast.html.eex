@@ -138,9 +138,9 @@ $(document).ready(function() {
           url: `/stat/contrast?username=${'<%=@user.username%>'}`,
           dataType: 'json',
           success: (res)=> {
-            this.stat_key = res.list_key
+            this.headerEn = res.key
+            this.headerCn = res.cnkey;
             this.stat = res.stat;
-            this.headerCn = this.stat[0];
             this.stat.splice(0, 1);
             this.url = res.url;
           }
@@ -200,34 +200,20 @@ $(document).ready(function() {
           url: url,
           dataType: 'json',
           success: (res)=> {
-            data_name = res.data_name
+            data = res.data
             series = res.series
+            name = res.name
             option = {
-              tooltip : {
-                  trigger: 'item',
-                  formatter: "{a} <br/>{b} : {c} ({d}%)"
-              },
-              legend: {
-                  orient: 'vertical',
-                  left: 'left',
-                  data: data_name
-              },
-              series : [
-                  {
-                      name: '访问来源',
-                      type: 'pie',
-                      radius : '55%',
-                      center: ['50%', '60%'],
-                      data: series,
-                      itemStyle: {
-                          emphasis: {
-                              shadowBlur: 10,
-                              shadowOffsetX: 0,
-                              shadowColor: 'rgba(0, 0, 0, 0.5)'
-                          }
-                      }
-                  }
-              ]
+              tooltip : {trigger: 'item', formatter: "{a} <br/>{b} : {c} ({d}%)"},
+              legend: {orient: 'vertical', left: 'left', data: data},
+              series : [{
+                  name: name,
+                  type: 'pie',
+                  radius : '55%',
+                  center: ['50%', '60%'],
+                  data: series,
+                  itemStyle: {emphasis: {shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)'}}
+              }]
             };
             setOption(id, option)
           }
@@ -237,14 +223,13 @@ $(document).ready(function() {
         console.log(id)
       },
       echarts: function (value) {
-        const url = `/stat/contrast_chart?chart_type=pie&chart_key=${this.stat_key[3]}&username=${'<%=@user.username%>'}`
         if (value === 'l') {
           switch (this.lEchar) {
             case 'bar':
               this.chartBar('charts')
               break;
             case 'pie':
-              this.chartPie('charts', url)
+              this.chartPie('charts', `/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[this.headerEn.length-1]}&username=${'<%=@user.username%>'}`)
               break;
             case 'radar':
               this.chartRadar('charts')
@@ -273,7 +258,7 @@ $(document).ready(function() {
         }
       },
       tableTh: function(index) {
-        const url =`/stat/contrast_chart?chart_type=pie&chart_key=${this.stat_key[index]}&username=${'<%=@user.username%>'}`
+        const url =`/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[index]}&username=${'<%=@user.username%>'}`
         if (this.lEchar === 'pie') {
           this.chartPie('charts', url)
         } else if (this.rEchar === 'pie') {

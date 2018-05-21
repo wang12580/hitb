@@ -97,6 +97,7 @@ $(document).ready(function() {
     data: {
       stat: [],
       headerCn: [],
+      headerEn: [],
       leftList: [],
       suggest: '',
       lEchar: 'radar',
@@ -106,7 +107,7 @@ $(document).ready(function() {
       this.getList();
       this.getStatInfo();
       this.chartRadar('charts');
-      this.chartBar('charts2');
+      // this.chartBar('charts2');
     },
     methods: {
       getList: function() {
@@ -125,10 +126,9 @@ $(document).ready(function() {
           url: `/stat/stat_info?username=${'<%=@user.username%>'}`,
           dataType: 'json',
           success: (res)=> {
-            console.log(res);
-            this.stat_key =res.stat_key;
+            this.headerEn =res.key;
+            this.headerCn =res.cnkey;
             this.stat = res.stat;
-            this.headerCn = this.stat[0];
             this.stat.splice(0, 1);
             this.suggest = res.suggest.join(' ; ');
           }
@@ -188,48 +188,36 @@ $(document).ready(function() {
           url: url,
           dataType: 'json',
           success: (res)=> {
-            data_name = res.data_name
+            data = res.data
             series = res.series
+            name = res.name
             option = {
-              tooltip : {
-                  trigger: 'item',
-                  formatter: "{a} <br/>{b} : {c} ({d}%)"
-              },
-              legend: {
-                  orient: 'vertical',
-                  left: 'left',
-                  data: data_name
-              },
-              series : [
-                  {
-                      name: '访问来源',
-                      type: 'pie',
-                      radius : '55%',
-                      center: ['50%', '60%'],
-                      data: series,
-                      itemStyle: {
-                          emphasis: {
-                              shadowBlur: 10,
-                              shadowOffsetX: 0,
-                              shadowColor: 'rgba(0, 0, 0, 0.5)'
-                          }
-                      }
-                  }
-              ]
+              tooltip : {trigger: 'item', formatter: "{a} <br/>{b} : {c} ({d}%)"},
+              legend: {orient: 'vertical', left: 'left', data: data},
+              series : [{
+                  name: name,
+                  type: 'pie',
+                  radius : '55%',
+                  center: ['50%', '60%'],
+                  data: series,
+                  itemStyle: {emphasis: {shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)'}}
+              }]
             };
             setOption(id, option)
           }
         });
       },
       echarts: function (value) {
-        const url = `/stat/contrast_chart?chart_type=pie&chart_key=${this.stat_key[3]}&username=${'<%=@user.username%>'}`
+        const url = ''
+        // `/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[3]}&username=${'<%=@user.username%>'}`
+        // if
         if (value === 'l') {
           switch (this.lEchar) {
             case 'bar':
               this.chartBar('charts')
               break;
             case 'pie':
-              this.chartPie('charts', url)
+              this.chartPie('charts', `/stat/stat_info_chart?chart_type=pie&chart_key=${this.headerEn[this.headerEn.length - 1]}&username=${'<%=@user.username%>'}`)
               break;
             case 'radar':
               this.chartRadar('charts')
@@ -258,7 +246,7 @@ $(document).ready(function() {
         }
       },
       tableTh: function (index) {
-        url = `/stat/stat_info_chart?chart_type=pie&chart_key=${this.stat_key[index]}&id=<%=@id%>&username=${'<%=@user.username%>'}`
+        url = `/stat/stat_info_chart?chart_type=pie&chart_key=${this.headerEn[index]}&id=<%=@id%>&username=${'<%=@user.username%>'}`
         if (this.lEchar === 'pie') {
           this.chartPie('charts', url)
         } else if (this.rEchar === 'pie') {

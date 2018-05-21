@@ -6,8 +6,12 @@ defmodule HitbserverWeb.RoomChannel do
     {:ok, socket}
   end
 
-  def join("room:" <> _private_room_id, _params, _socket) do
-    {:error, %{reason: "unauthorized"}}
+  def join("room:" <> private_room_id, _params, socket) do
+    if(private_room_id in Edit.all_cda())do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
   end
 
   def handle_in("新消息", %{"body" => body, "username" => username}, socket) do

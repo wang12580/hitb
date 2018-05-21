@@ -2,9 +2,10 @@ defmodule StatWeb.ClientController do
   use StatWeb, :controller
   plug StatWeb.Access
   alias Stat.Query
+  alias Hitbserver.Time
 
   def stat_create(conn, %{"data" => data, "username" => username}) do
-    filename = Hitbserver.Time.sdata_date2() <> "对比分析.csv"
+    filename = Hitbserver.Time.stimehour_number <> "对比分析.csv"
     case Repo.get_by(Stat.ClientStat, filename: filename, username: username) do
       nil ->
         %Stat.ClientStat{}
@@ -46,20 +47,21 @@ defmodule StatWeb.ClientController do
       page_type = Stat.page_en(page_type)
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
-      [stat, list, tool, page_list, _, count, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
+      [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
+      stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
       #存储在自定义之前最后一次url
       Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #计算客户端提示
-      [clinet_stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
+      [clinet_stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
+      clinet_stat = [key, cnkey] ++ Stat.Convert.map2list(clinet_stat, key)
       header = Enum.at(clinet_stat, 1)
       clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
       num = clinet_stat|>Enum.map(fn x -> List.last(x) end)|>Enum.sum
       org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
       time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
       drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
-      # IO.inspect {num, org_num, time_num, drg_num}
       json conn, %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end

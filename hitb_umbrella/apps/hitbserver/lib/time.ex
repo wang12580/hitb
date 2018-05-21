@@ -51,6 +51,13 @@ defmodule Hitbserver.Time do
     to_string(year) <> to_string(month) <> to_string(day) <> to_string(hour) <> to_string(minute) <> to_string(second)
   end
 
+  #当前时间到小时数字连接string
+  def stimehour_number() do
+    time = :calendar.local_time()
+    {year, month, day, hour, minute, second} = gb_time(time)
+    to_string(year) <> to_string(month) <> to_string(day) <> to_string(hour)
+  end
+
   #utc时间
   # def stime_utc() do
   #   time =  :calendar.local_time_to_universal_time(:calendar.local_time())

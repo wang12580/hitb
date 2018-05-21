@@ -149,7 +149,7 @@ $(document).ready(function() {
             this.headerEn = this.stat[0];
             this.headerCn = this.stat[1];
             this.stat.splice(0, 2);
-            this.leftList = res.list[0][0];
+            this.leftList = res.list;
             this.pages = res.page_list;
             this.page = res.page;
             this.order = this.headerEn.indexOf(res.order);
@@ -179,15 +179,14 @@ $(document).ready(function() {
         });
       },
       com_y: function(index) {
-        index1 = this.headerCn[index]
-        index2 = this.headerEn[index]
-        if (!['机构','时间','病种'].includes(index1)) {
-          if (this.clickedY.includes(index1)) {
-            this.clickedY.splice(this.clickedY.indexOf(index1), 1)
-            com_cache(index2, 'del_y')
+        key = this.headerCn[index]
+        if (!['机构','时间','病种'].includes(key)) {
+          if (this.clickedY.includes(key)) {
+            this.clickedY.splice(this.clickedY.indexOf(key), 1)
+            com_cache(this.headerEn[index], 'del_y')
           } else {
-            this.clickedY.push(index1);
-            com_cache(index2, 'add_y');
+            this.clickedY.push(key);
+            com_cache(this.headerEn[index], 'add_y');
           }
         }
       },

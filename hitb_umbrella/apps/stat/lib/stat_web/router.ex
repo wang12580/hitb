@@ -27,15 +27,15 @@ defmodule StatWeb.Router do
     pipe_through :api
     get "/stat_json", StatController, :stat_json
     #对比
-    post "/contrast", StatController, :contrast_operate
+    post "/contrast", ContrastController, :contrast_operate
 
-    get "/contrast", StatController, :contrast
+    get "/contrast", ContrastController, :contrast
 
-    get "/contrast_list", StatController, :contrast_list
+    get "/contrast_list", ContrastController, :contrast_list
 
-    get "/contrast_chart", StatController, :contrast_chart
+    get "/contrast_chart", ContrastController, :contrast_chart
 
-    get "/contrast_info", StatController, :contrast_info
+    get "/contrast_info", ContrastController, :contrast_info
 
     get "/download_stat", StatController, :download_stat
 
@@ -43,7 +43,7 @@ defmodule StatWeb.Router do
 
     get "/stat_info", StatController, :stat_info
 
-    get "/contrast_clear", StatController, :contrast_clear
+    get "/contrast_clear", ContrastController, :contrast_clear
 
     get "/stat_file", ClientController, :stat_file
 
