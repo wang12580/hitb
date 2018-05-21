@@ -1,5 +1,6 @@
 defmodule HitbserverWeb.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
   channel "room:*", HitbserverWeb.RoomChannel
@@ -20,9 +21,15 @@ defmodule HitbserverWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(params, socket) do
-    # {:ok, socket}
-    IO.inspect params
-    # socket = assign(socket, :user_id, "ssss")
+    %{"username" => username} = params
+    user =
+      if(Hitbserver.ets_get(:socket_user, :online))do
+        Hitbserver.ets_get(:socket_user, :online) ++ [username]
+      else
+        [username]
+      end
+    Logger.warn("用户--#{username}--加入服务端")
+    Hitbserver.ets_insert(:socket_user, :online, user|>:lists.usort)
     {:ok, socket}
   end
 
