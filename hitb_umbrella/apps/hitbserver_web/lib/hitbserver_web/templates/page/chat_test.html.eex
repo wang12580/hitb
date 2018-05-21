@@ -1,0 +1,44 @@
+<div id="messages"></div>
+<div id="messages"></div>
+<div class="ui message" id="s"></div>
+<input id="chat-input" type="text"></input>
+<input type="button" onclick="aa()" value="leave"></input>
+<script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
+<!-- <script src="<%= static_path(@conn, "/js/app.js") %>"></script> -->
+<script>
+var socket = null;
+var channel = null;
+
+socket = new Phoenix.Socket("ws://127.0.0.1:8000/socket", {params: {token: "a token", username: "ssss"}});
+socket.connect();
+channel = socket.channel("room:test6@hitb.com.cn-日程记录_ 默认.cda", {abc: 123})
+channel.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+channel.push("加入房间", {body: "网页端", username: '网页端', type: "ssss"})
+let chatInput = document.querySelector("#chat-input")
+chatInput.addEventListener("keypress", event => {
+  if(event.keyCode === 13){
+    channel.push("新消息", {body: chatInput.value, username: '网页端', type: "message"})
+    chatInput.value = ""
+  }
+})
+channel.on("新消息", payload => {
+  html = `<div class="header">[${payload.username}]     ${payload.time}</div><div class="ui floating message"><p>${payload.body}</p></div><br/><br/>`
+   $("#s").append(html);
+})
+channel.on("加入房间", payload => {
+  html = `<div class="header">[加入房间]     ${payload.username}</div>`
+  $("#s").append(html);
+})
+channel.on("离开房间", payload => {
+  html = `<div class="header">[离开房间]     ${payload.username}</div>`
+  $("#s").append(html);
+});
+
+function aa(){
+  channel.onClose(() => console.console.log(ssss))
+  channel.push("离开房间", {body: '离开房间', username: '网页端', type: "ssss"});
+}
+
+</script>

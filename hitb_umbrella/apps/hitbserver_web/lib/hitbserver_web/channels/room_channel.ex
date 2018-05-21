@@ -15,12 +15,12 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def handle_in("新消息", %{"body" => body, "username" => username, "type" => type}, socket) do
-    broadcast! socket, "新消息", %{body: body, username: username, type: type}
+    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitbserver.Time.standard_time()}
     {:noreply, socket}
   end
 
-  def handle_in("加入房间", a, socket) do
-    # broadcast! socket, "加入房间", %{body: body, username: username}
+  def handle_in("加入房间", %{"username" => username}, socket) do
+    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: Hitbserver.Time.standard_time()}
     {:noreply, socket}
   end
 

@@ -18,6 +18,7 @@ defmodule HitbserverWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/chat", PageController, :chat
 
     #登录页面
     get "/login", PageController, :login_html
@@ -62,7 +63,7 @@ defmodule HitbserverWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/ss/", PageController, :index2
+    get "/chat", PageController, :chat
 
     #登录页面
     get "/login", PageController, :login_html
