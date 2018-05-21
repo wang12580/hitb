@@ -14,18 +14,13 @@ defmodule HitbserverWeb.RoomChannel do
     end
   end
 
-  def handle_in("新消息", %{"body" => body, "username" => username}, socket) do
-    broadcast! socket, "新消息", %{body: body, username: username}
+  def handle_in("新消息", %{"body" => body, "username" => username, "type" => type}, socket) do
+    broadcast! socket, "新消息", %{body: body, username: username, type: type}
     {:noreply, socket}
   end
 
-  def handle_out("新消息", %{"body" => body, "username" => username}, socket) do
-    broadcast! socket, "新消息", %{body: body, username: username}
-    {:noreply, socket}
-  end
-
-  def handle_in("加入房间", %{"body" => body, "username" => username}, socket) do
-    broadcast! socket, "加入房间", %{body: body, username: username}
+  def handle_in("加入房间", a, socket) do
+    # broadcast! socket, "加入房间", %{body: body, username: username}
     {:noreply, socket}
   end
 
