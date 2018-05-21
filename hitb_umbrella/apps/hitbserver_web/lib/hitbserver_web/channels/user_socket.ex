@@ -1,9 +1,11 @@
 defmodule HitbserverWeb.UserSocket do
   use Phoenix.Socket
   require Logger
+  import Ecto.Query
 
   ## Channels
   channel "room:*", HitbserverWeb.RoomChannel
+  channel "online:*", HitbserverWeb.OnlineChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -21,15 +23,10 @@ defmodule HitbserverWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(params, socket) do
+    Hitbserver.ets_insert(:socket_user, :all_users, Server.Repo.all(from p in Server.User, select: p.username))
     %{"username" => username} = params
-    user =
-      if(Hitbserver.ets_get(:socket_user, :online))do
-        Hitbserver.ets_get(:socket_user, :online) ++ [username]
-      else
-        [username]
-      end
+    Hitbserver.ets_insert(:socket_user, username, true)
     Logger.warn("用户--#{username}--加入服务端")
-    Hitbserver.ets_insert(:socket_user, :online, user|>:lists.usort)
     {:ok, socket}
   end
 
