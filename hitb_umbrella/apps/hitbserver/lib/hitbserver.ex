@@ -1,5 +1,5 @@
 defmodule Hitbserver do
-  @tab [:hitb_log, :postgresx, :json, :stat_drg, :my_user, :stat]
+  @tab [:hitb_log, :postgresx, :json, :stat_drg, :my_user, :stat, :socket_user]
   def ets_new() do
     Enum.each(@tab, fn x -> ets_new(x) end)
   end

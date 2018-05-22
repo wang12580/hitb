@@ -13,6 +13,13 @@ defmodule Hitbserver.Time do
     to_string(year) <> "-" <> to_string(month) <> "-" <> to_string(day)
   end
 
+  #
+  def standard_time() do
+    time = :calendar.local_time()
+    {year, month, day, hour, minute, second} = gb_time(time)
+    "#{to_string(year)}年#{to_string(month)}月#{to_string(day)}日 #{to_string(hour)}:#{to_string(minute)}:#{to_string(second)}"
+  end
+
   #当前日期字符串string
   def sdata_date2() do
     time = :calendar.local_time()

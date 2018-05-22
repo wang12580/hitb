@@ -107,7 +107,7 @@ $(document).ready(function() {
       this.getList();
       this.getStatInfo();
       this.chartRadar('charts');
-      // this.chartBar('charts2');
+      this.chartBar('charts2');
     },
     methods: {
       getList: function() {
@@ -233,7 +233,7 @@ $(document).ready(function() {
               this.chartBar('charts2')
               break;
             case 'pie':
-              this.chartPie('charts2', url)
+              this.chartPie('charts2', `/stat/stat_info_chart?chart_type=pie&chart_key=${this.headerEn[this.headerEn.length - 1]}&username=${'<%=@user.username%>'}`)
               break;
             case 'radar':
               this.chartRadar('charts2')

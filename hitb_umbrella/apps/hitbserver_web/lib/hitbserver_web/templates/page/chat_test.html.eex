@@ -1,0 +1,61 @@
+<div id="users"></div>
+<div id="messages"></div>
+<div class="ui message" id="s"></div>
+<input id="chat-input" type="text"></input>
+<input type="button" onclick="aa()" value="leave"></input>
+<script src="<%= static_path(@conn, "/css/phoenix.js") %>"></script>
+<!-- <script src="<%= static_path(@conn, "/js/app.js") %>"></script> -->
+<script>
+var socket = null;
+var channel = null;
+var room = "test6@hitb.com.cn-日程记录_ 默认.cda"
+socket = new Phoenix.Socket("ws://192.168.1.13:8000/socket", {params: {token: "a token", username: "网页端"}});
+socket.connect();
+
+channel2 = socket.channel("online:list", {username: "网页端"})
+channel2.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+
+channel = socket.channel(`room:${room}`, {username: "网页端"})
+channel.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+channel.push("加入房间", {body: "网页端", username: '网页端', type: "网页端"})
+let chatInput = document.querySelector("#chat-input")
+chatInput.addEventListener("keypress", event => {
+  if(event.keyCode === 13){
+    channel.push("新消息", {body: chatInput.value, username: '网页端', type: "message"})
+    chatInput.value = ""
+  }
+})
+channel.on("新消息", payload => {
+  html = `<div class="header">[${payload.username}]     ${payload.time}</div><div class="ui floating message"><p>${payload.body}</p></div><br/><br/>`
+   $("#s").append(html);
+})
+channel.on("加入房间", payload => {
+  html = `<div class="header">[加入房间]     ${payload.username}</div>`
+  $("#s").append(html);
+  html = '';
+  payload.users.forEach(x => {
+    html = `<input type="button" onclick="aa('${x}')" value="${x}"></input>`
+  })
+  $("#users").html(html);
+})
+channel.on("离开房间", payload => {
+  html = `<div class="header">[离开房间]     ${payload.username}</div>`
+  $("#s").append(html);
+});
+channel.on("ping", msg => {
+  console.log(msg);
+  html = '';
+  msg.users.forEach(x => {
+    html = `<input type="button" onclick="aa('${x}')" value="${x}"></input>`
+  })
+  $("#users").html(html);
+})
+function aa(s){
+  channel2.push(`邀请加入:${s}`, {body: room,  username: s});
+}
+
+</script>
