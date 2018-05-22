@@ -46,6 +46,8 @@ defmodule ServerWeb.Router do
     post "/user_update", UserController, :update
     #用户
     resources "/user", UserController, except: [:new, :edit]
+
+    resources "/chat_record", ChatRecordController, except: [:new, :edit]
   end
 
   # Other scopes may use custom stacks.
@@ -78,5 +80,8 @@ defmodule ServerWeb.Router do
     # 科室列表
     get "/wt4_department_list", PageController, :wt4_department_list
     get "/wt4_insert", PageController, :wt4_insert
+
+    resources "/chat_record", ChatRecordController, except: [:new, :edit]
+
   end
 end
