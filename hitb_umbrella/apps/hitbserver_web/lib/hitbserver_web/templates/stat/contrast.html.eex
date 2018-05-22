@@ -40,6 +40,7 @@
             <option value="bar">左《柱状图》</option>
             <option value="pie">左《饼图》</option>
             <option value="radar">左《雷达图》</option>
+            <option value="scatter">左《散点图》</option>
           </select>
           &nbsp;&nbsp;
           <select class="ui compact selection button green" value="右图选择" v-model="rEchar" v-on:click="echarts('r')">
@@ -47,6 +48,7 @@
             <option value="bar">右《柱状图》</option>
             <option value="pie">右《饼图》</option>
             <option value="radar">右《雷达图》</option>
+            <option value="scatter">右《散点图》</option>
           </select>
           &nbsp;&nbsp;
         </div>
@@ -78,7 +80,7 @@
               </thead>
               <tbody>
                 <tr v-for="(xs, i) in stat" class="center aligned">
-                  <td v-for="(x, index) in xs"> {{ x }} </td>
+                  <td v-for="(x, index) in xs" v-bind:class="{'active': pieTable.includes(index)}">{{ x }} </td>
                 </tr>
               </tbody>
             </table>
@@ -114,6 +116,7 @@ $(document).ready(function() {
       url: '',
       lEchar: 'radar',
       rEchar: 'bar',
+      pieTable: []
     },
     created: function () {
       this.getList();
@@ -222,6 +225,96 @@ $(document).ready(function() {
       chartLine: function(id) {
         console.log(id)
       },
+      chartScatter: function (id, url) {
+        this.$ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: (res)=> {
+            data4 = res.data;
+            data4_name = res.xkey;
+            data4_x = res.xSeries;
+            data4_y = res.ySeries;
+            var myRegression = ecStat.regression('polynomial', data4, 3)
+            myRegression.points.sort(function(a, b) {
+                return a[0] - b[0];
+            });
+            option = {
+              tooltip: {
+                  trigger: 'axis',
+                  axisPointer: {
+                      type: 'cross'
+                  }
+              },
+              xAxis: {
+                  type: 'value',
+                  min: data4_x,
+                  splitLine: {
+                      lineStyle: {
+                          type: 'dashed'
+                      }
+                  },
+                  splitNumber: 20
+              },
+              yAxis: {
+                  type: 'value',
+                  min: data4_y-100,
+                  splitLine: {
+                      lineStyle: {
+                          type: 'dashed'
+                      }
+                  }
+              },
+              grid: {
+                  top: 90
+              },
+              series: [{
+                  name: data4_name,
+                  type: 'scatter',
+                  label: {
+                      emphasis: {
+                          show: true,
+                          position: 'right',
+                          textStyle: {
+                              color: 'blue',
+                              fontSize: 16
+                          }
+                      }
+                  },
+                  data: data4
+              }, {
+                  name: '曲线值',
+                  type: 'line',
+                  smooth: true,
+                  showSymbol: false,
+                  data: myRegression.points,
+                  markPoint: {
+                      itemStyle: {
+                          normal: {
+                              color: 'transparent'
+                          }
+                      },
+                      label: {
+                          normal: {
+                              show: true,
+                              position: 'left',
+                              formatter: myRegression.expression,
+                              textStyle: {
+                                  color: '#333',
+                                  fontSize: 14
+                              }
+                          }
+                      },
+                      data: [{
+                          coord: myRegression.points[myRegression.points.length - 1]
+                      }]
+                  }
+              }]
+            };
+            setOption(id, option)
+          }
+        });
+      },
       echarts: function (value) {
         if (value === 'l') {
           switch (this.lEchar) {
@@ -237,6 +330,9 @@ $(document).ready(function() {
             case 'line':
               this.chartLine('charts')
               break;
+            case 'scatter':
+              this.chartScatter('charts', `/stat/contrast_chart?chart_type=scatter&chart_key=${this.headerEn[this.headerEn.length-1]}-${this.headerEn[this.headerEn.length-2]}&username=${'<%=@user.username%>'}`)
+              break;
             default:
           }
         } else {
@@ -245,24 +341,44 @@ $(document).ready(function() {
               this.chartBar('charts2')
               break;
             case 'pie':
-              this.chartPie('charts2')
+              this.chartPie('charts2', `/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[this.headerEn.length-1]}&username=${'<%=@user.username%>'}`)
               break;
             case 'radar':
-              this.chartRadar('charts2', url)
+              this.chartRadar('charts2')
               break;
             case 'line':
               this.chartLine('charts2')
+              break;
+            case 'scatter':
+              this.chartScatter('charts2', `/stat/contrast_chart?chart_type=scatter&chart_key=${this.headerEn[this.headerEn.length-1]}-${this.headerEn[this.headerEn.length-2]}&username=${'<%=@user.username%>'}`)
               break;
             default:
           }
         }
       },
       tableTh: function(index) {
-        const url =`/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[index]}&username=${'<%=@user.username%>'}`
-        if (this.lEchar === 'pie') {
-          this.chartPie('charts', url)
-        } else if (this.rEchar === 'pie') {
-          this.chartPie('charts2', url)
+        if (!['org', 'time', 'drg'].includes(this.headerEn[index])){
+          if (this.pieTable[this.pieTable.length-1] !== index) {
+            this.pieTable.push(index)
+          }
+          if (this.pieTable.length > 2) {
+            this.pieTable.splice(0, 1)
+          }
+          let url = ''
+          if (this.lEchar === 'pie' || this.rEchar === 'pie') {
+            url =`/stat/contrast_chart?chart_type=pie&chart_key=${this.headerEn[index]}&username=${'<%=@user.username%>'}`
+          } else if (this.pieTable.length === 2 && (this.lEchar === 'scatter' || this.rEchar === 'scatter')) {
+            url =`/stat/contrast_chart?chart_type=scatter&chart_key=${this.headerEn[this.pieTable[0]]}-${this.headerEn[this.pieTable[1]]}&username=${'<%=@user.username%>'}`
+          }
+          if (this.lEchar === 'pie') {
+            this.chartPie('charts', url)
+          } else if (this.rEchar === 'pie') {
+            this.chartPie('charts2', url)
+          } else if (this.lEchar === 'scatter') {
+            this.chartScatter('charts', url)
+          } else if (this.rEchar === 'scatter') {
+            this.chartScatter('charts2', url)
+          }
         }
       }
     }

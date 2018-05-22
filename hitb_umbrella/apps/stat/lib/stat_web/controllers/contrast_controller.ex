@@ -15,6 +15,8 @@ defmodule StatWeb.ContrastController do
                       Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)]
     staty = if(staty)do staty else key end
     #生成分析结果
+    # IO.inspect statx
+    IO.inspect staty
     stat = [cnkey] ++ Stat.Convert.map2list(statx, staty)
     #存储url
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
@@ -114,6 +116,7 @@ defmodule StatWeb.ContrastController do
       cond do
         chart_type == "pie" -> ["org","time", chart_key]
         chart_type == "scatter" -> ["org","time"] ++ String.split(chart_key, "-")
+        IO.inspect ["org","time"] ++ String.split(chart_key, "-")
         true -> key
       end
     #取缓存
