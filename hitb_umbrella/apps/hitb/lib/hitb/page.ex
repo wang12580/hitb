@@ -1,4 +1,4 @@
-defmodule Hitbserver.Page do
+defmodule Hitb.Page do
   #求当前页的skip值(当前页码,每页条数)
   def skip(page, num) do
     #定义每页条目数量

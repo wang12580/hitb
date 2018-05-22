@@ -42,13 +42,6 @@ defmodule BlockWeb.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:account, in_umbrella: true},
-      {:hitb, in_umbrella: true},
-      {:repos, in_umbrella: true},
-      {:peers, in_umbrella: true},
-      {:block, in_umbrella: true},
-      {:share, in_umbrella: true},
-      {:token, in_umbrella: true},
       {:cowboy, "~> 1.0"}
     ]
   end

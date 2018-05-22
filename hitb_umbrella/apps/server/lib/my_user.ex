@@ -13,9 +13,9 @@ defmodule ServerWeb.MyUser do
         case Bcrypt.checkpw(user.password, db_user.hashpw) do
           true ->
             #缓存区块链数据
-            Hitbserver.ets_insert(:my_user, "blockchain" <> user.username, Map.merge(%{address2: ""}, blockchain))
+            Hitb.ets_insert(:my_user, "blockchain" <> user.username, Map.merge(%{address2: ""}, blockchain))
             #缓存用户数据
-            Hitbserver.ets_insert(:my_user, user.username, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain})
+            Hitb.ets_insert(:my_user, user.username, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain})
             #返回登录
             {put_session(conn, :user, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}), true}
           _ -> {put_session(conn, :user, %{login: false, username: "", type: 2, key: []}), false}

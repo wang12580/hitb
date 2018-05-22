@@ -9,9 +9,9 @@ defmodule ServerWeb.CustomizeDepartmentController do
 
   def index(conn, _params) do
     %{"name" => name, "page" => page} = Map.merge(%{"name" => "", "page" => "1"}, conn.params)
-    skip = Hitbserver.Page.skip(page, 15)
+    skip = Hitb.Page.skip(page, 15)
     [count, result] = SchemaHospitals.list_customize(name, skip, 15)
-    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
+    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
     render(conn, "index.json", %{customize_department: result, page_num: page_num, page_list: page_list})
   end
 

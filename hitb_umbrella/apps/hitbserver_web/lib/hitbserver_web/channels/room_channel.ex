@@ -7,7 +7,7 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def join("room:" <> private_room_id, message, socket) do
-    if(private_room_id in Edit.all_cda())do
+    if(private_room_id in Server.all_user())do
       Process.flag(:trap_exit, true)
       :timer.send_interval(5000, :ping)
       socket = Map.merge(socket, %{username: message["username"]})
@@ -18,22 +18,22 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def handle_info(:ping, socket) do
-    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitbserver.Time.standard_time(), users: online()}
+    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()}
     {:noreply, socket}
   end
 
   def handle_in("新消息", %{"body" => body, "username" => username, "type" => type}, socket) do
-    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitbserver.Time.standard_time()}
+    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time()}
     {:noreply, socket}
   end
 
   def handle_in("加入房间", %{"username" => username}, socket) do
-    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: Hitbserver.Time.standard_time(), users: online()}
+    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: Hitb.Time.standard_time(), users: online()}
     {:noreply, socket}
   end
 
   def terminate(reason, socket) do
-    Hitbserver.ets_insert(:socket_user, socket.username, false)
+    Hitb.ets_insert(:socket_user, socket.username, false)
     Logger.warn("用户--#{socket.username}--离开房间,并已下线")
     broadcast! socket, "离开房间", %{body: "离开房间,并已下线", username: socket.username}
     :ok
@@ -45,8 +45,8 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   defp online() do
-    Hitbserver.ets_get(:socket_user, :all_users)
-    |>Enum.map(fn x -> %{username: x, online: Hitbserver.ets_get(:socket_user, x)}  end)
+    Hitb.ets_get(:socket_user, :all_users)
+    |>Enum.map(fn x -> %{username: x, online: Hitb.ets_get(:socket_user, x)}  end)
     |>Enum.reject(fn x -> x.online in [nil, false] end)
     |>Enum.map(fn x -> x.username end)
   end

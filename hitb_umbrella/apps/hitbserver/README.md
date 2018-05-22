@@ -1,3 +1,0 @@
-# Hitbserver
-
-**TODO: Add description**

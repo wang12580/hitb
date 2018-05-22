@@ -54,6 +54,8 @@ release :hitb_umbrella do
     hitbserver_web: :permanent,
     library: :permanent,
     server: :permanent,
-    stat: :permanent
+    stat: :permanent,
+    transaction: :permanent,
+    peers: :permanent
   ]
 end
