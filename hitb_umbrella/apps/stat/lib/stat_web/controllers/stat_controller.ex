@@ -43,33 +43,44 @@ defmodule StatWeb.StatController do
     #获取分析
     stat = Stat.Query.info(username, 13)
     suggest =
-      Enum.map(List.delete_at(stat, 0), fn x ->
-        type =
-          case x.info_type do
-            "环比记录" -> "环比"
-            "同比记录" -> "同比"
-          end
-        #判断体
-        Enum.map(Map.keys(x), fn k ->
-          i = Map.get(x, k)
-          if(is_float(i))do
-            j = Map.get(hd(stat), k)
-            cond do
-              i <= 0.0 -> nil
-              true ->
-                cond do
-                  (j-i)/i == 0.0 -> "#{Key.cnkey(to_string(k))}#{type}无变化"
-                  (j-i)/i < 0.0 -> "#{Key.cnkey(to_string(k))}#{type}降低#{to_string(Float.round((j-i)/i*100*-1, 2))}%"
-                  (j-i)/i > 0.0 -> "#{Key.cnkey(to_string(k))}#{type}增长#{to_string(Float.round((j-i)/i*100, 2))}%"
-                end
+      if (stat != [[], []]) do
+        Enum.map(List.delete_at(stat, 0), fn x ->
+          type =
+            case x.info_type do
+              "环比记录" -> "环比"
+              "同比记录" -> "同比"
             end
-          end
+          #判断体
+          Enum.map(Map.keys(x), fn k ->
+            IO.inspect k
+            i = Map.get(x, k)
+            if(is_float(i))do
+              j = Map.get(hd(stat), k)
+              cond do
+                i <= 0.0 -> nil
+                true ->
+                  cond do
+                    (j-i)/i == 0.0 -> "#{Key.cnkey(to_string(k))}#{type}无变化"
+                    (j-i)/i < 0.0 -> "#{Key.cnkey(to_string(k))}#{type}降低#{to_string(Float.round((j-i)/i*100*-1, 2))}%"
+                    (j-i)/i > 0.0 -> "#{Key.cnkey(to_string(k))}#{type}增长#{to_string(Float.round((j-i)/i*100, 2))}%"
+                  end
+              end
+            end
+          end)
+          |>Enum.reject(fn x -> x == nil end)
+          |>Enum.join("，")
         end)
-        |>Enum.reject(fn x -> x == nil end)
-        |>Enum.join("，")
-      end)
+      else
+        []
+      end
+    IO.inspect key
     #按照key取值
-    stat = [cnkey] ++ Stat.Convert.map2list(stat, key)
+    stat =
+      case stat do
+        [[], []] -> []
+        _ -> [cnkey] ++ Stat.Convert.map2list(stat, key)
+      end
+    # stat = [cnkey] ++ Stat.Convert.map2list(stat, key)
     json conn, %{stat: stat, suggest: suggest, key: key, cnkey: cnkey}
   end
 

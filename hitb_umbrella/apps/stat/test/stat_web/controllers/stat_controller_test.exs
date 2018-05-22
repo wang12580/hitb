@@ -6,12 +6,12 @@ defmodule StatWeb.StatControllerTest do
     assert json_response(conn, 200)["order"] == "org"
   end
   test "GET /stat/stat_info_chart", %{conn: conn} do
-    conn = get conn, "/stat/stat_info_chart", chart_type: "pie", username: "sss"
-    assert json_response(conn, 200)["data"] == []
+    conn = get conn, "/stat/stat_info_chart", chart_type: "pie", username: "hitb"
+    assert json_response(conn, 200) == %{}
   end
   test "GET /stat/contrast", %{conn: conn} do
     conn = get conn, "/stat/contrast", username: "sss"
-    assert json_response(conn, 200)["tool"] == []
+    assert json_response(conn, 200)["cnkey"] == ["机构", "时间", "总权重", "诊断相关组数", "费用消耗指数", "时间消耗指数", "CMI", "平均住院费用", "平均住院天数", "病历数"]
   end
   test "POST /stat/contrast", %{conn: conn} do
     conn = post conn, "/stat/contrast", username: "username", field: "", url: [], com_type: "add_x"
@@ -23,7 +23,7 @@ defmodule StatWeb.StatControllerTest do
   end
   test "GET /stat/contrast_chart", %{conn: conn} do
     conn = get conn, "/stat/contrast_chart", chart_type: "pie", username: "sss"
-    assert json_response(conn, 200)["data"] == []
+    assert json_response(conn, 200) == %{}
   end
   test "GET /stat/contrast_info", %{conn: conn} do
     conn = get conn, "/stat/contrast_info", username: "sss"
@@ -36,7 +36,7 @@ defmodule StatWeb.StatControllerTest do
   test "GET /stat/stat_info", %{conn: conn} do
     conn = get conn, "/stat/stat_info", username: "sss"
     # IO.inspect assert json_response(conn, 200)
-    assert json_response(conn, 200)["com"] == []
+    assert json_response(conn, 200)["stat"] == []
   end
   # test "POST /stat/com_add", %{conn: conn} do
   #   conn = post conn, "/stat/com_add", url: ["org", "", "", "", ""], username: "sss"

@@ -13,10 +13,10 @@ defmodule StatWeb.ContrastController do
     #拿到缓存中所有数据
     [statx, staty] = [Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username),
                       Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)]
+    statx = if(statx == nil)do [] else statx end
     staty = if(staty)do staty else key end
     #生成分析结果
-    # IO.inspect statx
-    IO.inspect staty
+    # IO.inspect Stat.Convert.map2list(statx, staty)
     stat = [cnkey] ++ Stat.Convert.map2list(statx, staty)
     #存储url
     Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
