@@ -18,17 +18,18 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def handle_info(:ping, socket) do
-    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()}
+    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online() }
     {:noreply, socket}
   end
 
-  def handle_in("新消息", %{"body" => body, "username" => username, "type" => type}, socket) do
-    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time()}
+  def handle_in("新消息", %{"body" => body, "username" => username, "type" => type, "create_room_time" => create_room_time}, socket) do
+    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     {:noreply, socket}
   end
 
-  def handle_in("加入房间", %{"username" => username}, socket) do
-    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: Hitb.Time.standard_time(), users: online()}
+  def handle_in("加入房间", %{"username" => username, "create_room_time" => create_room_time}, socket) do
+    time = Hitb.Time.standard_time()
+    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: time, users: online(), create_room_time: time}
     {:noreply, socket}
   end
 

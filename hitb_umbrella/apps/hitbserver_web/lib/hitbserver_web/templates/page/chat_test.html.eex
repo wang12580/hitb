@@ -10,6 +10,7 @@ var url = window.location.href.split('/')[2];
 var socket = null;
 var channel = null;
 var room = '<%=@user.username%>'
+let c_time = ''
 socket = new Phoenix.Socket(`ws://${url}:8000/socket`, {params: {token: "a token", username: "网页端"}});
 
 socket.connect();
@@ -27,7 +28,7 @@ channel.push("加入房间", {body: "网页端", username: '网页端', type: "�
 let chatInput = document.querySelector("#chat-input")
 chatInput.addEventListener("keypress", event => {
   if(event.keyCode === 13){
-    channel.push("新消息", {body: chatInput.value, username: '网页端', type: "message"})
+    channel.push("新消息", {body: chatInput.value, username: '网页端', type: "message", create_room_time: c_time})
     chatInput.value = ""
   }
 })
@@ -36,6 +37,7 @@ channel.on("新消息", payload => {
    $("#s").append(html);
 })
 channel.on("加入房间", payload => {
+  c_time = payload.create_room_time
   html = `<div class="header">[加入房间]     ${payload.username}</div>`
   $("#s").append(html);
   html = '';
