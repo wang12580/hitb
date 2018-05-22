@@ -133,7 +133,7 @@ defmodule LibraryWeb.RuleController do
 # 模糊搜索
   def search(conn, _params) do
     %{"page" => page, "table" => table, "code" => code} = Map.merge(%{"page" => "1", "table" => "", "code" => ""}, conn.params)
-    skip = Hitbserver.Page.skip(page, 10)
+    skip = Hitb.Page.skip(page, 10)
     tab =
       cond do
         table == "icd9" -> RuleIcd9
@@ -150,7 +150,7 @@ defmodule LibraryWeb.RuleController do
       |> Repo.all
     query = from w in tab, where: like(w.code, ^code) or like(w.name, ^code), select: count(w.id)
     count = hd(Repo.all(query))
-    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 10)
+    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 10)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -190,7 +190,7 @@ defmodule LibraryWeb.RuleController do
       end
     num = select(query, [w], count(w.id))
     count = hd(Repo.all(num, [timeout: 1500000]))
-    skip = Hitbserver.Page.skip(page, rows)
+    skip = Hitb.Page.skip(page, rows)
     query = order_by(query, [w], asc: w.code)
         |>limit([w], ^rows)
         |>offset([w], ^skip)
@@ -212,7 +212,7 @@ defmodule LibraryWeb.RuleController do
             _ -> List.first(i)|>Enum.sort
           end
       end
-    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
   end
   defp ruleOther(params) do
@@ -259,13 +259,13 @@ defmodule LibraryWeb.RuleController do
       |>Repo.all
       |>hd
 
-    skip = Hitbserver.Page.skip(page, rows)
+    skip = Hitb.Page.skip(page, rows)
     #查询
     result = query
       |>limit([p], ^rows)
       |>offset([w], ^skip)
       |>Repo.all
-    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
     list = []
     [result, list, page_list, page_num, count_page, type]
   end

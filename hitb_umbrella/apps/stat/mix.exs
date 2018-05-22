@@ -44,7 +44,6 @@ defmodule Stat.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:hitbserver, in_umbrella: true},
       {:distillery, "~> 1.5", runtime: false},
       {:cowboy, "~> 1.0"}
     ]

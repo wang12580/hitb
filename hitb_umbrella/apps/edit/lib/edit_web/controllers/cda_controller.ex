@@ -3,7 +3,7 @@ defmodule EditWeb.CdaController do
 
   alias Edit.Client
   alias Edit.Client.Cda
-  alias Hitbserver.Time
+  alias Hitb.Time
   plug EditWeb.Access
 
   def cda_user(conn, _params) do

@@ -10,7 +10,7 @@ defmodule Stat.Query do
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end) #中文key
     thkey = Enum.map(key, fn x -> %{cnkey: Key.cnkey(x), key: x} end) #表头key
     #取缓存stat
-    cache_key = [page, type, org, time, drg, order, order_type, key, rows_num, Hitbserver.Time.sdata_date()]
+    cache_key = [page, type, org, time, drg, order, order_type, key, rows_num, Hitb.Time.sdata_date()]
     #分析获得
     [list, count, skip, stat] =
       cond do
@@ -24,7 +24,7 @@ defmodule Stat.Query do
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>Repo.all
             end
           [[], 0, 15, stat]
-        Hitbserver.ets_get(:stat, cache_key) == nil ->
+        Hitb.ets_get(:stat, cache_key) == nil ->
           order = String.to_atom(order)
           #获取左侧list
           list = list(type, org, time)
@@ -33,21 +33,21 @@ defmodule Stat.Query do
           #取总数
           count = select(query, [p], count(p.id))|>Repo.all([timeout: 1500000])|>List.last
           #求本页stat
-          skip = Hitbserver.Page.skip(page, rows_num)
+          skip = Hitb.Page.skip(page, rows_num)
           stat =
             case order_type do
               "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
             end
           #缓存
-          Hitbserver.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
-          Hitbserver.ets_insert(:stat, cache_key, [list, count, skip, stat])
+          Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
+          Hitb.ets_insert(:stat, cache_key, [list, count, skip, stat])
           [list, count, skip, stat]
         true ->
-          Hitbserver.ets_get(:stat, cache_key)
+          Hitb.ets_get(:stat, cache_key)
       end
     # #求分页列表
-    [page_num, page_list, count_page] = Hitbserver.Page.page_list(page, count, rows_num)
+    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows_num)
     # #按照字段取值
     # #如果有下载任务,进行下载查询
     # # stat = if(stat_type == "download")do stat else [] end
@@ -57,11 +57,11 @@ defmodule Stat.Query do
   end
 
   def info(username, rows_num) do
-    [page, type, tool_type, drg, order, order_type, page_type, org, time] = Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
-    case Hitbserver.ets_get(:stat_drg, "comx_" <> username) do
+    [page, type, tool_type, drg, order, order_type, page_type, org, time] = Hitb.ets_get(:stat_drg, "defined_url_" <> username)
+    case Hitb.ets_get(:stat_drg, "comx_" <> username) do
       nil -> [[], []]
       _ ->
-        stat = Hitbserver.ets_get(:stat_drg, "comx_" <> username)|>List.last
+        stat = Hitb.ets_get(:stat_drg, "comx_" <> username)|>List.last
         mm_time = Convert.mm_time(stat.time)
         yy_time = Convert.yy_time(stat.time)
         #取缓存stat

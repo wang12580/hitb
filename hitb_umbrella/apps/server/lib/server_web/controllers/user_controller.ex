@@ -22,9 +22,9 @@ defmodule ServerWeb.UserController do
 
   def index(conn, _params) do
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
-    skip = Hitbserver.Page.skip(page, 15)
+    skip = Hitb.Page.skip(page, 15)
     [count, user] = SchemaHospitals.list_user(skip, 15)
-    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
+    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
     user = Enum.map(user, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
