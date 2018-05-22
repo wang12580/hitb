@@ -7,7 +7,7 @@ defmodule HitbserverWeb.OnlineChannel do
   end
 
   def handle_in("邀请加入" <> _private_room_id, %{"body" => body, "username" => username}, socket) do
-    broadcast! socket, "邀请加入", %{message: "#{username}邀请您进入#{body}房间", time: Hitbserver.Time.standard_time(), room: body}
+    broadcast! socket, "邀请加入", %{message: "#{username}邀请您进入#{body}房间", time: Hitb.Time.standard_time(), room: body}
     {:noreply, socket}
   end
 

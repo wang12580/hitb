@@ -8,9 +8,9 @@ defmodule ServerWeb.RecordController do
   action_fallback ServerWeb.FallbackController
 
   def index(conn, %{"page"=> page}) do
-    skip = Hitbserver.Page.skip(page, 15)
+    skip = Hitb.Page.skip(page, 15)
     [count, record] = SchemaHospitals.list_record(skip, 15)
-    [page_num, page_list, _] = Hitbserver.Page.page_list(page, count, 15)
+    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
     record = Enum.map(record, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)

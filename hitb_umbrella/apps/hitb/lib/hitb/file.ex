@@ -1,4 +1,4 @@
-defmodule Hitbserver.File do
+defmodule Hitb.File do
   #对写入文件的处理
   def write(file_path, file_name, str)do
     #临时文件是否存在
@@ -16,7 +16,7 @@ defmodule Hitbserver.File do
   #对上传文件的处理
   def upload_file(file_path, conn_file) do
     %{:path => tmp_path, :filename => file_name, :content_type => content_type} = conn_file
-    file_name = Hitbserver.Time.stime_number() <> "_" <> file_name
+    file_name = Hitb.Time.stime_number() <> "_" <> file_name
     #临时文件是否存在
     if(File.exists?(tmp_path))do
       #下载目录是否存在,不存在创建,存在直接复制临时文件到下载目录
@@ -44,9 +44,9 @@ defmodule Hitbserver.File do
       file_size: file_size, #文件大小
       file_type: content_type, #文件类型
       access: access, #文件权限
-      atime: Hitbserver.Time.ttime_to_stime(atime), #最后一次读取时间
-      mtime: Hitbserver.Time.ttime_to_stime(mtime), #最后一次修改时间
-      ctime: Hitbserver.Time.ttime_to_stime(ctime)} #创建时间
+      atime: Hitb.Time.ttime_to_stime(atime), #最后一次读取时间
+      mtime: Hitb.Time.ttime_to_stime(mtime), #最后一次修改时间
+      ctime: Hitb.Time.ttime_to_stime(ctime)} #创建时间
   end
 
   def check(file_path) do

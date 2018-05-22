@@ -1,6 +1,6 @@
 defmodule Stat.Convert do
   def map2list(obj, key) do
-    obj
+    map = obj
     |>Enum.map(fn x ->
         key
         |>Enum.map(fn x ->
@@ -16,22 +16,30 @@ defmodule Stat.Convert do
             end
         end)
     end)
+    map
   end
 
   def map(map, key) do
-    map
-    |>Enum.map(fn x ->
-        key|>Enum.map(fn x -> if(is_bitstring(x))do String.to_atom(x) else x end end)
-        |>Enum.reduce(%{}, fn k, acc ->
-            v = Map.get(x, k)
-            cond do
-              is_nil(v) -> Map.put(acc, k, Stat.Rand.rand(k, nil))
-              is_float(v) ->  Map.put(acc, k, Float.round(v, 4))
-              is_integer(v) ->  Map.put(acc, k, Stat.Rand.rand(k, nil))
-              true -> Map.put(acc, k, v)
-            end
-        end)
-    end)
+    # IO.inspect "#{map}-------------obj"
+    # IO.inspect map
+    # IO.inspect "#{map}-------------obj"
+    if(map == [])do
+      map
+      |>Enum.map(fn x ->
+          key|>Enum.map(fn x -> if(is_bitstring(x))do String.to_atom(x) else x end end)
+          |>Enum.reduce(%{}, fn k, acc ->
+              v = Map.get(x, k)
+              cond do
+                is_nil(v) -> Map.put(acc, k, Stat.Rand.rand(k, nil))
+                is_float(v) ->  Map.put(acc, k, Float.round(v, 4))
+                is_integer(v) ->  Map.put(acc, k, Stat.Rand.rand(k, nil))
+                true -> Map.put(acc, k, v)
+              end
+          end)
+      end)
+    else
+      []
+    end
   end
 
   def mm_time(time)do

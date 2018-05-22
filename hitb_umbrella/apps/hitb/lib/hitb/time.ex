@@ -1,4 +1,4 @@
-defmodule Hitbserver.Time do
+defmodule Hitb.Time do
 
   #本地时间国标string
   def stime_local() do
