@@ -5,5 +5,6 @@ config :hitbserver_web, HitbserverWeb.Endpoint,
   http: [port: 8000],
   url: [host: "127.0.0.1"],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  server: true
+  server: true,
+  check_origin: false
 import_config "prod.secret.exs"
