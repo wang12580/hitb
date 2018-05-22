@@ -8,7 +8,7 @@ defmodule LibraryWeb.Wt4Controller do
 
   def index(conn, _params) do
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
-    skip = Library.Page.skip(page, 15)
+    skip = Hitbserver.Page.skip(page, 15)
     result = from(w in Wt4)
       |> limit([w], 15)
       |> offset([w], ^skip)
