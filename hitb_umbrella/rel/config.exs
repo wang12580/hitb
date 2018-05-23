@@ -56,6 +56,8 @@ release :hitb_umbrella do
     server: :permanent,
     stat: :permanent,
     transaction: :permanent,
-    peers: :permanent
+    peers: :permanent,
+    block: :permanent,
+    account: :permanent
   ]
 end

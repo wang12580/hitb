@@ -5,7 +5,6 @@ defmodule HitbserverWeb.OnlineChannel do
   def join("online:list", message, socket) do
     %{"username" => username} = message
     socket = Map.merge(socket, %{username: username})
-    IO.inspect Hitb.ets_get(:socket_user, username)
     case Hitb.ets_get(:socket_user, username) do
       true ->
         {:error, %{reason: "已经登录"}}
