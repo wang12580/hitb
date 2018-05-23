@@ -49,8 +49,8 @@ defmodule HitbserverWeb.RoomChannel do
 
   def terminate(reason, socket) do
     Hitb.ets_insert(:socket_user, socket.username, false)
-    Logger.warn("用户--#{socket.username}--离开房间,并已下线")
-    broadcast! socket, "离开房间", %{body: "离开房间,并已下线", username: socket.username}
+    Logger.warn("用户--#{socket.username}--离开房间")
+    broadcast! socket, "离开房间", %{body: "离开房间", username: socket.username}
     :ok
   end
 

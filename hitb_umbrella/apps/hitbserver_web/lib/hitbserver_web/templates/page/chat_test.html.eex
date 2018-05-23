@@ -11,24 +11,24 @@ var socket = null;
 var channel = null;
 var room = '<%=@user.username%>'
 let c_time = ''
-socket = new Phoenix.Socket(`ws://${url}:8001/socket`, {params: {token: "a token", username: "网页端"}});
+socket = new Phoenix.Socket(`ws://${url}:8001/socket`, {params: {token: "a token", username: '<%=@user.username%>'}});
 // socket = new Phoenix.Socket(`ws://192.168.1.10:8000/socket`, {params: {token: "a token", username: "网页端"}});
 socket.connect();
 
-channel2 = socket.channel("online:list", {username: "网页端"})
+channel2 = socket.channel("online:list", {username: '<%=@user.username%>'})
 channel2.join()
     .receive("ok", resp => { console.log("Joined successfully", resp) })
     .receive("error", resp => { console.log("Unable to join", resp) })
 
-channel = socket.channel(`room:${room}`, {username: "网页端"})
+channel = socket.channel(`room:${room}`, {username:'<%=@user.username%>'})
 channel.join()
     .receive("ok", resp => { console.log("Joined successfully", resp) })
     .receive("error", resp => { console.log("Unable to join", resp) })
-channel.push("加入房间", {body: "网页端", username: '网页端', type: "网页端", create_room_time: c_time})
+channel.push("加入房间", {body: '<%=@user.username%>', username: '<%=@user.username%>', type: '<%=@user.username%>', create_room_time: c_time})
 let chatInput = document.querySelector("#chat-input")
 chatInput.addEventListener("keypress", event => {
   if(event.keyCode === 13){
-    channel.push("新消息", {body: chatInput.value, username: '网页端', type: "message", create_room_time: c_time})
+    channel.push("新消息", {body: chatInput.value, username: '<%=@user.username%>', type: "message", create_room_time: c_time})
     chatInput.value = ""
   }
 })
