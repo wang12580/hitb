@@ -50,10 +50,10 @@ defmodule Account do
          "byPublicKey" -> deserialize_record_from_account(getAccountByPublicKey(value))
          "byAddress" -> deserialize_record_from_account(getAddressByAddress(value))
       end
-    case :mnesia.transaction(fn -> :mnesia.delete_object(account) end) do
-      {:ok, _} -> :ok
-      {:atomic, _} -> :error
-    end
+    # case :mnesia.transaction(fn -> :mnesia.delete_object(account) end) do
+    #   {:ok, _} -> :ok
+    #   {:atomic, _} -> :error
+    # end
   end
 
   def newAccount(account) do
