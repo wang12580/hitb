@@ -3,6 +3,7 @@ defmodule EditWeb.CdaController do
 
   alias Edit.Client
   alias Edit.Client.Cda
+  alias Edit.MyMould
   alias Hitb.Time
   plug EditWeb.Access
 
@@ -23,8 +24,20 @@ defmodule EditWeb.CdaController do
     [cda, info] = Client.list_cda("filename", {filename, username})
     json conn, %{cda: cda, info: info}
   end
+  def mould_list(conn, _params) do
+    %{"username" => username} = Map.merge(%{"username" => ""}, conn.params)
+    resule = Repo.all(from p in MyMould, where: p.username == ^username, select: p.name)
+    json conn, %{resule: resule, success: true}
+  end
 
-  def update(conn, %{"content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype}) do
+  def mould_file(conn, _params) do
+    %{"username" => username, "name" => name} = Map.merge(%{"username" => "", "name" => ""}, conn.params)
+    resule = Repo.get_by(Edit.MyMould, name: name, username: username)
+    result = resule.content
+    json conn, %{result: result, success: true}
+  end
+
+  def update(conn, %{"content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype, "mouldtype" => mouldtype}) do
     IO.inspect (String.contains? file_name, "-")
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
@@ -32,6 +45,33 @@ defmodule EditWeb.CdaController do
       else
         {username, file_name}
       end
+    rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
+    if (mouldtype == "模板") do
+      myMoulds(conn, rules)
+    else
+      myCdas(conn, rules)
+    end
+  end
+  defp myMoulds(conn, params) do
+    %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username} = params
+    mymould = Repo.get_by(Edit.MyMould, name: file_name, username: file_username)
+    if(mymould)do
+      mymould
+      |> MyMould.changeset(%{content: content})
+      |> Repo.update()
+    else
+      namea = doctype<>".cdh"
+      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true}
+      IO.inspect body
+      %MyMould{}
+      |> MyMould.changeset(body)
+      |> Repo.insert()
+      json conn, %{success: true, info: "新建成功"}
+    end
+  end
+
+  defp myCdas(conn, params) do
+    %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username} = params
     cda = Repo.get_by(Cda, name: file_name, username: file_username)
     if(cda)do
       cond do
@@ -56,7 +96,7 @@ defmodule EditWeb.CdaController do
       %Cda{}
       |> Cda.changeset(body)
       |> Repo.insert()
-      json conn, %{success: false, info: "新建成功"}
+      json conn, %{success: true, info: "新建成功"}
     end
   end
 end
