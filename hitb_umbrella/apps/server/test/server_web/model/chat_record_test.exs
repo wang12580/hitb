@@ -1,5 +1,5 @@
 defmodule ServerWeb.ChatRecordTest do
-  use ServerWeb.ModelCase
+  use Server.DataCase
 
   alias Server.ChatRecord
 
