@@ -11,7 +11,7 @@ var socket = null;
 var channel = null;
 var room = '<%=@user.username%>'
 let c_time = ''
-socket = new Phoenix.Socket(`ws://${url}:8000/socket`, {params: {token: "a token", username: "网页端"}});
+socket = new Phoenix.Socket(`ws://${url}:8001/socket`, {params: {token: "a token", username: "网页端"}});
 // socket = new Phoenix.Socket(`ws://192.168.1.10:8000/socket`, {params: {token: "a token", username: "网页端"}});
 socket.connect();
 
@@ -42,7 +42,7 @@ channel.on("加入房间", payload => {
   $("#s").append(html);
   html = '';
   payload.users.forEach(x => {
-    html = `<input type="button" onclick="aa('${x}')" value="${x}"></input>`
+    html = html+`<input type="button" onclick="aa('${x}')" value="${x}"></input>`
   })
   $("#users").html(html);
 })
@@ -51,14 +51,15 @@ channel.on("离开房间", payload => {
   $("#s").append(html);
 });
 channel.on("ping", msg => {
-  html = '';
+  html = `<input type="button" onclick="aa('test3@hitb.com.cn')" value="test3@hitb.com.cn"></input>`;
+
   msg.users.forEach(x => {
-    html = `<input type="button" onclick="aa('${x}')" value="${x}"></input>`
+    html = html+`<input type="button" onclick="aa('${x}')" value="${x}"></input>`
   })
   $("#users").html(html);
 })
 function aa(s){
-  channel2.push(`邀请加入:${s}`, {body: room,  username: s, create_room_time: c_time});
+  channel2.push(`邀请加入:${s}`, {body: room,  username: s, create_room_time: c_time, invite: s, room_owner: room});
 }
 
 </script>
