@@ -28,5 +28,7 @@ defmodule EditWeb.Router do
     get "/cda_user", CdaController, :cda_user
     get "/cda_file", CdaController, :cda_file
     post "/cda", CdaController, :update
+    get "/mouldlist", CdaController, :mould_list
+    get "/mouldfile", CdaController, :mould_file
   end
 end
