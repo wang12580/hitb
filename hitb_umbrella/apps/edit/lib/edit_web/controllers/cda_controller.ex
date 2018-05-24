@@ -4,8 +4,35 @@ defmodule EditWeb.CdaController do
   alias Edit.Client
   alias Edit.Client.Cda
   alias Edit.MyMould
+  alias Edit.ClinetHelp
   alias Hitb.Time
   plug EditWeb.Access
+
+  def test(conn, _params) do
+    # {:ok, str} = File.read("/home/hitb/桌面/未命名文件夹 2/hitb_edit.cdh")
+    # IO.inspect str
+    # Enum.each(String.split(str, "\n") -- [""], fn x-> 
+    #   IO.inspect x
+    # end)
+    resule = Repo.get_by(ClinetHelp, name: "输入提示")
+    result = resule.content
+    Enum.each(String.split(result, "\\n") -- [""], fn x-> 
+      IO.inspect x
+    end)
+    json conn, %{}
+  end
+
+  def test2(conn, _params) do
+    a = ["输入提示", "参考病案", "病案历史","在线交流","DRG分析","HIS接口"]
+    Enum.each(a, fn x -> 
+      rule = %{"name" => x}
+      %ClinetHelp{}
+      |> ClinetHelp.changeset(rule)
+      |> Repo.insert()
+      IO.inspect rule
+    end)
+    json conn, %{}
+  end
 
   def cda_user(conn, _params) do
     # %{"type" => type} = Map.merge(%{"type" => "user"}, conn.params)
@@ -32,7 +59,19 @@ defmodule EditWeb.CdaController do
 
   def mould_file(conn, _params) do
     %{"username" => username, "name" => name} = Map.merge(%{"username" => "", "name" => ""}, conn.params)
-    resule = Repo.get_by(Edit.MyMould, name: name, username: username)
+    resule = Repo.get_by(MyMould, name: name, username: username)
+    result = resule.content
+    json conn, %{result: result, success: true}
+  end
+
+  def help_list(conn, _params) do
+    resule = Repo.all(from p in ClinetHelp, select: p.name)
+    json conn, %{resule: resule, success: true}
+  end
+
+  def help_file(conn, _params) do
+    %{"name" => name} = Map.merge(%{"name" => ""}, conn.params)
+    resule = Repo.get_by(ClinetHelp, name: "输入提示")
     result = resule.content
     json conn, %{result: result, success: true}
   end
