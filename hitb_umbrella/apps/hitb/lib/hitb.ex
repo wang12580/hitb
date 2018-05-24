@@ -7,9 +7,17 @@ defmodule Hitb do
 
   def ets_insert(tab, key, value) do
     case tab in @tab do
-      true -> :ets.insert(tab, {key, value})
+      true ->
+        if(ets_get(tab, key))do
+          ets_del(tab, key)
+        end
+        :ets.insert(tab, {key, value})
       false -> false
     end
+  end
+
+  def ets_del(tab, key) do
+    :ets.delete(tab, key)
   end
 
   def ets_get(tab, key) do
