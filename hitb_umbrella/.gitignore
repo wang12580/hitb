@@ -8,3 +8,6 @@ erl_crash.dump
 /mix.lock
 /.cache/*
 /.erlang.cookie
+
+/download
+/wt4
