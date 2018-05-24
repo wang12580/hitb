@@ -46,7 +46,8 @@ defmodule Server.Mixfile do
       {:gettext, "~> 0.11"},
       {:comeonin, "~> 2.2"},
       {:distillery, "~> 1.5", runtime: false},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:library, in_umbrella: true},
     ]
   end
 

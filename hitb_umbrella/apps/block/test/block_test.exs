@@ -1,8 +1,8 @@
 defmodule BlockTest do
   use ExUnit.Case
-  doctest Block
+  doctest Block.Token
 
   test "greets the world" do
-    assert Block.hello() == :world
+    assert Block.Token.hello() == :world
   end
 end
