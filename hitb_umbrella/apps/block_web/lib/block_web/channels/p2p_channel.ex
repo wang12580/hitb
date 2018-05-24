@@ -20,29 +20,29 @@ defmodule BlockWeb.P2pChannel do
     {:noreply, socket}
   end
 
-  def handle_in(@query_latest_block, payload, socket) do
+  def handle_in(@query_latest_block, _payload, socket) do
     Logger.info("sending latest block to #{inspect socket}")
     {:reply, {:ok, %{type: @query_latest_block, data: Block.BlockService.get_latest_block()}}, socket}
   end
 
-  def handle_in(@query_all_accounts, payload, socket) do
+  def handle_in(@query_all_accounts, _payload, socket) do
     Logger.info("sending all accounts to #{inspect socket}")
     {:reply, {:ok, %{type: @query_all_accounts, data: Repos.AccountRepository.get_all_accounts()}}, socket}
   end
 
-  def handle_in(@query_all_blocks, payload, socket) do
+  def handle_in(@query_all_blocks, _payload, socket) do
     Logger.info("sending all blocks to #{inspect socket}")
     {:reply, {:ok, %{type: @query_all_blocks, data: Repos.BlockRepository.get_all_blocks()}}, socket}
   end
 
-  def handle_in(@query_all_transactions, payload, socket) do
+  def handle_in(@query_all_transactions, _payload, socket) do
     Logger.info("sending all transactions to #{inspect socket}")
     {:reply, {:ok, %{type: @query_all_transactions, data: Repos.TransactionRepository.get_all_transactions()}}, socket}
   end
 
   def handle_in(@add_peer_request, payload, socket) do
     Logger.info("attempting to connect to #{inspect payload}...")
-    result = Peers.P2pSessionManager.connect(payload["host"], payload["port"])
+    result = Block.P2pSessionManager.connect(payload["host"], payload["port"])
     if result == :fail do
       {:reply, {:ok, %{type: @connection_error}}, socket}
     else

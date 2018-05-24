@@ -3,6 +3,7 @@ defmodule BlockWeb.TransactionController do
   plug BlockWeb.Access
   alias Block
   alias Repos
+  alias Block.Transaction
   @moduledoc """
     Functionality related to blocks in the block chain
   """

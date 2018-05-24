@@ -1,7 +1,7 @@
 defmodule Stat.StatOrgHeal do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Stat.StatOrgHeal
+  # alias Stat.StatOrgHeal
 
 
   schema "stat_org_heal" do

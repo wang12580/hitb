@@ -47,7 +47,7 @@ defmodule Repos.AccountRepository do
         [deserialize_account_from_record(record) | acc]
       end, [], :account)
     end)
-    {:atomic, result2} = :mnesia.transaction(fn ->
+    {:atomic, _result2} = :mnesia.transaction(fn ->
       :mnesia.foldl(fn(record, acc) ->
         [record | acc]
       end, [], :account)

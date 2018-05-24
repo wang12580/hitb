@@ -2,6 +2,7 @@ defmodule Block.Transaction do
   @moduledoc """
   Documentation for Transaction.
   """
+  alias Block.Account
   def hello do
     :transaction
   end

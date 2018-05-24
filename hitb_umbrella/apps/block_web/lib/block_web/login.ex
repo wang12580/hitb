@@ -1,6 +1,6 @@
 defmodule BlockWeb.Login do
   use BlockWeb, :controller
-
+  alias Block.Account
   #登录,返回conn
 
   #退出,返回conn

@@ -44,7 +44,7 @@ defmodule Block.Account do
   end
 
   def delAccount(by, value) do
-    account =
+    _account =
       case by do
          "byUsername" -> deserialize_record_from_account(getAccount(value))
          "byPublicKey" -> deserialize_record_from_account(getAccountByPublicKey(value))

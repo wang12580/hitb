@@ -25,7 +25,7 @@ defmodule Repos.Application do
     :mnesia.start()
     case :mnesia.wait_for_tables([:block_chain], 5000) do
       {:timeout, _} ->
-        node = Node.self()
+        _node = Node.self()
         :mnesia.create_table(:block_chain, [
           attributes: [:index, :previous_hash, :timestamp, :data, :hash, :generateAdress],
           type: :set
@@ -54,7 +54,7 @@ defmodule Repos.Application do
   end
 
   defp init_peer() do
-    init_peer = %Repos.Peer{
+    _init_peer = %Repos.Peer{
       host:  "139.129.165.56",
       port:  "4000",
       connect: true

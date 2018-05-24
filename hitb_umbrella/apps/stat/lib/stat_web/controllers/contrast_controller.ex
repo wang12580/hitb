@@ -5,7 +5,7 @@ defmodule StatWeb.ContrastController do
   alias Stat.Query
   alias Stat.Chart
 
-  def contrast(conn, %{"username" => username}) do
+  def contrast(conn, %{"username" => _username}) do
     [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     #获取页面key
     key = Key.key(username, drg, type, tool_type, page_type)
@@ -79,7 +79,7 @@ defmodule StatWeb.ContrastController do
 
   #获取list
   def contrast_list(conn, %{"username" => username})do
-    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
+    [_page, _page_type, type, tool_type, org, time, drg, _order, _order_type, _username] = conn_merge(conn.params)
     #拆解url路径和参数
     [page, _, _, _, _, _, order, order_type, page_type] =
       case Hitb.ets_get(:stat_drg, "comurl_" <> username) do
@@ -134,7 +134,7 @@ defmodule StatWeb.ContrastController do
           staty = Hitb.ets_get(:stat_drg, "comy" <> "_" <> username)
           [unless(statx)do [] else statx end, unless(staty)do [] else staty end]
       end
-    [page, type, tool_type, drg, order, order_type, page_type, org, time] =
+    [_page, type, tool_type, drg, _order, _order_type, page_type, _org, _time] =
       case Hitb.ets_get(:stat_drg, "defined_url_" <> username) do
         nil -> ["1", "org", "total", "", "org", "asc", "base", "", ""]
         _ -> Hitb.ets_get(:stat_drg, "defined_url_" <> username)

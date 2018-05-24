@@ -60,11 +60,11 @@ defmodule ServerWeb.OrgController do
     end
   end
 
-  defp mycase(val) do
-    case to_string(val) do
-      "true" -> "是"
-      "false" -> "否"
-      _ -> val
-    end
-  end
+  # defp mycase(val) do
+  #   case to_string(val) do
+  #     "true" -> "是"
+  #     "false" -> "否"
+  #     _ -> val
+  #   end
+  # end
 end

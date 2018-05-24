@@ -11,12 +11,12 @@ defmodule EditWeb.CdaController do
   def test(conn, _params) do
     # {:ok, str} = File.read("/home/hitb/桌面/未命名文件夹 2/hitb_edit.cdh")
     # IO.inspect str
-    # Enum.each(String.split(str, "\n") -- [""], fn x-> 
+    # Enum.each(String.split(str, "\n") -- [""], fn x->
     #   IO.inspect x
     # end)
     resule = Repo.get_by(ClinetHelp, name: "输入提示")
     result = resule.content
-    Enum.each(String.split(result, "\\n") -- [""], fn x-> 
+    Enum.each(String.split(result, "\\n") -- [""], fn x->
       IO.inspect x
     end)
     json conn, %{}
@@ -24,7 +24,7 @@ defmodule EditWeb.CdaController do
 
   def test2(conn, _params) do
     a = ["输入提示", "参考病案", "病案历史","在线交流","DRG分析","HIS接口"]
-    Enum.each(a, fn x -> 
+    Enum.each(a, fn x ->
       rule = %{"name" => x}
       %ClinetHelp{}
       |> ClinetHelp.changeset(rule)
@@ -70,7 +70,7 @@ defmodule EditWeb.CdaController do
   end
 
   def help_file(conn, _params) do
-    %{"name" => name} = Map.merge(%{"name" => ""}, conn.params)
+    %{"name" => _name} = Map.merge(%{"name" => ""}, conn.params)
     resule = Repo.get_by(ClinetHelp, name: "输入提示")
     result = resule.content
     json conn, %{result: result, success: true}
@@ -92,7 +92,7 @@ defmodule EditWeb.CdaController do
     end
   end
   defp myMoulds(conn, params) do
-    %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username} = params
+    %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => _username} = params
     mymould = Repo.get_by(Edit.MyMould, name: file_name, username: file_username)
     if(mymould)do
       mymould

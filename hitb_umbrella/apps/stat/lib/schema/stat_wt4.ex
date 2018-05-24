@@ -1,7 +1,7 @@
 defmodule Stat.StatWt4 do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Stat.StatWt4
+  # alias Stat.StatWt4
 
 
   schema "stat_wt4" do

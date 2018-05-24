@@ -9,7 +9,7 @@ defmodule Block.P2pSessionManager do
   # @add_peer_request   Repos.P2pMessage.add_peer_request
 
   def connect(host, port) do
-    already_connected = :ets.tab2list(:peers) |> Enum.reduce(false, fn(record, acc) ->
+    _already_connected = :ets.tab2list(:peers) |> Enum.reduce(false, fn(record, acc) ->
         if acc == false do
           peer_map = record |> elem(1)
           if peer_map[:host] == host && peer_map[:port] == port do

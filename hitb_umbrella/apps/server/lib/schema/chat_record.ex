@@ -1,7 +1,7 @@
 defmodule Server.ChatRecord do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Server.ChatRecord
+  # alias Server.ChatRecord
 
   schema "chat_record" do
     field :room, :string

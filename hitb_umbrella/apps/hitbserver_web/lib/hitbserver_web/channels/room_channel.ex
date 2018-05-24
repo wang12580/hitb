@@ -45,13 +45,13 @@ defmodule HitbserverWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("加入房间", %{"username" => username, "create_room_time" => create_room_time}, socket) do
+  def handle_in("加入房间", %{"username" => username, "create_room_time" => _create_room_time}, socket) do
     time = Hitb.Time.standard_time()
     broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: time, users: online(), create_room_time: time}
     {:noreply, socket}
   end
 
-  def terminate(reason, socket) do
+  def terminate(_reason, socket) do
     Hitb.ets_del(:socket_user, socket.username)
     Logger.warn("用户--#{socket.username}--离开房间")
     broadcast! socket, "离开房间", %{body: "离开房间", username: socket.username}
