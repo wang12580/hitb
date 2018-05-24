@@ -24,7 +24,7 @@ defmodule BlockWeb.Mixfile do
   def application do
     [
       mod: {BlockWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools, :mnesia]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
