@@ -86,12 +86,12 @@ defmodule Repos.Application do
     }
     secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
     init_transaction = %Repos.Transaction{
-      id: Transaction.generateId,
+      id: "Transaction.generateId",
       height: init_block.index,
       blockId: to_string(init_block.index),
       type:                 3,
       timestamp:            init_block.timestamp,
-      datetime:             Transaction.generateDateTime,
+      datetime:             "Transaction.generateDateTime",
       senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64|> regex,
       requesterPublicKey:   "",
       senderId:             "",

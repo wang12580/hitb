@@ -2,14 +2,14 @@ defmodule BlockWeb.P2pChannel do
   use Phoenix.Channel
   require Logger
 
-  @query_latest_block Peers.P2pMessage.query_latest_block
-  @query_all_accounts Peers.P2pMessage.query_all_accounts
-  @query_all_blocks   Peers.P2pMessage.query_all_blocks
-  # @update_block_chain Peers.P2pMessage.update_block_chain
-  @add_peer_request   Peers.P2pMessage.add_peer_request
+  @query_latest_block Block.P2pMessage.query_latest_block
+  @query_all_accounts Block.P2pMessage.query_all_accounts
+  @query_all_blocks   Block.P2pMessage.query_all_blocks
+  # @update_block_chain Block.P2pMessage.update_block_chain
+  @add_peer_request   Block.P2pMessage.add_peer_request
   @query_all_transactions "query_all_transactions"
-  @connection_error   Peers.P2pMessage.connection_error
-  @connection_success Peers.P2pMessage.connection_success
+  @connection_error   Block.P2pMessage.connection_error
+  @connection_success Block.P2pMessage.connection_success
 
   def join(_topic, _payload, socket) do
     IO.inspect IO.inspect "P2pChannel1"
