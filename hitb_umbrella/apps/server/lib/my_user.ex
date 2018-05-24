@@ -23,6 +23,20 @@ defmodule ServerWeb.MyUser do
     end
   end
 
+  #登录,返回conn
+  def socket_login(user) do
+    db_user = Repo.get_by(User, username: user.username)
+    case db_user do
+      nil ->
+        [false, %{login: false, username: user.username}]
+      _ ->
+        case Bcrypt.checkpw(user.password, db_user.hashpw) do
+          true -> [true, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: %{}, is_show: db_user.is_show}]
+          _ -> [false, %{login: false, username: user.username}]
+        end
+    end
+  end
+
   #退出,返回conn
   def logout(conn) do
     put_session(conn, :user, %{login: false, username: nil})

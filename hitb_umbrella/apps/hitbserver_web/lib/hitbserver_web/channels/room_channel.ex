@@ -25,19 +25,23 @@ defmodule HitbserverWeb.RoomChannel do
 
   def handle_in("新消息", %{"body" => body, "username" => username, "type" => type, "create_room_time" => create_room_time}, socket) do
     record = Server.Repo.get_by(ChatRecord, room: username, date: create_room_time)
-    if(record != nil)do
-      bodystring = record.record_string <>"@%@"<>body
-      bodyarray = record.record_array ++ [body]
-      record
-      |>ChatRecord.changeset(%{record_string: bodystring, record_array: bodyarray})
-      |>Server.Repo.update
+    if(type == "doc")do
+      broadcast! socket, "共享文档", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     else
-      record_body = %{"room" => username, "date" => create_room_time, "record_string" => body, "record_array" => [body]}
-      %ChatRecord{}
-      |> ChatRecord.changeset(record_body)
-      |> Server.Repo.insert()
+      if(record != nil)do
+        bodystring = record.record_string <>"@%@"<>body
+        bodyarray = record.record_array ++ [body]
+        record
+        |>ChatRecord.changeset(%{record_string: bodystring, record_array: bodyarray})
+        |>Server.Repo.update
+      else
+        record_body = %{"room" => username, "date" => create_room_time, "record_string" => body, "record_array" => [body]}
+        %ChatRecord{}
+        |> ChatRecord.changeset(record_body)
+        |> Server.Repo.insert()
+      end
+      broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     end
-    broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     {:noreply, socket}
   end
 
@@ -48,13 +52,14 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def terminate(reason, socket) do
-    Hitb.ets_insert(:socket_user, socket.username, false)
+    Hitb.ets_del(:socket_user, socket.username)
     Logger.warn("用户--#{socket.username}--离开房间")
     broadcast! socket, "离开房间", %{body: "离开房间", username: socket.username}
     :ok
   end
 
   def handle_in("离开房间", %{"body" => body, "username" => username}, socket) do
+    Hitb.ets_del(:socket_user, socket.username)
     broadcast! socket, "离开房间", %{body: body, username: username}
     {:noreply, socket}
   end
