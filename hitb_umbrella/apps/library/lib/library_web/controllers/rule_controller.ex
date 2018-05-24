@@ -7,6 +7,8 @@ defmodule LibraryWeb.RuleController do
   alias Library.RuleIcd9
   alias Library.RuleIcd10
   alias Library.LibWt4
+  alias Library.ChineseMedicine
+  alias Library.ChineseMedicinePatent
   alias Library.Key
 
   def rule(conn, _params) do
@@ -20,7 +22,7 @@ defmodule LibraryWeb.RuleController do
 
   def rule_file(conn, _params) do
     file =
-      ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]
+      ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药"]
       |>Enum.map(fn x -> x <> ".csv" end)
     json conn, %{data: file}
   end
@@ -49,6 +51,7 @@ defmodule LibraryWeb.RuleController do
   defp rule(params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows} = params
     rows = to_string(rows)|>String.to_integer
+    IO.inspect tab_type
     tab =
       cond do
         tab_type == "mdc" -> RuleMdc
@@ -56,18 +59,23 @@ defmodule LibraryWeb.RuleController do
         tab_type == "drg" -> RuleDrg
         tab_type == "icd10" -> RuleIcd10
         tab_type == "icd9" -> RuleIcd9
+        tab_type == "中药" -> ChineseMedicine
+        tab_type == "中成药" -> ChineseMedicinePatent
         true -> LibWt4
       end
     [result, list, page_list, page_num, count, type] =
-      if (tab_type not in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]) do
-        rules = %{"year" => year, "version" => version, "dissect" => dissect, "tab" => tab, "type" => type,
-        "page" => page, "rows" => rows}
-        ruleWT4(rules)
-      else
-        rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
-        ruleOther(rules)
+      cond do
+        tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
+          rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
+          ruleOther(rules)
+        tab_type in ["中药", "中成药"] ->
+          rules = %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows}
+          ruleChinese(rules)
+        true->
+          rules = %{"year" => year, "version" => version, "dissect" => dissect, "tab" => tab, "type" => type,
+          "page" => page, "rows" => rows}
+          ruleWT4(rules)
       end
-
     [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
 
@@ -267,6 +275,22 @@ defmodule LibraryWeb.RuleController do
       |>Repo.all
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
     list = []
+    [result, list, page_list, page_num, count_page, type]
+  end
+  defp ruleChinese(params) do
+    %{"type" => type, "tab_type" => tab_type, "tab" => tab, "page" => page, "rows" => rows} = params
+    IO.inspect tab_type
+    count = Repo.all(from p in tab, select: count(p.id)) |>hd
+    skip = Hitb.Page.skip(page, rows)
+    result = from(p in tab)
+      |>limit([p], ^rows)
+      |>offset([w], ^skip)
+      |>Repo.all
+    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    list = []
+    IO.inspect page_num
+    IO.inspect page_list
+    IO.inspect count_page
     [result, list, page_list, page_num, count_page, type]
   end
 end

@@ -32,7 +32,7 @@ defmodule LibraryWeb.PageController do
     json conn, %{data: result}
   end
 
-  def test(conn, _params) do
+  def test2(conn, _params) do
     {:ok, str} = File.read("/home/hitb/桌面/未命名文件夹 2/中成药 (复件).csv")
     Enum.each(String.split(str, "\n") -- [""], fn x ->
       [code, medicine_type, type, medicine_code, name, other_spec, name_1, indicatorg_limition, department_limit, user_limit, other_limit ]= String.split(x, ",")
@@ -44,8 +44,5 @@ defmodule LibraryWeb.PageController do
     end)
     json conn, %{}
   end
-
-
-
 
 end
