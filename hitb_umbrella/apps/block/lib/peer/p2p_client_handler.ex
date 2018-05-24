@@ -1,4 +1,4 @@
-defmodule Peers.P2pClientHandler do
+defmodule Block.P2pClientHandler do
   @moduledoc """
   Receives and handles messages over websocket.
   Responsible for keeping the block chain in sync.
@@ -8,14 +8,14 @@ defmodule Peers.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
-  @query_all_accounts   Peers.P2pMessage.query_all_accounts
-  @query_latest_block     Peers.P2pMessage.query_latest_block
-  @query_all_blocks       Peers.P2pMessage.query_all_blocks
-  @query_all_transactions   Peers.P2pMessage.query_all_transactions
+  @query_all_accounts   Block.P2pMessage.query_all_accounts
+  @query_latest_block     Block.P2pMessage.query_latest_block
+  @query_all_blocks       Block.P2pMessage.query_all_blocks
+  @query_all_transactions   Block.P2pMessage.query_all_transactions
   # @update_block_chain Peers.P2pMessage.update_block_chain
-  @add_peer_request   Peers.P2pMessage.add_peer_request
-  @connection_error   Peers.P2pMessage.connection_error
-  @connection_success Peers.P2pMessage.connection_success
+  @add_peer_request   Block.P2pMessage.add_peer_request
+  @connection_error   Block.P2pMessage.connection_error
+  @connection_success Block.P2pMessage.connection_success
 
   def start_link(host, port) do
     GenSocketClient.start_link(

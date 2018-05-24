@@ -1,4 +1,4 @@
-defmodule Token do
+defmodule Block.Token do
   @moduledoc """
   Documentation for Token.
   """

@@ -1,4 +1,4 @@
-defmodule Transaction do
+defmodule Block.Transaction do
   @moduledoc """
   Documentation for Transaction.
   """
@@ -19,7 +19,7 @@ defmodule Transaction do
         blockId: to_string(latest_block.hash),
         type: transaction.type,
         timestamp: :os.system_time(:seconds),
-        datetime: Transaction.generateDateTime,
+        datetime: Block.Transaction.generateDateTime,
         senderPublicKey: sender.publicKey,
         requesterPublicKey: sender.publicKey,
         senderId: sender.index,
@@ -34,11 +34,11 @@ defmodule Transaction do
       #验证是否有二级密码
       case sender.secondPublicKey do
         nil ->
-          recipient = Account.getAccountByPublicKey(tran.recipientId)
+          recipient = Block.Account.getAccountByPublicKey(tran.recipientId)
           pay(sender, recipient, transaction, tran)
         _ ->
           if(:crypto.hash(:sha256, "#{transaction.secondPassword}")|> Base.encode64|> regex == sender.secondPublicKey)do
-            recipient = Account.getAccountByPublicKey(tran.recipientId)
+            recipient = Block.Account.getAccountByPublicKey(tran.recipientId)
             pay(sender, recipient, transaction, tran)
           else
             [:error, nil, "交易失败,二级密码错误"]

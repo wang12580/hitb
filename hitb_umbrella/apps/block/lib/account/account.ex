@@ -1,4 +1,4 @@
-defmodule Account do
+defmodule Block.Account do
   @moduledoc """
   Documentation for Account.
   """
@@ -130,12 +130,12 @@ defmodule Account do
       {_, :ok} ->
         latest_block = Block.BlockService.get_latest_block()
         tran = %{
-          id: Transaction.generateId,
+          id: Block.Transaction.generateId,
           height: latest_block.index,
           blockId: to_string(latest_block.index),
           type: 5,
           timestamp: :os.system_time(:seconds),
-          datetime: Transaction.generateDateTime,
+          datetime: Block.Transaction.generateDateTime,
           senderPublicKey: account.publicKey,
           requesterPublicKey: "",
           senderId: account.index,
