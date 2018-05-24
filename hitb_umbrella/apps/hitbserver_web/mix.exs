@@ -46,7 +46,12 @@ defmodule HitbserverWeb.Mixfile do
       {:distillery, "~> 1.5", runtime: false},
       {:cowboy, "~> 1.0"},
       {:json, "~> 1.0"},
+      {:hitb, in_umbrella: true},
+      {:edit, in_umbrella: true},
+      {:stat, in_umbrella: true},
+      {:library, in_umbrella: true},
       {:server, in_umbrella: true},
+      {:block, in_umbrella: true},
     ]
   end
 
