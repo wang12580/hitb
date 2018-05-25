@@ -5,7 +5,7 @@ defmodule Block.BlockRepository do
 
   def insert_block(block) do
     %BlockList{}
-    |> BlockList.changset(block)
+    |> BlockList.changeset(block)
     |> Repo.insert
   end
 

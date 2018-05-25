@@ -77,7 +77,7 @@ defmodule Block.P2pClientHandler do
   def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
     Logger.info("connection to server failed...")
     IO.inspect payload
-    Peers.P2pSessionManager.terminate_session(self())
+    Block.P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
 

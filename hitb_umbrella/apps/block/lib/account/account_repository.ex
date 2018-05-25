@@ -5,7 +5,7 @@ defmodule Block.AccountRepository do
 
   def insert_account(account) do
     %Account{}
-    |> Account.changset(account)
+    |> Account.changeset(account)
     |> Repo.insert
   end
 

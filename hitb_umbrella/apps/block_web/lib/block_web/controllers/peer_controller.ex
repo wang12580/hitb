@@ -2,7 +2,7 @@ defmodule BlockWeb.PeerController do
   use BlockWeb, :controller
   plug BlockWeb.Access
   alias Hitb
-  alias Block.Peers
+  alias Block.PeerService
 
   @moduledoc """
     Functionality for managing peers
@@ -11,10 +11,10 @@ defmodule BlockWeb.PeerController do
   def add_peer(conn, %{"peer_data" => peer_data}) do
     %{"host" => host, "port" => port} = peer_data
     result = Block.P2pSessionManager.connect(host, port)
-    if result == :fail do
+    if result != :ok do
       raise Hitb.ErrorAlreadyConnected
     else
-      Peers.newPeer(host, port)
+      PeerService.newPeer(host, port)
       json(conn, %{result: [host <> ":" <> port <> "节点连接成功"]})
     end
   end

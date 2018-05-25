@@ -5,7 +5,7 @@ defmodule Block.PeerRepository do
 
   def insert_peer(peer) do
     %Peer{}
-    |> Peer.changset(peer)
+    |> Peer.changeset(peer)
     |> Repo.insert
     :ok
   end

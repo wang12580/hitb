@@ -2,10 +2,11 @@ defmodule Block.TransactionRepository do
   import Ecto.Query, warn: false
   alias Block.Repo
   alias Block.Transaction
+  alias Block.BlockList
 
   def insert_transaction(transaction) do
     %Transaction{}
-    |> Transaction.changset(transaction)
+    |> Transaction.changeset(transaction)
     |> Repo.insert
     :ok
   end

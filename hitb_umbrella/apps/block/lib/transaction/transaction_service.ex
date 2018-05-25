@@ -18,7 +18,7 @@ defmodule Block.TransactionService do
         blockId: to_string(latest_block.hash),
         type: transaction.type,
         timestamp: :os.system_time(:seconds),
-        datetime: TransactionService.generateDateTime,
+        datetime: Block.TransactionService.generateDateTime,
         senderPublicKey: sender.publicKey,
         requesterPublicKey: sender.publicKey,
         senderId: sender.index,

@@ -1,6 +1,6 @@
 defmodule BlockWeb.Login do
   use BlockWeb, :controller
-  alias Block.Account
+  alias Block.AccountService
   #登录,返回conn
 
   #退出,返回conn
@@ -12,7 +12,7 @@ defmodule BlockWeb.Login do
     case Repos.AccountRepository.get_account(user.username) do
       [] ->
         if user.username == "someone manual strong movie roof episode eight spatial brown soldier soup motor" and Repos.AccountRepository.get_all_accounts() === [] do
-          account = Account.newAccount(Map.merge(user, %{balance: 100000}))
+          account = AccountService.newAccount(Map.merge(user, %{balance: 100000}))
           Repos.AccountRepository.insert_account(account)
           user = Repos.AccountRepository.get_account(user.username)
           user =

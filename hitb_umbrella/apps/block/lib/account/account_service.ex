@@ -130,12 +130,12 @@ defmodule Block.AccountService do
       {_, :ok} ->
         latest_block = Block.BlockService.get_latest_block()
         tran = %{
-          id: Block.Transaction.generateId,
+          id: Block.TransactionService.generateId,
           height: latest_block.index,
           blockId: to_string(latest_block.index),
           type: 5,
           timestamp: :os.system_time(:seconds),
-          datetime: Block.Transaction.generateDateTime,
+          datetime: Block.TransactionService.generateDateTime,
           senderPublicKey: account.publicKey,
           requesterPublicKey: "",
           senderId: account.index,

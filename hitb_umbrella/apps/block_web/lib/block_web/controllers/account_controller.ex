@@ -2,7 +2,7 @@ defmodule BlockWeb.AccountController do
   use BlockWeb, :controller
   plug BlockWeb.Access
   alias Hitb
-  alias Block.Account
+  alias Block.AccountService
   @moduledoc """
     Functionality for managing peers
   """
@@ -27,8 +27,8 @@ defmodule BlockWeb.AccountController do
           _ -> get_session(conn, :user)
        end
     if(user.login)do
-      balance = Account.getBalance(user.username)
-      u_Balance = Account.getuBalance(user.username)
+      balance = AccountService.getBalance(user.username)
+      u_Balance = AccountService.getuBalance(user.username)
       json(conn, %{balance: balance, u_Balance: u_Balance})
     else
       json(conn, %{balance: 0, u_Balance: 0})
@@ -49,7 +49,7 @@ defmodule BlockWeb.AccountController do
   end
 
   def generatePublicKey(conn, %{"username" => username}) do
-    publicKey = Account.generatePublickey(username)
+    publicKey = AccountService.generatePublickey(username)
     json(conn, %{publicKey: publicKey})
   end
 
@@ -84,7 +84,7 @@ defmodule BlockWeb.AccountController do
     case username do
       "" -> json(conn, %{success: false, user: %{username: username}, info: "用户名未填写"})
       _ ->
-        account = Account.newAccount(%{username: username, balance: 0})
+        account = AccountService.newAccount(%{username: username, balance: 0})
         case account do
           false ->
             json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
@@ -97,7 +97,7 @@ defmodule BlockWeb.AccountController do
   end
 
   def addSignature(conn, %{"username" => username, "password" => password}) do
-    [success, id] = Account.addSignature(username, password)
+    [success, id] = AccountService.addSignature(username, password)
     [conn, _] = BlockWeb.Login.user(conn)
     json(conn, %{success:  success, transaction: id})
   end
