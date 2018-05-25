@@ -74,7 +74,6 @@ defmodule HitbserverWeb.Router do
     get "/bc_production", BlockController, :bc_production
     get "/bc_blockchain", BlockController, :bc_blockchain
     get "/bc_delegates", BlockController, :bc_delegates
-    get "/bc_delegates", BlockController, :bc_delegates
     get "/bc_pay", BlockController, :bc_pay
     get "/bc_peers", BlockController, :bc_peers
     # 规则表

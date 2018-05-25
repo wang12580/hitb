@@ -1,5 +1,5 @@
 defmodule Library.ServerRuleService do
-  import Ecto
+  # import Ecto
   import Ecto.Query
   alias Hitb.Repo
 

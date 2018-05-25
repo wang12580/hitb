@@ -43,7 +43,7 @@ defmodule BlockWeb.P2pChannel do
   def handle_in(@add_peer_request, payload, socket) do
     Logger.info("attempting to connect to #{inspect payload}...")
     result = Block.P2pSessionManager.connect(payload["host"], payload["port"])
-    if result == :fail do
+    if result != :ok do
       {:reply, {:ok, %{type: @connection_error}}, socket}
     else
       {:reply, {:ok, %{type: @connection_success}}, socket}

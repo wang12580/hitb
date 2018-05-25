@@ -48,6 +48,7 @@ defmodule Server.Mixfile do
       {:distillery, "~> 1.5", runtime: false},
       {:cowboy, "~> 1.0"},
       {:library, in_umbrella: true},
+      {:hitb, in_umbrella: true},
     ]
   end
 

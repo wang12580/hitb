@@ -35,8 +35,8 @@ defmodule LibraryWeb.Wt4Controller do
     result = Enum.reduce(result, [["病案ID", "主要诊断", "其他诊断", "手术/操作", "住院天数", "病种", "费用", "性别", "年龄"]], fn x, acc ->
               acc ++ [Enum.map([:b_wt4_v1_id, :disease_code, :diags_code, :opers_code, :acctual_days, :drg, :total_expense, :gender, :age], fn k -> if(k in [:diags_code, :opers_code])do Enum.join(Map.get(x, k), "-") else Map.get(x, k) end end)]
              end)
-    IO.inspect Hitbserver.Page.page_list(page, count, 15)
-    [page_num, page_list, page_count] = Hitbserver.Page.page_list(page, count, 15)
+    IO.inspect Hitb.Page.page_list(page, count, 15)
+    [page_num, page_list, page_count] = Hitb.Page.page_list(page, count, 15)
     json conn, %{wt4: result, page: page_num, page_list: page_list, count: page_count, num: count, org_num: 0, time_num: 0, drg_num: 0}
   end
 

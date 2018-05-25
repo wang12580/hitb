@@ -1,5 +1,5 @@
 defmodule Edit.MouldService do
-  import Ecto
+  # import Ecto
   import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Edit.MyMould

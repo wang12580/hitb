@@ -1,8 +1,8 @@
 defmodule Library.RuleService do
-  import Ecto
+  # import Ecto
   import Ecto.Query
   alias Hitb.Repo
-  alias Hitb.Time
+  # alias Hitb.Time
   alias Hitb.Library.RuleMdc
   alias Hitb.Library.RuleAdrg
   alias Hitb.Library.RuleDrg
@@ -11,7 +11,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.LibWt4
   alias Hitb.Library.ChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent
-  alias Hitb.Library.Key
+  alias Library.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
     [result, page_list, page_num, _count, tab_type, type, dissect, list, version, year] = get_rule(page, type, tab_type, version, year, dissect, rows)
@@ -269,7 +269,7 @@ defmodule Library.RuleService do
     [result, list, page_list, page_num, count_page, type]
   end
 
-  defp ruleChinese(type, tab_type, tab, page, rows) do
+  defp ruleChinese(type, _tab_type, tab, page, rows) do
     count = Repo.all(from p in tab, select: count(p.id)) |>hd
     skip = Hitb.Page.skip(page, rows)
     result = from(p in tab)

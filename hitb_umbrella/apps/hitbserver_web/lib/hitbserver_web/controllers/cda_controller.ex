@@ -1,7 +1,7 @@
 defmodule HitbserverWeb.CdaController do
   use HitbserverWeb, :controller
   alias Edit.CdaService
-  alias Hitb.Time
+  # alias Hitb.Time
   plug HitbserverWeb.Access
 
   def cda_user(conn, _params) do

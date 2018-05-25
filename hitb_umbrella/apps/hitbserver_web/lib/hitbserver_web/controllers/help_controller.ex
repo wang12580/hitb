@@ -1,7 +1,7 @@
 defmodule HitbserverWeb.HelpController do
   use HitbserverWeb, :controller
   alias Edit.HelpService
-  alias Hitb.Time
+  # alias Hitb.Time
   plug HitbserverWeb.Access
 
   def help_list(conn, _params) do

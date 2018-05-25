@@ -1,7 +1,7 @@
 defmodule Edit.CdaTest do
   use Edit.DataCase
 
-  alias Edit.Client.Cda
+  alias Hitb.Edit.Cda
   @valid_attrs %{content: "sss", name: "sss", username: "sss", is_show: false, is_change: false}
   @invalid_attrs %{}
 

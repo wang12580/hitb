@@ -1,9 +1,9 @@
 defmodule Edit.HelpService do
-  import Ecto
+  # import Ecto
   import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Edit.ClinetHelp
-  alias Hitb.Time
+  # alias Hitb.Time
 
   def help_list() do
     Repo.all(from p in ClinetHelp, select: p.name)

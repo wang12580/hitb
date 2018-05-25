@@ -67,7 +67,7 @@ defmodule Stat.Convert do
       3 ->
         [year, last, _] = String.split(time, "年")
         case last do
-          "上半" -> "#{year-1}年下半年"
+          "上半" -> "#{String.to_integer(year)-1}年下半年"
           "下半" -> "#{year}年上半年"
         end
     end

@@ -2,7 +2,7 @@ defmodule LibraryWeb.PageController do
   use LibraryWeb, :controller
   plug LibraryWeb.Access
   # alias Library.ChineseMedicine
-  alias Library.ChineseMedicinePatent
+  # alias Library.ChineseMedicinePatent
 
   def index(conn, _params) do
     render conn, "index.html"

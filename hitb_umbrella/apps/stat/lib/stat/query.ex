@@ -58,9 +58,9 @@ defmodule Stat.Query do
 
   def info(username, _rows_num) do
     [_page, type, tool_type, drg, _order, _order_type, page_type, _org, _time] =
-      case Hitbserver.ets_get(:stat_drg, "defined_url_" <> username) do
+      case Hitb.ets_get(:stat_drg, "defined_url_" <> username) do
         nil -> ["1", "org", "total", "", "org", "asc", "base", "", ""]
-        _ -> Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
+        _ -> Hitb.ets_get(:stat_drg, "defined_url_" <> username)
       end
     case Hitb.ets_get(:stat_drg, "comx_" <> username) do
       nil -> [[], []]

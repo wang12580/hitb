@@ -1,10 +1,10 @@
 defmodule Edit.CdaService do
-  import Ecto
+  # import Ecto
   import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Edit.Cda
   alias Hitb.Edit.MyMould
-  alias Hitb.Edit.ClinetHelp
+  # alias Hitb.Edit.ClinetHelp
   alias Hitb.Time
 
   def cda_user() do
@@ -40,7 +40,7 @@ defmodule Edit.CdaService do
       else
         {username, file_name}
       end
-    rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
+    _rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
     if (mouldtype == "模板") do
       myMoulds(file_name, file_username, content, doctype)
     else

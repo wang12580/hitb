@@ -11,8 +11,8 @@ defmodule StatWeb.ContrastController do
     key = Key.key(username, drg, type, tool_type, page_type)
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end)
     #拿到缓存中所有数据
-    [statx, staty] = [Hitbserver.ets_get(:stat_drg, "comx" <> "_" <> username),
-                      Hitbserver.ets_get(:stat_drg, "comy" <> "_" <> username)]
+    [statx, staty] = [Hitb.ets_get(:stat_drg, "comx" <> "_" <> username),
+                      Hitb.ets_get(:stat_drg, "comy" <> "_" <> username)]
     statx = if(statx == nil)do [] else statx end
     staty = if(staty)do staty else key end
     #生成分析结果

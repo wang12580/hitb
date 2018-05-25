@@ -2,13 +2,13 @@ defmodule ServerWeb.PageController do
   use ServerWeb, :controller
   plug ServerWeb.Access
   alias Server.CustomizeDepartment
-  # alias Server.Wt4
+  # alias Hitb.Library.Wt4
 
   def index(conn, _params) do
     render conn, "index.html"
   end
 
-  def wt4_upload(conn, _params)do
+  def wt4_upload(conn, _params) do
     file_path = System.user_home() <> "/wt4/"
     %{:path => file_path, :file_name => file_name, :file_size => file_size} = Hitb.File.upload_file(file_path, conn.params["file"])
     Hitb.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
@@ -37,7 +37,7 @@ defmodule ServerWeb.PageController do
     keys = Map.keys(hd(json))
     org_name =
       cond do
-        keys == nil -> ""
+        # keys == nil -> ""
         keys == [] -> ""
         "org" in keys -> hd(json)["org"]
         "org_name" in keys -> hd(json)["org_name"]
