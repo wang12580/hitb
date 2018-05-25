@@ -3,7 +3,7 @@ defmodule StatWeb.StatController do
   plug StatWeb.Access
   alias Stat.Key
   alias Stat.Query
-  alias Stat.Chart
+  # alias Stat.Chart
 
   def stat_json(conn, _params) do
     [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
@@ -15,7 +15,7 @@ defmodule StatWeb.StatController do
     json conn, %{stat: stat, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
-  def download_stat(conn, %{"username" => username})do
+  def download_stat(conn, %{"username" => _username})do
     #取对比分析
     [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
     [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")

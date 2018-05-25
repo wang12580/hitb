@@ -36,7 +36,7 @@ defmodule HitbserverWeb.OnlineChannel do
     {:noreply, socket}
   end
 
-  def terminate(reason, socket) do
+  def terminate(_reason, socket) do
     Hitb.ets_del(:socket_user, socket.username)
     Logger.warn("用户--#{socket.username}--已下线")
     :ok

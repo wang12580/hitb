@@ -1,4 +1,4 @@
-defmodule Share do
+defmodule Block.Share do
   @moduledoc """
   Documentation for Share.
   """

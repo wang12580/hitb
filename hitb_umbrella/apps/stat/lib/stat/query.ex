@@ -12,7 +12,7 @@ defmodule Stat.Query do
     #取缓存stat
     cache_key = [page, type, org, time, drg, order, order_type, key, rows_num, Hitb.Time.sdata_date()]
     #分析获得
-    [list, count, skip, stat] =
+    [list, count, _skip, stat] =
       cond do
         stat_type == "download" ->
           order = String.to_atom(order)
@@ -56,8 +56,8 @@ defmodule Stat.Query do
     # {[],[],[],[],1,0,[],[],[]}
   end
 
-  def info(username, rows_num) do
-    [page, type, tool_type, drg, order, order_type, page_type, org, time] =
+  def info(username, _rows_num) do
+    [_page, type, tool_type, drg, _order, _order_type, page_type, _org, _time] =
       case Hitbserver.ets_get(:stat_drg, "defined_url_" <> username) do
         nil -> ["1", "org", "total", "", "org", "asc", "base", "", ""]
         _ -> Hitbserver.ets_get(:stat_drg, "defined_url_" <> username)
@@ -116,11 +116,11 @@ defmodule Stat.Query do
   end
 
   #生成查询语句
-  defp query(page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num) do
+  defp query(_page, type, _tool_type, org, time, drg, _order, _order_type, _page_type, _rows_num) do
     cond do
       type in ["mdc", "adrg", "drg"] ->
         drg = if(type == "mdc")do String.slice(drg, 3, 1) else drg end
-        query = from(p in Stat.StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>drgwhere(type, drg)
+        _query = from(p in Stat.StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>drgwhere(type, drg)
       type == "heal" ->
         myfrom(drg)|>mywhere(type, org, time)
       type == "case" ->

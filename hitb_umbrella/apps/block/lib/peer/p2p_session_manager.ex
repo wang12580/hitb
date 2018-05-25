@@ -1,4 +1,4 @@
-defmodule Peers.P2pSessionManager do
+defmodule Block.P2pSessionManager do
   @moduledoc """
   Oversees clients for each p2p session, using them to send messages.
   """
@@ -9,7 +9,7 @@ defmodule Peers.P2pSessionManager do
   # @add_peer_request   Repos.P2pMessage.add_peer_request
 
   def connect(host, port) do
-    already_connected = :ets.tab2list(:peers) |> Enum.reduce(false, fn(record, acc) ->
+    _already_connected = :ets.tab2list(:peers) |> Enum.reduce(false, fn(record, acc) ->
         if acc == false do
           peer_map = record |> elem(1)
           if peer_map[:host] == host && peer_map[:port] == port do
@@ -20,7 +20,7 @@ defmodule Peers.P2pSessionManager do
         end
       end)
       # if not already_connected do
-        {:ok, pid} = Peers.P2pClientHandler.start_link(host, port)
+        {:ok, pid} = Block.P2pClientHandler.start_link(host, port)
         :ets.insert(:peers, {pid, %{host: host, port: port}})
         :ok
       # else

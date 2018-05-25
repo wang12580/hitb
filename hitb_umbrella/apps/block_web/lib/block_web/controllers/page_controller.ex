@@ -9,12 +9,6 @@ defmodule BlockWeb.PageController do
   alias Token
 
   def index(conn, _params) do
-    Logger.info Hitb.hello()
-    Logger.info Repos.hello()
-    Logger.info Peers.hello()
-    Logger.info Block.hello()
-    Logger.info Share.hello()
-    Logger.info Token.hello()
     login = BlockWeb.Login.is_login(conn)
     if(login)do
       [conn, user] = BlockWeb.Login.user(conn)

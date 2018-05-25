@@ -21,7 +21,7 @@ defmodule HitbserverWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(params, socket) do
+  def connect(_params, socket) do
     Hitb.ets_insert(:socket_user, :all_users, Server.all_user())
     {:ok, socket}
   end

@@ -61,7 +61,7 @@ defmodule Hitb.Time do
   #当前时间到小时数字连接string
   def stimehour_number() do
     time = :calendar.local_time()
-    {year, month, day, hour, minute, second} = gb_time(time)
+    {year, month, day, hour, _minute, _second} = gb_time(time)
     to_string(year) <> to_string(month) <> to_string(day) <> to_string(hour)
   end
 

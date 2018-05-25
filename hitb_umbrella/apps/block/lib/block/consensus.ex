@@ -1,4 +1,4 @@
-defmodule Consensus do
+defmodule Block.Consensus do
   @moduledoc """
   Documentation for Block.
   """

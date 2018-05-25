@@ -1,7 +1,7 @@
 defmodule Stat.StatOrg do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Stat.StatOrg
+  # alias Stat.StatOrg
 
 
   schema "stat_org" do

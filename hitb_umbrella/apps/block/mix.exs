@@ -26,6 +26,11 @@ defmodule Block.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:phoenix_ecto, "~> 3.2"},
+      {:postgrex, ">= 0.0.0"},
+      {:phoenix_gen_socket_client, "~> 2.0.0"},
+      {:websocket_client, "~> 1.2"},
+      {:repos, in_umbrella: true},
     ]
   end
 end

@@ -1,4 +1,4 @@
-defmodule Peers do
+defmodule Block.Peers do
   require Logger
   @moduledoc """
   Documentation for Peers.

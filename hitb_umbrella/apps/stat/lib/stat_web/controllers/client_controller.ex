@@ -2,7 +2,7 @@ defmodule StatWeb.ClientController do
   use StatWeb, :controller
   plug StatWeb.Access
   alias Stat.Query
-  alias Hitb.Time
+  # alias Hitb.Time
 
   def stat_create(conn, %{"data" => data, "username" => username}) do
     filename = Hitb.Time.stimehour_number <> "对比分析.csv"

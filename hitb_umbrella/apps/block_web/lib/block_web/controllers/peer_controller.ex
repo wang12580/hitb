@@ -2,13 +2,15 @@ defmodule BlockWeb.PeerController do
   use BlockWeb, :controller
   plug BlockWeb.Access
   alias Hitb
+  alias Block.Peers
+
   @moduledoc """
     Functionality for managing peers
   """
 
   def add_peer(conn, %{"peer_data" => peer_data}) do
     %{"host" => host, "port" => port} = peer_data
-    result = Peers.P2pSessionManager.connect(host, port)
+    result = Block.P2pSessionManager.connect(host, port)
     if result == :fail do
       raise Hitb.ErrorAlreadyConnected
     else

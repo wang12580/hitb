@@ -13,7 +13,7 @@ defmodule LibraryWeb.RuleController do
 
   def rule(conn, _params) do
     params = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    [result, page_list, page_num, count, tab_type, type, dissect, list, version, year] = rule(params)
+    [result, page_list, page_num, _count, tab_type, type, dissect, list, version, year] = rule(params)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
