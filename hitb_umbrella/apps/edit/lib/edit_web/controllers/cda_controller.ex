@@ -9,15 +9,15 @@ defmodule EditWeb.CdaController do
   plug EditWeb.Access
 
   def test(conn, _params) do
-    # {:ok, str} = File.read("/home/hitb/桌面/未命名文件夹 2/hitb_edit.cdh")
-    # IO.inspect str
-    # Enum.each(String.split(str, "\n") -- [""], fn x-> 
-    #   IO.inspect x
-    # end)
-    resule = Repo.get_by(ClinetHelp, name: "输入提示")
-    result = resule.content
-    Enum.each(String.split(result, "\\n") -- [""], fn x-> 
-      IO.inspect x
+    resule = Repo.all(from p in Client.Cda, select: [p.username, p.name, p.content])
+    Enum.each(resule, fn x -> 
+      [username, name, content] = x
+      b = String.split(name, ".")|>hd
+      # IO.inspect b
+      rule = %{"username" => username, "name"=> b<>".cdh", "content" => content, "is_change" => true, "is_show" => true}
+      %MyMould{}
+      |> MyMould.changeset(rule)
+      |> Repo.insert()
     end)
     json conn, %{}
   end
