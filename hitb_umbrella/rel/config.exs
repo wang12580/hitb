@@ -48,13 +48,13 @@ release :hitb_umbrella do
   set version: "0.1.0"
   set applications: [
     :runtime_tools,
+    block: :permanent,
     block_web: :permanent,
     edit: :permanent,
-    hitbserver: :permanent,
-    hitbserver_web: :permanent,
+    stat: :permanent,
     library: :permanent,
     server: :permanent,
-    stat: :permanent,
-    block: :permanent
+    hitb: :permanent,
+    hitbserver_web: :permanent
   ]
 end
