@@ -35,7 +35,10 @@ defmodule Hitb.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:library, in_umbrella: true},]
+    [
+      {:phoenix_ecto, "~> 3.2"},
+      {:postgrex, ">= 0.0.0"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

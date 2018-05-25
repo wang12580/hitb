@@ -1,7 +1,7 @@
-defmodule Edit.Client.Cda do
+defmodule Hitb.Edit.Cda do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Edit.Client.Cda
+  alias Hitb.Edit.Cda
 
 
   schema "cda" do

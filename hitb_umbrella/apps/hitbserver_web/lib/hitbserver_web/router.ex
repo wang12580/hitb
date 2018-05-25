@@ -35,12 +35,9 @@ defmodule HitbserverWeb.Router do
     get "/bc_pay", BlockController, :bc_pay
     get "/bc_peers", BlockController, :bc_peers
     # 规则表
-    get "/rule", RuleController, :rule
-    get "/rule_contrast", RuleController, :contrast
-    get "/details", RuleController, :details
-
-
-
+    get "/rule", RulePageController, :rule
+    get "/rule_contrast", RulePageController, :contrast
+    get "/details", RulePageController, :details
     #统计分析
     get "/stat_html", StatController, :stat
     get "/contrast", StatController, :contrast
@@ -81,9 +78,9 @@ defmodule HitbserverWeb.Router do
     get "/bc_pay", BlockController, :bc_pay
     get "/bc_peers", BlockController, :bc_peers
     # 规则表
-    get "/rule", RuleController, :rule
-    get "/rule_contrast", RuleController, :contrast
-    get "/details", RuleController, :details
+    get "/rule", RulePageController, :rule
+    get "/rule_contrast", RulePageController, :contrast
+    get "/details", RulePageController, :details
 
     #统计分析
     get "/stat_html", StatController, :stat
@@ -110,17 +107,38 @@ defmodule HitbserverWeb.Router do
     get "/rule_auditing_html", ServerController, :auditing_html
     get "/user_html", ServerController, :user_html
     get "/myset", ServerController, :myset
-
-
   end
 
   # Other scopes may use custom stacks.
   scope "/hospitals", HitbserverWeb do
     pipe_through :api
-
-
     post "/login", PageController, :login
     #省市县三级联动
     get "/province", ServerController, :province
+  end
+
+  scope "/edit", HitbserverWeb do
+    pipe_through :api
+    get "/cda", CdaController, :index
+    get "/cda_user", CdaController, :cda_user
+    get "/cda_file", CdaController, :cda_file
+    post "/cda", CdaController, :update
+    get "/mouldlist", MouldController, :mould_list
+    get "/mouldfile", MouldController, :mould_file
+    get "/helplist", HelpController, :help_list
+    get "/helpfile", HelpController, :help_file
+  end
+
+  scope "/library", HitbserverWeb do
+    pipe_through :api
+    get "/rule_client", RuleController, :rule_client
+    get "/rule_file", RuleController, :rule_file
+    get "/rule", RuleController, :rule
+    get "/contrast", RuleController, :contrast
+    get "/details", RuleController, :details
+    get "/search", RuleController, :search
+    get "/wt4", Wt4Controller, :index
+    get "/stat_wt4", Wt4Controller, :stat_wt4
+    get "/server_rule", RuleController, :server_rule
   end
 end

@@ -1,4 +1,4 @@
-defmodule Hitb.ErrorAlreadyConnected do
+defmodule Block.ErrorAlreadyConnected do
   @moduledoc """
   Exception raised when attempting to connect to a user again.
   """

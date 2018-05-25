@@ -23,15 +23,13 @@ defmodule EditWeb.Router do
   # Other scopes may use custom stacks.
   scope "/edit", EditWeb do
     pipe_through :api
-
-    get "/test", CdaController, :test
     get "/cda", CdaController, :index
     get "/cda_user", CdaController, :cda_user
     get "/cda_file", CdaController, :cda_file
     post "/cda", CdaController, :update
-    get "/mouldlist", CdaController, :mould_list
-    get "/mouldfile", CdaController, :mould_file
-    get "/helplist", CdaController, :help_list
-    get "/helpfile", CdaController, :help_file
+    get "/mouldlist", MouldController, :mould_list
+    get "/mouldfile", MouldController, :mould_file
+    get "/helplist", HelpController, :help_list
+    get "/helpfile", HelpController, :help_file
   end
 end
