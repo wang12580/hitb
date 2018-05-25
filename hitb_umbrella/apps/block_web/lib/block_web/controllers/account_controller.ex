@@ -66,17 +66,17 @@ defmodule BlockWeb.AccountController do
   end
 
   def getAccount(conn, %{"username" => username}) do
-    account = Repos.AccountRepository.get_account(username)
+    account = Block.AccountRepository.get_account(username)
     json(conn, %{account: account})
   end
 
   def getAccountByPublicKey(conn, %{"publicKey" => publicKey}) do
-    account = Repos.AccountRepository.get_account_by_publicKey(publicKey)
+    account = Block.AccountRepository.get_account_by_publicKey(publicKey)
     json(conn, %{account: account})
   end
 
   def getAccountByAddress(conn, %{"address" => address}) do
-    account = Repos.AccountRepository.get_account_by_address(address)
+    account = Block.AccountRepository.get_account_by_address(address)
     json(conn, %{account: account})
   end
 
@@ -89,8 +89,8 @@ defmodule BlockWeb.AccountController do
           false ->
             json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
           _ ->
-            Repos.AccountRepository.insert_account(account)
-            user = Repos.AccountRepository.get_account(username)
+            Block.AccountRepository.insert_account(account)
+            user = Block.AccountRepository.get_account(username)
             json(conn, %{success: true, user: user, info: "用户创建成功"})
         end
     end
@@ -104,7 +104,7 @@ defmodule BlockWeb.AccountController do
 
   def getAccountsPublicKey(conn, _params) do
     [conn, user] = BlockWeb.Login.user(conn)
-    publicKeys = Repos.AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
+    publicKeys = Block.AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
     json conn, %{publicKeys: publicKeys}
   end
 end

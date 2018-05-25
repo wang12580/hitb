@@ -9,12 +9,12 @@ defmodule BlockWeb.Login do
   end
 
   def login(conn, user) do
-    case Repos.AccountRepository.get_account(user.username) do
+    case Block.AccountRepository.get_account(user.username) do
       [] ->
-        if user.username == "someone manual strong movie roof episode eight spatial brown soldier soup motor" and Repos.AccountRepository.get_all_accounts() === [] do
+        if user.username == "someone manual strong movie roof episode eight spatial brown soldier soup motor" and Block.AccountRepository.get_all_accounts() === [] do
           account = AccountService.newAccount(Map.merge(user, %{balance: 100000}))
-          Repos.AccountRepository.insert_account(account)
-          user = Repos.AccountRepository.get_account(user.username)
+          Block.AccountRepository.insert_account(account)
+          user = Block.AccountRepository.get_account(user.username)
           user =
             %{login: true,
               index: user.index,
@@ -37,7 +37,7 @@ defmodule BlockWeb.Login do
           [put_session(conn, :user, %{login: false, username: user.username}), %{}]
         end
       _ ->
-        user = Repos.AccountRepository.get_account(user.username)
+        user = Block.AccountRepository.get_account(user.username)
         user =
           %{login: true,
             index: user.index,
@@ -64,7 +64,7 @@ defmodule BlockWeb.Login do
     case user do
       nil -> false
       _ ->
-        account = Repos.AccountRepository.get_account(user.username)
+        account = Block.AccountRepository.get_account(user.username)
         case account do
           [] -> false
           _ -> user.login
@@ -74,7 +74,7 @@ defmodule BlockWeb.Login do
 
   def user(conn) do
     username = get_session(conn, :user).username
-    user = Map.merge(get_session(conn, :user), Repos.AccountRepository.get_account(username))
+    user = Map.merge(get_session(conn, :user), Block.AccountRepository.get_account(username))
     latest_block = Block.BlockService.get_latest_block()
     user = %{user | :lockHeight => latest_block.index}
     [put_session(conn, :user, user), user]

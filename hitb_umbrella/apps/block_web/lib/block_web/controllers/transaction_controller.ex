@@ -9,12 +9,12 @@ defmodule BlockWeb.TransactionController do
   """
 
   def getTransactions(conn, _) do
-    transactions = Repos.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
+    transactions = Block.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
     json(conn, %{data: transactions})
   end
 
   def getTransaction(conn, %{"id" => id}) do
-    transaction = Repos.TransactionRepository.get_transactions_by_id(id)
+    transaction = Block.TransactionRepository.get_transactions_by_id(id)
     json conn, %{data: transaction}
   end
 
@@ -35,15 +35,15 @@ defmodule BlockWeb.TransactionController do
   end
 
   def getTransactionsByBlockHeight(conn, %{"height" => height}) do
-    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(height)
+    transaction = Block.TransactionRepository.get_transactions_by_blockIndex(height)
     json conn, %{data: transaction}
   end
 
   def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
-    block = Repos.BlockRepository.get_block_by_hash(hash)
+    block = Block.BlockRepository.get_block_by_hash(hash)
     case block do
       [] -> json conn, %{data: []}
-      _ -> transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
+      _ -> transaction = Block.TransactionRepository.get_transactions_by_blockIndex(block.index)
            json conn, %{data: transaction}
     end
   end

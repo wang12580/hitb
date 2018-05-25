@@ -27,17 +27,17 @@ defmodule BlockWeb.P2pChannel do
 
   def handle_in(@query_all_accounts, _payload, socket) do
     Logger.info("sending all accounts to #{inspect socket}")
-    {:reply, {:ok, %{type: @query_all_accounts, data: Repos.AccountRepository.get_all_accounts()}}, socket}
+    {:reply, {:ok, %{type: @query_all_accounts, data: Block.AccountRepository.get_all_accounts()}}, socket}
   end
 
   def handle_in(@query_all_blocks, _payload, socket) do
     Logger.info("sending all blocks to #{inspect socket}")
-    {:reply, {:ok, %{type: @query_all_blocks, data: Repos.BlockRepository.get_all_blocks()}}, socket}
+    {:reply, {:ok, %{type: @query_all_blocks, data: Block.BlockRepository.get_all_blocks()}}, socket}
   end
 
   def handle_in(@query_all_transactions, _payload, socket) do
     Logger.info("sending all transactions to #{inspect socket}")
-    {:reply, {:ok, %{type: @query_all_transactions, data: Repos.TransactionRepository.get_all_transactions()}}, socket}
+    {:reply, {:ok, %{type: @query_all_transactions, data: Block.TransactionRepository.get_all_transactions()}}, socket}
   end
 
   def handle_in(@add_peer_request, payload, socket) do

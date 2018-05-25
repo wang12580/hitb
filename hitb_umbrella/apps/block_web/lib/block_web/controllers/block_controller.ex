@@ -16,20 +16,20 @@ defmodule BlockWeb.BlockController do
 
   def get_all_blocks(conn, _) do
     all_blocks =
-      Repos.BlockRepository.get_all_blocks()
+    Block.BlockRepository.get_all_blocks()
       |>Enum.map(fn x ->
-          Map.put(x, :transactions, length(Repos.TransactionRepository.get_transactions_by_blockIndex(x.index)))
+          Map.put(x, :transactions, length(Block.TransactionRepository.get_transactions_by_blockIndex(x.index)))
         end)
     json(conn,  %{blocks: all_blocks})
   end
 
   def getBlock(conn, %{"index" => index}) do
-    block = Repos.BlockRepository.get_block(index)
+    block = Block.BlockRepository.get_block(index)
     json(conn, %{block: block})
   end
 
   def getBlockByHash(conn, %{"hash" => hash}) do
-    block = Repos.BlockRepository.get_block_by_hash(hash)
+    block = Block.BlockRepository.get_block_by_hash(hash)
     json(conn, %{block: block})
   end
 
@@ -42,7 +42,7 @@ defmodule BlockWeb.BlockController do
   end
 
   def getHeight(conn, _) do
-    height = Repos.BlockRepository.get_all_blocks() |> List.last |> Map.get(:index)
+    height = Block.BlockRepository.get_all_blocks() |> List.last |> Map.get(:index)
     json(conn, %{height: height})
   end
 

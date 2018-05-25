@@ -20,7 +20,7 @@ defmodule BlockWeb.PeerController do
   end
 
   def get_all_peers(conn, _) do
-    peers = Repos.PeerRepository.get_all_peers()
+    peers = Block.PeerRepository.get_all_peers()
     json(conn,  %{peers: peers})
   end
 
