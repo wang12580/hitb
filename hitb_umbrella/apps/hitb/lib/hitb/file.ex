@@ -1,4 +1,5 @@
 defmodule Hitb.File do
+  alias Hitb.Library.Wt4
   #对写入文件的处理
   def write(file_path, file_name, str)do
     #临时文件是否存在
@@ -80,7 +81,7 @@ defmodule Hitb.File do
             Map.put(acc, k, val)
           end)
           #取得错误
-          error = Library.Wt4.changeset(%Library.Wt4{}, x).errors
+          error = Wt4.changeset(%Wt4{}, x).errors
             |>Enum.map(fn error -> hd(Tuple.to_list(error)) end)
             |>Enum.map(fn x -> to_string(x) end)
           Map.put(x, "error", error)
@@ -90,7 +91,7 @@ defmodule Hitb.File do
           case JSON.decode(x) do
             {:ok, json} ->
               json = Map.merge(json, %{"adrg" => String.slice(json["drg"], 0, 3), "mdc" => String.at(json["drg"], 0), "department" => to_string(json["department"]), "org" => to_string(json["org"]), "org_name" => "东华万兴测试"})
-              error = Library.Wt4.changeset(%Library.Wt4{}, json).errors
+              error = Wt4.changeset(%Wt4{}, json).errors
                 |>Enum.map(fn error -> hd(Tuple.to_list(error)) end)
                 |>Enum.map(fn x -> to_string(x) end)
               Map.put(json, "error", error)

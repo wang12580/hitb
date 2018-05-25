@@ -1,6 +1,9 @@
 defmodule Hitb do
   @tab [:hitb_log, :postgresx, :json, :stat_drg, :my_user, :stat, :socket_user]
 
+  def hello() do
+    :hitb
+  end
   def ets_new() do
     Enum.each(@tab, fn x -> ets_new(x) end)
   end

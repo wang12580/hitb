@@ -111,6 +111,7 @@ defmodule Block.TransactionService do
 
   def generateId do
     {megaSecs, secs, _} = :erlang.now()
+    # {megaSecs, secs, _} = DateTime.utc_now()
     randMegaSecs = :rand.uniform(megaSecs)
     randSecs = :rand.uniform(secs)
     # randMicroSecs = :random.uniform(microSecs)

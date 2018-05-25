@@ -12,7 +12,7 @@ defmodule BlockWeb.PeerController do
     %{"host" => host, "port" => port} = peer_data
     result = Block.P2pSessionManager.connect(host, port)
     if result != :ok do
-      raise Hitb.ErrorAlreadyConnected
+      raise Block.ErrorAlreadyConnected
     else
       PeerService.newPeer(host, port)
       json(conn, %{result: [host <> ":" <> port <> "节点连接成功"]})
