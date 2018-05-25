@@ -1,8 +1,6 @@
-defmodule Block.Transaction do
-  @moduledoc """
-  Documentation for Transaction.
-  """
-  alias Block.Account
+defmodule Block.TransactionService do
+  alias Block.AccountService
+
   def hello do
     :transaction
   end
@@ -10,7 +8,7 @@ defmodule Block.Transaction do
   def newTransaction(transaction) do
     transaction = Map.merge(%{fee: 0, type: 1, id: generateId()}, transaction)
     latest_block = Block.BlockService.get_latest_block()
-    sender = Account.getAccountByPublicKey(transaction.publicKey)
+    sender = AccountService.getAccountByPublicKey(transaction.publicKey)
     case sender do
       [] -> [:error, nil, ""]
       _ ->
@@ -20,7 +18,7 @@ defmodule Block.Transaction do
         blockId: to_string(latest_block.hash),
         type: transaction.type,
         timestamp: :os.system_time(:seconds),
-        datetime: Block.Transaction.generateDateTime,
+        datetime: TransactionService.generateDateTime,
         senderPublicKey: sender.publicKey,
         requesterPublicKey: sender.publicKey,
         senderId: sender.index,
@@ -35,11 +33,11 @@ defmodule Block.Transaction do
       #验证是否有二级密码
       case sender.secondPublicKey do
         nil ->
-          recipient = Block.Account.getAccountByPublicKey(tran.recipientId)
+          recipient = AccountService.getAccountByPublicKey(tran.recipientId)
           pay(sender, recipient, transaction, tran)
         _ ->
           if(:crypto.hash(:sha256, "#{transaction.secondPassword}")|> Base.encode64|> regex == sender.secondPublicKey)do
-            recipient = Block.Account.getAccountByPublicKey(tran.recipientId)
+            recipient = AccountService.getAccountByPublicKey(tran.recipientId)
             pay(sender, recipient, transaction, tran)
           else
             [:error, nil, "交易失败,二级密码错误"]
@@ -99,11 +97,11 @@ defmodule Block.Transaction do
           true ->
             [:error, nil, "交易失败,费用不足"]
           false ->
-            Repos.TransactionRepository.insert_transaction(insert_tran)
+            Block.TransactionRepository.insert_transaction(insert_tran)
             sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
-            Repos.AccountRepository.insert_account(sender)
+            Block.AccountRepository.insert_account(sender)
             recipient = %{recipient | :balance => sender.balance + transaction.amount}
-            Repos.AccountRepository.insert_account(recipient)
+            Block.AccountRepository.insert_account(recipient)
             [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
         end
       false ->

@@ -3,7 +3,6 @@ defmodule Block.Account do
   import Ecto.Changeset
   alias Block.Account
 
-
   schema "account" do
     field :username,           :string #用户名
     field :u_username,         :string

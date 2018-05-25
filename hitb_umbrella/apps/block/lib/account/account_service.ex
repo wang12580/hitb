@@ -1,4 +1,4 @@
-defmodule Block.Account do
+defmodule Block.AccountService do
   @moduledoc """
   Documentation for Account.
   """

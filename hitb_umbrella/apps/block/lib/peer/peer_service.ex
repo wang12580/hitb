@@ -1,4 +1,4 @@
-defmodule Block.Peers do
+defmodule Block.PeerService do
   require Logger
   @moduledoc """
   Documentation for Peers.
@@ -14,7 +14,7 @@ defmodule Block.Peers do
 
   def newPeer(host, port)do
     peer = %{host: host, port: port, connect: true}
-    Repos.PeerRepository.insert_peer(peer)
+    Block.PeerRepository.insert_peer(peer)
   end
 
 end
