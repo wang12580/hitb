@@ -6,7 +6,7 @@ defmodule Edit.Client do
   import Ecto.Query, warn: false
   alias Edit.Repo
 
-  alias Edit.Client.Cda
+  alias Hitb.Edit.Cda
 
   @doc """
   Returns the list of cda.
