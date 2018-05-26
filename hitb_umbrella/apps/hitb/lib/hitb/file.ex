@@ -30,25 +30,36 @@ defmodule Hitb.File do
       end
     end
     #读取文件信息
-    # File.stat("./mix.exs")
-    {:ok, [_, file_size, _, access, atime, mtime, ctime, _, _, _, _, _, _, _]} = :file.read_file_info(file_path <> file_name)
+    file_info =
+      case File.stat("#{file_path}#{file_name}") do
+        {:ok, result} ->
+          %{path: "#{file_path}#{file_name}", #文件存放路径
+            file_name: file_name, #文件名
+            file_size: result.size, #文件大小
+            file_type: content_type, #文件类型
+            access: result.access, #文件权限
+            atime: Hitb.Time.ttime_to_stime(result.atime), #最后一次读取时间
+            mtime: Hitb.Time.ttime_to_stime(result.mtime), #最后一次修改时间
+            ctime: Hitb.Time.ttime_to_stime(result.ctime)} #创建时间
+        {:error, _} ->
+          %{path: "#{file_path}#{file_name}", #文件存放路径
+            file_name: file_name, #文件名
+            file_size: 0, #文件大小
+            file_type: nil, #文件类型
+            access: nil, #文件权限
+            atime: nil, #最后一次读取时间
+            mtime: nil, #最后一次修改时间
+            ctime: nil} #创建时间
+      end
     #识别文件大小
     file_size =
       cond do
-        file_size < 1024 -> to_string(file_size) <> "B"
-        file_size > 1024 and file_size < 1048576 -> to_string(Float.round((file_size/1024), 2)) <> "KB"
-        file_size > 1048576 and file_size < 1073741824 -> to_string(Float.round((file_size/1048576), 2)) <> "MB"
-        true -> to_string(Float.round((file_size/1073741824), 2)) <> "GB"
+        file_info.file_size < 1024 -> to_string(file_info.file_size) <> "B"
+        file_info.file_size > 1024 and file_info.file_size < 1048576 -> to_string(Float.round((file_info.file_size/1024), 2)) <> "KB"
+        file_info.file_size > 1048576 and file_info.file_size < 1073741824 -> to_string(Float.round((file_info.file_size/1048576), 2)) <> "MB"
+        true -> to_string(Float.round((file_info.file_size/1073741824), 2)) <> "GB"
       end
-    file_info = %{path: "#{file_path}#{file_name}", #文件存放路径
-          file_name: file_name, #文件名
-          file_size: file_size, #文件大小
-          file_type: content_type, #文件类型
-          access: access, #文件权限
-          atime: Hitb.Time.ttime_to_stime(atime), #最后一次读取时间
-          mtime: Hitb.Time.ttime_to_stime(mtime), #最后一次修改时间
-          ctime: Hitb.Time.ttime_to_stime(ctime)} #创建时间
-    file_info
+    %{file_info | :file_size => file_size}
   end
 
   def check(file_path) do
