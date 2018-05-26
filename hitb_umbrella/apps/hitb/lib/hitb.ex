@@ -4,6 +4,7 @@ defmodule Hitb do
   def hello() do
     :hitb
   end
+  
   def ets_new() do
     Enum.each(@tab, fn x -> ets_new(x) end)
   end

@@ -11,7 +11,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.LibWt4
   alias Hitb.Library.ChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent
-  alias Library.Key
+  alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
     [result, page_list, page_num, _count, tab_type, type, dissect, list, version, year] = get_rule(page, type, tab_type, version, year, dissect, rows)

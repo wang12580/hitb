@@ -56,8 +56,7 @@ channel.on("离开房间", payload => {
   $("#s").append(html);
 });
 channel.on("ping", msg => {
-  html = `<input type="button" onclick="aa('test3@hitb.com.cn')" value="test3@hitb.com.cn"></input>`;
-
+  html = '';
   msg.users.forEach(x => {
     html = html+`<input type="button" onclick="aa('${x}')" value="${x}"></input>`
   })
