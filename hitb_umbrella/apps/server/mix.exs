@@ -37,16 +37,7 @@ defmodule Server.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.3.0"},
-      {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.2"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.10"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:gettext, "~> 0.11"},
       {:comeonin, "~> 2.2"},
-      {:distillery, "~> 1.5", runtime: false},
-      {:cowboy, "~> 1.0"},
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
     ]

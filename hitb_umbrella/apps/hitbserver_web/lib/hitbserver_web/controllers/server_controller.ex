@@ -1,6 +1,6 @@
 defmodule HitbserverWeb.ServerController do
   use HitbserverWeb, :controller
-  alias HitbserverWeb.MyUser
+  alias Server.UserService
   alias Hitb.Province
   alias Hitb.File
   plug HitbserverWeb.Access
@@ -8,7 +8,7 @@ defmodule HitbserverWeb.ServerController do
 
   def org_set(conn, _params) do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
       render conn, "org_set.html", user: user
       # , page: page, type: type, tab_type: tab_type, version: version, year: year,
@@ -20,7 +20,7 @@ defmodule HitbserverWeb.ServerController do
 
   def department(conn, _params) do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
       %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
       render conn, "department.html", user: user, page: page
@@ -33,9 +33,9 @@ defmodule HitbserverWeb.ServerController do
 
   def add(conn, %{"type" => type})do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
-      org = MyUser.user_info(conn).org
+      org = UserService.user_info(user).org
       render conn, "add.html", user: user, type: type, org: org
     else
       redirect conn, to: "/hospitals/login"
@@ -44,9 +44,9 @@ defmodule HitbserverWeb.ServerController do
 
   def server_edit(conn, %{"type" => type, "id" => id})do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
-      org = MyUser.user_info(conn).org
+      org = UserService.user_info(user).org
       render conn, "edit.html", user: user, type: type, org: org, id: id
     else
       redirect conn, to: "/hospitals/login"
@@ -55,7 +55,7 @@ defmodule HitbserverWeb.ServerController do
 
   def user_html(conn, _params)do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
       # SchemaHospitals.butying_insert("用户管理", user.username)
       %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
@@ -87,7 +87,7 @@ defmodule HitbserverWeb.ServerController do
   def myset(conn, _params) do
     %{"type" => type} = Map.merge(%{"type" => "info"}, conn.params)
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
       render conn, "myset.html", user: user, type: type
     else
@@ -131,7 +131,7 @@ defmodule HitbserverWeb.ServerController do
   end
   def check_html(conn, %{"page" => page})do
     user = get_session(conn, :user)
-    login = MyUser.is_login(conn)
+    login = UserService.is_login(user)
     if(login)do
       # SchemaHospitals.butying_insert("WT4检查", user.username)
       #求skip

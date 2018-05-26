@@ -1,6 +1,6 @@
-defmodule EditWeb.CdaView do
-  use EditWeb, :view
-  alias EditWeb.CdaView
+defmodule HitbserverWeb.CdaView do
+  use HitbserverWeb, :view
+  alias HitbserverWeb.CdaView
 
   def render("index.json", %{cda: cda}) do
     %{data: render_many(cda, CdaView, "cda.json")}

@@ -1,5 +1,4 @@
 defmodule Stat.Chart do
-  use StatWeb, :controller
   alias Stat.Key
 
   #通用图调用方法,stat数据类型为[%{key: val, key: val, ...}, ...]

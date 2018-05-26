@@ -1,6 +1,7 @@
 defmodule HitbserverWeb.RoomChannel do
   use Phoenix.Channel
-  alias Server.ChatRecord
+  alias Hitb.Repo
+  alias Hitb.Server.ChatRecord
   require Logger
 
   def join("room:lobby", _message, socket) do
@@ -24,7 +25,7 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def handle_in("新消息", %{"body" => body, "username" => username, "type" => type, "create_room_time" => create_room_time}, socket) do
-    record = Server.Repo.get_by(ChatRecord, room: username, date: create_room_time)
+    record = Repo.get_by(ChatRecord, room: username, date: create_room_time)
     if(type == "doc")do
       broadcast! socket, "共享文档", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     else
@@ -33,12 +34,12 @@ defmodule HitbserverWeb.RoomChannel do
         bodyarray = record.record_array ++ [body]
         record
         |>ChatRecord.changeset(%{record_string: bodystring, record_array: bodyarray})
-        |>Server.Repo.update
+        |>Repo.update
       else
         record_body = %{"room" => username, "date" => create_room_time, "record_string" => body, "record_array" => [body]}
         %ChatRecord{}
         |> ChatRecord.changeset(record_body)
-        |> Server.Repo.insert()
+        |> Repo.insert()
       end
       broadcast! socket, "新消息", %{body: body, username: username, type: type, time: Hitb.Time.standard_time(), create_room_time: create_room_time}
     end

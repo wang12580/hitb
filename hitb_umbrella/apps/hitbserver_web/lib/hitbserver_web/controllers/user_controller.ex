@@ -8,7 +8,8 @@ defmodule HitbserverWeb.UserController do
 
   def login(conn, %{"user" => user}) do
     %{"username" => username, "password" => password, "address" => address, "privateKey" => privateKey, "publicKey" => publicKey, "secret" => secret} = Map.merge(%{"address" => "", "privateKey" => "", "publicKey" => "", "secret" => ""}, user)
-    {conn, login} = Server.MyUser.login(conn, %{username: username, password: password}, %{publicKey: publicKey, privateKey: privateKey, address: address, secret: secret})
+    [user, login] = UserService.login(conn, %{username: username, password: password}, %{publicKey: publicKey, privateKey: privateKey, address: address, secret: secret})
+    conn = put_session(conn, :user, user)
     user =
       case login do
         true -> get_session(conn, :user)

@@ -1,6 +1,7 @@
 defmodule HitbserverWeb.OnlineChannel do
   use Phoenix.Channel
   require Logger
+  alias Server.UserService
 
   def join("online:list", message, socket) do
     if(message["username"])do
@@ -8,7 +9,7 @@ defmodule HitbserverWeb.OnlineChannel do
       socket = Map.merge(socket, %{username: username})
       cond do
         username in ["hitb", "test@test.com"] ->
-          [success, user] = ServerWeb.MyUser.socket_login(%{password: password, username: username})
+          [success, user] = UserService.socket_login(%{password: password, username: username})
           Hitb.ets_insert(:socket_user, username, true)
           Logger.warn("用户--#{username}--加入服务端")
           socket = Map.put(socket, :user, user)
@@ -16,7 +17,7 @@ defmodule HitbserverWeb.OnlineChannel do
         Hitb.ets_get(:socket_user, username) ->
           {:error, %{reason: "您的账号已在其他地点登录,请先退出后再次尝试登录"}}
         true ->
-          [success, user] = ServerWeb.MyUser.socket_login(%{password: password, username: username})
+          [success, user] = UserService.socket_login(%{password: password, username: username})
           if(success)do
             Hitb.ets_insert(:socket_user, username, true)
             Logger.warn("用户--#{username}--加入服务端")

@@ -1,5 +1,5 @@
 defmodule Stat.Query do
-  use StatWeb, :controller
+  import Ecto.Query
   alias Stat.Key
   alias Stat.Convert
   alias Hitb.Repo

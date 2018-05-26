@@ -7,13 +7,7 @@ defmodule Edit.Application do
     import Supervisor.Spec
 
     # Define workers and child supervisors to be supervised
-    children = [
-      # Start the Ecto repository
-      # Start the endpoint when the application starts
-      supervisor(EditWeb.Endpoint, []),
-      # Start your own worker by calling: Edit.Worker.start_link(arg1, arg2, arg3)
-      # worker(Edit.Worker, [arg1, arg2, arg3]),
-    ]
+    children = []
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -21,10 +15,4 @@ defmodule Edit.Application do
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    EditWeb.Endpoint.config_change(changed, removed)
-    :ok
-  end
 end

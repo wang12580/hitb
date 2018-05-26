@@ -1,5 +1,5 @@
 defmodule HitbserverWeb.StatController do
-  use StatWeb, :controller
+  use HitbserverWeb, :controller
   plug HitbserverWeb.Access
   alias Stat.StatService
 

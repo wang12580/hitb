@@ -1,6 +1,4 @@
 defmodule Stat.Key do
-  use StatWeb, :controller
-
   #通用key求得
   def key(username, drg, type, tool_type, page_type) do
     keys = key(username, page_type, tool_type)

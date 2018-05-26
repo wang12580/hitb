@@ -1,6 +1,6 @@
-defmodule EditWeb.MyMouldView do
-  use EditWeb, :view
-  alias EditWeb.MyMouldView
+defmodule HitbserverWeb.MyMouldView do
+  use HitbserverWeb, :view
+  alias HitbserverWeb.MyMouldView
 
   def render("index.json", %{my_mould: my_mould}) do
     %{data: render_many(my_mould, MouldView, "my_mould.json")}

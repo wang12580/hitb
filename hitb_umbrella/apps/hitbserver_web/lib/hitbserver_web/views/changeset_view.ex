@@ -1,5 +1,5 @@
-defmodule EditWeb.ChangesetView do
-  use EditWeb, :view
+defmodule HitbserverWeb.ChangesetView do
+  use HitbserverWeb, :view
 
   @doc """
   Traverses and translates changeset errors.

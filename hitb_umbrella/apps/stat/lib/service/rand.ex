@@ -1,5 +1,4 @@
 defmodule Stat.Rand do
-  use StatWeb, :controller
   alias Stat.Key
 
   #自定义取数据库

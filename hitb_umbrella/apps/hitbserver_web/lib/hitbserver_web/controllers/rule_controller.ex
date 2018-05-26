@@ -1,6 +1,6 @@
 defmodule HitbserverWeb.RuleController do
   use HitbserverWeb, :controller
-  # alias HitbserverWeb.MyUser
+  # alias Server.UserService
   alias Library.RuleService
   plug :put_layout, "app_stat.html"
 
