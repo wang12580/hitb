@@ -2,6 +2,12 @@ defmodule Stat.Query do
   use StatWeb, :controller
   alias Stat.Key
   alias Stat.Convert
+  alias Hitb.Repo
+  alias Hitb.Stat.StatOrg
+  alias Hitb.Stat.StatDrg
+  alias Hitb.Stat.StatWt4
+  alias Hitb.Stat.StatOrgHeal
+  alias Hitb.Stat.StatOrgHeal
 
   #自定义取数据库
   def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type) do
@@ -94,24 +100,24 @@ defmodule Stat.Query do
   defp list(type, org, time) do
     cond do
       type == "org" ->
-        from(p in Stat.StatOrg)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        from(p in StatOrg)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
       type == "heal" ->
-        from(p in Stat.StatOrgHeal)|>department_where(org)|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        from(p in StatOrgHeal)|>department_where(org)|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
       type == "department" ->
-        from(p in Stat.StatOrg)|>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        from(p in StatOrg)|>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
       type in ["mdc", "adrg", "drg"] ->
-        from(p in Stat.StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], fragment("distinct ?", p.drg2))|>Repo.all|>Enum.sort
+        from(p in StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], fragment("distinct ?", p.drg2))|>Repo.all|>Enum.sort
       type == "case" and String.contains? org, "_" ->
         query_org = hd(String.split(org, "_")) <> "_%"
-        from(p in Stat.StatWt4)|>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        from(p in StatWt4)|>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
       type == "case" ->
-        from(p in Stat.StatWt4)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        from(p in StatWt4)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
       type == "time" ->
-        from(p in Stat.StatOrg)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+        from(p in StatOrg)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
       type == "drg2" ->
         []
       type in ["year_time", "month_time", "season_time", "half_year"] ->
-        from(p in Stat.StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+        from(p in StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
     end
   end
 
@@ -120,21 +126,21 @@ defmodule Stat.Query do
     cond do
       type in ["mdc", "adrg", "drg"] ->
         drg = if(type == "mdc")do String.slice(drg, 3, 1) else drg end
-        _query = from(p in Stat.StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>drgwhere(type, drg)
+        _query = from(p in StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>drgwhere(type, drg)
       type == "heal" ->
         myfrom(drg)|>mywhere(type, org, time)
       type == "case" ->
-        from(p in Stat.StatWt4)|>mywhere(type, org, time)
+        from(p in StatWt4)|>mywhere(type, org, time)
       true ->
-        from(p in Stat.StatOrg)|>mywhere(type, org, time)
+        from(p in StatOrg)|>mywhere(type, org, time)
     end
   end
 
   #表判断
   defp myfrom(drg) do
     case drg do
-      "" -> from(p in Stat.StatOrgHeal)
-      _ ->  from(p in Stat.StatDrgHeal)
+      "" -> from(p in StatOrgHeal)
+      _ ->  from(p in StatDrgHeal)
     end
   end
 
