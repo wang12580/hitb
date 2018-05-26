@@ -6,9 +6,6 @@
 use Mix.Config
 
 # General application configuration
-config :server,
-  namespace: Server,
-  ecto_repos: [Server.Repo]
 
 # Configures the endpoint
 config :server, ServerWeb.Endpoint,

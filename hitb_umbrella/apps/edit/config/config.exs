@@ -5,11 +5,6 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :edit,
-  namespace: Edit,
-  ecto_repos: [Edit.Repo]
-
 # Configures the endpoint
 config :edit, EditWeb.Endpoint,
   url: [host: "localhost"],

@@ -46,13 +46,3 @@ config :logger, :console, format: "[$level] $message\n"
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
-
-# Configure your database
-config :stat, Stat.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  port: 5432,
-  username: "postgres",
-  password: "postgres",
-  database: "stat_dev",
-  hostname: "postgres",
-  pool_size: 10

@@ -5,11 +5,6 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :library,
-  namespace: Library,
-  ecto_repos: [Library.Repo]
-
 # Configures the endpoint
 config :library, LibraryWeb.Endpoint,
   url: [host: "localhost"],

@@ -6,9 +6,6 @@
 use Mix.Config
 
 # General application configuration
-config :stat,
-  namespace: Stat,
-  ecto_repos: [Stat.Repo]
 
 # Configures the endpoint
 config :stat, StatWeb.Endpoint,
