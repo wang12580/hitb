@@ -28,9 +28,9 @@ defmodule HitbserverWeb.ConnCase do
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hitbserver.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hitb.Repo)
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Hitbserver.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Hitb.Repo, {:shared, self()})
     end
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end

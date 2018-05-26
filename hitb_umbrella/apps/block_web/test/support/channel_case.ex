@@ -26,7 +26,11 @@ defmodule BlockWeb.ChannelCase do
   end
 
 
-  setup _tags do
+  setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Block.Repo)
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Block.Repo, {:shared, self()})
+    end
     :ok
   end
 
