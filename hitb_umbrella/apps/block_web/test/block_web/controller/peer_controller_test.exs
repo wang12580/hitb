@@ -1,7 +1,7 @@
 defmodule BlockWeb.PeerControllerTest do
   use BlockWeb.ConnCase
 
-  @valid_attrs %{}
+  # @valid_attrs %{}
 
   # test "POST /peer", %{conn: conn} do
   #   conn = post conn, "/api/peer", peer_data: %{ host: "127.0.0.1", port: "4000" }

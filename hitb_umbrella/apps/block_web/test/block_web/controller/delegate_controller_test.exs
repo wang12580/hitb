@@ -1,7 +1,7 @@
 defmodule BlockWeb.DelegateControllerTest do
   use BlockWeb.ConnCase
 
-  @valid_attrs %{}
+  # @valid_attrs %{}
 
   test "POST /count", %{conn: conn} do
     conn = get conn, "/api/count"

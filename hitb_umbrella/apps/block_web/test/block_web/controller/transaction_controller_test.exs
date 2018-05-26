@@ -1,7 +1,7 @@
 defmodule BlockWeb.TransactionsControllerTest do
   use BlockWeb.ConnCase
 
-  @valid_attrs %{}
+  # @valid_attrs %{}
 
   # test "POST /getTransactions", %{conn: conn} do
   #   conn = get conn, "/api/getTransactions"

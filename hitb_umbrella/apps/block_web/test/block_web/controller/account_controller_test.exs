@@ -1,7 +1,7 @@
 defmodule BlockWeb.AccountControllerTest do
   use BlockWeb.ConnCase
 
-  @valid_attrs %{}
+  # @valid_attrs %{}
 
   test "POST /open", %{conn: conn} do
     conn = post conn, "/api/open"

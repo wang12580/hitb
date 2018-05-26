@@ -6,4 +6,5 @@ config :hitb, Hitb.Repo,
   password: "postgres",
   database: "hitb_test",
   hostname: "postgres",
+  pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
