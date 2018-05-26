@@ -22,7 +22,7 @@ defmodule Server.RecordService do
   def get_record!(id), do: Repo.get!(Record, id)
 
   def delete_record(id) do
-    record = SchemaHospitals.get_record!(id)
+    record = get_record!(id)
     Repo.delete(record)
   end
 

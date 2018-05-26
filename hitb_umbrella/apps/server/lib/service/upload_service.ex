@@ -1,5 +1,5 @@
 defmodule Server.UploadService do
-  alias Server.CustomizeDepartment
+  # alias Server.CustomizeDepartment
 
   # def wt4_upload(conn, _params) do
   #   file_path = System.user_home() <> "/wt4/"

@@ -4,7 +4,7 @@ defmodule Mix.Tasks.InitHitb do
     initializes the on-disk database and creates necessary tables.
   """
   def run(_args) do
-    IO.puts("Initializing Hitb DB on #{node}...")
+    IO.puts("Initializing Hitb DB on ...")
     :ok
   end
 

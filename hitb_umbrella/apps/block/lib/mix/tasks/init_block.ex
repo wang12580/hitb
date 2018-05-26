@@ -4,7 +4,7 @@ defmodule Mix.Tasks.InitBlock do
     initializes the on-disk database and creates necessary tables.
   """
   def run(_args) do
-    IO.puts("Initializing Block DB on #{node}...")
+    IO.puts("Initializing Block DB on ...")
     :ok
   end
 

@@ -9,7 +9,7 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def join("room:" <> private_room_id, message, socket) do
-    if(private_room_id in Server.all_user())do
+    if(private_room_id in Server.UserService.all_user())do
       Process.flag(:trap_exit, true)
       :timer.send_interval(5000, :ping)
       socket = Map.merge(socket, %{username: message["username"]})

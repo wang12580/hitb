@@ -62,7 +62,7 @@ defmodule HitbserverWeb.UserController do
   end
 
   def delete(conn, %{"id" => id}) do
-    with {:ok, %User{}} <- SchemaHospitals.delete_user(id) do
+    with {:ok, %User{}} <- UserService.delete_user(id) do
       send_resp(conn, :no_content, "")
     end
   end

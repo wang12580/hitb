@@ -1,9 +1,9 @@
 defmodule HitbserverWeb.ContrastController do
   use HitbserverWeb, :controller
   plug HitbserverWeb.Access
-  alias Stat.Key
-  alias Stat.Query
-  alias Stat.Chart
+  # alias Stat.Key
+  # alias Stat.Query
+  # alias Stat.Chart
   alias Stat.ContrastService
 
   def contrast(conn, %{"username" => _username}) do

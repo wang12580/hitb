@@ -3,19 +3,19 @@ defmodule BlockWeb.BlockControllerTest do
 
   @valid_attrs %{}
 
-  test "POST /blocks", %{conn: conn} do
-    conn = get conn, "/block/api/blocks"
-    assert json_response(conn, 200)["blocks"] != []
-  end
-  test "GET /getBlock", %{conn: conn} do
-    conn = get conn, "/block/api/getBlock", index: "0"
-    assert json_response(conn, 200)["blocks"] != []
-  end
+  # test "POST /blocks", %{conn: conn} do
+  #   conn = get conn, "/block/api/blocks"
+  #   assert json_response(conn, 200)["blocks"] != []
+  # end
+  # test "GET /getBlock", %{conn: conn} do
+  #   conn = get conn, "/block/api/getBlock", index: "0"
+  #   assert json_response(conn, 200)["blocks"] != []
+  # end
 
-  test "POST /getBlockByHash", %{conn: conn} do
-    conn = get conn, "/block/api/getBlockByHash", hash: "sssss"
-    assert json_response(conn, 200)["blocks"] != []
-  end
+  # test "POST /getBlockByHash", %{conn: conn} do
+  #   conn = get conn, "/block/api/getBlockByHash", hash: "sssss"
+  #   assert json_response(conn, 200)["blocks"] != []
+  # end
   test "POST /getFullBlock", %{conn: conn} do
     conn = get conn, "/block/api/getFullBlock"
     assert json_response(conn, 200) == %{}
@@ -24,10 +24,10 @@ defmodule BlockWeb.BlockControllerTest do
     conn = get conn, "/block/api/getBlocks"
     assert json_response(conn, 200) == %{}
   end
-  test "POST /getHeight", %{conn: conn} do
-    conn = get conn, "/block/api/getHeight"
-    assert json_response(conn, 200)["height"] == 0
-  end
+  # test "POST /getHeight", %{conn: conn} do
+  #   conn = get conn, "/block/api/getHeight"
+  #   assert json_response(conn, 200)["height"] == 0
+  # end
   test "POST /getFee", %{conn: conn} do
       conn = get conn, "/block/api/getFee"
     # IO.inspect assert json_response(conn, 200)

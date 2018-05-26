@@ -1,5 +1,5 @@
 defmodule Stat.ContrastService do
-  import Ecto.Query
+  # import Ecto.Query
   alias Stat.Key
   alias Stat.Query
   alias Stat.Chart

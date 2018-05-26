@@ -1,5 +1,5 @@
 defmodule Server.ChatRecordService do
-  import Ecto.Query
+  # import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Server.ChatRecord
 

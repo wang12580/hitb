@@ -3,10 +3,10 @@ defmodule Server.UserService do
   alias Hitb.Repo
   alias Comeonin.Bcrypt
   alias Hitb.Server.User
-  alias ServerWeb.MyUser
+  # alias ServerWeb.MyUser
 
   #登录,返回conn
-  def login(conn, user, blockchain) do
+  def login(_conn, user, blockchain) do
     db_user = Repo.get_by(User, username: user.username)
     case db_user do
       nil ->
@@ -105,7 +105,7 @@ defmodule Server.UserService do
   end
 
   def delete_user(id) do
-    user = UserService.get_user!(id)
+    user = get_user!(id)
     Repo.delete(user)
   end
 end

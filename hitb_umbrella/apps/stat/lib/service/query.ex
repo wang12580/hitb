@@ -7,7 +7,7 @@ defmodule Stat.Query do
   alias Hitb.Stat.StatDrg
   alias Hitb.Stat.StatWt4
   alias Hitb.Stat.StatOrgHeal
-  alias Hitb.Stat.StatOrgHeal
+  alias Hitb.Stat.StatDrgHeal
 
   #自定义取数据库
   def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type) do

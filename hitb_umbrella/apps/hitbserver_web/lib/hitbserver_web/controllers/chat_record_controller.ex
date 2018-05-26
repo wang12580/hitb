@@ -23,12 +23,12 @@ defmodule HitbserverWeb.ChatRecordController do
   end
 
   def show(conn, %{"id" => id}) do
-    chat_record = ChatRecordService.get_chat_record(id)
+    chat_record = ChatRecordService.get_chat_record!(id)
     render(conn, "show.json", chat_record: chat_record)
   end
 
   def update(conn, %{"id" => id, "chat_record" => chat_record_params}) do
-    case ChatRecord.update_chat_record(id, chat_record_params) do
+    case ChatRecordService.update_chat_record(id, chat_record_params) do
       {:ok, chat_record} ->
         render(conn, "show.json", chat_record: chat_record)
       {:error, changeset} ->

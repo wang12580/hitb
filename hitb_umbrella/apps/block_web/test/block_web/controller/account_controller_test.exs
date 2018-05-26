@@ -32,22 +32,22 @@ defmodule BlockWeb.AccountControllerTest do
     conn = put conn, "/api/delegates"
     assert json_response(conn, 200) == %{}
   end
-  test "POST /account", %{conn: conn} do
-    conn = get conn, "/api/account", username: "sss"
-    assert json_response(conn, 200)["account"] !=  nil
-  end
-  test "POST /getAccountByPublicKey", %{conn: conn} do
-    conn = get conn, "/api/getAccountByPublicKey", publicKey: "1222222"
-    assert json_response(conn, 200)["account"] == []
-  end
-  test "POST /getAccountByAddress", %{conn: conn} do
-    conn = get conn, "/api/getAccountByAddress", address: "1222222"
-    assert json_response(conn, 200)["account"] == []
-  end
-  test "POST /newAccount", %{conn: conn} do
-    conn = get conn, "/api/newAccount", username: "sss"
-    assert json_response(conn, 200) != nil
-  end
+  # test "POST /account", %{conn: conn} do
+  #   conn = get conn, "/api/account", username: "sss"
+  #   assert json_response(conn, 200)["account"] !=  nil
+  # end
+  # test "POST /getAccountByPublicKey", %{conn: conn} do
+  #   conn = get conn, "/api/getAccountByPublicKey", publicKey: "1222222"
+  #   assert json_response(conn, 200)["account"] == []
+  # end
+  # test "POST /getAccountByAddress", %{conn: conn} do
+  #   conn = get conn, "/api/getAccountByAddress", address: "1222222"
+  #   assert json_response(conn, 200)["account"] == []
+  # end
+  # test "POST /newAccount", %{conn: conn} do
+  #   conn = get conn, "/api/newAccount", username: "sss"
+  #   assert json_response(conn, 200) != nil
+  # end
   # test "POST /addSignature", %{conn: conn} do
   #   conn = put conn, "/api/addSignature", username: "sss", password: "123456"
   #   assert json_response(conn, 200)['success'] == false

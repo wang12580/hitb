@@ -9,7 +9,7 @@ defmodule Edit.CdaService do
 
   def cda_user() do
     users = Repo.all(from p in Cda, select: p.username)|>:lists.usort
-    [users -- Server.Repo.all(from p in Server.User, where: p.is_show == false, select: p.username), "读取成功"]
+    [users -- Hitb.Repo.all(from p in Hitb.Server.User, where: p.is_show == false, select: p.username), "读取成功"]
   end
 
   def cda_files(username) do

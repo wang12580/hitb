@@ -1,7 +1,7 @@
 defmodule HitbserverWeb.CompController do
   use HitbserverWeb, :controller
   plug HitbserverWeb.Access
-  alias Stat.Key
+  # alias Stat.Key
   alias Stat.CompService
 
   def target1(conn, _params)do
