@@ -1,4 +1,7 @@
 defmodule Stat.Key do
+  alias Hitb.Repo
+  alias Hitb.Server.User
+
   #通用key求得
   def key(username, drg, type, tool_type, page_type) do
     keys = key(username, page_type, tool_type)

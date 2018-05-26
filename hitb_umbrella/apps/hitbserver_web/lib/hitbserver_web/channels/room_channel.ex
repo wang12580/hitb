@@ -12,7 +12,7 @@ defmodule HitbserverWeb.RoomChannel do
     if(private_room_id in Server.UserService.all_user())do
       Process.flag(:trap_exit, true)
       :timer.send_interval(5000, :ping)
-      socket = Map.merge(socket, %{username: message["username"]})
+      socket = %{socket | :assigns => %{username: message["username"]}}
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -20,7 +20,7 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def handle_info(:ping, socket) do
-    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online() }
+    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()  -- [socket.assigns.username] }
     {:noreply, socket}
   end
 
@@ -48,7 +48,7 @@ defmodule HitbserverWeb.RoomChannel do
 
   def handle_in("加入房间", %{"username" => username, "create_room_time" => _create_room_time}, socket) do
     time = Hitb.Time.standard_time()
-    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: time, users: online(), create_room_time: time}
+    broadcast! socket, "加入房间", %{body: "加入房间", username: username, time: time, users: online() -- [socket.assigns.username], create_room_time: time}
     {:noreply, socket}
   end
 
@@ -59,9 +59,9 @@ defmodule HitbserverWeb.RoomChannel do
   end
 
   def terminate(_reason, socket) do
-    Hitb.ets_del(:socket_user, socket.username)
-    Logger.warn("用户--#{socket.username}--离开房间")
-    broadcast! socket, "离开房间", %{body: "离开房间", username: socket.username}
+    Hitb.ets_del(:socket_user, socket.assigns.username)
+    Logger.warn("用户--#{socket.assigns.username}--离开房间")
+    broadcast! socket, "离开房间", %{body: "离开房间", username: socket.assigns.username}
     :ok
   end
 

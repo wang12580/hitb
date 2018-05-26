@@ -1,6 +1,7 @@
 defmodule Stat.ClientService do
   import Ecto.Query
   alias Hitb.Repo
+  alias Stat.Query
   alias Hitb.Stat.ClientStat
 
   def stat_create(data, username) do

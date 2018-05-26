@@ -12,7 +12,7 @@ defmodule HitbserverWeb.OnlineChannel do
           [success, user] = UserService.socket_login(%{password: password, username: username})
           Hitb.ets_insert(:socket_user, username, true)
           Logger.warn("用户--#{username}--加入服务端")
-          socket = Map.put(socket, :user, user)
+          socket = %{socket | :assigns => user}
           {:ok, socket}
         Hitb.ets_get(:socket_user, username) ->
           {:error, %{reason: "您的账号已在其他地点登录,请先退出后再次尝试登录"}}
@@ -21,7 +21,7 @@ defmodule HitbserverWeb.OnlineChannel do
           if(success)do
             Hitb.ets_insert(:socket_user, username, true)
             Logger.warn("用户--#{username}--加入服务端")
-            socket = Map.put(socket, :user, user)
+            socket = %{socket | :assigns => user}
             {:ok, socket}
           else
             {:error, %{reason: "用户登录失败,账号或密码错误"}}
@@ -43,9 +43,9 @@ defmodule HitbserverWeb.OnlineChannel do
     {:noreply, socket}
   end
 
-  def terminate(_reason, socket) do
-    Hitb.ets_del(:socket_user, socket.username)
-    Logger.warn("用户--#{socket.username}--已下线")
+  def terminate(_, socket) do
+    Hitb.ets_del(:socket_user, socket.assigns.username)
+    Logger.warn("用户--#{socket.assigns.username}--已下线")
     :ok
   end
 
