@@ -1,10 +1,10 @@
-defmodule Mix.Tasks.InitBlock do
+defmodule Mix.Tasks.InitHitb do
   use Mix.Task
   @moduledoc """
     initializes the on-disk database and creates necessary tables.
   """
   def run(_args) do
-    IO.puts("Initializing Block DB on #{node}...")
+    IO.puts("Initializing Hitb DB on #{node}...")
     :ok
   end
 

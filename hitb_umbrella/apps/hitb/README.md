@@ -1,3 +1,3 @@
 # Hitb
 
-**TODO: Add description**
+数据表定义
