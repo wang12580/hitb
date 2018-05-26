@@ -7,4 +7,4 @@ config :hitbserver_web, HitbserverWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   check_origin: false
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
