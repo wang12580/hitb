@@ -11,7 +11,7 @@ defmodule Block.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
+      compilers: [:elixir, :leex] ++ Mix.compilers,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
