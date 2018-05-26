@@ -26,7 +26,6 @@ defmodule HitbserverWeb.PageController do
 
   def login_html(conn, _params)do
     user = get_session(conn, :user)
-    # IO.inspect user
     user = UserService.user_info(user)
     render conn, "login.html", user: user
   end
