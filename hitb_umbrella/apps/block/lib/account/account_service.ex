@@ -6,9 +6,31 @@ defmodule Block.AccountService do
     :account
   end
 
+  def newAccount(account) do
+    accounts = Block.AccountRepository.get_all_accounts
+    usernames = accounts |> Enum.map(fn x -> x.username end)
+    if account.username in usernames do
+      false
+    else
+      address = generateAddress(account.username)
+      publicKey = generatePublickey(account.username)
+      index = Block.AccountRepository.get_all_accounts |> Enum.map(fn x -> x.index end) |> List.last
+      index =
+        case index do
+          nil -> 0
+          _ -> index + 1
+        end
+      latest_block = Block.BlockService.get_latest_block()
+      account = %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: nil, balance: account.balance, u_balance: 0, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block.index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block.index)}
+      Block.AccountRepository.insert_account(account)
+      account
+    end
+  end
+
   def getAddressByPublicKey(publicKey) do
     account = Block.AccountRepository.get_account_by_publicKey(publicKey)
     case account do
+      nil -> nil
       [] -> nil
       _ -> account.address
     end
@@ -17,7 +39,8 @@ defmodule Block.AccountService do
   def getAccountByPublicKey(publicKey) do
     account = Block.AccountRepository.get_account_by_publicKey(publicKey)
     case account do
-      [] -> []
+      nil -> nil
+      [] -> nil
       _ -> account
     end
   end
@@ -44,35 +67,14 @@ defmodule Block.AccountService do
   end
 
   def delAccount(by, value) do
-    _account =
+    account =
       case by do
-         "byUsername" -> deserialize_record_from_account(getAccount(value))
-         "byPublicKey" -> deserialize_record_from_account(getAccountByPublicKey(value))
-         "byAddress" -> deserialize_record_from_account(getAddressByAddress(value))
+         "byUsername" -> getAccount(value)
+         "byPublicKey" -> getAccountByPublicKey(value)
+         "byAddress" -> getAddressByAddress(value)
       end
-    # case :mnesia.transaction(fn -> :mnesia.delete_object(account) end) do
-    #   {:ok, _} -> :ok
-    #   {:atomic, _} -> :error
-    # end
-  end
-
-  def newAccount(account) do
-    accounts = Block.AccountRepository.get_all_accounts
-    usernames = accounts |> Enum.map(fn x -> x.username end)
-    if account.username in usernames do
-      false
-    else
-      address = generateAddress(account.username)
-      publicKey = generatePublickey(account.username)
-      index = Block.AccountRepository.get_all_accounts |> Enum.map(fn x -> x.index end) |> List.last
-      index =
-        case index do
-          nil -> 0
-          _ -> index + 1
-        end
-      latest_block = Block.BlockService.get_latest_block()
-      %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: nil, balance: account.balance, u_balance: 0, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block.index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block.index)}
-    end
+    # IO.inspect
+    Block.AccountRepository.delete_account(account)
   end
 
   def getBalance(username) do
@@ -87,7 +89,7 @@ defmodule Block.AccountService do
     account = Block.AccountRepository.get_account(username)
     case account do
       [] -> 0.0
-      _ -> account.u_balance
+      _ -> account.balance
     end
   end
 
@@ -152,43 +154,6 @@ defmodule Block.AccountService do
         [true, tran.id]
       _ ->
         [false, []]
-    end
-  end
-
-  defp deserialize_record_from_account(account) do
-    case account do
-      [] -> []
-      _ ->
-        {:account,
-        account.index,
-        account.username,
-        account.u_username,
-        account.isDelegate,
-        account.secondSignature,
-        account.u_secondSignature,
-        account.address,
-        account.publicKey,
-        account.secondPublicKey,
-        account.balance,
-        account.u_balance,
-        account.vote,
-        account.rate,
-        account.delegates,
-        account.u_delegates,
-        account.multisignatures,
-        account.u_multisignatures,
-        account.multimin,
-        account.u_multimin,
-        account.multilifetime,
-        account.u_multilifetime,
-        account.blockId,
-        account.nameexist,
-        account.u_nameexist,
-        account.producedblocks,
-        account.missedblocks,
-        account.fees,
-        account.rewards,
-        account.lockHeight}
     end
   end
 

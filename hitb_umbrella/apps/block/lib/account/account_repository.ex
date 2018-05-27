@@ -32,7 +32,7 @@ defmodule Block.AccountRepository do
     |> Repo.update
   end
 
-  def delete_all_account() do
-    Repo.delete_all(Account)
+  def delete_account(account) do
+    Repo.delete(account)
   end
 end

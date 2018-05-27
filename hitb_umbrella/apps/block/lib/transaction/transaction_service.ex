@@ -10,6 +10,7 @@ defmodule Block.TransactionService do
     latest_block = Block.BlockService.get_latest_block()
     sender = AccountService.getAccountByPublicKey(transaction.publicKey)
     case sender do
+      nil -> [:error, nil, ""]
       [] -> [:error, nil, ""]
       _ ->
       tran = %{

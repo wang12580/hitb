@@ -1,6 +1,6 @@
 defmodule Block.BlockService do
   require Logger
-  # import Block.BlockList
+  alias Block.BlockList
   @moduledoc """
   Operations for blocks
   TODO: refactor :ets work into its own module
@@ -34,7 +34,7 @@ defmodule Block.BlockService do
     index        = latest_block.index + 1
     timestamp    = :os.system_time(:seconds)
     hash         = generate_block_hash(index, latest_block.hash, timestamp, data)
-    %Block.BlockList{
+    %{
       index:          index,
       previous_hash:  latest_block.hash,
       timestamp:      timestamp,

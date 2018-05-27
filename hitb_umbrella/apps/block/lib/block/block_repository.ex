@@ -7,6 +7,8 @@ defmodule Block.BlockRepository do
     %BlockList{}
     |> BlockList.changeset(block)
     |> Repo.insert
+    :ets.insert(:latest_block, {:latest, block})
+    :ok
   end
 
   def get_block(index) do
@@ -29,7 +31,7 @@ defmodule Block.BlockRepository do
   end
 
   def get_latest_block() do
-    block = Repo.all(from p in BlockList, order_by: [desc: p.index], limit: 1)
+    block = Repo.all(from p in BlockList, order_by: [desc: p.index], limit: 1)|>List.first
     :ets.insert(:latest_block, {:latest, block})
     block
   end

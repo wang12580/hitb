@@ -4,6 +4,7 @@ defmodule Block.Account do
   alias Block.Account
 
   schema "account" do
+    field :index,              :integer
     field :username,           :string #用户名
     field :u_username,         :string
     field :isDelegate,         :integer #是否委托人
@@ -39,7 +40,7 @@ defmodule Block.Account do
   @doc false
   def changeset(%Account{} = account, attrs) do
     account
-    |> cast(attrs, [:username,:u_username, :isDelegate, :u_isDelegate, :secondSignature, :u_secondSignature, :address, :publicKey, :secondPublicKey, :balance, :u_balance, :vote, :rate, :delegates,  :u_delegates, :multisignatures, :u_multisignatures, :multimin, :u_multimin, :multilifetime, :u_multilifetime, :blockId, :nameexist, :u_nameexist, :producedblocks, :missedblocks, :fees, :rewards, :lockHeight])
-    |> validate_required([:username,:u_username, :isDelegate, :u_isDelegate, :secondSignature, :u_secondSignature, :address, :publicKey, :secondPublicKey, :balance, :u_balance, :vote, :rate, :delegates,  :u_delegates, :multisignatures, :u_multisignatures, :multimin, :u_multimin, :multilifetime, :u_multilifetime, :blockId, :nameexist, :u_nameexist, :producedblocks, :missedblocks, :fees, :rewards, :lockHeight])
+    |> cast(attrs, [:index, :username, :u_username, :isDelegate, :u_isDelegate, :secondSignature, :u_secondSignature, :address, :publicKey, :secondPublicKey, :balance, :u_balance, :vote, :rate, :delegates,  :u_delegates, :multisignatures, :u_multisignatures, :multimin, :u_multimin, :multilifetime, :u_multilifetime, :blockId, :nameexist, :u_nameexist, :producedblocks, :missedblocks, :fees, :rewards, :lockHeight])
+    |> validate_required([:username, :isDelegate, :u_isDelegate, :secondSignature, :u_secondSignature, :address, :publicKey, :u_balance, :vote, :rate, :multimin, :u_multimin, :multilifetime, :u_multilifetime, :nameexist, :u_nameexist, :producedblocks, :missedblocks, :fees, :rewards, :lockHeight])
   end
 end
