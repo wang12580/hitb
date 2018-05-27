@@ -70,6 +70,7 @@ defmodule Stat.Query do
       end
     case Hitb.ets_get(:stat_drg, "comx_" <> username) do
       nil -> [[], []]
+      [] -> [[], []]
       _ ->
         stat = Hitb.ets_get(:stat_drg, "comx_" <> username)|>List.last
         mm_time = Convert.mm_time(stat.time)

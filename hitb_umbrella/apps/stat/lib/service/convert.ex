@@ -20,9 +20,6 @@ defmodule Stat.Convert do
   end
 
   def map(map, key) do
-    # IO.inspect "#{map}-------------obj"
-    # IO.inspect map
-    # IO.inspect "#{map}-------------obj"
     if(map == [])do
       map
       |>Enum.map(fn x ->

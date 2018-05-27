@@ -1,9 +1,9 @@
 defmodule Stat.Chart do
   alias Stat.Key
 
-  #通用图调用方法,stat数据类型为[%{key: val, key: val, ...}, ...]
+  #通用图调用方法,stat数据类型为[%{day_avg: 3.3537, day_index: 1.0, org: "测试医院1", time: "2016年10月"}, %{day_avg: 3.4386, day_index: 2.0, org: "测试医院1", time: "2016年8月"}]
   def chart(stat, chart_type) do
-    unless(stat == [])do
+    unless(stat == [] or stat == nil)do
       #数据data
       data = stat
         |>Enum.map(fn x ->
