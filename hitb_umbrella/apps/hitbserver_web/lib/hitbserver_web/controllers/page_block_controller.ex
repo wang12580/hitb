@@ -1,4 +1,4 @@
-defmodule HitbserverWeb.BlockController do
+defmodule HitbserverWeb.PageBlockController do
   use HitbserverWeb, :controller
   alias Server.UserService
   plug :put_layout, "app_blockchain.html"

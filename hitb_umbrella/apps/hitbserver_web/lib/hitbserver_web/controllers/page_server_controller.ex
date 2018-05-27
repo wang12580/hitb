@@ -1,4 +1,4 @@
-defmodule HitbserverWeb.ServerController do
+defmodule HitbserverWeb.PageServerController do
   use HitbserverWeb, :controller
   alias Server.UserService
   alias Hitb.Province

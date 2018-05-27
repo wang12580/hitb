@@ -1,4 +1,4 @@
-defmodule HitbserverWeb.StatPageController do
+defmodule HitbserverWeb.PageStatController do
   use HitbserverWeb, :controller
   alias Server.UserService
   plug :put_layout, "app_stat.html"

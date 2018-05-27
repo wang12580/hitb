@@ -1,4 +1,4 @@
-defmodule HitbserverWeb.RulePageController do
+defmodule HitbserverWeb.PageRuleController do
   use HitbserverWeb, :controller
   alias Server.UserService
   plug :put_layout, "app_stat.html"
