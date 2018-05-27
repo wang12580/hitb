@@ -10,7 +10,11 @@ defmodule Edit.HelpService do
   end
 
   def help_file() do
-    Repo.get_by(ClinetHelp, name: "输入提示").content
+    help = Repo.get_by(ClinetHelp, name: "输入提示")
+    case help do
+      nil -> []
+      _ -> help.content
+    end
   end
 
 end

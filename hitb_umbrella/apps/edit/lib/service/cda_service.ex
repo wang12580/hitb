@@ -4,12 +4,15 @@ defmodule Edit.CdaService do
   alias Hitb.Repo
   alias Hitb.Edit.Cda
   alias Hitb.Edit.MyMould
-  # alias Hitb.Edit.ClinetHelp
   alias Hitb.Time
+  alias Hitb.Server.User
 
   def cda_user() do
     users = Repo.all(from p in Cda, select: p.username)|>:lists.usort
-    [users -- Hitb.Repo.all(from p in Hitb.Server.User, where: p.is_show == false, select: p.username), "读取成功"]
+    users = if(users)do users else [] end
+    users2 = Repo.all(from p in User, where: p.is_show == false, select: p.username)
+    users2 = if(users2)do users2 else [] end
+    [users -- users2, "读取成功"]
   end
 
   def cda_files(username) do
@@ -24,6 +27,8 @@ defmodule Edit.CdaService do
   def cda_file(filename, username) do
     edit = Repo.get_by(Cda, username: username, name: filename)
     cond do
+      edit == nil ->
+        [[],["文件读取失败,无此文件"]]
       edit.is_show == false ->
         [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
       edit.is_change == false ->

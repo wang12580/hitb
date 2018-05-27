@@ -9,10 +9,11 @@ defmodule Edit.MouldService do
   end
 
   def mould_file(username, name) do
-    IO.inspect username
-    IO.inspect name
-    IO.inspect "------------------------"
-    Repo.get_by(MyMould, name: name, username: username).content
+    my_mould = Repo.get_by(MyMould, name: name, username: username)
+    case my_mould do
+      nil -> []
+      _ -> my_mould.content
+    end
   end
 
 end
