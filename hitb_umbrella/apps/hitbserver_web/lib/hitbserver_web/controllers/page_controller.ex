@@ -1,6 +1,7 @@
 defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
   alias Server.UserService
+  plug HitbserverWeb.Access
 
   def index(conn, _params) do
     user = get_session(conn, :user)
