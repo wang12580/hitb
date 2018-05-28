@@ -35,7 +35,7 @@ defmodule Block.MixProject do
     [
       {:phoenix_ecto, "~> 3.2"},
       {:postgrex, ">= 0.0.0"},
-      {:poison, "~> 2.2.0"},
+      {:poison, "~> 3.1"},
       {:phoenix_gen_socket_client, "~> 2.0.0"},
       {:websocket_client, "~> 1.2"},
     ]
