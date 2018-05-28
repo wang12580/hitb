@@ -18,7 +18,7 @@ defmodule HitbserverWeb.ChatRecordController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Server.ChangesetView, "error.json", changeset: changeset)
+        |> render(HitbserverWeb.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
@@ -34,7 +34,7 @@ defmodule HitbserverWeb.ChatRecordController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Server.ChangesetView, "error.json", changeset: changeset)
+        |> render(HitbserverWeb.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
