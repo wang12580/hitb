@@ -3,6 +3,7 @@ defmodule Block.Repo.Migrations.CreateAccount do
 
   def change do
     create table(:account) do
+      add :index,              :integer 
       add :username,           :string #用户名
       add :u_username,         :string
       add :isDelegate,         :integer #是否委托人

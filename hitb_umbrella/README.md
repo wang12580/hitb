@@ -6,13 +6,9 @@
 * [ipfs](https://github.com/ipfs/ipfs) Peer-to-peer hypermedia protocol
 
 ### 项目开发
-* ./init.sh
-* ./dev.sh
-* iex --sname dev -S mix phx.server
+* mix phx.server
 * :observer.start()
-* r(Block.S1)
-* Block.S1.create("a")
-* Block.S1.lookup("a")
+
 ### 项目发布
 * MIX_ENV=prod mix release
 

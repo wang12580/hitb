@@ -77,7 +77,7 @@ defmodule Block.P2pClientHandler do
   def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
     Logger.info("connection to server failed...")
     IO.inspect payload
-    Peers.P2pSessionManager.terminate_session(self())
+    Block.P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
 
@@ -90,7 +90,7 @@ defmodule Block.P2pClientHandler do
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
-        |>Enum.map(fn x -> Repos.AccountRepository.insert_account(x) end)
+        |>Enum.map(fn x -> Block.AccountRepository.insert_account(x) end)
         GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
       "get_latest_block" ->
         if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
@@ -105,14 +105,14 @@ defmodule Block.P2pClientHandler do
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
-        |>Enum.map(fn x -> Repos.BlockRepository.insert_block(x) end)
+        |>Enum.map(fn x -> Block.BlockRepository.insert_block(x) end)
         GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
       "query_all_transactions" ->
         response
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
-        |>Enum.map(fn x -> Repos.TransactionRepository.insert_transaction(%{x | :args => List.to_tuple(x.args)}) end)
+        |>Enum.map(fn x -> Block.TransactionRepository.insert_transaction(%{x | :args => List.to_tuple(x.args)}) end)
     end
     Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}

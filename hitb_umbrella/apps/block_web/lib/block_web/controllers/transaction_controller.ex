@@ -3,18 +3,18 @@ defmodule BlockWeb.TransactionController do
   plug BlockWeb.Access
   alias Block
   alias Repos
-  alias Block.Transaction
+  alias Block.TransactionService
   @moduledoc """
     Functionality related to blocks in the block chain
   """
 
   def getTransactions(conn, _) do
-    transactions = Repos.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
+    transactions = Block.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
     json(conn, %{data: transactions})
   end
 
   def getTransaction(conn, %{"id" => id}) do
-    transaction = Repos.TransactionRepository.get_transactions_by_id(id)
+    transaction = Block.TransactionRepository.get_transactions_by_id(id)
     json conn, %{data: transaction}
   end
 
@@ -28,22 +28,22 @@ defmodule BlockWeb.TransactionController do
 
   def addTransactions(conn, %{"publicKey" => publicKey, "amount" => amount, "recipientId" => recipientId, "message" => message}) do
     %{"secondPassword" => secondPassword} = Map.merge(%{"secondPassword" => "dzc944262316"}, conn.params)
-    case Transaction.newTransaction(%{publicKey: publicKey, amount: String.to_integer(amount), recipientId: recipientId, message: message, secondPassword: secondPassword, fee: 1}) do
+    case TransactionService.newTransaction(%{publicKey: publicKey, amount: String.to_integer(amount), recipientId: recipientId, message: message, secondPassword: secondPassword, fee: 1}) do
       [:ok, transaction, info] -> json(conn,  %{success: true, transaction: transaction, info: info})
       [:error, _, info] -> json(conn,  %{success: false, transaction: [], info: info})
     end
   end
 
   def getTransactionsByBlockHeight(conn, %{"height" => height}) do
-    transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(height)
+    transaction = Block.TransactionRepository.get_transactions_by_blockIndex(height)
     json conn, %{data: transaction}
   end
 
   def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
-    block = Repos.BlockRepository.get_block_by_hash(hash)
+    block = Block.BlockRepository.get_block_by_hash(hash)
     case block do
       [] -> json conn, %{data: []}
-      _ -> transaction = Repos.TransactionRepository.get_transactions_by_blockIndex(block.index)
+      _ -> transaction = Block.TransactionRepository.get_transactions_by_blockIndex(block.index)
            json conn, %{data: transaction}
     end
   end

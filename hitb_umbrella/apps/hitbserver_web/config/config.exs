@@ -7,7 +7,8 @@ use Mix.Config
 
 # General application configuration
 config :hitbserver_web,
-  namespace: HitbserverWeb
+  namespace: HitbserverWeb,
+  ecto_repos: [Hitb.Repo]
 
 # Configures the endpoint
 config :hitbserver_web, HitbserverWeb.Endpoint,

@@ -1,4 +1,5 @@
 defmodule Hitb.File do
+  alias Hitb.Library.Wt4
   #对写入文件的处理
   def write(file_path, file_name, str)do
     #临时文件是否存在
@@ -29,24 +30,36 @@ defmodule Hitb.File do
       end
     end
     #读取文件信息
-    {:ok, file_info}  = :file.read_file_info(file_path <> file_name)
-    [_, file_size, _, access, atime, mtime, ctime, _, _, _, _, _, _, _] = file_info
+    file_info =
+      case File.stat("#{file_path}#{file_name}") do
+        {:ok, result} ->
+          %{path: "#{file_path}#{file_name}", #文件存放路径
+            file_name: file_name, #文件名
+            file_size: result.size, #文件大小
+            file_type: content_type, #文件类型
+            access: result.access, #文件权限
+            atime: Hitb.Time.ttime_to_stime(result.atime), #最后一次读取时间
+            mtime: Hitb.Time.ttime_to_stime(result.mtime), #最后一次修改时间
+            ctime: Hitb.Time.ttime_to_stime(result.ctime)} #创建时间
+        {:error, _} ->
+          %{path: "#{file_path}#{file_name}", #文件存放路径
+            file_name: file_name, #文件名
+            file_size: 0, #文件大小
+            file_type: nil, #文件类型
+            access: nil, #文件权限
+            atime: nil, #最后一次读取时间
+            mtime: nil, #最后一次修改时间
+            ctime: nil} #创建时间
+      end
     #识别文件大小
     file_size =
       cond do
-        file_size < 1024 -> to_string(file_size) <> "B"
-        file_size > 1024 and file_size < 1048576 -> to_string(Float.round((file_size/1024), 2)) <> "KB"
-        file_size > 1048576 and file_size < 1073741824 -> to_string(Float.round((file_size/1048576), 2)) <> "MB"
-        true -> to_string(Float.round((file_size/1073741824), 2)) <> "GB"
+        file_info.file_size < 1024 -> to_string(file_info.file_size) <> "B"
+        file_info.file_size > 1024 and file_info.file_size < 1048576 -> to_string(Float.round((file_info.file_size/1024), 2)) <> "KB"
+        file_info.file_size > 1048576 and file_info.file_size < 1073741824 -> to_string(Float.round((file_info.file_size/1048576), 2)) <> "MB"
+        true -> to_string(Float.round((file_info.file_size/1073741824), 2)) <> "GB"
       end
-    %{path: "#{file_path}#{file_name}", #文件存放路径
-      file_name: file_name, #文件名
-      file_size: file_size, #文件大小
-      file_type: content_type, #文件类型
-      access: access, #文件权限
-      atime: Hitb.Time.ttime_to_stime(atime), #最后一次读取时间
-      mtime: Hitb.Time.ttime_to_stime(mtime), #最后一次修改时间
-      ctime: Hitb.Time.ttime_to_stime(ctime)} #创建时间
+    %{file_info | :file_size => file_size}
   end
 
   def check(file_path) do
@@ -80,7 +93,7 @@ defmodule Hitb.File do
             Map.put(acc, k, val)
           end)
           #取得错误
-          error = Library.Wt4.changeset(%Library.Wt4{}, x).errors
+          error = Wt4.changeset(%Wt4{}, x).errors
             |>Enum.map(fn error -> hd(Tuple.to_list(error)) end)
             |>Enum.map(fn x -> to_string(x) end)
           Map.put(x, "error", error)
@@ -90,7 +103,7 @@ defmodule Hitb.File do
           case JSON.decode(x) do
             {:ok, json} ->
               json = Map.merge(json, %{"adrg" => String.slice(json["drg"], 0, 3), "mdc" => String.at(json["drg"], 0), "department" => to_string(json["department"]), "org" => to_string(json["org"]), "org_name" => "东华万兴测试"})
-              error = Library.Wt4.changeset(%Library.Wt4{}, json).errors
+              error = Wt4.changeset(%Wt4{}, json).errors
                 |>Enum.map(fn error -> hd(Tuple.to_list(error)) end)
                 |>Enum.map(fn x -> to_string(x) end)
               Map.put(json, "error", error)

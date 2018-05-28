@@ -1,7 +1,7 @@
 defmodule BlockWeb.PageControllerTest do
   use BlockWeb.ConnCase
 
-  @valid_attrs %{}
+  # @valid_attrs %{}
 
   test "POST /status", %{conn: conn} do
     conn = get conn, "/api/status"

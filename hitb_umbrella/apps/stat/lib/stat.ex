@@ -1,11 +1,4 @@
 defmodule Stat do
-  @moduledoc """
-  Stat keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
   #页面中文
   def page_en(page_type) do
     case page_type do

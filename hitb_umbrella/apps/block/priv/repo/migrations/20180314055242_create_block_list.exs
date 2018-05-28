@@ -3,6 +3,7 @@ defmodule Block.Repo.Migrations.CreateBlockList do
 
   def change do
     create table(:block_list) do
+      add :index,   :integer
       add :previous_hash,   :string
       add :timestamp,       :integer
       add :data,            :string

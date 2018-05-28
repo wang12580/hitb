@@ -10,7 +10,10 @@ defmodule Block.MixProject do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
+      elixirc_paths: elixirc_paths(Mix.env),
+      compilers: [:elixir, :leex] ++ Mix.compilers,
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps()
     ]
   end
@@ -19,9 +22,13 @@ defmodule Block.MixProject do
   def application do
     [
       mod: {Block.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -30,7 +37,14 @@ defmodule Block.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_gen_socket_client, "~> 2.0.0"},
       {:websocket_client, "~> 1.2"},
-      {:repos, in_umbrella: true},
+    ]
+  end
+
+  defp aliases do
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

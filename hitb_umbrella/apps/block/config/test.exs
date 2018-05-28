@@ -11,4 +11,5 @@ config :block, Block.Repo,
   password: "postgres",
   database: "block_test",
   hostname: "postgres",
+  pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
