@@ -33,7 +33,7 @@ defmodule HitbserverWeb.OnlineChannel do
   end
 
   def handle_in("用户信息", _private, socket) do
-    user = Map.get(socket, :user)
+    user = Map.get(socket, :assigns)
     broadcast! socket, "用户信息", %{user: user}
     {:noreply, socket}
   end
