@@ -17,10 +17,8 @@ defmodule Block.Application do
   def initialize_datastore() do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
-    # unless(Mix.env() == :test)do
-      init_peer()
-      generate_initial_block()
-    # end
+    init_peer()
+    generate_initial_block()
   end
 
   defp init_peer() do
@@ -29,16 +27,16 @@ defmodule Block.Application do
       port:  "4000",
       connect: true
     }
-    case Block.PeerRepository.get_all_peers do
-      [] ->
-        case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-          :ok -> Block.PeerRepository.insert_peer(init_peer)
-          _ -> :error
-        end
-      peers ->
-        # 连接所有存储的节点
-        peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
-      _ -> :error
+    peers = Block.PeerRepository.get_all_peers
+    if(peers)do
+      peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    else
+      case Block.P2pSessionManager.connect(init_peer.host, init_peer.port)do
+        :ok ->
+          Block.PeerRepository.insert_peer(init_peer)
+        _ ->
+          Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
+      end
     end
   end
 
