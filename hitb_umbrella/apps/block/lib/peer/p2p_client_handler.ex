@@ -4,6 +4,8 @@ defmodule Block.P2pClientHandler do
   Responsible for keeping the block chain in sync.
   """
   require Logger
+  alias Block.PeerRepository
+  alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
   @behaviour GenSocketClient
 
@@ -41,7 +43,7 @@ defmodule Block.P2pClientHandler do
 
   def handle_disconnected(reason, state) do
     peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
-    :mnesia.transaction(fn -> :mnesia.write({:peer, peer.host, peer.port, false}) end)
+    PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
     # Process.send_after(self(), :connect, :timer.seconds(20000))
     {:ok, state}
@@ -86,16 +88,15 @@ defmodule Block.P2pClientHandler do
     response = payload["response"]["data"]
     case type do
       "get_all_accounts" ->
-        response
-        |>Enum.map(fn data ->
-            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
-          end)
-        |>Enum.map(fn x -> Block.AccountRepository.insert_account(x) end)
+        # response
+        # |>Enum.map(fn data ->
+        #     Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
+        #   end)
+        # |>Enum.map(fn x -> Block.AccountRepository.insert_account(x) end)
         GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
       "get_latest_block" ->
-        if(Map.get(response, "hash") != Map.get(Block.BlockService.get_latest_block, :hash))do
-          block = Map.keys(response) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), response[x]) end)
-          :ets.insert(:latest_block, {:latest, block})
+        if(Block.BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(Block.BlockService.get_latest_block, :timestamp))do
+          # BlockRepository.insert_block(response)
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
         else
           GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})

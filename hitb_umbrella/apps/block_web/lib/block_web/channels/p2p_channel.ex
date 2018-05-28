@@ -12,7 +12,6 @@ defmodule BlockWeb.P2pChannel do
   @connection_success Block.P2pMessage.connection_success
 
   def join(_topic, _payload, socket) do
-    IO.inspect IO.inspect "P2pChannel1"
     {:ok, socket}
   end
 

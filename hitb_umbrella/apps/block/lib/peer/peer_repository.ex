@@ -10,6 +10,18 @@ defmodule Block.PeerRepository do
     :ok
   end
 
+  def update_peer(host, port, attr) do
+    peer = Repo.get_by(Peer, host: host, port: port)
+    case peer do
+      nil -> :error
+      _ ->
+        peer
+        |> Peer.changeset(attr)
+        |> Repo.update
+        :ok
+    end
+  end
+
   def get_all_peers() do
     Repo.all(Peer)
   end

@@ -18,7 +18,9 @@ defmodule Block.Application do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
     init_peer()
-    generate_initial_block()
+    # generate_initial_block()
+    IO.inspect Block.BlockRepository.get_all_blocks
+
   end
 
   defp init_peer() do
@@ -28,7 +30,7 @@ defmodule Block.Application do
       connect: true
     }
     peers = Block.PeerRepository.get_all_peers
-    if(peers)do
+    if(peers != [])do
       peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
     else
       case Block.P2pSessionManager.connect(init_peer.host, init_peer.port)do
@@ -52,7 +54,9 @@ defmodule Block.Application do
         generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
       }
       Block.BlockRepository.insert_block(init_block)
-      secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
+      if(Block.AccountRepository.get_all_accounts == [])do
+        Block.AccountService.newAccount(%{username: secret, balance: 100000000})
+      end
       init_transaction = %{
         transaction_id: Block.TransactionService.generateId,
         height: init_block.index,
