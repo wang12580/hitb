@@ -24,6 +24,6 @@ defmodule Block.TransactionRepository do
   end
 
   def get_all_transactions() do
-    Repo.all(from p in BlockList, order_by: [asc: p.datetime])
+    Repo.all(from p in BlockList, order_by: [asc: p.index])
   end
 end
