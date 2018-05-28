@@ -11,6 +11,6 @@ defmodule Block.PeerRepository do
   end
 
   def get_all_peers() do
-    Repo.all(from p in Peer)
+    Repo.all(Peer)
   end
 end

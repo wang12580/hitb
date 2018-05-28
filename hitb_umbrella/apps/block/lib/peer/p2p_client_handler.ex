@@ -43,7 +43,7 @@ defmodule Block.P2pClientHandler do
     peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
     :mnesia.transaction(fn -> :mnesia.write({:peer, peer.host, peer.port, false}) end)
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
-    Process.send_after(self(), :connect, :timer.seconds(1200))
+    # Process.send_after(self(), :connect, :timer.seconds(20000))
     {:ok, state}
   end
 
@@ -60,7 +60,7 @@ defmodule Block.P2pClientHandler do
 
   def handle_channel_closed(topic, payload, _transport, state) do
     Logger.error("disconnected from the topic #{topic}: #{inspect payload}. Attempting to rejoin...")
-    Process.send_after(self(), {:join, topic}, :timer.seconds(2))
+    Process.send_after(self(), {:join, topic}, :timer.seconds(20000))
     {:ok, state}
   end
 

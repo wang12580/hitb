@@ -3,7 +3,7 @@ defmodule Block.Repo.Migrations.CreateTransaction do
 
   def change do
     create table(:transaction) do
-      add :transaction_id,      :integer
+      add :transaction_id,      :string
       add :height,              :integer
       add :blockId,             :string
       add :type,                :integer
