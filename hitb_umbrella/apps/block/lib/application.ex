@@ -17,8 +17,10 @@ defmodule Block.Application do
   def initialize_datastore() do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
-    init_peer()
-    generate_initial_block()
+    # unless(Mix.env() == :test)do
+      init_peer()
+      generate_initial_block()
+    # end
   end
 
   defp init_peer() do

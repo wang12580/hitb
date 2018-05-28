@@ -19,7 +19,7 @@ defmodule Stat.ContrastServiceTest do
   end
 
   test "test contrast_info" do
-    # assert ContrastService.contrast_info("") == %{x: [], y: []}
+    assert ContrastService.contrast_info("") == %{x: [], y: []}
   end
 
   test "test contrast_clear" do
