@@ -2,6 +2,7 @@ defmodule HitbserverWeb.RuleController do
   use HitbserverWeb, :controller
   # alias Server.UserService
   alias Library.RuleService
+  plug HitbserverWeb.Access
   plug :put_layout, "app_stat.html"
 
   def rule(conn, _params) do
