@@ -117,7 +117,7 @@ defmodule Block.TransactionService do
     randSecs = :rand.uniform(secs)
     # randMicroSecs = :random.uniform(microSecs)
     randSec = :os.system_time(:seconds)
-    Enum.sort([randSec, randSecs, randMegaSecs]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("") |> String.to_integer
+    Enum.sort([randSec, randSecs, randMegaSecs]) |> Enum.map(fn x -> to_string(x) end) |> Enum.join("")
   end
 
   def generateDateTime do

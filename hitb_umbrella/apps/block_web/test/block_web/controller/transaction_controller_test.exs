@@ -9,7 +9,7 @@ defmodule BlockWeb.TransactionsControllerTest do
   # end
 
   test "POST /getTransaction", %{conn: conn} do
-    conn = get conn, "/api/getTransaction", id: "0"
+    conn = get conn, "/api/getTransaction", id: "123456"
     assert json_response(conn, 200)["data"] != []
   end
 
@@ -27,7 +27,7 @@ defmodule BlockWeb.TransactionsControllerTest do
   # end
 
   test "POST /getTransactionsByBlockHeight", %{conn: conn} do
-    conn = get conn, "/api/getTransactionsByBlockHeight", height: 0
+    conn = get conn, "/api/getTransactionsByBlockHeight", height: "12"
     assert json_response(conn, 200)["data"] != []
   end
   # test "POST /getTransactionsByBlockHash", %{conn: conn} do

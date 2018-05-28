@@ -5,7 +5,7 @@ defmodule Block.Transaction do
 
 
   schema "transaction" do
-    field :transaction_id,      :integer
+    field :transaction_id,      :string
     field :height,              :integer
     field :blockId,             :string
     field :type,                :integer
@@ -29,6 +29,6 @@ defmodule Block.Transaction do
   def changeset(%Transaction{} = transaction, attrs) do
     transaction
     |> cast(attrs, [:transaction_id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey,  :requesterPublicKey, :senderId, :recipientId, :amount, :fee, :signature, :signSignature, :asset, :args, :message])
-    |> validate_required([:transaction_id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey,  :requesterPublicKey, :senderId, :recipientId, :amount, :fee, :signature, :signSignature, :asset, :args, :message])
+    |> validate_required([:transaction_id, :height, :blockId, :type, :timestamp, :datetime, :senderPublicKey, :recipientId, :amount, :fee, :asset, :args, :message])
   end
 end

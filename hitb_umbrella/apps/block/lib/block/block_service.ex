@@ -1,6 +1,5 @@
 defmodule Block.BlockService do
   require Logger
-  alias Block.BlockList
   @moduledoc """
   Operations for blocks
   TODO: refactor :ets work into its own module

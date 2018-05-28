@@ -9,7 +9,6 @@ defmodule Edit.CdaService do
 
   def cda_user() do
     users = Repo.all(from p in Cda, select: p.username)|>:lists.usort
-    users = if(users)do users else [] end
     users2 = Repo.all(from p in User, where: p.is_show == false, select: p.username)
     users2 = if(users2)do users2 else [] end
     [users -- users2, "读取成功"]

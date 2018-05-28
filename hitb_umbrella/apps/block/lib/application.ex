@@ -17,10 +17,32 @@ defmodule Block.Application do
   def initialize_datastore() do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
-    generate_initial_block()
+    init_peer()
+    # generate_initial_block()
+    IO.inspect Block.BlockRepository.get_all_blocks
+
   end
 
-  def generate_initial_block() do
+  defp init_peer() do
+    init_peer = %{
+      host:  "139.129.165.56",
+      port:  "4000",
+      connect: true
+    }
+    peers = Block.PeerRepository.get_all_peers
+    if(peers != [])do
+      peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    else
+      case Block.P2pSessionManager.connect(init_peer.host, init_peer.port)do
+        :ok ->
+          Block.PeerRepository.insert_peer(init_peer)
+        _ ->
+          Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
+      end
+    end
+  end
+
+  defp generate_initial_block() do
     if(Block.BlockRepository.get_all_blocks == [])do
       secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
       init_block = %{
@@ -32,6 +54,29 @@ defmodule Block.Application do
         generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
       }
       Block.BlockRepository.insert_block(init_block)
+      if(Block.AccountRepository.get_all_accounts == [])do
+        Block.AccountService.newAccount(%{username: secret, balance: 100000000})
+      end
+      init_transaction = %{
+        transaction_id: Block.TransactionService.generateId,
+        height: init_block.index,
+        blockId: to_string(init_block.index),
+        type:                 3,
+        timestamp:            init_block.timestamp,
+        datetime:             Block.TransactionService.generateDateTime,
+        senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64|> regex,
+        requesterPublicKey:   "",
+        senderId:             "",
+        recipientId:          "SYSTEM",
+        amount:               0,
+        fee:                  0,
+        signature:            "",
+        signSignature:       "",
+        asset:                [],
+        args:                 [],
+        message:              "创世区块"
+      }
+      Block.TransactionRepository.insert_transaction(init_transaction)
     end
   end
 

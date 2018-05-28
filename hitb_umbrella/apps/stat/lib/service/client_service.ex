@@ -49,7 +49,7 @@ defmodule Stat.ClientService do
       [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
       stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
       #存储在自定义之前最后一次url
-      Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org])
+      Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #计算客户端提示

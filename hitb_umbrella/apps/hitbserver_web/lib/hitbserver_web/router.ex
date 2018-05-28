@@ -138,7 +138,7 @@ defmodule HitbserverWeb.Router do
   scope "/servers", HitbserverWeb do
     pipe_through :api
     #省市县三级联动
-    get "/province", PageController, :province
+    get "/province", PageServerController, :province
     #服务器连接
     get "/connect", PageController, :connect
     #上传wt4

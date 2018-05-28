@@ -9,7 +9,7 @@ defmodule BlockWeb.TransactionController do
   """
 
   def getTransactions(conn, _) do
-    transactions = Block.TransactionRepository.get_all_transactions |> Enum.map(fn x -> %{x | :id => to_string(x.id)} end)
+    transactions = Block.TransactionRepository.get_all_transactions
     json(conn, %{data: transactions})
   end
 

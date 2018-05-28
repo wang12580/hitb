@@ -19,13 +19,9 @@ defmodule Block.P2pSessionManager do
           end
         end
       end)
-      # if not already_connected do
-        {:ok, pid} = Block.P2pClientHandler.start_link(host, port)
-        :ets.insert(:peers, {pid, %{host: host, port: port}})
-        :ok
-      # else
-        # :fail
-      # end
+    {:ok, pid} = Block.P2pClientHandler.start_link(host, port)
+    :ets.insert(:peers, {pid, %{host: host, port: port}})
+    :ok
   end
 
   def broadcast(message) do

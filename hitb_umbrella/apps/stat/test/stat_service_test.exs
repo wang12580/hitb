@@ -11,7 +11,7 @@ defmodule Stat.StatServiceTest do
   end
 
   test "test stat_info" do
-    # assert StatService.stat_info("org", "total", "", "base", "") == %{cnkey: ["机构", "时间", "总权重", "诊断相关组数","费用消耗指数", "时间消耗指数", "CMI","平均住院费用", "平均住院天数", "病历数"], key: ["org", "time", "weight_count", "zdxg_num", "fee_index", "day_index", "cmi", "fee_avg", "day_avg", "num_sum"], stat: [], suggest: []}
+    assert StatService.stat_info("org", "total", "", "base", "") == %{cnkey: ["机构", "时间", "总权重", "诊断相关组数","费用消耗指数", "时间消耗指数", "CMI","平均住院费用", "平均住院天数", "病历数"], key: ["org", "time", "weight_count", "zdxg_num", "fee_index", "day_index", "cmi", "fee_avg", "day_avg", "num_sum"], stat: [], suggest: []}
   end
 
   test "test stat_info_chart" do

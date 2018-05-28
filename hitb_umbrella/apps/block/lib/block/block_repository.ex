@@ -35,4 +35,8 @@ defmodule Block.BlockRepository do
     :ets.insert(:latest_block, {:latest, block})
     block
   end
+
+  def del_all_block() do
+    Repo.delete_all(BlockList)
+  end
 end
