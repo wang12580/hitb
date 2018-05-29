@@ -2,7 +2,6 @@ defmodule Block.TransactionRepository do
   import Ecto.Query, warn: false
   alias Block.Repo
   alias Block.Transaction
-  alias Block.BlockList
 
   def insert_transaction(transaction) do
     %Transaction{}
@@ -24,6 +23,10 @@ defmodule Block.TransactionRepository do
   end
 
   def get_all_transactions() do
-    Repo.all(from p in BlockList, order_by: [asc: p.index])
+    Repo.all(from p in Transaction, order_by: [asc: p.datetime])
+  end
+
+  def get_all_transactions_id() do
+    Repo.all(from p in Transaction, select: p.transaction_id)
   end
 end
