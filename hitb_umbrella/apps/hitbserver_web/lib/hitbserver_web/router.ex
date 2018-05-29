@@ -109,6 +109,7 @@ defmodule HitbserverWeb.Router do
     #省市县三级联动
     get "/province", ServerController, :province
     get "/json_check", PageServerController, :json_check
+    get "/check_html", PageServerController, :check_html
   end
 
   scope "/edit", HitbserverWeb do
