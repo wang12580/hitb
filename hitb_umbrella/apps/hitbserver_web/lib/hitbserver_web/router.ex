@@ -120,6 +120,7 @@ defmodule HitbserverWeb.Router do
     post "/cda", CdaController, :update
     get "/mouldlist", MouldController, :mould_list
     get "/mouldfile", MouldController, :mould_file
+    get "/helpinsert", HelpController, :help_insert
     get "/helplist", HelpController, :help_list
     get "/helpfile", HelpController, :help_file
   end
