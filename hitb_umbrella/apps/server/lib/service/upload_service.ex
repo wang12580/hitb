@@ -1,12 +1,16 @@
 defmodule Server.UploadService do
-  # alias Server.CustomizeDepartment
+  alias Hitb.File
+  alias Hitb.Repo
+  alias Hitb.Library.Wt4
+  alias Hitb.Server.Org
 
-  # def wt4_upload(conn, _params) do
-  #   file_path = System.user_home() <> "/wt4/"
-  #   %{:path => file_path, :file_name => file_name, :file_size => file_size} = Hitb.File.upload_file(file_path, conn.params["file"])
-  #   Hitb.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
-  #   json conn, %{file_path: file_path, file_name: file_name, file_size: file_size}
-  # end
+  def wt4_upload(conn) do
+    file_path = System.user_home() <> "/wt4/"
+    %{:path => file_path, :file_name => file_name, :file_size => file_size} = File.upload_file(file_path, conn.params["file"])
+    Hitb.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
+    IO.inspect file_path
+    %{file_path: file_path, file_name: file_name, file_size: file_size}
+  end
   #
   # def province()do
   #   %{province: Hitb.Province.province(), city: Hitb.Province.city(), county: Hitb.Province.county()}
@@ -22,34 +26,34 @@ defmodule Server.UploadService do
   #   Enum.map(department, fn x -> %{code: x} end)
   # end
   #
-  # def wt4_insert() do
-  #   json = Hitb.ets_get(:json, :json)
-  #   keys = Map.keys(hd(json))
-  #   org_name =
-  #     cond do
-  #       # keys == nil -> ""
-  #       keys == [] -> ""
-  #       "org" in keys -> hd(json)["org"]
-  #       "org_name" in keys -> hd(json)["org_name"]
-  #       true -> ""
-  #     end
-  #   org = Repo.get_by(Server.Org, name: org_name)
-  #   org =
-  #     case org do
-  #         nil -> %{stat_org_name: "未知", code: "未知"}
-  #         _ -> org
-  #     end
-  #   stat_org_name = "医院" <> to_string(org.stat_org_name)
-  #   result = Enum.map(json, fn x ->
-  #       if(x != [])do
-  #         x = Map.merge(x, %{"stat_org_name" => stat_org_name, "org_code" => org.code})
-  #         # IO.inspect Wt4.changeset(%Wt4{}, x)
-  #         %Library.Wt4{}
-  #         |> Library.Wt4.changeset(x)
-  #         |> Library.Repo.insert
-  #       end
-  #     end)
-  #   length(result)
-  # end
+  def wt4_insert() do
+    json = Hitb.ets_get(:json, :json)
+    keys = Map.keys(hd(json))
+    org_name =
+      cond do
+        # keys == nil -> ""
+        keys == [] -> ""
+        "org" in keys -> hd(json)["org"]
+        "org_name" in keys -> hd(json)["org_name"]
+        true -> ""
+      end
+    org = Repo.get_by(Org, name: org_name)
+    org =
+      case org do
+          nil -> %{stat_org_name: "未知", code: "未知"}
+          _ -> org
+      end
+    stat_org_name = "医院" <> to_string(org.stat_org_name)
+    result = Enum.map(json, fn x ->
+        if(x != [])do
+          x = Map.merge(x, %{"stat_org_name" => stat_org_name, "org_code" => org.code})
+          # IO.inspect Wt4.changeset(%Wt4{}, x)
+          %Wt4{}
+          |> Wt4.changeset(x)
+          |> Repo.insert
+        end
+      end)
+    length(result)
+  end
 
 end
