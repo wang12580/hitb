@@ -87,15 +87,13 @@ defmodule Block.P2pClientHandler do
     response = payload["response"]["data"]
     case type do
       "get_all_accounts" ->
-        # response
-        # |>Enum.map(fn data ->
-        #     Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
-        #   end)
-        # |>Enum.map(fn x -> Block.AccountRepository.insert_account(x) end)
+        usernames = Block.AccountRepository.get_all_usernames()
+        response
+        |> Enum.reject(fn x -> x["username"] in usernames end)
+        |> Enum.each(fn x -> Block.AccountRepository.insert_account(x) end)
         GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
       "get_latest_block" ->
         if(Block.BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(Block.BlockService.get_latest_block, :timestamp))do
-          # BlockRepository.insert_block(response)
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
         else
           GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
@@ -108,11 +106,10 @@ defmodule Block.P2pClientHandler do
         |>Enum.map(fn x -> Block.BlockRepository.insert_block(x) end)
         GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
       "query_all_transactions" ->
+        transactios_id = Block.TransactionRepository.get_all_transactions_id()
         response
-        |>Enum.map(fn data ->
-            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
-          end)
-        |>Enum.map(fn x -> Block.TransactionRepository.insert_transaction(x) end)
+        |> Enum.reject(fn x -> x["transaction_id"] in transactios_id end)
+        |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
     end
     # Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}

@@ -20,6 +20,7 @@ defmodule HitbserverWeb.UserView do
       tel: user.tel,
       is_show: user.is_show,
       name: user.name,
-      type: user.type}
+      type: user.type,
+      hash: user.hash}
   end
 end

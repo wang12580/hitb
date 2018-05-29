@@ -25,7 +25,7 @@ defmodule Block.Application do
 
   defp init_peer() do
     init_peer = %{
-      host:  "127.0.0.1",
+      host:  "139.129.165.56",
       port:  "4000",
       connect: true
     }
@@ -43,46 +43,46 @@ defmodule Block.Application do
     # end
   end
 
-  defp generate_initial_block() do
-    if(Block.BlockRepository.get_all_blocks == [])do
-      secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
-      init_block = %{
-        index: 0,
-        previous_hash: "0",
-        timestamp: :os.system_time(:seconds),
-        data: "foofizzbazz",
-        hash: :crypto.hash(:sha256, "cool") |> Base.encode64 |> regex,
-        generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
-      }
-      Block.BlockRepository.insert_block(init_block)
-      if(Block.AccountRepository.get_all_accounts == [])do
-        Block.AccountService.newAccount(%{username: secret, balance: 100000000})
-      end
-      init_transaction = %{
-        transaction_id: Block.TransactionService.generateId,
-        height: init_block.index,
-        blockId: to_string(init_block.index),
-        type:                 3,
-        timestamp:            init_block.timestamp,
-        datetime:             Block.TransactionService.generateDateTime,
-        senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64|> regex,
-        requesterPublicKey:   "",
-        senderId:             "",
-        recipientId:          "SYSTEM",
-        amount:               0,
-        fee:                  0,
-        signature:            "",
-        signSignature:       "",
-        asset:                [],
-        args:                 [],
-        message:              "创世区块"
-      }
-      Block.TransactionRepository.insert_transaction(init_transaction)
-    end
-  end
+  # defp generate_initial_block() do
+  #   if(Block.BlockRepository.get_all_blocks == [])do
+  #     secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
+  #     init_block = %{
+  #       index: 0,
+  #       previous_hash: "0",
+  #       timestamp: :os.system_time(:seconds),
+  #       data: "foofizzbazz",
+  #       hash: :crypto.hash(:sha256, "cool") |> Base.encode64 |> regex,
+  #       generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
+  #     }
+  #     Block.BlockRepository.insert_block(init_block)
+  #     if(Block.AccountRepository.get_all_accounts == [])do
+  #       Block.AccountService.newAccount(%{username: secret, balance: 100000000})
+  #     end
+  #     init_transaction = %{
+  #       transaction_id: Block.TransactionService.generateId,
+  #       height: init_block.index,
+  #       blockId: to_string(init_block.index),
+  #       type:                 3,
+  #       timestamp:            init_block.timestamp,
+  #       datetime:             Block.TransactionService.generateDateTime,
+  #       senderPublicKey:      :crypto.hash(:sha256, "publicKey#{secret}")|> Base.encode64|> regex,
+  #       requesterPublicKey:   "",
+  #       senderId:             "",
+  #       recipientId:          "SYSTEM",
+  #       amount:               0,
+  #       fee:                  0,
+  #       signature:            "",
+  #       signSignature:       "",
+  #       asset:                [],
+  #       args:                 [],
+  #       message:              "创世区块"
+  #     }
+  #     Block.TransactionRepository.insert_transaction(init_transaction)
+  #   end
+  # end
 
-  defp regex(s) do
-    [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
-    |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
-  end
+  # defp regex(s) do
+  #   [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
+  #   |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
+  # end
 end

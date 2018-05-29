@@ -13,6 +13,10 @@ defmodule Block.AccountRepository do
     Repo.all(from p in Account, order_by: [asc: p.index])
   end
 
+  def get_all_usernames() do
+    Repo.all(from p in Account, select: p.username)
+  end
+
   def get_account(username) do
     Repo.get_by(Account, username: username)
   end
