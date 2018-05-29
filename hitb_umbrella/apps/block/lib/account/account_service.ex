@@ -41,7 +41,7 @@ defmodule Block.AccountService do
     case account do
       nil -> nil
       [] -> nil
-      _ -> account
+      _ -> Map.drop(account, [:__meta__, :__struct__])
     end
   end
 
@@ -49,7 +49,7 @@ defmodule Block.AccountService do
     account = Block.AccountRepository.get_account_by_address(address)
     case account do
       [] -> nil
-      _ -> account
+      _ -> Map.drop(account, [:__meta__, :__struct__])
     end
   end
 

@@ -80,14 +80,37 @@ defmodule Server.UserService do
   end
 
   def create_user(attrs \\ %{}) do
-    user = attrs["username"]
-    get_user = Repo.get_by(User, username: user)
+    username = attrs["username"]
+    get_user = Repo.get_by(User, username: username)
     case get_user do
       nil ->
         attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "type" => 2, "key" => []}, attrs)
-        %User{}
-        |> User.changeset(attrs)
-        |> Repo.insert()
+        #调用block服务
+        secret = generate_secret(username)
+        block_address =
+          case HTTPoison.request(:get, "http://127.0.0.1/block/api/newAccount?username=#{secret}") do
+            {:ok, result} ->
+              %{body: body} = result
+              body = Poison.decode!(body)
+              if(body["success"])do
+                body["user"]["address"]
+              else
+                false
+              end
+            {:error, _} ->
+              false
+          end
+        case block_address do
+          false ->
+            attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "is_show" => false}, attrs)
+            changeset = User.changeset(%User{}, attrs)
+            {:error, changeset}
+          _ ->
+            attrs = Map.merge(%{"block_address" => block_address}, attrs)
+            %User{}
+            |> User.changeset(attrs)
+            |> Repo.insert()
+        end
       _ ->
         attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "is_show" => false}, attrs)
         changeset = User.changeset(%User{}, attrs)
@@ -107,5 +130,11 @@ defmodule Server.UserService do
   def delete_user(id) do
     user = get_user!(id)
     Repo.delete(user)
+  end
+
+  defp generate_secret(username) do
+    username = String.split(username, "@")|>List.first
+    words = Mnemonic.generate()|>String.split(" ")
+    [username] ++ Enum.map(0..10, fn x -> Enum.at(words, x) end)
   end
 end
