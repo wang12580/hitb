@@ -3,7 +3,10 @@ defmodule HitbserverWeb.HelpController do
   alias Edit.HelpService
   # alias Hitb.Time
   plug HitbserverWeb.Access
-
+  def help_insert(conn, _params) do
+    result = HelpService.help_insert()
+    json conn, %{success: true}
+  end
   def help_list(conn, _params) do
     result = HelpService.help_list()
     json conn, %{result: result, success: true}
