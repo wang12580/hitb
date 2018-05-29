@@ -1,6 +1,7 @@
 defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
   alias Server.UserService
+  alias Server.UploadService
   plug HitbserverWeb.Access
 
   def index(conn, _params) do
@@ -52,6 +53,13 @@ defmodule HitbserverWeb.PageController do
     redirect conn, to: "/hospitals/login"
   end
 
-
+  def wt4_upload(conn, _params) do
+    wt4s = UploadService.wt4_upload(conn)
+    json conn, wt4s
+  end
+  def wt4_insert(conn, _params) do
+    wt4s = UploadService.wt4_insert()
+    json conn, wt4s
+  end
 
 end
