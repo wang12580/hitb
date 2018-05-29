@@ -43,7 +43,7 @@ defmodule Block.P2pClientHandler do
 
   def handle_disconnected(reason, state) do
     peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
-    PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
+    # PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
     # Process.send_after(self(), :connect, :timer.seconds(20000))
     {:ok, state}
@@ -78,7 +78,6 @@ defmodule Block.P2pClientHandler do
 
   def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
     Logger.info("connection to server failed...")
-    IO.inspect payload
     Block.P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
@@ -113,9 +112,9 @@ defmodule Block.P2pClientHandler do
         |>Enum.map(fn data ->
             Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
           end)
-        |>Enum.map(fn x -> Block.TransactionRepository.insert_transaction(%{x | :args => List.to_tuple(x.args)}) end)
+        |>Enum.map(fn x -> Block.TransactionRepository.insert_transaction(x) end)
     end
-    Logger.warn("reply on topic #{topic}: #{inspect payload}")
+    # Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
   end
 

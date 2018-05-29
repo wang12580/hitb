@@ -19,27 +19,28 @@ defmodule Block.Application do
     :ets.new(:latest_block, [:set, :public, :named_table])
     init_peer()
     # generate_initial_block()
-    IO.inspect Block.BlockRepository.get_all_blocks
+    # IO.inspect Block.BlockRepository.get_all_blocks
 
   end
 
   defp init_peer() do
     init_peer = %{
-      host:  "139.129.165.56",
+      host:  "127.0.0.1",
       port:  "4000",
       connect: true
     }
-    peers = Block.PeerRepository.get_all_peers
-    if(peers != [])do
-      peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
-    else
-      case Block.P2pSessionManager.connect(init_peer.host, init_peer.port)do
-        :ok ->
-          Block.PeerRepository.insert_peer(init_peer)
-        _ ->
-          Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
-      end
-    end
+    Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
+    # peers = Block.PeerRepository.get_all_peers
+    # if(peers != [])do
+      # peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    # else
+    #   case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+    #     :ok ->
+    #       Block.PeerRepository.insert_peer(init_peer)
+    #     _ ->
+    #       Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
+    #   end
+    # end
   end
 
   defp generate_initial_block() do
