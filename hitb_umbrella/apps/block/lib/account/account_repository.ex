@@ -18,7 +18,7 @@ defmodule Block.AccountRepository do
   end
 
   def get_account(username) do
-    Map.drop(Repo.get_by(Account, username: username), [:__meta__, :__struct__])
+    Repo.get_by(Account, username: username)
   end
 
   def get_account_by_publicKey(publicKey) do
@@ -37,6 +37,6 @@ defmodule Block.AccountRepository do
   end
 
   def delete_account(account) do
-    Repo.delete(account)
+    Repo.delete!(account)
   end
 end

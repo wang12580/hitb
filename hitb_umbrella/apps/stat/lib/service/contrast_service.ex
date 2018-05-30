@@ -97,7 +97,9 @@ defmodule Stat.ContrastService do
         true -> key
       end
     #取缓存
-    stat = Hitb.ets_get(:stat_drg, "comx_" <> username)|>Stat.Convert.map(key)
+    comx = Hitb.ets_get(:stat_drg, "comx_" <> username)
+    comx = if(comx)do comx else [] end
+    stat = comx|>Stat.Convert.map(key)
     #最终要对比值
     Chart.chart(stat, chart_type)
   end

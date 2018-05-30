@@ -91,11 +91,15 @@ defmodule Server.UserService do
           case HTTPoison.request(:get, "http://127.0.0.1/block/api/newAccount?username=#{secret}") do
             {:ok, result} ->
               %{body: body} = result
-              body = Poison.decode!(body)
-              if(body["success"])do
-                body["user"]["address"]
-              else
-                false
+              case String.contains? body, "502 Bad Gateway" do
+                true -> false
+                _ ->
+                  body = Poison.decode!(body)
+                  if(body["success"])do
+                    body["user"]["address"]
+                  else
+                    false
+                  end
               end
             {:error, _} ->
               false

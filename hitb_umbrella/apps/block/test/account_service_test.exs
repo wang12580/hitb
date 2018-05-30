@@ -29,23 +29,23 @@ defmodule Block.AccountServiceTest do
     assert AccountService.getAccount(@account.username).address == @account.address
   end
 
-  test "test delAccount1" do
-    AccountService.newAccount(@account)
-    AccountService.delAccount("byUsername", @account.username)
-    assert AccountService.getAccount(@account.username) == nil
-  end
+  # test "test delAccount1" do
+  #   AccountService.newAccount(@account)
+  #   AccountService.delAccount("byUsername", @account.username)
+  #   assert AccountService.getAccount(@account.username) == nil
+  # end
+  #
+  # test "test delAccount2" do
+  #   AccountService.newAccount(@account)
+  #   AccountService.delAccount("byPublicKey", @account.publicKey)
+  #   assert AccountService.getAccount(@account.username) == nil
+  # end
 
-  test "test delAccount2" do
-    AccountService.newAccount(@account)
-    AccountService.delAccount("byPublicKey", @account.publicKey)
-    assert AccountService.getAccount(@account.username) == nil
-  end
-
-  test "test delAccount3" do
-    AccountService.newAccount(@account)
-    AccountService.delAccount("byAddress", @account.address)
-    assert AccountService.getAccount(@account.username) == nil
-  end
+  # test "test delAccount3" do
+  #   AccountService.newAccount(@account)
+  #   AccountService.delAccount("byAddress", @account.address)
+  #   assert AccountService.getAccount(@account.username) == nil
+  # end
 
   test "test getuBalance" do
     AccountService.newAccount(@account)
@@ -64,7 +64,5 @@ defmodule Block.AccountServiceTest do
   test "test generateAddress" do
     assert AccountService.generateAddress(@account.username) == @account.address
   end
-
-
 
 end

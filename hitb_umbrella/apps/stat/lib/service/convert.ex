@@ -20,7 +20,7 @@ defmodule Stat.Convert do
   end
 
   def map(map, key) do
-    if(map != [])do
+    if(List.flatten(map) != [])do
       map
       |>Enum.map(fn x ->
           key|>Enum.map(fn x -> if(is_bitstring(x))do String.to_atom(x) else x end end)
