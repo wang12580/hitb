@@ -18,6 +18,7 @@ defmodule Library.RuleService do
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
+    IO.inspect type
     %{result: result, page_list: page_list, page_num: page_num, tab_type: tab_type, type: type, dissect: dissect, list: list, version: version, year: year}
   end
 
@@ -269,15 +270,40 @@ defmodule Library.RuleService do
     [result, list, page_list, page_num, count_page, type]
   end
 
-  defp ruleChinese(type, _tab_type, tab, page, rows) do
-    count = Repo.all(from p in tab, select: count(p.id)) |>hd
+  defp ruleChinese(type, tab_type, tab, page, rows) do
+    list =
+      cond do
+        tab_type == "中成药" ->
+          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :medicine_type)))
+            |>Enum.reject(fn x -> x == nil end)
+          case i do
+            [] -> []
+            _ -> List.first(i)|>Enum.sort
+          end
+        tab_type == "中药" -> []
+      end
+    query =
+      cond do
+        type in ["解表药", "清热解毒药", "泻下药", "消导药", "止咳化痰药", "理气药", "温里药", "祛风湿药?", "固涩药", "利水渗湿药", "开窍药"] ->
+          from(p in tab)
+          |>where([p], p.type == ^type)
+        type in list ->
+          from(p in tab)
+          |>where([p], p.medicine_type == ^type)
+        true ->
+          from(p in tab)
+      end
+    count = query
+      |>select([p], count(p.id))
+      |>Repo.all
+      |>hd
+    # count = Repo.all(from p in tab, select: count(p.id)) |>hd
     skip = Hitb.Page.skip(page, rows)
-    result = from(p in tab)
+    result = query
       |>limit([p], ^rows)
       |>offset([w], ^skip)
       |>Repo.all
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
-    list = []
     [result, list, page_list, page_num, count_page, type]
   end
 end

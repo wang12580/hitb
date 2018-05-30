@@ -1,6 +1,6 @@
 <div class="ui padded grid"  id="rule">
   <div class="two wide column" style="overflow-y:auto;overflow-x:hidden;height:795px;">
-    <div class="ui secondary vertical menu">
+    <div class="ui secondary vertical menu" v-if="tabType !=='中成药'">
       <%= cond do%>
         <% @type == "year" -> %>
           <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@year%>'}" :href="'/hospitals/rule?dissect=<%=@dissect%>&page=1&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&year='+x">{{ x }}</a>
@@ -9,6 +9,9 @@
         <% true -> %>
           <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@dissect%>'}" :href="'/hospitals/rule?year=<%=@year%>&page=1&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
       <% end %>
+    </div>
+    <div class="ui secondary vertical menu" v-if="tabType ==='中成药'">
+      <a class="item" v-for="x in leftList" v-on:click="change(x)">{{ x }}</a>
     </div>
   </div>
   <div class="fourteen wide column">
@@ -26,6 +29,7 @@
         <div class="ui primary button" v-on:click="change(x[1])" v-else>{{x[0]}}</div>&nbsp;&nbsp;
       </div>
     </div>
+
     <div id= "rule_tit">
       <a class='ui red label' v-if="tit.year !== ''">{{tit.year}}年
         <i class='delete icon' v-on:click="del('year')"></i>
@@ -98,13 +102,14 @@ $(document).ready(function() {
         '街道乡镇代码': [[]],
         '民族': [[]],
         '区县编码': [[]],
-        '中药': [[]],
+        '中药': [['解表药', '解表药'], ['清热解毒药', '清热解毒药'], ['泻下药', '泻下药'], ['消导药', '消导药'], ['止咳化痰药', '止咳化痰药'], ['理气药', '理气药'], ['止血药', '止血药'], ['温里药', '温里药'], ['祛风湿药?', '祛风湿药?'], ['固涩药', '固涩药'], ['利水渗湿药', '利水渗湿药'], ['开窍药', '开窍药'], ['芳香化湿药', '芳香化湿药'], ['补益药 ', '补益药 '], ['安神药', '安神药'],['平肝熄风药', '平肝熄风药'], ['驱虫药', '驱虫药'],['活血化瘀药', '活血化瘀药'], ['涌吐药', '涌吐药'], ['外用药', '外用药']],
         '中成药': [[]],
       },
       tool: [],
       tit: {},
       titTypes: [],
-      titType: false
+      titType: false,
+      tabType: ''
     },
     created: function () {
       this.getRule();
@@ -127,7 +132,9 @@ $(document).ready(function() {
             } else {
               this.headerCn = ['名称', '编码', '年份', '版本']
             }
+            this.tabType = res.tab_type;
             this.leftList = res.list;
+            console.log(res);
             this.pages = res.page_list;
             this.page = res.page_num;
             this.tool = this.tools[res.tab_type];
