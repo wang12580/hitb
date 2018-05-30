@@ -89,7 +89,6 @@ defmodule BlockWeb.AccountController do
           false ->
             json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
           _ ->
-            Block.AccountRepository.insert_account(account)
             user = Block.AccountRepository.get_account(username)
             json(conn, %{success: true, user: user, info: "用户创建成功"})
         end

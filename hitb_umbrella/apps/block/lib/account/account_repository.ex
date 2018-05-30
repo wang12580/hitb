@@ -18,7 +18,7 @@ defmodule Block.AccountRepository do
   end
 
   def get_account(username) do
-    Repo.get_by(Account, username: username)
+    Map.drop(Repo.get_by(Account, username: username), [:__meta__, :__struct__])
   end
 
   def get_account_by_publicKey(publicKey) do

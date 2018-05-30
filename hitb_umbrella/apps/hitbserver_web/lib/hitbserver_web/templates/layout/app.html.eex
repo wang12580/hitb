@@ -407,6 +407,22 @@
                         <a class="item" href="/hospitals/rule?tab_type=医保诊断依据&version=">医保，诊断依据</a>
                       </div>
                     </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">中药</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=中药&version=">中药</a>
+                      </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="dropdown icon"></i>
+                      <span class="text">中成药</span>
+                      <div class="menu">
+                        <a class="item" href="/hospitals/rule?tab_type=中成药&version=">中成药</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="divider"></div>

@@ -37,6 +37,7 @@ defmodule Server.Mixfile do
   defp deps do
     [
       {:comeonin, "~> 2.2"},
+      {:mnemonic, "~> 0.2.0"},
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
     ]

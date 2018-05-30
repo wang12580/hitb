@@ -20,7 +20,6 @@ defmodule HitbserverWeb.UserController do
 
 
   def index(conn, _params) do
-    IO.inspect conn.params
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
     [count, user] = UserService.list_user(page, 15)
     [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)

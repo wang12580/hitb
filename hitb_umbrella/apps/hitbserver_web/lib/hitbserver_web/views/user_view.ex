@@ -21,6 +21,6 @@ defmodule HitbserverWeb.UserView do
       is_show: user.is_show,
       name: user.name,
       type: user.type,
-      hash: user.hash}
+      block_address: user.block_address}
   end
 end
