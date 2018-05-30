@@ -4,7 +4,8 @@ defmodule HitbserverWeb.HelpController do
   # alias Hitb.Time
   plug HitbserverWeb.Access
   def help_insert(conn, _params) do
-    result = HelpService.help_insert()
+    %{"name" => name, "content" => content} = Map.merge(%{"name" => "", "content" => ""}, conn.params)
+    result = HelpService.help_insert(name, content)
     json conn, %{success: true}
   end
   def help_list(conn, _params) do
