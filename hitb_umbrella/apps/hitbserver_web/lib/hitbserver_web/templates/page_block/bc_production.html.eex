@@ -133,46 +133,46 @@ const privateKey = keys.privateKey
 const address =  AschJS.crypto.getAddress(publicKey)
 
 let info = {};
-$.ajax({
-  type: "get",
-  url: '/block/blockchain',
-  async: false,
-  success: function(data){
-    info = data;
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
+// $.ajax({
+//   type: "get",
+//   url: '/block/blockchain',
+//   async: false,
+//   success: function(data){
+//     info = data;
+//   },
+//   error: function (jqXHR, textStatus, errorThrown){
+//     console.log(errorThrown);
+//   },
+//   dataType: 'json'
+// });
 let info1 = {}
-$.ajax({
-  type: "get",
-  url: `/block/bc_production`,
-  async: false,
-  success: function(data){
-    info1 = data;
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
+// $.ajax({
+//   type: "get",
+//   url: `/block/bc_production`,
+//   async: false,
+//   success: function(data){
+//     info1 = data;
+//   },
+//   error: function (jqXHR, textStatus, errorThrown){
+//     console.log(errorThrown);
+//   },
+//   dataType: 'json'
+// });
 str = ""
 $('#hassecond').children().remove()
-if (!info.data.account.secondPublicKey) {
-  str = "<label>二级密码</label>"+
-  '<input type="password" name="register" value="" placeholder="至少八位数字和字母组合">'
-  $('#hassecond').append(str)
-}
+// if (!info.data.account.secondPublicKey) {
+//   str = "<label>二级密码</label>"+
+//   '<input type="password" name="register" value="" placeholder="至少八位数字和字母组合">'
+//   $('#hassecond').append(str)
+// }
 $("#button_pro").children().remove()
-if (info.data.success) {
-  $("#button_pro").append('<button class="ui primary button" onclick=registrant("registrant")>'+info1.data.delegate.username+'</button>')
-}
-$("#rewards").html(`${info1.data.delegate.rewards}`)
-$("#rate").html(`${info1.data.delegate.rate}`)
-$("#productivity").html(`${info1.data.delegate.productivity}%`)
-$("#vote").html(`${info1.data.delegate.vote}%`)
+// if (info.data.success) {
+//   $("#button_pro").append('<button class="ui primary button" onclick=registrant("registrant")>'+info1.data.delegate.username+'</button>')
+// }
+// $("#rewards").html(`${info1.data.delegate.rewards}`)
+// $("#rate").html(`${info1.data.delegate.rate}`)
+// $("#productivity").html(`${info1.data.delegate.productivity}%`)
+// $("#vote").html(`${info1.data.delegate.vote}%`)
 </script>
 
 <script>

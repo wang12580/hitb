@@ -231,18 +231,18 @@ const publicKey = keys.publicKey
 const privateKey = keys.privateKey
 const address =  AschJS.crypto.getAddress(publicKey)
 let info1 = {};
-$.ajax({
-  type: "get",
-  url: `/block/bc_asset`,
-  async: false,
-  success: function(data){
-    info1 = data;
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
+// $.ajax({
+//   type: "get",
+//   url: `/block/bc_asset`,
+//   async: false,
+//   success: function(data){
+//     info1 = data;
+//   },
+//   error: function (jqXHR, textStatus, errorThrown){
+//     console.log(errorThrown);
+//   },
+//   dataType: 'json'
+// });
 console.log(info1);
 
 </script>
