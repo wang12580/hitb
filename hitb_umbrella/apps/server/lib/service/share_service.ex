@@ -35,7 +35,7 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleMdc, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              [mdc, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(mdc, previous_hash, fn x, acc ->
                 hash = hash(acc, timestamp, "#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
@@ -47,8 +47,8 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleAdrg, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
+              [adrg, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              Enum.reduce(adrg, previous_hash, fn x, acc ->
                 hash = hash(acc, timestamp, "#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleAdrg{hash: hash, previous_hash: acc})
@@ -59,8 +59,8 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleDrg, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
+              [drg, _list, _count, _page_list,_page_num] =  Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
+              Enum.reduce(drg, previous_hash, fn x, acc ->
                 hash = hash(acc, timestamp, "#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleDrg{hash: hash, previous_hash: acc})
@@ -71,8 +71,8 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleIcd9, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
+              [icd9, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              Enum.reduce(icd9, previous_hash, fn x, acc ->
                 hash = hash(acc, timestamp, "#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleIcd9{hash: hash, previous_hash: acc})
@@ -83,38 +83,39 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleIcd10, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
+              [icd10, _list, _count, _page_list,_page_num] =  Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
+              # mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              Enum.reduce(icd10, previous_hash, fn x, acc ->
                 hash = hash(acc, timestamp, "#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleIcd10{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
                 acc = hash
               end)
-            "中药.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = Block.Repo.all(from p in Block.Library.ChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.ChineseMedicine{hash: hash, previous_hash: acc})
-                |>Block.Repo.insert!
-                acc = hash
-              end)
-            "中成药.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.ChineseMedicinePatent{hash: hash, previous_hash: acc})
-                |>Block.Repo.insert!
-                acc = hash
-              end)
+            # "中药.csv" ->
+            #   file_name = String.split(file_name, ".")|>List.first
+            #   latest = Block.Repo.all(from p in Block.Library.ChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
+            #   previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
+            #   [icd10, _list, _count, _page_list,_page_num] =  Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+            #   Enum.reduce(mdc, previous_hash, fn x, acc ->
+            #     hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+            #     Map.drop(x, [:__meta__, :__struct__, :id])
+            #     |>Map.merge(%Block.Library.ChineseMedicine{hash: hash, previous_hash: acc})
+            #     |>Block.Repo.insert!
+            #     acc = hash
+            #   end)
+            # "中成药.csv" ->
+            #   file_name = String.split(file_name, ".")|>List.first
+            #   latest = Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
+            #   previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
+            #   mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+            #   Enum.reduce(mdc, previous_hash, fn x, acc ->
+            #     hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+            #     Map.drop(x, [:__meta__, :__struct__, :id])
+            #     |>Map.merge(%Block.Library.ChineseMedicinePatent{hash: hash, previous_hash: acc})
+            #     |>Block.Repo.insert!
+            #     acc = hash
+            #   end)
             _ ->
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == ^file_name, order_by: [desc: p.inserted_at], limit: 1)

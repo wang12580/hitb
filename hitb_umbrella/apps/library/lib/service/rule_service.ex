@@ -27,6 +27,17 @@ defmodule Library.RuleService do
   end
 
   def rule_client(page, type, tab_type, version, year, dissect, rows) do
+    [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows)
+    result =
+      case length(result) do
+        0 -> []
+        _ ->
+          [Map.keys(List.first(result))] ++ Enum.map(result, fn x -> Map.values(x) end)
+      end
+    %{library: result, list: list, count: count, page_list: page_list, page: page_num}
+  end
+
+  def clinet(page, type, tab_type, version, year, dissect, rows) do
     [result, page_list, page_num, count, _, _, _, list, _, _] = get_rule(page, type, tab_type, version, year, dissect, rows)
     result = result
       |>Enum.map(fn x ->
@@ -37,13 +48,7 @@ defmodule Library.RuleService do
           x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
           x
         end)
-    result =
-      case length(result) do
-        0 -> []
-        _ ->
-          [Map.keys(List.first(result))] ++ Enum.map(result, fn x -> Map.values(x) end)
-      end
-    %{library: result, list: list, count: count, page_list: page_list, page: page_num}
+    [result, list, count, page_list, page_num]
   end
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows) do
