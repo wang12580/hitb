@@ -3,21 +3,24 @@
       <div class ="ui header" style ="margin-top: 0.2em;">投票</div>
       <div class ="ui divider"></div>
       <div class="ui three top steps">
-        <div id ="usname" class="step active" onclick ="delegates_ajax('usname')">
+        <!-- onclick ="delegates_ajax('usname')" -->
+        <div id ="usname" class="step active">
           <i class="truck icon"></i>
           <div class="content">
             <div class="title">受托人列表</div>
             <div class="description">Choose your shipping options</div>
           </div>
         </div>
-        <div id ="histroy" class="step" onclick ="delegates_ajax('histroy')">
+         <!-- onclick ="delegates_ajax('histroy')" -->
+        <div id ="histroy" class="step">
           <i class="payment icon"></i>
           <div class="content">
             <div class="title">投票记录</div>
             <div class="description">Enter billing information</div>
           </div>
         </div>
-        <div id ="me" class="step" onclick ="delegates_ajax('me')">
+         <!-- onclick ="delegates_ajax('me')" -->
+        <div id ="me" class="step">
           <i class="info icon"></i>
           <div class="content">
             <div class="title">谁投了我</div>
@@ -59,31 +62,31 @@ const address =  AschJS.crypto.getAddress(publicKey)
 
 
 
-$.ajax({
-  type: "get",
-  url: `/block/bc_delegates`,
-  async: false,
-  success: function(data){
-    info1 = data;
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-  },
-  dataType: 'json'
-});
-
+// $.ajax({
+//   type: "get",
+//   url: `/block/bc_delegates`,
+//   async: false,
+//   success: function(data){
+//     info1 = data;
+//   },
+//   error: function (jqXHR, textStatus, errorThrown){
+//     console.log(errorThrown);
+//   },
+//   dataType: 'json'
+// });
+const BASE_URL = '/block/api';
 let infos = {};
-$.ajax({
-  type: "get",
-  url: '/block/blockchain',
-  async: false,
-  success: function(data){
-    infos = data;
-  },
-  error: function (jqXHR, textStatus, errorThrown){
-  },
-  dataType: 'json'
-});
+// $.ajax({
+//   type: "get",
+//   url: BASE_URL + '/blockchain',
+//   async: false,
+//   success: function(data){
+//     infos = data;
+//   },
+//   error: function (jqXHR, textStatus, errorThrown){
+//   },
+//   dataType: 'json'
+// });
 
 function post_ajax (value) {
   $.ajax({

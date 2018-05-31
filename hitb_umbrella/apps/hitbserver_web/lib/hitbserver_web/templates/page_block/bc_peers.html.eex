@@ -6,8 +6,6 @@
           <thead>
             <tr>
               <th>IP</th>
-              <th>版本</th>
-              <th>操作系统</th>
             </tr>
           </thead>
           <tbody id = "peers_table">
@@ -29,9 +27,11 @@ const publicKey = keys.publicKey
 const privateKey = keys.privateKey
 const address =  AschJS.crypto.getAddress(publicKey)
 
-let urls = `/block/bc_peers`
+const BASE_URL = '/block/api';
+
+let urls = `/peers`
 function page_peer (value) {
-  urls = `/block/bc_peers?page=${value}`
+  urls = `/peers?page=${value}`
   peer_ajax();
 }
 peer_ajax();
@@ -39,10 +39,11 @@ function peer_ajax() {
   let info1 = {};
   $.ajax({
     type: "get",
-    url: `/block/bc_peers`,
+    url: BASE_URL + urls,
     async: false,
     success: function(data){
       info1 = data;
+      console.log(data);
     },
     error: function (jqXHR, textStatus, errorThrown){
       console.log(errorThrown);
@@ -51,18 +52,18 @@ function peer_ajax() {
   });
   let str = ""
   $('#peers_table').children().remove()
-  info1.data.peers.forEach((n) => {
-    str = str + "<tr><td>"+n.ip+"</td><td>"+n.version+"</td><td>"+n.os+"</td></tr>"
+  info1.peers.forEach((n) => {
+    str = str + "<tr><td>"+n.host+"</td></tr>"
   })
   $('#peers_table').append(str)
   let html=``;
-  info1.page_list.forEach((n) => {
-    if (info1.page_num === n.num) {
-      html = html + `<a class="disabled item" href="">${n.num}</a>`
-    } else {
-      html = html + `<a class="item" onclick=page_peer('${n.page}')>${n.num}</a>`
-    }
-  })
+  // info1.page_list.forEach((n) => {
+  //   if (info1.page_num === n.num) {
+  //     html = html + `<a class="disabled item" href="">${n.num}</a>`
+  //   } else {
+  //     html = html + `<a class="item" onclick=page_peer('${n.page}')>${n.num}</a>`
+  //   }
+  // })
   $('#page_peers').html(html)
 }
 </script>

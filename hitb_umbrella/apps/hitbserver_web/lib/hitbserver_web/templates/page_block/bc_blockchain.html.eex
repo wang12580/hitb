@@ -44,6 +44,7 @@ function ajax () {
      url: BASE_URL + '/blocks',
      dataType: 'json',
      success: (res)=> {
+       console.log(res);
        blocks = res.blocks
        block_html(blocks)
      },
