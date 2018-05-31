@@ -23,6 +23,10 @@ defmodule Block.BlockRepository do
     Repo.all(from p in BlockList, order_by: [asc: p.index])
   end
 
+  def get_all_block_hashs() do
+    Repo.all(BlockList)|>Enum.map(fn x -> x.hash end)
+  end
+
   def replace_chain(block_chain, latest_block) do
     Enum.each(block_chain, fn block ->
       insert_block(block)

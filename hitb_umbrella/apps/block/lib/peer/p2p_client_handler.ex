@@ -99,11 +99,10 @@ defmodule Block.P2pClientHandler do
           GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
         end
       "get_all_blocks" ->
+        block_hashs = Block.BlockRepository.get_all_block_hashs
         response
-        |>Enum.map(fn data ->
-            Map.keys(data) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, String.to_atom(x), data[x]) end)
-          end)
-        |>Enum.map(fn x -> Block.BlockRepository.insert_block(x) end)
+        |> Enum.reject(fn x -> x["hash"] in block_hashs end)
+        |> Enum.each(fn x -> Block.BlockRepository.insert_block(x) end)
         GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
       "query_all_transactions" ->
         transactios_id = Block.TransactionRepository.get_all_transactions_id()
