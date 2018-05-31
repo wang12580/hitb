@@ -15,7 +15,8 @@ defmodule Block.TransactionRepository do
   end
 
   def get_transactions_by_blockIndex(id) do
-    Repo.get_by(Transaction, blockId: id)
+    id = to_string(id)
+    Repo.all(from p in Transaction, where: p.blockId == ^id)
   end
 
   def get_transactions_by_publicKey(publicKey) do

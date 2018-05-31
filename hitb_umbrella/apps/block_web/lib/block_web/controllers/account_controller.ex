@@ -101,8 +101,8 @@ defmodule BlockWeb.AccountController do
     json(conn, %{success:  success, transaction: id})
   end
 
-  def getAccountsPublicKey(conn, _params) do
-    [conn, user] = BlockWeb.Login.user(conn)
+  def getAccountsPublicKey(conn, %{"username" => username}) do
+    user = Block.AccountService.getAccount(username)
     publicKeys = Block.AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
     json conn, %{publicKeys: publicKeys}
   end

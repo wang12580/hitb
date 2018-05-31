@@ -21,6 +21,9 @@ defmodule BlockWeb.PeerController do
 
   def get_all_peers(conn, _) do
     peers = Block.PeerRepository.get_all_peers()
+    peers = Enum.map(peers, fn x ->
+      Map.drop(x, [:__meta__, :__struct__])
+    end)
     json(conn,  %{peers: peers})
   end
 

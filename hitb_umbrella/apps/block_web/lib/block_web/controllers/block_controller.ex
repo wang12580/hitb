@@ -20,6 +20,9 @@ defmodule BlockWeb.BlockController do
       |>Enum.map(fn x ->
           Map.put(x, :transactions, length(Block.TransactionRepository.get_transactions_by_blockIndex(x.index)))
         end)
+    all_blocks = Enum.map(all_blocks, fn x ->
+      Map.drop(x, [:__meta__, :__struct__])
+    end)
     json(conn,  %{blocks: all_blocks})
   end
 

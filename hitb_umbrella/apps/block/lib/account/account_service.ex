@@ -71,6 +71,7 @@ defmodule Block.AccountService do
   end
 
   def getAccount(username) do
+    IO.inspect "++++++++++++++++"
     Block.AccountRepository.get_account(username)
   end
 
