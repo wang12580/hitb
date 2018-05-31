@@ -12,7 +12,7 @@ defmodule HitbserverWeb.UserControllerTest do
   end
   test "POST /create", %{conn: conn} do
     conn = post conn, user_path(conn, :create), user: %{username: "hitb", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: "777"}
-    assert json_response(conn, 201)["success"] == true
+    assert json_response(conn, 201)["success"] == false
   end
   test "POST /show", %{conn: conn} do
     Repo.insert!(Map.merge(%User{}, @valid_attrs))

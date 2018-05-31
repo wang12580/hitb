@@ -38,6 +38,8 @@ defmodule Server.Mixfile do
     [
       {:comeonin, "~> 2.2"},
       {:mnemonic, "~> 0.2.0"},
+      {:poison, "~> 3.1"},
+      {:httpoison, "~> 1.1"},
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
     ]

@@ -66,7 +66,7 @@ defmodule BlockWeb.AccountController do
   end
 
   def getAccount(conn, %{"username" => username}) do
-    account = Block.AccountRepository.get_account(username)
+    account = Map.drop(Block.AccountRepository.get_account(username), [:__meta__, :__struct__])
     json(conn, %{account: account})
   end
 

@@ -30,6 +30,7 @@ defmodule Block.BlockService do
   # creates a new block based on the latest one
   def create_next_block(data, secret) do
     latest_block = get_latest_block()
+    latest_block = if(latest_block)do latest_block else %{index: 0, hash: ""} end
     index        = latest_block.index + 1
     timestamp    = :os.system_time(:seconds)
     hash         = generate_block_hash(index, latest_block.hash, timestamp, data)
@@ -55,7 +56,9 @@ defmodule Block.BlockService do
   end
 
   def add_block(block) do
-    if is_block_valid(block, get_latest_block()) do
+    latest_block = get_latest_block()
+    latest_block = if(latest_block)do latest_block else %{index: 0, hash: ""} end
+    if is_block_valid(block, latest_block) do
       Block.BlockRepository.insert_block(block)
     end
   end

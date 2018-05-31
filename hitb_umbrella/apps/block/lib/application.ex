@@ -29,7 +29,10 @@ defmodule Block.Application do
       port:  "4000",
       connect: true
     }
-    Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
+    IO.inspect Mix.env
+    if(Mix.env != :test)do
+      Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
+    end
     # peers = Block.PeerRepository.get_all_peers
     # if(peers != [])do
       # peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
