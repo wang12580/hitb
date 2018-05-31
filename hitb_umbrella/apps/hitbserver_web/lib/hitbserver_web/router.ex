@@ -169,7 +169,7 @@ defmodule HitbserverWeb.Router do
     get "/wt4_insert", PageController, :wt4_insert
     resources "/chat_record", ChatRecordController, except: [:new, :edit]
     #分享
-    get "/share", ShareController, :share
+    post "/share", ShareController, :share
   end
 
   scope "/stat", HitbserverWeb do
