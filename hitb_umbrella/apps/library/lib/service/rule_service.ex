@@ -18,7 +18,6 @@ defmodule Library.RuleService do
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
-    IO.inspect type
     %{result: result, page_list: page_list, page_num: page_num, tab_type: tab_type, type: type, dissect: dissect, list: list, version: version, year: year}
   end
 
@@ -191,9 +190,7 @@ defmodule Library.RuleService do
     num = select(query, [w], count(w.id))
     count = hd(Repo.all(num, [timeout: 1500000]))
     skip = Hitb.Page.skip(page, rows)
-    query = order_by(query, [w], asc: w.code)
-        |>limit([w], ^rows)
-        |>offset([w], ^skip)
+    query = if(rows == 0)do query else order_by(query, [w], asc: w.code)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = Repo.all(query)
     list =
       cond do
@@ -261,9 +258,8 @@ defmodule Library.RuleService do
 
     skip = Hitb.Page.skip(page, rows)
     #查询
+    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
     result = query
-      |>limit([p], ^rows)
-      |>offset([w], ^skip)
       |>Repo.all
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
     list = []
@@ -299,9 +295,8 @@ defmodule Library.RuleService do
       |>hd
     # count = Repo.all(from p in tab, select: count(p.id)) |>hd
     skip = Hitb.Page.skip(page, rows)
+    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
     result = query
-      |>limit([p], ^rows)
-      |>offset([w], ^skip)
       |>Repo.all
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]

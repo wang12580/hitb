@@ -7,9 +7,7 @@ defmodule Block.AccountService do
   end
 
   def newAccount(account) do
-    accounts = Block.AccountRepository.get_all_accounts
-    # IO.inspect accounts
-    usernames = accounts |> Enum.map(fn x -> x.username end)
+    usernames = Block.AccountRepository.get_all_usernames
     if account.username in usernames do
       false
     else

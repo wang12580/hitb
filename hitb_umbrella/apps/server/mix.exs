@@ -43,6 +43,7 @@ defmodule Server.Mixfile do
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
       {:block, in_umbrella: true},
+      {:stat, in_umbrella: true},
     ]
   end
 
