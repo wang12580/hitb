@@ -50,10 +50,17 @@ defmodule Block.AccountService do
     account = Block.AccountRepository.get_account_by_address(address)
     case account do
       [] -> nil
-      _ -> Map.drop(account, [:__meta__, :__struct__])
+      _ -> account.address
     end
   end
 
+  def getAccountByAddress(address) do
+    account = Block.AccountRepository.get_account_by_address(address)
+    case account do
+      [] -> nil
+      _ -> Map.drop(account, [:__meta__, :__struct__])
+    end
+  end
 
   def vote do
 

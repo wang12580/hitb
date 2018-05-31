@@ -42,6 +42,7 @@ defmodule Server.Mixfile do
       {:httpoison, "~> 1.1"},
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
+      {:block, in_umbrella: true},
     ]
   end
 

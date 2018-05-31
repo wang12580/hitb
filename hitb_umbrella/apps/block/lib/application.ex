@@ -29,21 +29,20 @@ defmodule Block.Application do
       port:  "4000",
       connect: true
     }
-    IO.inspect Mix.env
-    if(Mix.env != :test)do
-      Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
-    end
-    # peers = Block.PeerRepository.get_all_peers
-    # if(peers != [])do
-      # peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
-    # else
-    #   case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-    #     :ok ->
-    #       Block.PeerRepository.insert_peer(init_peer)
-    #     _ ->
-    #       Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
-    #   end
+    # if(Mix.env != :test)do
+    #   # Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
     # end
+    peers = Block.PeerRepository.get_all_peers
+    if(peers != [])do
+      peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    else
+      case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+        :ok ->
+          Block.PeerRepository.insert_peer(init_peer)
+        _ ->
+          Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
+      end
+    end
   end
 
   # defp generate_initial_block() do
@@ -83,7 +82,7 @@ defmodule Block.Application do
   #     Block.TransactionRepository.insert_transaction(init_transaction)
   #   end
   # end
-
+  #
   # defp regex(s) do
   #   [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]
   #   |> Enum.reduce(s, fn x, acc -> Regex.replace(x, acc, "") end)
