@@ -62,9 +62,12 @@
          console.log(err);
        }
      });
+    var test = window.location.href;
+    console.log(test);
+    var username = 'someone manual strong movie roof episode eight spatial brown soldier soup motor'
     $.ajax({
       type: 'GET',
-      url: BASE_URL + '/getAccountsPublicKey',
+      url: BASE_URL + `/getAccountsPublicKey?username=${username}`,
       dataType: 'json',
       success: (res)=> {
         let str = ''

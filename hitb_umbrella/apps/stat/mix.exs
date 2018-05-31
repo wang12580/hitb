@@ -37,6 +37,7 @@ defmodule Stat.Mixfile do
   defp deps do
     [
       {:hitb, in_umbrella: true},
+      
     ]
   end
 

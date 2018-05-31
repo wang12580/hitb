@@ -10,6 +10,9 @@ defmodule BlockWeb.TransactionController do
 
   def getTransactions(conn, _) do
     transactions = Block.TransactionRepository.get_all_transactions
+    transactions = Enum.map(transactions, fn x ->
+      Map.drop(x, [:__meta__, :__struct__])
+    end)
     json(conn, %{data: transactions})
   end
 
