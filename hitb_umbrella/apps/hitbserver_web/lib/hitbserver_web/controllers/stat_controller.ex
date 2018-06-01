@@ -4,14 +4,14 @@ defmodule HitbserverWeb.StatController do
   alias Stat.StatService
 
   def stat_json(conn, _params) do
-    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username, server_type] = conn_merge(conn.params)
     result = StatService.stat_json(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
     json conn, result
   end
 
   def download_stat(conn, %{"username" => _username})do
     #取对比分析
-    [page, page_type, type, tool_type, org, time, drg, order, order_type, username] = conn_merge(conn.params)
+    [page, page_type, type, tool_type, org, time, drg, order, order_type, username, server_type] = conn_merge(conn.params)
     path = StatService.download_stat(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
     json conn, %{path: path}
   end

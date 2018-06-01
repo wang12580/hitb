@@ -2,17 +2,17 @@ defmodule Stat.StatService do
   alias Stat.Key
   alias Stat.Query
 
-  def stat_json(page, page_type, type, tool_type, org, time, drg, order, order_type, username) do
+  def stat_json(page, page_type, type, tool_type, org, time, drg, order, order_type, username, server_type) do
     #获取分析结果
-    [stat, list, tool, page_list, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [stat, list, tool, page_list, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", server_type)
     #转换为双层数组
     stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
     %{stat: stat, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
-  def download_stat(page, page_type, type, tool_type, org, time, drg, order, order_type, username)do
+  def download_stat(page, page_type, type, tool_type, org, time, drg, order, order_type, username, server_type)do
     #取对比分析
-    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download")
+    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download", server_type)
     #按照字段取值
     str = stat
       |>List.delete_at(0)
@@ -87,9 +87,9 @@ defmodule Stat.StatService do
   end
 
   #对比页新增对比
-  def stat_add(page, type, tool_type, org, time, drg, order, order_type, page_type, username)do
+  def stat_add(page, type, tool_type, org, time, drg, order, order_type, page_type, username, server_type)do
     #获取分析结果
-    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", server_type)
     stat = stat|>List.delete_at(0)|>List.delete_at(0)
     #拿到缓存中所有数据
     cache = Hitb.ets_get(:stat_drg, "comx_" <> username)

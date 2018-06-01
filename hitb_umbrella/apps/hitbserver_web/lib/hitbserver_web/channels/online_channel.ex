@@ -8,7 +8,7 @@ defmodule HitbserverWeb.OnlineChannel do
       %{"username" => username, "password" => password} = message
       socket = Map.merge(socket, %{username: username})
       cond do
-        username in ["hitb", "test@test.com"] ->
+        username in ["hitb", "test@test.com.cn"] ->
           [success, user] = UserService.socket_login(%{password: password, username: username})
           Hitb.ets_insert(:socket_user, username, true)
           Logger.warn("用户--#{username}--加入服务端")
@@ -45,7 +45,9 @@ defmodule HitbserverWeb.OnlineChannel do
 
   def terminate(_, socket) do
     Hitb.ets_del(:socket_user, socket.assigns.username)
-    Logger.warn("用户--#{socket.assigns.username}--已下线")
+    if(socket.assigns.username != "test@test.com.cn")do
+      Logger.warn("用户--#{socket.assigns.username}--已下线")
+    end
     :ok
   end
 

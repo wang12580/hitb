@@ -25,8 +25,8 @@ defmodule Block.Application do
 
   defp init_peer() do
     init_peer = %{
-      host:  "127.0.0.1",
-      port:  "4001",
+      host:  "139.129.165.56",
+      port:  "4000",
       connect: true
     }
     # if(Mix.env != :test)do
