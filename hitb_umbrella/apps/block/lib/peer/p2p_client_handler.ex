@@ -109,6 +109,8 @@ defmodule Block.P2pClientHandler do
         response
         |> Enum.reject(fn x -> x["transaction_id"] in transactios_id end)
         |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
+      # "other_sync" ->
+
     end
     # Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
