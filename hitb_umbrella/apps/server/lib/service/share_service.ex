@@ -13,8 +13,8 @@ defmodule Server.ShareService do
           cda = Hitb.Repo.all(from p in Hitb.Edit.Cda, where: p.name == ^file_name or p.username == ^username)
           Enum.reduce(cda, previous_hash, fn x, acc ->
             hash = hash("#{x.org}#{x.time}")
-            Map.drop(x, [:__meta__, :__struct__, :id])
-            |>Map.merge(%Block.Edit.Cda{hash: hash, previous_hash: acc})
+            %Block.Edit.Cda{hash: hash, previous_hash: acc}
+            |>Map.merge(Map.drop(x, [:id]))
             |>Block.Repo.insert!
             acc = hash
           end)
@@ -24,8 +24,8 @@ defmodule Server.ShareService do
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download")
           Enum.reduce(stat, previous_hash, fn x, acc ->
             hash = hash("#{x.org}#{x.time}")
-            Map.drop(x, [:__meta__, :__struct__, :id])
-            |>Map.merge(%Block.Stat.StatOrg{hash: hash, previous_hash: acc})
+            %Block.Library.StatOrg{hash: hash, previous_hash: acc}
+            |>Map.merge(Map.drop(x, [:id]))
             |>Block.Repo.insert!
             acc = hash
           end)
@@ -51,8 +51,8 @@ defmodule Server.ShareService do
               [adrg, _list, _count, _page_list,_page_num] = Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
               Enum.reduce(adrg, previous_hash, fn x, acc ->
                 hash = hash("#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.RuleAdrg{hash: hash, previous_hash: acc})
+                %Block.Library.RuleAdrg{hash: hash, previous_hash: acc}
+                |>Map.merge(Map.drop(x, [:id]))
                 |>Block.Repo.insert!
                 acc = hash
               end)
@@ -63,8 +63,8 @@ defmodule Server.ShareService do
               [drg, _list, _count, _page_list,_page_num] =  Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
               Enum.reduce(drg, previous_hash, fn x, acc ->
                 hash = hash("#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.RuleDrg{hash: hash, previous_hash: acc})
+                %Block.Library.RuleDrg{hash: hash, previous_hash: acc}
+                |>Map.merge(Map.drop(x, [:id]))
                 |>Block.Repo.insert!
                 acc = hash
               end)
@@ -75,8 +75,8 @@ defmodule Server.ShareService do
               [icd9, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0, "server")
               Enum.reduce(icd9, previous_hash, fn x, acc ->
                 hash = hash("#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.RuleIcd9{hash: hash, previous_hash: acc})
+                %Block.Library.RuleIcd9{hash: hash, previous_hash: acc}
+                |>Map.merge(Map.drop(x, [:id]))
                 |>Block.Repo.insert!
                 acc = hash
               end)
@@ -88,8 +88,8 @@ defmodule Server.ShareService do
               # mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(icd10, previous_hash, fn x, acc ->
                 hash = hash("#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.RuleIcd10{hash: hash, previous_hash: acc})
+                %Block.Library.RuleIcd10{hash: hash, previous_hash: acc}
+                |>Map.merge(Map.drop(x, [:id]))
                 |>Block.Repo.insert!
                 acc = hash
               end)
