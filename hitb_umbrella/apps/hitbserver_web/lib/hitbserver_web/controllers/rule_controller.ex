@@ -12,13 +12,14 @@ defmodule HitbserverWeb.RuleController do
   end
 
   def rule_file(conn, _params) do
-    file = RuleService.rule_file()
+    %{"server_type" => server_type} = Map.merge(%{"server_type" => "server"}, conn.params)
+    file = RuleService.rule_file(server_type)
     json conn, %{data: file}
   end
 
   def rule_client(conn, _params) do
-    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    result = RuleService.rule_client(page, type, tab_type, version, year, dissect, rows)
+    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server"}, conn.params)
+    result = RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type)
     json conn, result
   end
 

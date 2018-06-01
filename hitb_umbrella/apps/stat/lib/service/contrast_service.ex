@@ -25,7 +25,7 @@ defmodule Stat.ContrastService do
   #对比缓存读取和删除
   def contrast_operate(page, page_type, type, tool_type, org, time, drg, order, order_type, username, com_type, field)do
     #获取分析结果
-    [stat, _, _, _,  _,_, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [stat, _, _, _,  _,_, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", "server")
     cond do
       com_type in ["add_x", "del_x"] ->
         #拿到缓存中所有数据
@@ -75,7 +75,7 @@ defmodule Stat.ContrastService do
     #存储url
     Hitb.ets_insert(:stat_drg, "comurl_" <> username, [page, type, tool_type, org, time, drg, order, order_type, page_type])
     #取数据
-    [_, list, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat")
+    [_, list, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", "server")
     #取得所有drg
     orgs =
       case Hitb.ets_get(:stat_drg, "comx" <> "_" <> username) do

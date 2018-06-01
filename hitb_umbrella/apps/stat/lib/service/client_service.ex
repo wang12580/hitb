@@ -17,10 +17,11 @@ defmodule Stat.ClientService do
     end
   end
 
-  def stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows) do
-    files = Repo.all(from p in ClientStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
+  def stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows, server_type) do
+    clinet_stat = if(server_type == "server")do ClientStat else Block.Stat.ClientStat end
+    files = Repo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
     if(page_type <> ".csv" in files)do
-      stat = Repo.get_by(ClientStat, filename: page_type <> ".csv", username: username)
+      stat = Repo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
       stat = Poison.decode!(stat.data)
       header = Enum.at(stat, 0)
       #求病历总数
@@ -46,14 +47,14 @@ defmodule Stat.ClientService do
       page_type = Stat.page_en(page_type)
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
-      [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat")
+      [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat", server_type)
       stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
       #存储在自定义之前最后一次url
       Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #计算客户端提示
-      [clinet_stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download")
+      [clinet_stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download", server_type)
       clinet_stat = [key, cnkey] ++ Stat.Convert.map2list(clinet_stat, key)
       header = Enum.at(clinet_stat, 1)
       clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
