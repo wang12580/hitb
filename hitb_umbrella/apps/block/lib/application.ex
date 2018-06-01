@@ -25,7 +25,7 @@ defmodule Block.Application do
 
   defp init_peer() do
     init_peer = %{
-      host:  "139.129.165.56",
+      host:  "127.0.0.1",
       port:  "4000",
       connect: true
     }

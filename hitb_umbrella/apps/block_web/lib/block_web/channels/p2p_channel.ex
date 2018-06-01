@@ -43,6 +43,13 @@ defmodule BlockWeb.P2pChannel do
     {:reply, {:ok, %{type: @query_all_transactions, data: data}}, socket}
   end
 
+  def handle_in("other_sync", payload, socket) do
+    IO.inspect payload
+    # Logger.info("sending all transactions")
+    # data = Block.TransactionRepository.get_all_transactions()|>Enum.map(fn x -> send(x) end)
+    {:reply, {:ok, %{type: "other_sync", data: []}}, socket}
+  end
+
   def handle_in(@add_peer_request, payload, socket) do
     Logger.info("attempting to connect...")
     result = Block.P2pSessionManager.connect(payload["host"], payload["port"])

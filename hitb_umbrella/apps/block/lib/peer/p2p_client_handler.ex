@@ -7,6 +7,7 @@ defmodule Block.P2pClientHandler do
   alias Block.PeerRepository
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
+  alias Block.OtherSyncService
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
@@ -109,7 +110,9 @@ defmodule Block.P2pClientHandler do
         response
         |> Enum.reject(fn x -> x["transaction_id"] in transactios_id end)
         |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
-      # "other_sync" ->
+        GenSocketClient.push(transport, "p2p", "other_sync", %{cda_hash: OtherSyncService.get_latest_cda_hash(), ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(), cmp_hash: OtherSyncService.get_latest_cmp_hash(), cm_hash: OtherSyncService.get_latest_cm_hash(), ruledrg_hash: OtherSyncService.get_latest_ruledrg_hash(), ruleicd9_hash: OtherSyncService.get_latest_ruleicd9_hash(), ruleicd10_hash: OtherSyncService.get_latest_ruleicd10_hash(), rulemdc_hash: OtherSyncService.get_latest_rulemdc_hash(), libwt4_hash: OtherSyncService.get_latest_libwt4_hash(), wt4_hash: OtherSyncService.get_latest_wt4_hash()})
+      "other_sync" ->
+        IO.inspect "ok"
 
     end
     # Logger.warn("reply on topic #{topic}: #{inspect payload}")
