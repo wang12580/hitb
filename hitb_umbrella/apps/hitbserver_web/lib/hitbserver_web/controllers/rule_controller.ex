@@ -19,6 +19,7 @@ defmodule HitbserverWeb.RuleController do
 
   def rule_client(conn, _params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server"}, conn.params)
+    server_type = if(server_type == "undefined")do "server" else server_type end
     result = RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type)
     json conn, result
   end

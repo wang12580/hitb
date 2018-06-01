@@ -59,7 +59,6 @@ defmodule Library.RuleService do
   end
 
   def rule_client(page, type, tab_type, version, year, dissect, rows, server_type) do
-    server_type = "block"
     [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type)
     result =
       case length(result) do
@@ -86,24 +85,26 @@ defmodule Library.RuleService do
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
     rows = to_string(rows)|>String.to_integer
+    IO.inspect server_type
     tab =
       cond do
         tab_type == "mdc" and server_type == "server" -> RuleMdc
         tab_type == "mdc" and server_type == "block" -> Block.Library.RuleMdc
         tab_type == "adrg" and server_type == "server"  -> RuleAdrg
-        tab_type == "mdc" and server_type == "block" -> Block.Library.RuleAdrg
+        tab_type == "adrg" and server_type == "block" -> Block.Library.RuleAdrg
         tab_type == "drg" and server_type == "server"  -> RuleDrg
-        tab_type == "mdc" and server_type == "block" -> Block.Library.RuleDrg
+        tab_type == "drg" and server_type == "block" -> Block.Library.RuleDrg
         tab_type == "icd10" and server_type == "server"  -> RuleIcd10
-        tab_type == "mdc" and server_type == "block" -> Block.Library.RuleIcd10
+        tab_type == "icd10" and server_type == "block" -> Block.Library.RuleIcd10
         tab_type == "icd9" and server_type == "server"  -> RuleIcd9
-        tab_type == "mdc" and server_type == "block" -> Block.Library.RuleIcd9
+        tab_type == "icd9" and server_type == "block" -> Block.Library.RuleIcd9
         tab_type == "中药" and server_type == "server"  -> ChineseMedicine
-        tab_type == "mdc" and server_type == "block" -> Block.Library.ChineseMedicine
+        tab_type == "中药" and server_type == "block" -> Block.Library.ChineseMedicine
         tab_type == "中成药" and server_type == "server"  -> ChineseMedicinePatent
-        tab_type == "mdc" and server_type == "block" -> Block.Library.ChineseMedicinePatent
+        tab_type == "中成药" and server_type == "block" -> Block.Library.ChineseMedicinePatent
         true -> if(server_type == "server")do LibWt4 else Block.Library.LibWt4 end
       end
+    IO.inspect tab
     [result, list, page_list, page_num, count, type] =
       cond do
         tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
