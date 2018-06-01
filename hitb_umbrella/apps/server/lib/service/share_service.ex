@@ -24,7 +24,7 @@ defmodule Server.ShareService do
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download")
           Enum.reduce(stat, previous_hash, fn x, acc ->
             hash = hash("#{x.org}#{x.time}")
-            %Block.Library.StatOrg{hash: hash, previous_hash: acc}
+            %Block.Stat.StatOrg{hash: hash, previous_hash: acc}
             |>Map.merge(Map.drop(x, [:id]))
             |>Block.Repo.insert!
             acc = hash
