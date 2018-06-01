@@ -84,6 +84,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_reply(topic, _ref, payload, transport, state) do
+
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
@@ -112,10 +113,15 @@ defmodule Block.P2pClientHandler do
         |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync", %{cda_hash: OtherSyncService.get_latest_cda_hash(), ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(), cmp_hash: OtherSyncService.get_latest_cmp_hash(), cm_hash: OtherSyncService.get_latest_cm_hash(), ruledrg_hash: OtherSyncService.get_latest_ruledrg_hash(), ruleicd9_hash: OtherSyncService.get_latest_ruleicd9_hash(), ruleicd10_hash: OtherSyncService.get_latest_ruleicd10_hash(), rulemdc_hash: OtherSyncService.get_latest_rulemdc_hash(), libwt4_hash: OtherSyncService.get_latest_libwt4_hash(), wt4_hash: OtherSyncService.get_latest_wt4_hash()})
       "other_sync" ->
-        IO.inspect "ok"
+        response
+        |>List.flatten
+        |>Enum.each(fn x ->
+          %Block.Library.RuleMdc{}
+          |>Block.Library.RuleMdc.changeset(x)
+          |>Block.Repo.insert
+        end)
 
     end
-    # Logger.warn("reply on topic #{topic}: #{inspect payload}")
     {:ok, state}
   end
 

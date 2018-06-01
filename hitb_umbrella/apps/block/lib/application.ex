@@ -26,23 +26,23 @@ defmodule Block.Application do
   defp init_peer() do
     init_peer = %{
       host:  "127.0.0.1",
-      port:  "4000",
+      port:  "4001",
       connect: true
     }
     # if(Mix.env != :test)do
-    #   # Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
+      Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
     # end
-    peers = Block.PeerRepository.get_all_peers
-    if(peers != [])do
-      peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
-    else
-      case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-        :ok ->
-          Block.PeerRepository.insert_peer(init_peer)
-        _ ->
-          Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
-      end
-    end
+    # peers = Block.PeerRepository.get_all_peers
+    # if(peers != [])do
+    #   peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    # else
+    #   case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
+    #     :ok ->
+    #       Block.PeerRepository.insert_peer(init_peer)
+    #     _ ->
+    #       Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
+    #   end
+    # end
   end
 
   # defp generate_initial_block() do

@@ -12,7 +12,7 @@ defmodule Server.ShareService do
           previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
           cda = Hitb.Repo.all(from p in Hitb.Edit.Cda, where: p.name == ^file_name or p.username == ^username)
           Enum.reduce(cda, previous_hash, fn x, acc ->
-            hash = hash(acc, timestamp, "#{x.org}#{x.time}")
+            hash = hash("#{x.org}#{x.time}")
             Map.drop(x, [:__meta__, :__struct__, :id])
             |>Map.merge(%Block.Edit.Cda{hash: hash, previous_hash: acc})
             |>Block.Repo.insert!
@@ -23,7 +23,7 @@ defmodule Server.ShareService do
           previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download")
           Enum.reduce(stat, previous_hash, fn x, acc ->
-            hash = hash(acc, timestamp, "#{x.org}#{x.time}")
+            hash = hash("#{x.org}#{x.time}")
             Map.drop(x, [:__meta__, :__struct__, :id])
             |>Map.merge(%Block.Stat.StatOrg{hash: hash, previous_hash: acc})
             |>Block.Repo.insert!
@@ -35,11 +35,12 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleMdc, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [mdc, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              [mdc, _list, _count, _page_list,_page_num] = Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
+              # IO.inspect mdc
               Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
-                Map.drop(x, [:__meta__, :__struct__, :id])
-                |>Map.merge(%Block.Library.RuleMdc{hash: hash, previous_hash: acc})
+                hash = hash("#{x.code}#{x.name}")
+                %Block.Library.RuleMdc{hash: hash, previous_hash: acc}
+                |>Map.merge(Map.drop(x, [:id]))
                 |>Block.Repo.insert!
                 acc = hash
               end)
@@ -47,9 +48,9 @@ defmodule Server.ShareService do
               file_name = String.split(file_name, ".")|>List.first
               latest = Block.Repo.all(from p in Block.Library.RuleAdrg, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [adrg, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
+              [adrg, _list, _count, _page_list,_page_num] = Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(adrg, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+                hash = hash("#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleAdrg{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
@@ -61,7 +62,7 @@ defmodule Server.ShareService do
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
               [drg, _list, _count, _page_list,_page_num] =  Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(drg, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+                hash = hash("#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleDrg{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
@@ -73,7 +74,7 @@ defmodule Server.ShareService do
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
               [icd9, _list, _count, _page_list,_page_num] = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(icd9, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+                hash = hash("#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleIcd9{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
@@ -86,7 +87,7 @@ defmodule Server.ShareService do
               [icd10, _list, _count, _page_list,_page_num] =  Library.RuleService.clinet(1, "year", file_name, "BJ", "", "", 0)
               # mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(icd10, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+                hash = hash("#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.RuleIcd10{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
@@ -122,7 +123,7 @@ defmodule Server.ShareService do
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
               mdc = Library.RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0)
               Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash(acc, timestamp, "#{x.code}#{x.name}")
+                hash = hash("#{x.code}#{x.name}")
                 Map.drop(x, [:__meta__, :__struct__, :id])
                 |>Map.merge(%Block.Library.LibWt4{hash: hash, previous_hash: acc})
                 |>Block.Repo.insert!
@@ -132,8 +133,8 @@ defmodule Server.ShareService do
       end
   end
 
-  defp hash(previous_hash, timestamp, data) do
-    s = :crypto.hash(:sha256, "#{previous_hash}#{timestamp}#{data}")
+  defp hash(s) do
+    s = :crypto.hash(:sha256, s)
     |> Base.encode64
 
     [~r/\+/, ~r/ /, ~r/\=/, ~r/\%/, ~r/\//, ~r/\#/, ~r/\$/, ~r/\~/, ~r/\'/, ~r/\@/, ~r/\*/, ~r/\-/]

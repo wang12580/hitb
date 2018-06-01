@@ -8,6 +8,7 @@ defmodule BlockWeb.P2pChannel do
   # @update_block_chain Block.P2pMessage.update_block_chain
   @add_peer_request   Block.P2pMessage.add_peer_request
   @query_all_transactions "query_all_transactions"
+  alias Block.OtherSyncService
   @connection_error   Block.P2pMessage.connection_error
   @connection_success Block.P2pMessage.connection_success
 
@@ -44,10 +45,16 @@ defmodule BlockWeb.P2pChannel do
   end
 
   def handle_in("other_sync", payload, socket) do
-    IO.inspect payload
+    data =
+      Map.keys(payload)
+      |>Enum.map(fn x ->
+          [x, Map.get(payload, x)]
+          data(x, Map.get(payload, x))
+        end)
+      |>Enum.reject(fn x -> x == [] end)
     # Logger.info("sending all transactions")
     # data = Block.TransactionRepository.get_all_transactions()|>Enum.map(fn x -> send(x) end)
-    {:reply, {:ok, %{type: "other_sync", data: []}}, socket}
+    {:reply, {:ok, %{type: "other_sync", data: data}}, socket}
   end
 
   def handle_in(@add_peer_request, payload, socket) do
@@ -67,5 +74,21 @@ defmodule BlockWeb.P2pChannel do
 
   defp send(map) do
     Map.drop(map, [:id, :__meta__, :__struct__])
+  end
+
+  defp data(table, hash) do
+    # IO.inspect table
+    case hash do
+      nil ->
+        case table do
+          "rulemdc_hash" -> OtherSyncService.get_rulemdc
+          _ -> []
+        end
+      _ ->
+        case table do
+          "rulemdc_hash" -> OtherSyncService.get_rulemdc(hash)
+          _ -> []
+        end
+    end
   end
 end
