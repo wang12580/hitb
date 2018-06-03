@@ -133,6 +133,85 @@ defmodule Server.ShareService do
       end
   end
 
+  def get_share() do
+    edit = Block.Repo.all(from p in Block.Edit.Cda, select: count(p.id))|>List.first
+    stat_org = Block.Repo.all(from p in Block.Stat.StatOrg, select: count(p.id))|>List.first
+    mdc = Block.Repo.all(from p in Block.Library.RuleMdc, select: count(p.id))|>List.first
+    adrg = Block.Repo.all(from p in Block.Library.RuleAdrg, select: count(p.id))|>List.first
+    drg = Block.Repo.all(from p in Block.Library.RuleDrg, select: count(p.id))|>List.first
+    icd9 = Block.Repo.all(from p in Block.Library.RuleIcd9, select: count(p.id))|>List.first
+    icd10 = Block.Repo.all(from p in Block.Library.RuleIcd10, select: count(p.id))|>List.first
+    chinese_medicine = Block.Repo.all(from p in Block.Library.ChineseMedicine, select: count(p.id))|>List.first
+    chinese_medicine_patent = Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, select: count(p.id))|>List.first
+    lib_wt4 = Block.Repo.all(from p in Block.Library.LibWt4, select: count(p.id))|>List.first
+    [%{key: "edit", val: edit}, %{key: "stat_org", val: stat_org}, %{key: "mdc", val: mdc}, %{key: "adrg", val: adrg}, %{key: "drg", val: drg}, %{key: "icd9", val: icd9}, %{key: "icd10", val: icd10}, %{key: "chinese_medicine", val: chinese_medicine}, %{key: "chinese_medicine_patent", val: chinese_medicine_patent}, %{key: "lib_wt4", val: lib_wt4}]
+  end
+
+  def insert(table) do
+    case table do
+      "edit" ->
+        Block.Repo.all(from p in Block.Edit.Cda)
+        |>Enum.map(fn x ->
+            %Hitb.Edit.Cda{}
+            |>Hitb.Edit.Cda.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "stat_org" ->
+        Block.Repo.all(from p in Block.Stat.StatOrg)
+        |>Enum.map(fn x ->
+            %Hitb.Stat.StatOrg{}
+            |>Hitb.Stat.StatOrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "mdc" ->
+        Block.Repo.all(from p in Block.Library.RuleMdc)
+        |>Enum.map(fn x ->
+            %Hitb.Library.RuleMdc{}
+            |>Hitb.Library.RuleMdc.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "adrg" ->
+        Block.Repo.all(from p in Block.Library.RuleAdrg)
+        |>Enum.map(fn x ->
+            %Hitb.Library.RuleAdrg{}
+            |>Hitb.Library.RuleAdrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "drg" ->
+        Block.Repo.all(from p in Block.Library.RuleDrg)
+        |>Enum.map(fn x ->
+            %Hitb.Library.RuleDrg{}
+            |>Hitb.Library.RuleDrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "icd9" ->
+        Block.Repo.all(from p in Block.Library.RuleIcd9)
+        |>Enum.map(fn x ->
+            %Hitb.Library.RuleIcd9{}
+            |>Hitb.Library.RuleIcd9.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "icd10" ->
+        Block.Repo.all(from p in Block.Library.RuleIcd10)
+        |>Enum.map(fn x ->
+            %Hitb.Library.RuleIcd10{}
+            |>Hitb.Library.RuleIcd10.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "chinese_medicine" ->
+        Block.Repo.all(from p in Block.Library.ChineseMedicine)
+        |>Enum.map(fn x ->
+            %Hitb.Library.ChineseMedicine{}
+            |>Hitb.Library.ChineseMedicine.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "chinese_medicine_patent" ->
+        Block.Repo.all(from p in Block.Library.ChineseMedicinePatent)
+        |>Enum.map(fn x ->
+            %Hitb.Library.ChineseMedicinePatent{}
+            |>Hitb.Library.ChineseMedicinePatent.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+      "lib_wt4" ->
+        Block.Repo.all(from p in Block.Library.LibWt4)
+        |>Enum.map(fn x ->
+            %Hitb.Library.LibWt4{}
+            |>Hitb.Library.LibWt4.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+          end)
+    end
+  end
+
   defp hash(s) do
     s = :crypto.hash(:sha256, s)
     |> Base.encode64

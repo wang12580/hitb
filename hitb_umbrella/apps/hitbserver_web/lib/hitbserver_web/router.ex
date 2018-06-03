@@ -22,6 +22,8 @@ defmodule HitbserverWeb.Router do
     get "/login", PageController, :login_html
     #登出
     get "/logout", PageController, :logout
+    get "/share", PageController, :share
+
     #区块链
     get "/blockchain", PageBlockController, :blockchain
     get "/bc_asset", PageBlockController, :bc_asset
@@ -32,14 +34,17 @@ defmodule HitbserverWeb.Router do
     get "/bc_delegates", PageBlockController, :bc_delegates
     get "/bc_pay", PageBlockController, :bc_pay
     get "/bc_peers", PageBlockController, :bc_peers
+
     # 规则表
     get "/rule", PageRuleController, :rule
     get "/rule_contrast", PageRuleController, :contrast
     get "/details", PageRuleController, :details
+
     #统计分析
     get "/stat_html", PageStatController, :stat
     get "/contrast", PageStatController, :contrast
     get "/stat_info", PageStatController, :stat_info
+
     #系统设置
     get "/org_set", PageServerController, :org_set
     get "/department_set", PageServerController, :department
@@ -49,6 +54,7 @@ defmodule HitbserverWeb.Router do
     get "/record", PageServerController, :record
     get "/doctors", PageServerController, :doctors
     get "/user_html", PageServerController, :user_html
+
     #json处理
     get "/wt4_json", PageServerController, :upload_html
     #统计分析页面
@@ -66,6 +72,8 @@ defmodule HitbserverWeb.Router do
     get "/login", PageController, :login_html
     #登出
     get "/logout", PageController, :logout
+    get "/share", PageController, :share
+
     #区块链
     get "/blockchain", PageBlockController, :blockchain
     get "/bc_asset", PageBlockController, :bc_asset
@@ -76,14 +84,17 @@ defmodule HitbserverWeb.Router do
     get "/bc_delegates", PageBlockController, :bc_delegates
     get "/bc_pay", PageBlockController, :bc_pay
     get "/bc_peers", PageBlockController, :bc_peers
+
     # 规则表
     get "/rule", PageRuleController, :rule
     get "/rule_contrast", PageRuleController, :contrast
     get "/details", PageRuleController, :details
+
     #统计分析
     get "/stat_html", PageStatController, :stat
     get "/contrast", PageStatController, :contrast
     get "/stat_info", PageStatController, :stat_info
+
     #系统设置
     get "/org_set", PageServerController, :org_set
     get "/department_set", PageServerController, :department
@@ -93,6 +104,7 @@ defmodule HitbserverWeb.Router do
     get "/record", PageServerController, :record
     get "/doctors", PageServerController, :doctors
     get "/user_html", PageServerController, :user_html
+
     #json处理
     get "/wt4_json", PageServerController, :upload_html
     #统计分析页面
@@ -169,6 +181,7 @@ defmodule HitbserverWeb.Router do
     get "/wt4_insert", PageController, :wt4_insert
     resources "/chat_record", ChatRecordController, except: [:new, :edit]
     #分享
+    get "/get_share", ShareController, :get_share
     post "/share", ShareController, :share
   end
 

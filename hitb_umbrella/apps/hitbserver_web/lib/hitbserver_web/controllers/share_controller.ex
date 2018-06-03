@@ -9,4 +9,14 @@ defmodule HitbserverWeb.ShareController do
     result = ShareService.share(type, file_name, username, content)
     json conn, result
   end
+
+  def get_share(conn, _) do
+    result = ShareService.get_share
+    json conn, result
+  end
+
+  def insert_share(conn, %{"table" => table}) do
+    ShareService.insert(table)
+    json conn, %{result: true}
+  end
 end
