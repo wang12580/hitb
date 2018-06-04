@@ -57,9 +57,20 @@ defmodule HitbserverWeb.PageController do
     wt4s = UploadService.wt4_upload(conn)
     json conn, wt4s
   end
+
   def wt4_insert(conn, _params) do
     wt4s = UploadService.wt4_insert()
     json conn, wt4s
   end
 
+  def share(conn, _params) do
+    user = get_session(conn, :user)
+    login = UserService.is_login(user)
+    if(login)do
+      %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
+      render conn, "share.html", user: user, page_num: page
+    else
+      redirect conn, to: "/hospitals/login"
+    end
+  end
 end

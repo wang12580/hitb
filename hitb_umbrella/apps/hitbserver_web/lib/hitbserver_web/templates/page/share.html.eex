@@ -1,0 +1,119 @@
+<%= if(@user.type == 2)do %>
+  <div style="height:50%"></div>
+  <div class="ui massive negative message">
+    <div class="header">非常抱歉,您没有管理权限。</div>
+    <p>3秒后会跳转到系统设置。</p>
+  </div>
+  <script>
+  setTimeout("reload()",2000);
+  //重载
+  function reload(){
+    window.history.go(-1);
+  }
+  </script>
+<% else %>
+  <div id="user_set">
+    <div class="ui huge breadcrumb" style="background:#ffffff;">
+      <a class="section" href="/hospitals">主页</a>
+      <i class="right chevron icon divider"></i>
+      <div class="active section">共享获取</div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui menu" id="div_menu">
+      <div class="item">
+        <button id="edit" class="ui labeled icon button"  v-on:click = "insert()" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="edit icon"></i>导入</button>
+      </div>
+    </div>
+    <div class="ui success message" id = "mes" style="display:none;">
+      <div class="header" id = "mes_header">你的用户创建成功!</div>
+      <p>2秒后页面将自动刷新。</p>
+    </div>
+    <div class="ui negative message" id = "error_mes" style="display:none;">
+      <div class="header" id = "error_mes_header">你的用户创建失败!</div>
+      <p id = "error_mes_info">用户名重复。</p>
+    </div>
+    <table class="ui fixed single line celled table">
+      <thead>
+        <tr>
+          <th class="center aligned">表</th>
+          <th class="center aligned">数量</th>
+        </tr>
+      </thead>
+      <tbody id="user_tbody">
+        <tr v-for="(item, index) in shareList" v-bind:key="index" :id ="item.key" v-on:click="myclick(item.key, false)" v-bind:class="{'active center aligned': tableTr === item.key, 'center aligned': true}">
+          <td>{{item.key}}</td>
+          <td>{{item.val}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="ui right floated pagination menu" id="user_footer">
+      <a v-for="(item, index) in pageList" class="item" v-bind:key="index" v-bind:href = "generateUrl(item.num)" title = "item.page" v-bind:class="{'disabled': parseInt(item.num, 10) === page}" >{{item.num}}</a>
+    </div>
+  </div>
+  <script>
+  $(document).ready(function() {
+    Vue.prototype.$ajax = $.ajax;
+    common = new Vue({
+      el: '#user_set',
+      data: {
+        shareList: [],
+        pageList: [],
+        page: 1,
+        tableTr: null,
+        tableban: false,
+      },
+      created: function () {
+        this.getShare()
+      },
+      methods: {
+        getShare: function () {
+          $.ajax({
+            type: "get",
+            url: `/servers/get_share`,
+            async: false,
+            success: (data) => {
+              console.log(data);
+              this.shareList = data
+              // this.pageList = data.page_list
+              // this.page = data.page_num
+            }
+          })
+        },
+        myclick: function(value, bul) {
+          this.tableban = false
+          if (this.tableTr === value) {
+            this.tableTr = null
+          } else {
+            this.tableTr = value
+          }
+        },
+        insert: function () {
+          $.ajax({
+            type: "get",
+            url: `/servers/insert_share?table=${this.tableTr}`,
+            async: false,
+            success: (data) => {
+              console.log(data);
+              this.shareList = data
+              // this.pageList = data.page_list
+              // this.page = data.page_num
+            }
+          })
+        },
+        // generateUrl: function(num) {
+        //   let url = '';
+        //   if(this.page === parseInt(num)) {
+        //     url = '###'
+        //   } else {
+        //     url = `/hospitals/department_set?page=${num}`
+        //   }
+        //   return url
+        // },
+      }
+    })
+  })
+  function reload(){
+    location.reload();
+  }
+  </script>
+<%end%>
