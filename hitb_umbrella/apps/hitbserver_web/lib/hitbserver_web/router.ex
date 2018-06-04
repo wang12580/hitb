@@ -122,6 +122,7 @@ defmodule HitbserverWeb.Router do
     get "/province", ServerController, :province
     get "/json_check", PageServerController, :json_check
     get "/check_html", PageServerController, :check_html
+    get "/test", PageServerController, :test
   end
 
   scope "/edit", HitbserverWeb do

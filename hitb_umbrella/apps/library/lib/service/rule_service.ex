@@ -11,6 +11,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.LibWt4
   alias Hitb.Library.ChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent
+  alias Hitb.Library.EnglishMedicine
   alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
@@ -22,6 +23,7 @@ defmodule Library.RuleService do
   end
 
   def rule_file(server_type) do
+    IO.inspect server_type
     case server_type do
       "block" ->
         [["mdc", Block.Repo.all(from p in Block.Library.RuleMdc, select: count(p.id))],
@@ -53,7 +55,7 @@ defmodule Library.RuleService do
         |>List.flatten
         |>Enum.map(fn x -> x <> ".csv" end)
       _ ->
-        ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药"]
+        ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药", "西药"]
         |>Enum.map(fn x -> x <> ".csv" end)
     end
   end
@@ -102,15 +104,18 @@ defmodule Library.RuleService do
         tab_type == "中药" and server_type == "block" -> Block.Library.ChineseMedicine
         tab_type == "中成药" and server_type == "server"  -> ChineseMedicinePatent
         tab_type == "中成药" and server_type == "block" -> Block.Library.ChineseMedicinePatent
+        tab_type == "西药" and server_type == "server"  -> EnglishMedicine
         true -> if(server_type == "server")do LibWt4 else Block.Library.LibWt4 end
       end
-    IO.inspect tab
+    IO.inspect tab_type
     [result, list, page_list, page_num, count, type] =
       cond do
         tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
           ruleOther(type, tab_type, tab, page, rows, server_type)
         tab_type in ["中药", "中成药"] ->
           ruleChinese(type, tab_type, tab, page, rows, server_type)
+        tab_type in ["西药"] ->
+          ruleEnglish(type, tab_type, tab, page, rows, server_type)
         true->
           ruleWT4(version, year, dissect, tab, type, page, rows, server_type)
       end
@@ -337,6 +342,39 @@ defmodule Library.RuleService do
         true ->
           from(p in tab)
       end
+    repo = if(server_type == "server")do Repo else Block.Repo end
+    count = query
+      |>select([p], count(p.id))
+      |>repo.all
+      |>hd
+    # count = Repo.all(from p in tab, select: count(p.id)) |>hd
+    skip = Hitb.Page.skip(page, rows)
+    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
+    result = query
+      |>repo.all
+    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    [result, list, page_list, page_num, count_page, type]
+  end
+  defp ruleEnglish(type, tab_type, tab, page, rows, server_type) do
+    IO.inspect "000000000000000000"
+    list =
+      cond do
+        tab_type == "西药" ->
+          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :dosage_form)))
+            |>Enum.reject(fn x -> x == nil end)
+          case i do
+            [] -> []
+            _ -> List.first(i)|>Enum.sort
+          end
+      end
+    query =
+    cond do
+      type in list ->
+        from(p in tab)
+        |>where([p], p.dosage_form == ^type)
+      true ->
+        from(p in tab)
+    end
     repo = if(server_type == "server")do Repo else Block.Repo end
     count = query
       |>select([p], count(p.id))
