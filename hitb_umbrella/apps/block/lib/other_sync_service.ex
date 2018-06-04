@@ -11,10 +11,16 @@ defmodule Block.OtherSyncService do
   alias Block.Library.RuleMdc
   alias Block.Library.LibWt4
   alias Block.Library.Wt4
+  alias Block.Stat.StatOrg
 
   def get_latest_cda_hash do
     Repo.all(from p in Cda, select: p.hash)
   end
+
+  def get_latest_statorg_hash do
+    Repo.all(from p in StatOrg, select: p.hash)
+  end
+
 
   def get_latest_ruleadrg_hash do
     Repo.all(from p in RuleAdrg, select: p.hash)
@@ -55,6 +61,7 @@ defmodule Block.OtherSyncService do
   def get_data(x, hash) do
     hash = if(hash == nil)do [] else hash end
     case x do
+      "statorg_hash" -> Repo.all(StatOrg)
       "cda_hash" -> Repo.all(Cda)
       "ruleadrg_hash" -> Repo.all(RuleAdrg)
       "cmp_hash" -> Repo.all(ChineseMedicinePatent)
@@ -64,7 +71,6 @@ defmodule Block.OtherSyncService do
       "ruleicd10_hash" -> Repo.all(RuleIcd10)
       "rulemdc_hash" -> Repo.all(RuleMdc)
       "libwt4_hash" -> Repo.all(LibWt4)
-      "ruleadrg_hash" -> Repo.all(RuleAdrg)
       "wt4_hash" -> Repo.all(Wt4)
     end
     |>Enum.reject(fn x -> x.hash in hash end)
