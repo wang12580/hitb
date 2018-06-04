@@ -10,7 +10,7 @@
           <a class="item" v-for="x in leftList" v-bind:class="{active: x === '<%=@dissect%>'}" :href="'/hospitals/rule?year=<%=@year%>&page=1&tab_type=<%=@tab_type%>&version=<%=@version%>&type=<%=@type%>&dissect='+x">{{ x }}</a>
       <% end %>
     </div>
-    <div class="ui secondary vertical menu" v-if="tabType ==='中成药'">
+    <div class="ui secondary vertical menu" v-if="tabType ==='中成药' || tabType ==='西药'">
       <a class="item" v-for="x in leftList" v-on:click="change(x)">{{ x }}</a>
     </div>
   </div>
@@ -49,6 +49,8 @@
               <th>编码</th><th>名称</th><th>别名</th><th>功效</th>
             <% @tab_type in ["中成药"] -> %>
               <th>编码</th><th>名称</th><th>药品编码</th><th>别名</th>
+            <% @tab_type in ["西药"] -> %>
+              <th>中文名称</th><th>英文名称</th><th>一级分类</th><th>二级分类</th><th>三级分类</th><th>限制报销内容</th>
             <% true -> %>
               <th v-for="(a, index) in headerCn" v-on:click="com_y(index)">
                 {{ a }}
@@ -76,10 +78,15 @@
               <td>{{ xs.effect }}</td>
             </tr>
           <% @tab_type in ["中药", "中成药",] -> %>
-          <tr v-for="(xs, i) in rule">
-            <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.medicine_code }}</td>
-            <td>{{ xs.name_1 }}</td>
-          </tr>
+            <tr v-for="(xs, i) in rule">
+              <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.medicine_code }}</td>
+              <td>{{ xs.name_1 }}</td>
+            </tr>
+          <% @tab_type in ["西药"] -> %>
+            <tr v-for="(xs, i) in rule">
+              <td>{{ xs.zh_name }}</td><td>{{ xs.en_name }}</td><td>{{ xs.first_level }}</td>
+              <td>{{ xs.second_level }}</td><td>{{ xs.third_level }}</td><td>{{ xs.reimbursement_restrictions }}</td>
+            </tr>
           <% true -> %>
           <tr v-for="(xs, i) in rule">
             <td>{{ xs.code }}</td><td>{{ xs.name }}</td><td>{{ xs.year }}</td><td>{{ xs.version }}</td>
@@ -121,6 +128,7 @@ $(document).ready(function() {
         '区县编码': [[]],
         '中药': [['解表药', '解表药'], ['清热解毒药', '清热解毒药'], ['泻下药', '泻下药'], ['消导药', '消导药'], ['止咳化痰药', '止咳化痰药'], ['理气药', '理气药'], ['止血药', '止血药'], ['温里药', '温里药'], ['祛风湿药?', '祛风湿药?'], ['固涩药', '固涩药'], ['利水渗湿药', '利水渗湿药'], ['开窍药', '开窍药'], ['芳香化湿药', '芳香化湿药'], ['补益药 ', '补益药 '], ['安神药', '安神药'],['平肝熄风药', '平肝熄风药'], ['驱虫药', '驱虫药'],['活血化瘀药', '活血化瘀药'], ['涌吐药', '涌吐药'], ['外用药', '外用药']],
         '中成药': [[]],
+        '西药': [[]],
       },
       tool: [],
       tit: {},
