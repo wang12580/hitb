@@ -6,6 +6,7 @@ defmodule Server.ShareService do
   alias Hitb.Time
 
   def share(type, file_name, username, content) do
+    content = Poison.decode!(content)
     timestamp = :os.system_time(:seconds)
       case type do
         "edit" ->
@@ -20,16 +21,31 @@ defmodule Server.ShareService do
             acc = hash
           end)
         "stat" ->
+          content = Enum.map(content, fn x ->
+              x = String.split(x, ",")
+              "#{Enum.at(x, 0)}#{Enum.at(x, 1)}"
+            end)
           latest = Block.Repo.all(from p in Block.Stat.StatOrg, order_by: [desc: p.inserted_at], limit: 1)
-          previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download")
-          Enum.reduce(stat, previous_hash, fn x, acc ->
-            hash = hash("#{x.org}#{x.time}")
-            %Block.Stat.StatOrg{hash: hash, previous_hash: acc}
-            |>Map.merge(Map.drop(x, [:id]))
-            |>Block.Repo.insert!
-            acc = hash
-          end)
+          hashs = Block.Repo.all(from p in Block.Stat.StatOrg, select: p.hash)
+          previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "-" end
+          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download", "server")
+          Enum.reject(stat, fn x -> "#{x.org}#{x.time}" not in content end)
+          |>Enum.reduce(previous_hash, fn x, acc ->
+              hash = hash("#{x.org}#{x.time}")
+              if(hash not in hashs)do
+                %Block.Stat.StatOrg{}
+                |>Block.Stat.StatOrg.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
+                |>Block.Repo.insert
+                acc = hash
+              else
+                acc
+              end
+            end)
+          if(Block.Repo.get_by(Block.ShareRecord, type: "stat", file_name: file_name) == nil)do
+              %Block.ShareRecord{}
+              |>Block.ShareRecord.changeset(%{username: username, file_name: file_name, datetime: Hitb.Time.stime_local(), type: "stat"})
+              |>Block.Repo.insert
+          end
         "library" ->
           case file_name do
             "mdc.csv" ->
