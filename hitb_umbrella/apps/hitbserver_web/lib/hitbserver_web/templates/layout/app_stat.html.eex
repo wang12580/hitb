@@ -451,6 +451,7 @@
                   <a class = "item" id="set" href="/hospitals/doctors">医师组设置</a>
                   <a class = "item" id="set" href="#">医师设置</a>
                   <a class = "item" id="user" href="/hospitals/user_html">用户管理</a>
+                  <a class = "item" id="share" href="/hospitals/share">共享获取</a>
                 </div>
               </div>
               <div class="item">

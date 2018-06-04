@@ -3,6 +3,7 @@ defmodule Server.ShareService do
   import Ecto.Query
   alias Stat.ClientService
   alias Stat.Query
+  alias Hitb.Time
 
   def share(type, file_name, username, content) do
     timestamp = :os.system_time(:seconds)
@@ -144,7 +145,57 @@ defmodule Server.ShareService do
     chinese_medicine = Block.Repo.all(from p in Block.Library.ChineseMedicine, select: count(p.id))|>List.first
     chinese_medicine_patent = Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, select: count(p.id))|>List.first
     lib_wt4 = Block.Repo.all(from p in Block.Library.LibWt4, select: count(p.id))|>List.first
-    [%{key: "edit", val: edit}, %{key: "stat_org", val: stat_org}, %{key: "mdc", val: mdc}, %{key: "adrg", val: adrg}, %{key: "drg", val: drg}, %{key: "icd9", val: icd9}, %{key: "icd10", val: icd10}, %{key: "chinese_medicine", val: chinese_medicine}, %{key: "chinese_medicine_patent", val: chinese_medicine_patent}, %{key: "lib_wt4", val: lib_wt4}]
+    last_edit =
+      case edit do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Edit.Cda, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first
+      end
+    last_stat_org =
+      case stat_org do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Stat.StatOrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_mdc =
+      case mdc do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.RuleMdc, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_adrg =
+      case adrg do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.RuleAdrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_drg =
+      case drg do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.RuleDrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_icd9 =
+      case icd9 do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.RuleIcd9, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_icd10 =
+      case icd10 do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.RuleIcd10, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_chinese_medicine =
+      case chinese_medicine do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.ChineseMedicine, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_chinese_medicine_patent =
+      case chinese_medicine_patent do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    last_lib_wt4 =
+      case lib_wt4 do
+        0 -> "-"
+        _ -> Block.Repo.all(from p in Block.Library.LibWt4, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+      end
+    [%{key: "edit", val: edit, last: last_edit}, %{key: "stat_org", val: stat_org, last: last_stat_org}, %{key: "mdc", val: mdc, last: last_mdc}, %{key: "adrg", val: adrg, last: last_adrg}, %{key: "drg", val: drg, last: last_drg}, %{key: "icd9", val: icd9, last: last_icd9}, %{key: "icd10", val: icd10, last: last_icd10}, %{key: "chinese_medicine", val: chinese_medicine, last: last_chinese_medicine}, %{key: "chinese_medicine_patent", val: chinese_medicine_patent, last: last_chinese_medicine_patent}, %{key: "lib_wt4", val: lib_wt4, last: last_lib_wt4}]
   end
 
   def insert(table) do
