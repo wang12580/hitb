@@ -205,60 +205,70 @@ defmodule Server.ShareService do
         |>Enum.map(fn x ->
             %Hitb.Edit.Cda{}
             |>Hitb.Edit.Cda.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "stat_org" ->
         Block.Repo.all(from p in Block.Stat.StatOrg)
         |>Enum.map(fn x ->
             %Hitb.Stat.StatOrg{}
             |>Hitb.Stat.StatOrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "mdc" ->
         Block.Repo.all(from p in Block.Library.RuleMdc)
         |>Enum.map(fn x ->
             %Hitb.Library.RuleMdc{}
             |>Hitb.Library.RuleMdc.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "adrg" ->
         Block.Repo.all(from p in Block.Library.RuleAdrg)
         |>Enum.map(fn x ->
             %Hitb.Library.RuleAdrg{}
             |>Hitb.Library.RuleAdrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "drg" ->
         Block.Repo.all(from p in Block.Library.RuleDrg)
         |>Enum.map(fn x ->
             %Hitb.Library.RuleDrg{}
             |>Hitb.Library.RuleDrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "icd9" ->
         Block.Repo.all(from p in Block.Library.RuleIcd9)
         |>Enum.map(fn x ->
             %Hitb.Library.RuleIcd9{}
             |>Hitb.Library.RuleIcd9.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "icd10" ->
         Block.Repo.all(from p in Block.Library.RuleIcd10)
         |>Enum.map(fn x ->
             %Hitb.Library.RuleIcd10{}
             |>Hitb.Library.RuleIcd10.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "chinese_medicine" ->
         Block.Repo.all(from p in Block.Library.ChineseMedicine)
         |>Enum.map(fn x ->
             %Hitb.Library.ChineseMedicine{}
             |>Hitb.Library.ChineseMedicine.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "chinese_medicine_patent" ->
         Block.Repo.all(from p in Block.Library.ChineseMedicinePatent)
         |>Enum.map(fn x ->
             %Hitb.Library.ChineseMedicinePatent{}
             |>Hitb.Library.ChineseMedicinePatent.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
       "lib_wt4" ->
         Block.Repo.all(from p in Block.Library.LibWt4)
         |>Enum.map(fn x ->
             %Hitb.Library.LibWt4{}
             |>Hitb.Library.LibWt4.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
+            |>Hitb.Repo.insert
           end)
     end
   end

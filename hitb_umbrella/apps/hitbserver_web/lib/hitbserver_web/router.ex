@@ -182,6 +182,7 @@ defmodule HitbserverWeb.Router do
     resources "/chat_record", ChatRecordController, except: [:new, :edit]
     #分享
     get "/get_share", ShareController, :get_share
+    get "/insert_share", ShareController, :insert_share
     post "/share", ShareController, :share
   end
 
