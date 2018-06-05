@@ -10,8 +10,9 @@ defmodule HitbserverWeb.CdaController do
   end
 
   def cda_file(conn, _params) do
-    %{"username" => username} = Map.merge(%{"username" => ""}, conn.params)
-    [cda, info] = CdaService.cda_files(username)
+    %{"username" => username, "server_type" => server_type} = Map.merge(%{"username" => "", "server_type" => ""}, conn.params)
+    IO.inspect username
+    [cda, info] = CdaService.cda_files(username, server_type)
     json conn, %{cda: cda, info: info}
   end
 

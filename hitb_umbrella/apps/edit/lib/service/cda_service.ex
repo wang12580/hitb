@@ -14,7 +14,8 @@ defmodule Edit.CdaService do
     [users -- users2, "读取成功"]
   end
 
-  def cda_files(username) do
+  def cda_files(username, server_type) do
+    IO.inspect server_type
     case username do
       "" ->
         [Repo.all(from p in Cda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
