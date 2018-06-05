@@ -6,7 +6,7 @@ defmodule HitbserverWeb.ShareController do
 
   def share(conn, %{"username" => username, "type" => type, "file_name" => file_name}) do
     %{"content" => content} = Map.merge(%{"content" => []}, conn.params)
-    result = ShareService.share(type, file_name, username, content)
+    ShareService.share(type, file_name, username, content)
     json conn, %{result: true}
   end
 
@@ -15,8 +15,8 @@ defmodule HitbserverWeb.ShareController do
     json conn, result
   end
 
-  def insert_share(conn, %{"table" => table}) do
-    ShareService.insert(table)
+  def insert_share(conn, %{"table" => table, "time" => time}) do
+    ShareService.insert(table, time)
     json conn, %{result: true}
   end
 end

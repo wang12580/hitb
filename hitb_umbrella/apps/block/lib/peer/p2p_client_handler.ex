@@ -62,7 +62,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_disconnected(reason, state) do
-    peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
+    # peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
     # PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
     # Process.send_after(self(), :connect, :timer.seconds(20000))
@@ -96,13 +96,13 @@ defmodule Block.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
+  def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = _payload, _transport, state) do
     Logger.info("connection to server failed...")
     P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
 
-  def handle_reply(topic, _ref, payload, transport, state) do
+  def handle_reply(_topic, _ref, payload, transport, state) do
 
     type = payload["response"]["type"]
     response = payload["response"]["data"]

@@ -41,7 +41,7 @@
         </tr>
       </thead>
       <tbody id="user_tbody">
-        <tr v-for="(item, index) in shareList" v-bind:key="index" :id ="item.key" v-on:click="myclick(item.key, false, item.val)" v-bind:class="{'active center aligned': tableTr === item.key, 'center aligned': true}">
+        <tr v-for="(item, index) in shareList" v-bind:key="index" :id ="item.key" v-on:click="myclick(item.key, false, item.val, item.last)" v-bind:class="{'active center aligned': tableTr === item.key, 'center aligned': true}">
           <td>{{item.key}}</td>
           <td>{{item.val}}</td>
           <td>{{item.last}}</td>
@@ -63,6 +63,7 @@
         page: 1,
         tableTr: null,
         tableban: false,
+        tableTime: ''
       },
       created: function () {
         this.getShare()
@@ -80,18 +81,20 @@
             }
           })
         },
-        myclick: function(value, bul, num) {
+        myclick: function(value, bul, num, time) {
           this.tableban = false
           if (this.tableTr === value || num == 0) {
             this.tableTr = null
+            this.tableTime = ''
           } else {
             this.tableTr = value
+            this.tableTime = time
           }
         },
         insert: function () {
           $.ajax({
             type: "get",
-            url: `/servers/insert_share?table=${this.tableTr}`,
+            url: `/servers/insert_share?table=${this.tableTr}&time=${this.tableTime}`,
             async: false,
             success: (data) => {
             }

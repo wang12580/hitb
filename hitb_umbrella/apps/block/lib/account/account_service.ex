@@ -2,6 +2,7 @@ defmodule Block.AccountService do
   alias Block.AccountRepository
   alias Block.BlockService
   alias Block.TransactionService
+  alias Block.TransactionRepository
   alias Block.BlockRepository
   @moduledoc """
   Documentation for Account.
