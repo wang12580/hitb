@@ -1,7 +1,7 @@
 defmodule Block.PeerService do
   require Logger
 
-  alias PeerRepository
+  alias Block.PeerRepository
   @moduledoc """
   Documentation for Peers.
   """

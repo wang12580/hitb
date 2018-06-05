@@ -7,7 +7,7 @@ defmodule Edit.CdaServiceTest do
   end
 
   test "test cda_files" do
-    assert CdaService.cda_files("test") == [[], "读取成功"]
+    assert CdaService.cda_files("test", "server") == [[], "读取成功"]
   end
 
   test "test cda_file" do
