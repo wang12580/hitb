@@ -1,17 +1,29 @@
 defmodule Library.RuleService do
   # import Ecto
   import Ecto.Query
-  alias Hitb.Repo
+  alias Hitb.Page
+  alias Hitb.Repo, as: HitbRepo
+  alias Block.Repo, as: BlockRepo
   # alias Hitb.Time
-  alias Hitb.Library.RuleMdc
-  alias Hitb.Library.RuleAdrg
-  alias Hitb.Library.RuleDrg
-  alias Hitb.Library.RuleIcd9
-  alias Hitb.Library.RuleIcd10
-  alias Hitb.Library.LibWt4
-  alias Hitb.Library.ChineseMedicine
-  alias Hitb.Library.ChineseMedicinePatent
-  alias Hitb.Library.WesternMedicine
+  alias Hitb.Library.RuleMdc, as: HitbRuleMdc
+  alias Hitb.Library.RuleAdrg, as: HitbRuleAdrg
+  alias Hitb.Library.RuleDrg, as: HitbRuleDrg
+  alias Hitb.Library.RuleIcd9, as: HitbRuleIcd9
+  alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
+  alias Hitb.Library.LibWt4, as: HitbLibWt4
+  alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
+  alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
+  alias Hitb.Library.WesternMedicine, as: HitbWesternMedicine
+  alias Block.Library.RuleMdc, as: BlockRuleMdc
+  alias Block.Library.RuleAdrg, as: BlockRuleAdrg
+  alias Block.Library.RuleDrg, as: BlockRuleDrg
+  alias Block.Library.RuleIcd9, as: BlockRuleIcd9
+  alias Block.Library.RuleIcd10, as: BlockRuleIcd10
+  alias Block.Library.LibWt4, as: BlockLibWt4
+  alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
+  alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
+  # alias Block.Library.WesternMedicine, as: BlockWesternMedicine
+
   alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
@@ -23,26 +35,25 @@ defmodule Library.RuleService do
   end
 
   def rule_file(server_type) do
-    IO.inspect server_type
     case server_type do
       "block" ->
-        [["mdc", Block.Repo.all(from p in Block.Library.RuleMdc, select: count(p.id))],
-          ["adrg", Block.Repo.all(from p in Block.Library.RuleAdrg, select: count(p.id))],
-          ["drg", Block.Repo.all(from p in Block.Library.RuleDrg, select: count(p.id))],
-          ["icd9", Block.Repo.all(from p in Block.Library.RuleIcd9, select: count(p.id))],
-          ["icd10", Block.Repo.all(from p in Block.Library.RuleIcd10, select: count(p.id))],
-          ["基本信息", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "基本信息", select: count(p.id))],
-          ["街道乡镇代码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "街道乡镇代码", select: count(p.id))],
-          ["民族", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "民族", select: count(p.id))],
-          ["区县编码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "区县编码", select: count(p.id))],
-          ["手术血型", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "手术血型", select: count(p.id))],
-          ["出入院编码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "出入院编码", select: count(p.id))],
-          ["肿瘤编码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "肿瘤编码", select: count(p.id))],
-          ["科别代码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "科别代码", select: count(p.id))],
-          ["病理诊断编码", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "病理诊断编码", select: count(p.id))],
-          ["医保诊断依据", Block.Repo.all(from p in Block.Library.LibWt4, where: p.type == "医保诊断依据", select: count(p.id))],
-          ["中药", Block.Repo.all(from p in Block.Library.ChineseMedicine, select: count(p.id))],
-          ["中成药", Block.Repo.all(from p in Block.Library.ChineseMedicinePatent, select: count(p.id))]
+        [["mdc", BlockRepo.all(from p in BlockRuleMdc, select: count(p.id))],
+          ["adrg", BlockRepo.all(from p in BlockRuleAdrg, select: count(p.id))],
+          ["drg", BlockRepo.all(from p in BlockRuleDrg, select: count(p.id))],
+          ["icd9", BlockRepo.all(from p in BlockRuleIcd9, select: count(p.id))],
+          ["icd10", BlockRepo.all(from p in BlockRuleIcd10, select: count(p.id))],
+          ["基本信息", BlockRepo.all(from p in BlockLibWt4, where: p.type == "基本信息", select: count(p.id))],
+          ["街道乡镇代码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "街道乡镇代码", select: count(p.id))],
+          ["民族", BlockRepo.all(from p in BlockLibWt4, where: p.type == "民族", select: count(p.id))],
+          ["区县编码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "区县编码", select: count(p.id))],
+          ["手术血型", BlockRepo.all(from p in BlockLibWt4, where: p.type == "手术血型", select: count(p.id))],
+          ["出入院编码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "出入院编码", select: count(p.id))],
+          ["肿瘤编码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "肿瘤编码", select: count(p.id))],
+          ["科别代码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "科别代码", select: count(p.id))],
+          ["病理诊断编码", BlockRepo.all(from p in BlockLibWt4, where: p.type == "病理诊断编码", select: count(p.id))],
+          ["医保诊断依据", BlockRepo.all(from p in BlockLibWt4, where: p.type == "医保诊断依据", select: count(p.id))],
+          ["中药", BlockRepo.all(from p in BlockChineseMedicine, select: count(p.id))],
+          ["中成药", BlockRepo.all(from p in BlockChineseMedicinePatent, select: count(p.id))]
         ]
         |>Enum.map(fn x ->
             [table, count] = x
@@ -87,27 +98,25 @@ defmodule Library.RuleService do
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
     rows = to_string(rows)|>String.to_integer
-    IO.inspect server_type
     tab =
       cond do
-        tab_type == "mdc" and server_type == "server" -> RuleMdc
-        tab_type == "mdc" and server_type == "block" -> Block.Library.RuleMdc
-        tab_type == "adrg" and server_type == "server"  -> RuleAdrg
-        tab_type == "adrg" and server_type == "block" -> Block.Library.RuleAdrg
-        tab_type == "drg" and server_type == "server"  -> RuleDrg
-        tab_type == "drg" and server_type == "block" -> Block.Library.RuleDrg
-        tab_type == "icd10" and server_type == "server"  -> RuleIcd10
-        tab_type == "icd10" and server_type == "block" -> Block.Library.RuleIcd10
-        tab_type == "icd9" and server_type == "server"  -> RuleIcd9
-        tab_type == "icd9" and server_type == "block" -> Block.Library.RuleIcd9
-        tab_type == "中药" and server_type == "server"  -> ChineseMedicine
-        tab_type == "中药" and server_type == "block" -> Block.Library.ChineseMedicine
-        tab_type == "中成药" and server_type == "server"  -> ChineseMedicinePatent
-        tab_type == "中成药" and server_type == "block" -> Block.Library.ChineseMedicinePatent
-        tab_type == "西药" and server_type == "server"  -> WesternMedicine
-        true -> if(server_type == "server")do LibWt4 else Block.Library.LibWt4 end
+        tab_type == "mdc" and server_type == "server" -> HitbRuleMdc
+        tab_type == "mdc" and server_type == "block" -> BlockRuleMdc
+        tab_type == "adrg" and server_type == "server"  -> HitbRuleAdrg
+        tab_type == "adrg" and server_type == "block" -> BlockRuleAdrg
+        tab_type == "drg" and server_type == "server"  -> HitbRuleDrg
+        tab_type == "drg" and server_type == "block" -> BlockRuleDrg
+        tab_type == "icd10" and server_type == "server"  -> HitbRuleIcd10
+        tab_type == "icd10" and server_type == "block" -> BlockRuleIcd10
+        tab_type == "icd9" and server_type == "server"  -> HitbRuleIcd9
+        tab_type == "icd9" and server_type == "block" -> BlockRuleIcd9
+        tab_type == "中药" and server_type == "server"  -> HitbChineseMedicine
+        tab_type == "中药" and server_type == "block" -> BlockChineseMedicine
+        tab_type == "中成药" and server_type == "server"  -> HitbChineseMedicinePatent
+        tab_type == "中成药" and server_type == "block" -> BlockChineseMedicinePatent
+        tab_type == "西药" and server_type == "server"  -> HitbWesternMedicine
+        true -> if(server_type == "server")do LibWt4 else BlockLibWt4 end
       end
-    IO.inspect tab_type
     [result, list, page_list, page_num, count, type] =
       cond do
         tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
@@ -125,16 +134,16 @@ defmodule Library.RuleService do
   def contrast(table, id) do
     tab =
       cond do
-        table == "icd9" -> RuleIcd9
-        table == "icd10" -> RuleIcd10
-        table == "mdc" -> RuleMdc
-        table == "adrg" -> RuleAdrg
-        table == "drg" -> RuleDrg
+        table == "icd9" -> HitbRuleIcd9
+        table == "icd10" -> HitbRuleIcd10
+        table == "mdc" -> HitbRuleMdc
+        table == "adrg" -> HitbRuleAdrg
+        table == "drg" -> HitbRuleDrg
       end
     result = String.split(id, "-")
       |>Enum.map(fn x ->
           x = String.to_integer(x)
-          Repo.all(from p in tab, where: p.id == ^x)
+          HitbRepo.all(from p in tab, where: p.id == ^x)
         end)
       |>List.flatten
     [result, c] =
@@ -165,14 +174,14 @@ defmodule Library.RuleService do
   def details(code, table, version) do
     tab =
       cond do
-        table == "icd9" -> RuleIcd9
-        table == "icd10" -> RuleIcd10
-        table == "mdc" -> RuleMdc
-        table == "adrg" -> RuleAdrg
-        table == "drg" -> RuleDrg
+        table == "icd9" -> HitbRuleIcd9
+        table == "icd10" -> HitbRuleIcd10
+        table == "mdc" -> HitbRuleMdc
+        table == "adrg" -> HitbRuleAdrg
+        table == "drg" -> HitbRuleDrg
       end
-    result = Repo.all(from p in tab, where: p.code == ^code)
-    result1 = Repo.all(from p in tab, where: p.code == ^code and p.version == ^version)
+    result = HitbRepo.all(from p in tab, where: p.code == ^code)
+    result1 = HitbRepo.all(from p in tab, where: p.code == ^code and p.version == ^version)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -184,24 +193,24 @@ defmodule Library.RuleService do
 
 # 模糊搜索
   def search(page, table, code) do
-    skip = Hitb.Page.skip(page, 10)
+    skip = Page.skip(page, 10)
     tab =
       cond do
-        table == "icd9" -> RuleIcd9
-        table == "icd10" -> RuleIcd10
-        table == "mdc" -> RuleMdc
-        table == "adrg" -> RuleAdrg
-        table == "drg" -> RuleDrg
+        table == "icd9" -> HitbRuleIcd9
+        table == "icd10" -> HitbRuleIcd10
+        table == "mdc" -> HitbRuleMdc
+        table == "adrg" -> HitbRuleAdrg
+        table == "drg" -> HitbRuleDrg
       end
     code = "%" <> code <> "%"
     result = from(w in tab, where: like(w.code, ^code) or like(w.name, ^code))
       |> limit([w], 10)
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
-      |> Repo.all
+      |> HitbRepo.all
     query = from w in tab, where: like(w.code, ^code) or like(w.name, ^code), select: count(w.id)
-    count = hd(Repo.all(query))
-    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 10)
+    count = hd(HitbRepo.all(query))
+    [page_num, page_list, _] = Page.page_list(page, count, 10)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -227,7 +236,7 @@ defmodule Library.RuleService do
         year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
         true -> from(w in tab)
       end
-    [lib_wt4, repo] = if(server_type == "server")do [LibWt4, Repo] else [Block.Library.LibWt4, Block.Repo]end
+    [lib_wt4, repo] = if(server_type == "server")do [HitbLibWt4, HitbRepo] else [BlockLibWt4, BlockRepo]end
     query = if(type != "" and tab == lib_wt4)do query|>where([w], w.type == ^type) else query end
     query =
       if(type != "" and tab != lib_wt4)do
@@ -241,7 +250,7 @@ defmodule Library.RuleService do
       end
     num = select(query, [w], count(w.id))
     count = hd(repo.all(num, [timeout: 1500000]))
-    skip = Hitb.Page.skip(page, rows)
+    skip = Page.skip(page, rows)
     query = if(rows == 0)do query else order_by(query, [w], asc: w.code)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = repo.all(query)
     list =
@@ -261,7 +270,7 @@ defmodule Library.RuleService do
             _ -> List.first(i)|>Enum.sort
           end
       end
-    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
   end
 
@@ -303,18 +312,18 @@ defmodule Library.RuleService do
           |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
       end
     #计数
-    repo = if(server_type == "server")do Repo else Block.Repo end
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
     count = query
       |>select([p], count(p.id))
       |>repo.all
       |>hd
 
-    skip = Hitb.Page.skip(page, rows)
+    skip = Page.skip(page, rows)
     #查询
     query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
     result = query
       |>repo.all
-    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     list = []
     [result, list, page_list, page_num, count_page, type]
   end
@@ -323,7 +332,7 @@ defmodule Library.RuleService do
     list =
       cond do
         tab_type == "中成药" ->
-          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :medicine_type)))
+          i = HitbRepo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :medicine_type)))
             |>Enum.reject(fn x -> x == nil end)
           case i do
             [] -> []
@@ -342,25 +351,24 @@ defmodule Library.RuleService do
         true ->
           from(p in tab)
       end
-    repo = if(server_type == "server")do Repo else Block.Repo end
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
     count = query
       |>select([p], count(p.id))
       |>repo.all
       |>hd
     # count = Repo.all(from p in tab, select: count(p.id)) |>hd
-    skip = Hitb.Page.skip(page, rows)
+    skip = Page.skip(page, rows)
     query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
     result = query
       |>repo.all
-    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
   end
   defp ruleEnglish(type, tab_type, tab, page, rows, server_type) do
-    IO.inspect "000000000000000000"
     list =
       cond do
         tab_type == "西药" ->
-          i = Repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :dosage_form)))
+          i = HitbRepo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :dosage_form)))
             |>Enum.reject(fn x -> x == nil end)
           case i do
             [] -> []
@@ -375,17 +383,17 @@ defmodule Library.RuleService do
       true ->
         from(p in tab)
     end
-    repo = if(server_type == "server")do Repo else Block.Repo end
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
     count = query
       |>select([p], count(p.id))
       |>repo.all
       |>hd
     # count = Repo.all(from p in tab, select: count(p.id)) |>hd
-    skip = Hitb.Page.skip(page, rows)
+    skip = Page.skip(page, rows)
     query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
     result = query
       |>repo.all
-    [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows)
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
   end
 end

@@ -4,11 +4,28 @@ defmodule Block.P2pClientHandler do
   Responsible for keeping the block chain in sync.
   """
   require Logger
-  import Ecto.Query
-  alias Block.PeerRepository
+  # import Ecto.Query
+  # alias Block.PeerRepository
+  alias Block.AccountRepository
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
   alias Block.OtherSyncService
+  alias Block.P2pSessionManager
+  alias Block.TransactionRepository
+  alias Block.Stat.StatOrg, as: BlockStatOrg
+  alias Block.Edit.Cda, as: BlockCda
+  alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
+  alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
+  alias Block.Library.RuleMdc, as: BlockRuleMdc
+  alias Block.Library.RuleAdrg, as: BlockRuleAdrg
+  alias Block.Library.RuleDrg, as: BlockRuleDrg
+  alias Block.Library.RuleIcd9, as: BlockRuleIcd9
+  alias Block.Library.RuleIcd10, as: BlockRuleIcd10
+  alias Block.Library.LibWt4, as: BlockLibWt4
+  alias Block.Library.Wt4, as: BlockWt4
+
+
+
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
@@ -80,7 +97,7 @@ defmodule Block.P2pClientHandler do
 
   def handle_reply("p2p", _ref, %{"response" => %{"type" => @connection_error}} = payload, _transport, state) do
     Logger.info("connection to server failed...")
-    Block.P2pSessionManager.terminate_session(self())
+    P2pSessionManager.terminate_session(self())
     {:ok, state}
   end
 
@@ -90,28 +107,28 @@ defmodule Block.P2pClientHandler do
     response = payload["response"]["data"]
     case type do
       "get_all_accounts" ->
-        usernames = Block.AccountRepository.get_all_usernames()
+        usernames = AccountRepository.get_all_usernames()
         response
         |> Enum.reject(fn x -> x["username"] in usernames end)
-        |> Enum.each(fn x -> Block.AccountRepository.insert_account(x) end)
+        |> Enum.each(fn x -> AccountRepository.insert_account(x) end)
         GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
       "get_latest_block" ->
-        if(Block.BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(Block.BlockService.get_latest_block, :timestamp))do
+        if(BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(BlockService.get_latest_block, :timestamp))do
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
         else
           GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
         end
       "get_all_blocks" ->
-        block_hashs = Block.BlockRepository.get_all_block_hashs
+        block_hashs = BlockRepository.get_all_block_hashs
         response
         |> Enum.reject(fn x -> x["hash"] in block_hashs end)
-        |> Enum.each(fn x -> Block.BlockRepository.insert_block(x) end)
+        |> Enum.each(fn x -> BlockRepository.insert_block(x) end)
         GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
       "query_all_transactions" ->
-        transactios_id = Block.TransactionRepository.get_all_transactions_id()
+        transactios_id = TransactionRepository.get_all_transactions_id()
         response
         |> Enum.reject(fn x -> x["transaction_id"] in transactios_id end)
-        |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
+        |> Enum.each(fn x -> TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync",
           %{
             # statorg_hash: OtherSyncService.get_latest_statorg_hash(),
@@ -132,41 +149,41 @@ defmodule Block.P2pClientHandler do
             Enum.each(Map.get(response, k), fn x ->
               case k do
                 "statorg_hash" ->
-                  %Block.Stat.StatOrg{}
-                  |>Block.Stat.StatOrg.changeset(x)
+                  %BlockStatOrg{}
+                  |>BlockStatOrg.changeset(x)
                 "cda_hash" ->
-                  %Block.Edit.Cda{}
-                  |>Block.Edit.Cda.changeset(x)
+                  %BlockCda{}
+                  |>BlockCda.changeset(x)
                 "ruleadrg_hash" ->
-                  %Block.Library.RuleAdrg{}
-                  |>Block.Library.RuleAdrg.changeset(x)
+                  %BlockRuleAdrg{}
+                  |>BlockRuleAdrg.changeset(x)
                 "cmp_hash" ->
-                  %Block.Library.ChineseMedicinePatent{}
-                  |>Block.Library.ChineseMedicinePatent.changeset(x)
+                  %BlockChineseMedicinePatent{}
+                  |>BlockChineseMedicinePatent.changeset(x)
                 "cm_hash" ->
-                  %Block.Library.ChineseMedicine{}
-                  |>Block.Library.ChineseMedicine.changeset(x)
+                  %BlockChineseMedicine{}
+                  |>BlockChineseMedicine.changeset(x)
                 "ruledrg_hash" ->
-                  %Block.Library.RuleDrg{}
-                  |>Block.Library.RuleDrg.changeset(x)
+                  %BlockRuleDrg{}
+                  |>BlockRuleDrg.changeset(x)
                 "ruleicd9_hash" ->
-                  %Block.Library.RuleIcd9{}
-                  |>Block.Library.RuleIcd9.changeset(x)
+                  %BlockRuleIcd9{}
+                  |>BlockRuleIcd9.changeset(x)
                 "ruleicd10_hash" ->
-                  %Block.Library.RuleIcd10{}
-                  |>Block.Library.RuleIcd10.changeset(x)
+                  %BlockRuleIcd10{}
+                  |>BlockRuleIcd10.changeset(x)
                 "rulemdc_hash" ->
-                  %Block.Library.RuleMdc{}
-                  |>Block.Library.RuleMdc.changeset(x)
+                  %BlockRuleMdc{}
+                  |>BlockRuleMdc.changeset(x)
                 "libwt4_hash" ->
-                  %Block.Library.LibWt4{}
-                  |>Block.Library.LibWt4.changeset(x)
+                  %BlockLibWt4{}
+                  |>BlockLibWt4.changeset(x)
                 "ruleadrg_hash" ->
-                  %Block.Library.RuleAdrg{}
-                  |>Block.Library.RuleAdrg.changeset(x)
+                  %BlockRuleAdrg{}
+                  |>BlockRuleAdrg.changeset(x)
                 "wt4_hash" ->
-                  %Block.Library.Wt4{}
-                  |>Block.Library.Wt4.changeset(x)
+                  %BlockWt4{}
+                  |>BlockWt4.changeset(x)
               end
               |>Block.Repo.insert
             end)

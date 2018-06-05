@@ -1,5 +1,6 @@
 defmodule Block.BlockService do
   require Logger
+  alias Block.BlockRepository
   @moduledoc """
   Operations for blocks
   TODO: refactor :ets work into its own module
@@ -21,7 +22,7 @@ defmodule Block.BlockService do
       if (remote_latest_block.previousHash == local_latest_block.hash) do
         add_block(remote_latest_block)
       else
-        Block.BlockRepository.replace_chain(remote_block_chain, remote_latest_block)
+        BlockRepository.replace_chain(remote_block_chain, remote_latest_block)
       end
     end
   end
@@ -59,14 +60,14 @@ defmodule Block.BlockService do
     latest_block = get_latest_block()
     latest_block = if(latest_block)do latest_block else %{index: 0, hash: ""} end
     if is_block_valid(block, latest_block) do
-      Block.BlockRepository.insert_block(block)
+      BlockRepository.insert_block(block)
     end
   end
 
   def get_latest_block() do
     case :ets.lookup(:latest_block, :latest) do
       [] ->
-        Block.BlockRepository.get_latest_block()
+        BlockRepository.get_latest_block()
     list ->
       list |> hd |> elem(1)
     end

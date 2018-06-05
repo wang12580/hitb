@@ -1,4 +1,7 @@
 defmodule Block.AccountService do
+  alias Block.AccountRepository
+  alias Block.BlockService
+  alias Block.TransactionService
   @moduledoc """
   Documentation for Account.
   """
@@ -7,7 +10,7 @@ defmodule Block.AccountService do
   end
 
   def newAccount(account) do
-    usernames = Block.AccountRepository.get_all_usernames
+    usernames = AccountRepository.get_all_usernames
     if account.username in usernames do
       false
     else
@@ -18,16 +21,16 @@ defmodule Block.AccountService do
         case index do
           nil -> [0, 0]
           [] -> [0, 0]
-          _ -> [hd(index) + 1, Block.BlockService.get_latest_block().index]
+          _ -> [hd(index) + 1, BlockService.get_latest_block().index]
         end
       account = %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: nil, balance: account.balance, u_balance: 0, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block_index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block_index)}
-      Block.AccountRepository.insert_account(account)
+      AccountRepository.insert_account(account)
       account
     end
   end
 
   def getAddressByPublicKey(publicKey) do
-    account = Block.AccountRepository.get_account_by_publicKey(publicKey)
+    account = AccountRepository.get_account_by_publicKey(publicKey)
     case account do
       nil -> nil
       [] -> nil
@@ -36,7 +39,7 @@ defmodule Block.AccountService do
   end
 
   def getAccountByPublicKey(publicKey) do
-    account = Block.AccountRepository.get_account_by_publicKey(publicKey)
+    account = AccountRepository.get_account_by_publicKey(publicKey)
     case account do
       nil -> nil
       [] -> nil
@@ -45,7 +48,7 @@ defmodule Block.AccountService do
   end
 
   def getAddressByAddress(address) do
-    account = Block.AccountRepository.get_account_by_address(address)
+    account = AccountRepository.get_account_by_address(address)
     case account do
       [] -> nil
       _ -> account.address
@@ -53,7 +56,7 @@ defmodule Block.AccountService do
   end
 
   def getAccountByAddress(address) do
-    account = Block.AccountRepository.get_account_by_address(address)
+    account = AccountRepository.get_account_by_address(address)
     case account do
       [] -> nil
       _ -> Map.drop(account, [:__meta__, :__struct__])
@@ -69,8 +72,7 @@ defmodule Block.AccountService do
   end
 
   def getAccount(username) do
-    IO.inspect "++++++++++++++++"
-    Block.AccountRepository.get_account(username)
+    AccountRepository.get_account(username)
   end
 
   def delAccount(by, value) do
@@ -80,12 +82,11 @@ defmodule Block.AccountService do
          "byPublicKey" -> getAccountByPublicKey(value)
          "byAddress" -> getAddressByAddress(value)
       end
-    # IO.inspect
-    Block.AccountRepository.delete_account(account)
+    AccountRepository.delete_account(account)
   end
 
   def getBalance(username) do
-    account = Block.AccountRepository.get_account(username)
+    account = AccountRepository.get_account(username)
     case account do
       [] -> 0.0
       _ -> account.balance
@@ -93,7 +94,7 @@ defmodule Block.AccountService do
   end
 
   def getuBalance(username) do
-    account = Block.AccountRepository.get_account(username)
+    account = AccountRepository.get_account(username)
     case account do
       [] -> 0.0
       _ -> account.balance
@@ -101,7 +102,7 @@ defmodule Block.AccountService do
   end
 
   def getPublickey(username) do
-    account = Block.AccountRepository.get_account(username)
+    account = AccountRepository.get_account(username)
     case account do
       [] -> nil
       _ -> account.publicKey
@@ -135,16 +136,16 @@ defmodule Block.AccountService do
       |> Base.encode64|> regex
     account = getAccount(username)
     account = %{account | :secondPublicKey => secondPublicKey}
-    case Block.AccountRepository.update_secondPublicKey(account) do
+    case AccountRepository.update_secondPublicKey(account) do
       {_, :ok} ->
-        latest_block = Block.BlockService.get_latest_block()
+        latest_block = BlockService.get_latest_block()
         tran = %{
-          id: Block.TransactionService.generateId,
+          transaction_id: TransactionService.generateId,
           height: latest_block.index,
           blockId: to_string(latest_block.index),
           type: 5,
           timestamp: :os.system_time(:seconds),
-          datetime: Block.TransactionService.generateDateTime,
+          datetime: TransactionService.generateDateTime,
           senderPublicKey: account.publicKey,
           requesterPublicKey: "",
           senderId: account.index,
@@ -156,8 +157,8 @@ defmodule Block.AccountService do
           args: {},
           asset: %{},
           message: "设置二级密码"}
-          Block.TransactionRepository.insert_transaction(tran)
-          Block.AccountRepository.insert_account(Map.merge(account, %{balance: account.balance - 5}))
+          TransactionRepository.insert_transaction(tran)
+          AccountRepository.insert_account(Map.merge(account, %{balance: account.balance - 5}))
         [true, tran.id]
       _ ->
         [false, []]

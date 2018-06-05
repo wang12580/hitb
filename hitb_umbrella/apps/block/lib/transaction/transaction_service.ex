@@ -1,5 +1,8 @@
 defmodule Block.TransactionService do
   alias Block.AccountService
+  alias Block.AccountRepository
+  alias Block.BlockService
+  alias Block.TransactionRepository
 
   def hello do
     :transaction
@@ -7,7 +10,7 @@ defmodule Block.TransactionService do
 
   def newTransaction(transaction) do
     transaction = Map.merge(%{fee: 0, type: 1, id: generateId()}, transaction)
-    latest_block = Block.BlockService.get_latest_block()
+    latest_block = BlockService.get_latest_block()
     sender = AccountService.getAccountByPublicKey(transaction.publicKey)
     case sender do
       nil -> [:error, nil, ""]
@@ -19,7 +22,7 @@ defmodule Block.TransactionService do
         blockId: to_string(latest_block.hash),
         type: transaction.type,
         timestamp: :os.system_time(:seconds),
-        datetime: Block.TransactionService.generateDateTime,
+        datetime: TransactionService.generateDateTime,
         senderPublicKey: sender.publicKey,
         requesterPublicKey: sender.publicKey,
         senderId: sender.index,
@@ -98,11 +101,11 @@ defmodule Block.TransactionService do
           true ->
             [:error, nil, "交易失败,费用不足"]
           false ->
-            Block.TransactionRepository.insert_transaction(insert_tran)
+            TransactionRepository.insert_transaction(insert_tran)
             sender = %{sender | :balance => sender.balance - transaction.amount - transaction.fee}
-            Block.AccountRepository.insert_account(sender)
+            AccountRepository.insert_account(sender)
             recipient = %{recipient | :balance => sender.balance + transaction.amount}
-            Block.AccountRepository.insert_account(recipient)
+            AccountRepository.insert_account(recipient)
             [:ok, %{insert_tran | :args => Tuple.to_list(insert_tran.args)}, "交易成功"]
         end
       false ->

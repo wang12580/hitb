@@ -3,6 +3,9 @@ defmodule BlockWeb.PeerController do
   plug BlockWeb.Access
   alias Hitb
   alias Block.PeerService
+  alias Block.PeerRepository
+  alias Block.P2pSessionManager
+  alias Block.ErrorAlreadyConnected
 
   @moduledoc """
     Functionality for managing peers
@@ -10,9 +13,9 @@ defmodule BlockWeb.PeerController do
 
   def add_peer(conn, %{"peer_data" => peer_data}) do
     %{"host" => host, "port" => port} = peer_data
-    result = Block.P2pSessionManager.connect(host, port)
+    result = P2pSessionManager.connect(host, port)
     if result != :ok do
-      raise Block.ErrorAlreadyConnected
+      raise ErrorAlreadyConnected
     else
       PeerService.newPeer(host, port)
       json(conn, %{result: [host <> ":" <> port <> "节点连接成功"]})
@@ -20,7 +23,7 @@ defmodule BlockWeb.PeerController do
   end
 
   def get_all_peers(conn, _) do
-    peers = Block.PeerRepository.get_all_peers()
+    peers = PeerRepository.get_all_peers()
     peers = Enum.map(peers, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)

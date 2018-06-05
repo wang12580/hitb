@@ -7,11 +7,12 @@ defmodule BlockWeb.PageController do
   alias Block
   alias Share
   alias Token
+  alias BlockWeb.Login
 
   def index(conn, _params) do
-    login = BlockWeb.Login.is_login(conn)
+    login = Login.is_login(conn)
     if(login)do
-      [conn, user] = BlockWeb.Login.user(conn)
+      [conn, user] = Login.user(conn)
       render conn, "index.html", user: user
     else
       redirect conn, to: "/block/login"
@@ -32,9 +33,9 @@ defmodule BlockWeb.PageController do
 
   def block(conn, _params) do
     %{"page" => page} = Map.merge(%{ "page" => "" }, conn.params)
-    login = BlockWeb.Login.is_login(conn)
+    login = Login.is_login(conn)
     if(login)do
-      [conn, user] = BlockWeb.Login.user(conn)
+      [conn, user] = Login.user(conn)
       render conn, "block.html", user: user, page: page
     else
       redirect conn, to: "/block/login"
@@ -42,9 +43,9 @@ defmodule BlockWeb.PageController do
   end
 
   def peer(conn, _params) do
-    login = BlockWeb.Login.is_login(conn)
+    login = Login.is_login(conn)
     if(login)do
-      [conn, user] = BlockWeb.Login.user(conn)
+      [conn, user] = Login.user(conn)
       render conn, "peers.html", user: user
     else
       redirect conn, to: "/block/login"
@@ -57,9 +58,9 @@ defmodule BlockWeb.PageController do
   # 用户信息
   def account(conn,  _params) do
     %{"page" => page} = Map.merge(%{ "page" => "" }, conn.params)
-    login = BlockWeb.Login.is_login(conn)
+    login = Login.is_login(conn)
     if(login)do
-      [conn, user] = BlockWeb.Login.user(conn)
+      [conn, user] = Login.user(conn)
       render conn, "account.html", user: user, page: page
     else
       redirect conn, to: "/block/login"
@@ -68,7 +69,7 @@ defmodule BlockWeb.PageController do
   end
 
   def logout(conn, _params) do
-    conn = BlockWeb.Login.logout(conn)
+    conn = Login.logout(conn)
     redirect conn, to: "/block/login"
   end
 end

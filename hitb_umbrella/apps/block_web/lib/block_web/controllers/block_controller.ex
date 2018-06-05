@@ -2,23 +2,27 @@ defmodule BlockWeb.BlockController do
   use BlockWeb, :controller
   plug BlockWeb.Access
   alias Block
+  alias BlockWeb.Login
+  alias Block.BlockService
+  alias Block.BlockRepository
+  alias Block.TransactionRepository
   alias Repos
   @moduledoc """
     Functionality related to blocks in the block chain
   """
 
   def add_block(conn, payload) do
-    [conn, user] = BlockWeb.Login.user(conn)
-    block = Block.BlockService.create_next_block(payload["data"], user.username)
-    Block.BlockService.add_block(block)
+    [conn, user] = Login.user(conn)
+    block = BlockService.create_next_block(payload["data"], user.username)
+    BlockService.add_block(block)
     json(conn, %{})
   end
 
   def get_all_blocks(conn, _) do
     all_blocks =
-    Block.BlockRepository.get_all_blocks()
+    BlockRepository.get_all_blocks()
       |>Enum.map(fn x ->
-          Map.put(x, :transactions, length(Block.TransactionRepository.get_transactions_by_blockIndex(x.index)))
+          Map.put(x, :transactions, length(TransactionRepository.get_transactions_by_blockIndex(x.index)))
         end)
     all_blocks = Enum.map(all_blocks, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
@@ -27,12 +31,12 @@ defmodule BlockWeb.BlockController do
   end
 
   def getBlock(conn, %{"index" => index}) do
-    block = Block.BlockRepository.get_block(index)
+    block = BlockRepository.get_block(index)
     json(conn, %{block: block})
   end
 
   def getBlockByHash(conn, %{"hash" => hash}) do
-    block = Block.BlockRepository.get_block_by_hash(hash)
+    block = BlockRepository.get_block_by_hash(hash)
     json(conn, %{block: block})
   end
 
@@ -45,7 +49,7 @@ defmodule BlockWeb.BlockController do
   end
 
   def getHeight(conn, _) do
-    height = Block.BlockRepository.get_all_blocks() |> List.last |> Map.get(:index)
+    height = BlockRepository.get_all_blocks() |> List.last |> Map.get(:index)
     json(conn, %{height: height})
   end
 

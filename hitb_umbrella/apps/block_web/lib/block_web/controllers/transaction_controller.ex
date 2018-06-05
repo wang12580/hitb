@@ -3,13 +3,15 @@ defmodule BlockWeb.TransactionController do
   plug BlockWeb.Access
   alias Block
   alias Repos
+  alias Block.BlockRepository
   alias Block.TransactionService
+  alias Block.TransactionRepository
   @moduledoc """
     Functionality related to blocks in the block chain
   """
 
   def getTransactions(conn, _) do
-    transactions = Block.TransactionRepository.get_all_transactions
+    transactions = TransactionRepository.get_all_transactions
     transactions = Enum.map(transactions, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -17,7 +19,7 @@ defmodule BlockWeb.TransactionController do
   end
 
   def getTransaction(conn, %{"id" => id}) do
-    transaction = Block.TransactionRepository.get_transactions_by_id(id)
+    transaction =TransactionRepository.get_transactions_by_id(id)
     json conn, %{data: transaction}
   end
 
@@ -38,15 +40,15 @@ defmodule BlockWeb.TransactionController do
   end
 
   def getTransactionsByBlockHeight(conn, %{"height" => height}) do
-    transaction = Block.TransactionRepository.get_transactions_by_blockIndex(height)
+    transaction = TransactionRepository.get_transactions_by_blockIndex(height)
     json conn, %{data: transaction}
   end
 
   def getTransactionsByBlockHash(conn, %{"hash" => hash}) do
-    block = Block.BlockRepository.get_block_by_hash(hash)
+    block = BlockRepository.get_block_by_hash(hash)
     case block do
       [] -> json conn, %{data: []}
-      _ -> transaction = Block.TransactionRepository.get_transactions_by_blockIndex(block.index)
+      _ -> transaction = TransactionRepository.get_transactions_by_blockIndex(block.index)
            json conn, %{data: transaction}
     end
   end
