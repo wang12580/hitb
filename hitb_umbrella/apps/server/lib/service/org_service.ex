@@ -2,9 +2,10 @@ defmodule Server.OrgService do
   import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Server.Org
+  alias Hitb.Page
 
   def list_org(name, page, num) do
-    skip = Hitb.Page.skip(page, 15)
+    skip = Page.skip(page, 15)
     query = from(w in Org)
     name = "%" <> name <> "%"
     case name do
@@ -20,7 +21,7 @@ defmodule Server.OrgService do
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
     result = query|>Repo.all
-    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
+    [page_num, page_list, _] = Page.page_list(page, count, 15)
     %{org: result, page_num: page_num, page_list: page_list}
   end
 

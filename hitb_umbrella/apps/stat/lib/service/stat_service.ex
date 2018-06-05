@@ -1,12 +1,14 @@
 defmodule Stat.StatService do
   alias Stat.Key
   alias Stat.Query
-
+  alias Stat.Convert
+  alias Hitb.File
+  alias Stat.Chart
   def stat_json(page, page_type, type, tool_type, org, time, drg, order, order_type, username) do
     #获取分析结果
     [stat, list, tool, page_list, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", "server")
     #转换为双层数组
-    stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
+    stat = [key, cnkey] ++ Convert.map2list(stat, key)
     %{stat: stat, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
@@ -20,7 +22,7 @@ defmodule Stat.StatService do
           str = Enum.join(x, ",")
           acc <> str <> "\n"
         end)
-    Hitb.File.write(System.user_home() <> "/download/", "stat.csv", str)
+    File.write(System.user_home() <> "/download/", "stat.csv", str)
   end
 
   def stat_info(type, tool_type, drg, page_type, username) do
@@ -29,7 +31,7 @@ defmodule Stat.StatService do
     key = if(is_list(key) and key != [])do ["info_type", "org", "time"] ++ key else Key.key(username, drg, type, tool_type, page_type) end
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end)
     #获取分析
-    stat = Stat.Query.info(username, 13)
+    stat = Query.info(username, 13)
     suggest =
       if (stat != [[], []]) do
         Enum.map(List.delete_at(stat, 0), fn x ->
@@ -64,7 +66,7 @@ defmodule Stat.StatService do
     stat =
       case stat do
         [[], []] -> []
-        _ -> [cnkey] ++ Stat.Convert.map2list(stat, key)
+        _ -> [cnkey] ++ Convert.map2list(stat, key)
       end
     %{stat: stat, suggest: suggest, key: key, cnkey: cnkey}
   end
@@ -81,9 +83,9 @@ defmodule Stat.StatService do
       end
     #获取分析结果
     # IO.inspect Stat.Query.info(username, 13)
-    stat_info = Stat.Convert.map(Stat.Query.info(username, 13), key)
+    stat_info = Convert.map(Query.info(username, 13), key)
     # IO.inspect stat_info
-    Stat.Chart.chart(stat_info, chart_type)
+    Chart.chart(stat_info, chart_type)
   end
 
   #对比页新增对比
