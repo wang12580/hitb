@@ -7,6 +7,7 @@ defmodule Block.P2pClientHandler do
   # import Ecto.Query
   # alias Block.PeerRepository
   alias Block.AccountRepository
+  alias Block.BlockService
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
   alias Block.OtherSyncService
@@ -131,7 +132,7 @@ defmodule Block.P2pClientHandler do
         |> Enum.each(fn x -> TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync",
           %{
-            # statorg_hash: OtherSyncService.get_latest_statorg_hash(),
+            statorg_hash: OtherSyncService.get_latest_statorg_hash(),
             cda_hash: OtherSyncService.get_latest_cda_hash(),
             ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(),
             cmp_hash: OtherSyncService.get_latest_cmp_hash(),
@@ -145,7 +146,6 @@ defmodule Block.P2pClientHandler do
       "other_sync" ->
         Map.keys(response)
         |>Enum.each(fn k ->
-            # IO.inspect Map.get(response, k)
             Enum.each(Map.get(response, k), fn x ->
               case k do
                 "statorg_hash" ->
