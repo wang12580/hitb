@@ -3,6 +3,7 @@ defmodule Stat.ContrastService do
   alias Stat.Key
   alias Stat.Query
   alias Stat.Chart
+  alias Stat.Convert
 
   def contrast(page, page_type, type, tool_type, org, time, drg, order, order_type, username) do
     #获取页面key
@@ -14,7 +15,7 @@ defmodule Stat.ContrastService do
     statx = if(statx == nil)do [] else statx end
     staty = if(staty)do staty else key end
     #生成分析结果
-    stat = [cnkey] ++ Stat.Convert.map2list(statx, staty)
+    stat = [cnkey] ++ Convert.map2list(statx, staty)
     #存储url
     Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
     #返回路径
@@ -99,7 +100,7 @@ defmodule Stat.ContrastService do
     #取缓存
     comx = Hitb.ets_get(:stat_drg, "comx_" <> username)
     comx = if(comx)do comx else [] end
-    stat = comx|>Stat.Convert.map(key)
+    stat = comx|>Convert.map(key)
     #最终要对比值
     Chart.chart(stat, chart_type)
   end

@@ -2,14 +2,18 @@ defmodule Stat.ClientService do
   import Ecto.Query
   alias Hitb.Repo
   alias Stat.Query
-  alias Hitb.Stat.ClientStat
+  alias Stat.Convert
+  alias Stat.Key
+  alias Hitb.Stat.ClientStat, as: HitbClinetStat
+  alias Block.Stat.ClientStat, as: BlockClinetStat
+  alias Hitb.Time
 
   def stat_create(data, username) do
-    filename = Hitb.Time.stimehour_number <> "对比分析.csv"
-    case Repo.get_by(ClientStat, filename: filename, username: username) do
+    filename = Time.stimehour_number <> "对比分析.csv"
+    case Repo.get_by(HitbClinetStat, filename: filename, username: username) do
       nil ->
-        %ClientStat{}
-        |> ClientStat.changeset(%{data: data, username: username, filename: filename})
+        %HitbClinetStat{}
+        |> HitbClinetStat.changeset(%{data: data, username: username, filename: filename})
         |> Repo.insert
         %{success: true, filename: filename}
       _ ->
@@ -18,7 +22,7 @@ defmodule Stat.ClientService do
   end
 
   def stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows, server_type) do
-    clinet_stat = if(server_type == "server")do ClientStat else Block.Stat.ClientStat end
+    clinet_stat = if(server_type == "server")do HitbClinetStat else BlockClinetStat end
     files = Repo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
     if(page_type <> ".csv" in files)do
       stat = Repo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
@@ -48,14 +52,14 @@ defmodule Stat.ClientService do
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
       [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat", server_type)
-      stat = [key, cnkey] ++ Stat.Convert.map2list(stat, key)
+      stat = [key, cnkey] ++ Convert.map2list(stat, key)
       #存储在自定义之前最后一次url
       Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #计算客户端提示
       [clinet_stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download", server_type)
-      clinet_stat = [key, cnkey] ++ Stat.Convert.map2list(clinet_stat, key)
+      clinet_stat = [key, cnkey] ++ Convert.map2list(clinet_stat, key)
       header = Enum.at(clinet_stat, 1)
       clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
       num = clinet_stat|>Enum.map(fn x -> List.last(x) end)|>Enum.sum
@@ -78,7 +82,7 @@ defmodule Stat.ClientService do
             "机构绩效" -> [["机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效"], "二级菜单"]
             "统计分析" -> [["统计分析_病案统计", "统计分析_肿瘤统计"], "二级菜单"]
             "财务指标" -> [["财务指标_机构收入"], "二级菜单"]
-            "保存的对比分析" -> [Repo.all(from p in ClientStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq, "二级菜单"]
+            "保存的对比分析" -> [Repo.all(from p in HitbClinetStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq, "二级菜单"]
           end
         name in ["医疗质量_手术质量","医疗质量_负性事件","机构分析_基础分析", "机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效","统计分析_病案统计", "统计分析_肿瘤统计","财务指标_机构收入"] ->
           csv =
@@ -94,7 +98,7 @@ defmodule Stat.ClientService do
               "财务指标_机构收入" -> ["财务指标_机构收入_医疗收入", "财务指标_机构收入_医疗治疗收入", "财务指标_机构收入_管理收入", "财务指标_机构收入_耗材收入", "财务指标_机构收入_西药制品收入", "财务指标_机构收入_中药收入"]
             end
           data = Enum.map(csv, fn x ->
-                  tool = Stat.Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
+                  tool = Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
                   case length(tool) do
                     0 -> x <> ".csv"
                     _ -> Enum.map(tool, fn x2 -> x <> "_" <> x2 <> ".csv" end)
