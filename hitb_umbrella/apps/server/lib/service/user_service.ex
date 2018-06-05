@@ -96,30 +96,14 @@ defmodule Server.UserService do
         attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "type" => 2, "key" => []}, attrs)
         #调用block服务
         secret = generate_secret(username)
-        block_address =
-          case HTTPoison.request(:get, "http://127.0.0.1/block/api/newAccount?username=#{secret}") do
-            {:ok, result} ->
-              %{body: body} = result
-              case String.contains? body, "502 Bad Gateway" do
-                true -> false
-                _ ->
-                  body = Poison.decode!(body)
-                  if(body["success"])do
-                    body["user"]["address"]
-                  else
-                    false
-                  end
-              end
-            {:error, _} ->
-              false
-          end
+        block_address = AccountService.newAccount(%{username: username, balance: 0})
         case block_address do
           false ->
             attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "is_show" => false}, attrs)
             changeset = User.changeset(%User{}, attrs)
             {:error, changeset}
           _ ->
-            attrs = Map.merge(%{"block_address" => block_address}, attrs)
+            attrs = Map.merge(%{"block_address" => block_address.address}, attrs)
             %User{}
             |> User.changeset(attrs)
             |> Repo.insert()

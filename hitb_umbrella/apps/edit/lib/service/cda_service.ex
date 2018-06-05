@@ -1,31 +1,37 @@
 defmodule Edit.CdaService do
   # import Ecto
   import Ecto.Query
-  alias Hitb.Repo
-  alias Hitb.Edit.Cda
+  alias Hitb.Repo, as: HitbRepo
+  alias Block.Repo, as: BlockRepo
+  alias Hitb.Edit.Cda, as: HitbCda
+  alias Block.Edit.Cda, as: BlockCda
   alias Hitb.Edit.MyMould
   alias Hitb.Time
   alias Hitb.Server.User
 
   def cda_user() do
-    users = Repo.all(from p in Cda, select: p.username)|>:lists.usort
-    users2 = Repo.all(from p in User, where: p.is_show == false, select: p.username)
+    users = HitbRepo.all(from p in HitbCda, select: p.username)|>:lists.usort
+    users2 = HitbRepo.all(from p in User, where: p.is_show == false, select: p.username)
     users2 = if(users2)do users2 else [] end
     [users -- users2, "读取成功"]
   end
 
   def cda_files(username, server_type) do
-    IO.inspect server_type
-    case username do
-      "" ->
-        [Repo.all(from p in Cda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
+    case server_type do
+      "block" ->
+        [BlockRepo.all(from p in BlockCda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
       _ ->
-      [Repo.all(from p in Cda, where: p.username == ^username, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
+        case username do
+          "" ->
+            [HitbRepo.all(from p in HitbCda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
+          _ ->
+            [HitbRepo.all(from p in HitbCda, where: p.username == ^username, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
+        end
     end
   end
 
   def cda_file(filename, username) do
-    edit = Repo.get_by(Cda, username: username, name: filename)
+    edit = HitbRepo.get_by(HitbCda, username: username, name: filename)
     cond do
       edit == nil ->
         [[],["文件读取失败,无此文件"]]
@@ -54,45 +60,47 @@ defmodule Edit.CdaService do
   end
 
   defp myMoulds(file_name, file_username, content, doctype) do
-    mymould = Repo.get_by(Edit.MyMould, name: file_name, username: file_username)
+    mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
     if(mymould)do
       mymould
       |> MyMould.changeset(%{content: content})
-      |> Repo.update()
+      |> HitbRepo.update()
+      %{success: true, info: "保存成功"}
     else
       namea = doctype<>".cdh"
       body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true}
       %MyMould{}
       |> MyMould.changeset(body)
-      |> Repo.insert()
+      |> HitbRepo.insert()
+      %{success: true, info: "新建成功"}
     end
   end
 
   defp myCdas(file_name, file_username, content, doctype, username) do
-    cda = Repo.get_by(Cda, name: file_name, username: file_username)
+    cda = HitbRepo.get_by(HitbCda, name: file_name, username: file_username)
     if(cda)do
       cond do
         username == file_username ->
           cda
-          |>Cda.changeset(%{content: content})
-          |>Repo.update
+          |>HitbCda.changeset(%{content: content})
+          |>HitbRepo.update
           %{success: true, info: "保存成功"}
         true ->
           case cda.is_change do
             false -> %{success: false, info: "用户设置该文件不允许其他用户修改,请联系该文件拥有者"}
             true ->
               cda
-              |>Cda.changeset(%{content: content})
-              |>Repo.update
+              |>HitbCda.changeset(%{content: content})
+              |>HitbRepo.update
               %{success: true, info: "保存成功"}
           end
       end
     else
       namea = "#{doctype}_#{Time.stime_number}.cda"
       body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true}
-      %Cda{}
-      |> Cda.changeset(body)
-      |> Repo.insert()
+      %HitbCda{}
+      |> HitbCda.changeset(body)
+      |> HitbRepo.insert()
        %{success: true, info: "新建成功"}
     end
   end
