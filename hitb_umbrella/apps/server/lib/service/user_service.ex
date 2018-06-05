@@ -39,7 +39,12 @@ defmodule Server.UserService do
       _ ->
         case Bcrypt.checkpw(user.password, db_user.hashpw) do
           true ->
-            account = AccountService.getAccountByAddress(db_user.block_address)
+            account =
+              if(db_user.block_address == nil)do
+                %{publicKey: "", username: ""}
+              else
+                AccountService.getAccountByAddress()
+              end
             blockchain = %{address: db_user.block_address, publicKey: account.publicKey, secret: account.username}
             [true, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}]
           _ -> [false, %{login: false, username: user.username}]

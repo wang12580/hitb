@@ -11,7 +11,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.LibWt4
   alias Hitb.Library.ChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent
-  alias Hitb.Library.EnglishMedicine
+  alias Hitb.Library.WesternMedicine
   alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
@@ -104,7 +104,7 @@ defmodule Library.RuleService do
         tab_type == "中药" and server_type == "block" -> Block.Library.ChineseMedicine
         tab_type == "中成药" and server_type == "server"  -> ChineseMedicinePatent
         tab_type == "中成药" and server_type == "block" -> Block.Library.ChineseMedicinePatent
-        tab_type == "西药" and server_type == "server"  -> EnglishMedicine
+        tab_type == "西药" and server_type == "server"  -> WesternMedicine
         true -> if(server_type == "server")do LibWt4 else Block.Library.LibWt4 end
       end
     IO.inspect tab_type
