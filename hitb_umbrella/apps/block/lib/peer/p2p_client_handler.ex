@@ -4,6 +4,7 @@ defmodule Block.P2pClientHandler do
   Responsible for keeping the block chain in sync.
   """
   require Logger
+  import Ecto.Query
   alias Block.PeerRepository
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
@@ -111,23 +112,61 @@ defmodule Block.P2pClientHandler do
         response
         |> Enum.reject(fn x -> x["transaction_id"] in transactios_id end)
         |> Enum.each(fn x -> Block.TransactionRepository.insert_transaction(x) end)
-        GenSocketClient.push(transport, "p2p", "other_sync", %{cda_hash: OtherSyncService.get_latest_cda_hash(), ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(), cmp_hash: OtherSyncService.get_latest_cmp_hash(), cm_hash: OtherSyncService.get_latest_cm_hash(), ruledrg_hash: OtherSyncService.get_latest_ruledrg_hash(), ruleicd9_hash: OtherSyncService.get_latest_ruleicd9_hash(), ruleicd10_hash: OtherSyncService.get_latest_ruleicd10_hash(), rulemdc_hash: OtherSyncService.get_latest_rulemdc_hash(), libwt4_hash: OtherSyncService.get_latest_libwt4_hash(), wt4_hash: OtherSyncService.get_latest_wt4_hash()})
+        GenSocketClient.push(transport, "p2p", "other_sync",
+          %{
+            # statorg_hash: OtherSyncService.get_latest_statorg_hash(),
+            cda_hash: OtherSyncService.get_latest_cda_hash(),
+            ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(),
+            cmp_hash: OtherSyncService.get_latest_cmp_hash(),
+            cm_hash: OtherSyncService.get_latest_cm_hash(),
+            ruledrg_hash: OtherSyncService.get_latest_ruledrg_hash(),
+            ruleicd9_hash: OtherSyncService.get_latest_ruleicd9_hash(),
+            ruleicd10_hash: OtherSyncService.get_latest_ruleicd10_hash(),
+            rulemdc_hash: OtherSyncService.get_latest_rulemdc_hash(),
+            libwt4_hash: OtherSyncService.get_latest_libwt4_hash(),
+            wt4_hash: OtherSyncService.get_latest_wt4_hash()})
       "other_sync" ->
         Map.keys(response)
         |>Enum.each(fn k ->
+            # IO.inspect Map.get(response, k)
             Enum.each(Map.get(response, k), fn x ->
-              case x do
-                "cda_hash" -> %Block.Edit.Cda{}|>Block.Edit.Cda.changeset(x)
-                "ruleadrg_hash" -> %Block.Library.RuleAdrg{}|>Block.Library.RuleAdrg.changeset(x)
-                "cmp_hash" -> %Block.Library.ChineseMedicinePatent{}|>Block.Library.ChineseMedicinePatent.changeset(x)
-                "cm_hash" -> %Block.Library.ChineseMedicine{}|>Block.Library.ChineseMedicine.changeset(x)
-                "ruledrg_hash" -> %Block.Library.RuleDrg{}|>Block.Library.RuleDrg.changeset(x)
-                "ruleicd9_hash" -> %Block.Library.RuleIcd9{}|>Block.Library.RuleIcd9.changeset(x)
-                "ruleicd10_hash" -> %Block.Library.RuleIcd10{}|>Block.Library.RuleIcd10.changeset(x)
-                "rulemdc_hash" -> %Block.Library.RuleMdc{}|>Block.Library.RuleMdc.changeset(x)
-                "libwt4_hash" -> %Block.Library.LibWt4{}|>Block.Library.LibWt4.changeset(x)
-                "ruleadrg_hash" -> %Block.Library.RuleAdrg{}|>Block.Library.RuleAdrg.changeset(x)
-                "wt4_hash" -> %Block.Library.Wt4{}|>Block.Library.Wt4.changeset(x)
+              case k do
+                "statorg_hash" ->
+                  %Block.Stat.StatOrg{}
+                  |>Block.Stat.StatOrg.changeset(x)
+                "cda_hash" ->
+                  %Block.Edit.Cda{}
+                  |>Block.Edit.Cda.changeset(x)
+                "ruleadrg_hash" ->
+                  %Block.Library.RuleAdrg{}
+                  |>Block.Library.RuleAdrg.changeset(x)
+                "cmp_hash" ->
+                  %Block.Library.ChineseMedicinePatent{}
+                  |>Block.Library.ChineseMedicinePatent.changeset(x)
+                "cm_hash" ->
+                  %Block.Library.ChineseMedicine{}
+                  |>Block.Library.ChineseMedicine.changeset(x)
+                "ruledrg_hash" ->
+                  %Block.Library.RuleDrg{}
+                  |>Block.Library.RuleDrg.changeset(x)
+                "ruleicd9_hash" ->
+                  %Block.Library.RuleIcd9{}
+                  |>Block.Library.RuleIcd9.changeset(x)
+                "ruleicd10_hash" ->
+                  %Block.Library.RuleIcd10{}
+                  |>Block.Library.RuleIcd10.changeset(x)
+                "rulemdc_hash" ->
+                  %Block.Library.RuleMdc{}
+                  |>Block.Library.RuleMdc.changeset(x)
+                "libwt4_hash" ->
+                  %Block.Library.LibWt4{}
+                  |>Block.Library.LibWt4.changeset(x)
+                "ruleadrg_hash" ->
+                  %Block.Library.RuleAdrg{}
+                  |>Block.Library.RuleAdrg.changeset(x)
+                "wt4_hash" ->
+                  %Block.Library.Wt4{}
+                  |>Block.Library.Wt4.changeset(x)
               end
               |>Block.Repo.insert
             end)

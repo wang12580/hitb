@@ -2,6 +2,7 @@ defmodule HitbserverWeb.PageServerController do
   use HitbserverWeb, :controller
   alias Server.UserService
   alias Hitb.Province
+  # alias Hitb.Library.EnglishMedicine
   alias Hitb.File
   plug HitbserverWeb.Access
 
@@ -162,4 +163,17 @@ defmodule HitbserverWeb.PageServerController do
     json = Enum.map(skip..skip+num, fn x -> Enum.at(jsons, x) end)
     [json, skip, length(jsons)]
   end
+  # def test(conn, _params) do
+  #   path = "/home/hitb/桌面/未命名文件夹 2/西药 (复件).csv"
+  #   {:ok, arr} = File.read(path)
+  #   arrs = String.split(arr, "\n") -- [""]
+  #   Enum.each(arrs, fn x -> 
+  #     [first_level, second_level, third_level, zh_name, en_name, dosage_form, reimbursement_restrictions] = String.split(x, ",")
+  #     body = %{"first_level" => first_level, "second_level" => second_level, "third_level" => third_level, "zh_name" =>zh_name, "en_name" => en_name, "dosage_form" => dosage_form, "reimbursement_restrictions" => reimbursement_restrictions}
+  #     %EnglishMedicine{}
+  #     |> EnglishMedicine.changeset(body)
+  #     |> HItb.Repo.insert()
+  #   end)
+  #   json conn, %{}
+  # end
 end

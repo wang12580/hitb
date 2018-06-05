@@ -21,7 +21,7 @@
     <div class="ui divider"></div>
     <div class="ui menu" id="div_menu">
       <div class="item">
-        <button id="edit" class="ui labeled icon button"  v-on:click = "insert()" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="edit icon"></i>导入</button>
+        <button id="edit" class="ui labeled icon button"  v-on:click = "insert()" v-bind:class="{'ui disabled labeled icon button': tableTr === null}"><i class="redo icon"></i>导入</button>
       </div>
     </div>
     <div class="ui success message" id = "mes" style="display:none;">
@@ -37,12 +37,14 @@
         <tr>
           <th class="center aligned">表</th>
           <th class="center aligned">数量</th>
+          <th class="center aligned">最后更新时间</th>
         </tr>
       </thead>
       <tbody id="user_tbody">
-        <tr v-for="(item, index) in shareList" v-bind:key="index" :id ="item.key" v-on:click="myclick(item.key, false)" v-bind:class="{'active center aligned': tableTr === item.key, 'center aligned': true}">
+        <tr v-for="(item, index) in shareList" v-bind:key="index" :id ="item.key" v-on:click="myclick(item.key, false, item.val)" v-bind:class="{'active center aligned': tableTr === item.key, 'center aligned': true}">
           <td>{{item.key}}</td>
           <td>{{item.val}}</td>
+          <td>{{item.last}}</td>
         </tr>
       </tbody>
     </table>
@@ -72,16 +74,15 @@
             url: `/servers/get_share`,
             async: false,
             success: (data) => {
-              console.log(data);
               this.shareList = data
               // this.pageList = data.page_list
               // this.page = data.page_num
             }
           })
         },
-        myclick: function(value, bul) {
+        myclick: function(value, bul, num) {
           this.tableban = false
-          if (this.tableTr === value) {
+          if (this.tableTr === value || num == 0) {
             this.tableTr = null
           } else {
             this.tableTr = value
@@ -93,10 +94,6 @@
             url: `/servers/insert_share?table=${this.tableTr}`,
             async: false,
             success: (data) => {
-              console.log(data);
-              this.shareList = data
-              // this.pageList = data.page_list
-              // this.page = data.page_num
             }
           })
         },
