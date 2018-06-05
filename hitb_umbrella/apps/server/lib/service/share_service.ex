@@ -28,8 +28,8 @@ defmodule Server.ShareService do
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
-  
- 
+
+
 
   def share(type, file_name, username, content) do
     content =
@@ -108,12 +108,12 @@ defmodule Server.ShareService do
               end)
             "drg.csv" ->
               file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleＤrg, order_by: [desc: p.inserted_at], limit: 1)
+              latest = BlockRepo.all(from p in BlockRuleDrg, order_by: [desc: p.inserted_at], limit: 1)
               previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
               [drg, _list, _count, _page_list,_page_num] =  RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
               Enum.reduce(drg, previous_hash, fn x, acc ->
                 hash = hash("#{x.code}#{x.name}")
-                %BlockRuleＤrg{hash: hash, previous_hash: acc}
+                %BlockRuleDrg{hash: hash, previous_hash: acc}
                 |>Map.merge(Map.drop(x, [:id]))
                 |>BlockRepo.insert!
                 acc = hash
@@ -188,7 +188,7 @@ defmodule Server.ShareService do
     stat_org = BlockRepo.all(from p in BlockStatOrg, select: count(p.id))|>List.first
     mdc = BlockRepo.all(from p in BlockRuleMdc, select: count(p.id))|>List.first
     adrg = BlockRepo.all(from p in BlockRuleAdrg, select: count(p.id))|>List.first
-    drg = BlockRepo.all(from p in BlockRuleＤrg, select: count(p.id))|>List.first
+    drg = BlockRepo.all(from p in BlockRuleDrg, select: count(p.id))|>List.first
     icd9 = BlockRepo.all(from p in BlockRuleIcd9, select: count(p.id))|>List.first
     icd10 = BlockRepo.all(from p in BlockRuleIcd10, select: count(p.id))|>List.first
     chinese_medicine = BlockRepo.all(from p in BlockChineseMedicine, select: count(p.id))|>List.first
@@ -217,7 +217,7 @@ defmodule Server.ShareService do
     last_drg =
       case drg do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleＤrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> BlockRepo.all(from p in BlockRuleDrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
       end
     last_icd9 =
       case icd9 do
@@ -278,7 +278,7 @@ defmodule Server.ShareService do
             |>HitbRepo.insert
           end)
       "drg" ->
-        BlockRepo.all(from p in BlockRuleＤrg)
+        BlockRepo.all(from p in BlockRuleDrg)
         |>Enum.map(fn x ->
             %HitbRuleDrg{}
             |>HitbRuleDrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))

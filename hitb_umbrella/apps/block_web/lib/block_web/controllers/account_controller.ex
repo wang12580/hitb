@@ -3,13 +3,15 @@ defmodule BlockWeb.AccountController do
   plug BlockWeb.Access
   alias Hitb
   alias Block.AccountService
+  alias Block.AccountRepository
+  alias BlockWeb.Login
   @moduledoc """
     Functionality for managing peers
   """
 
   def openAccount(conn, _) do
     if(conn.params["username"])do
-      [conn, user] = BlockWeb.Login.login(conn, %{username: conn.params["username"]})
+      [conn, user] = Login.login(conn, %{username: conn.params["username"]})
       json(conn, %{login: true, user: user})
     else
       json(conn, %{login: false, user: %{}})
@@ -66,17 +68,17 @@ defmodule BlockWeb.AccountController do
   end
 
   def getAccount(conn, %{"username" => username}) do
-    account = Map.drop(Block.AccountRepository.get_account(username), [:__meta__, :__struct__])
+    account = Map.drop(AccountRepository.get_account(username), [:__meta__, :__struct__])
     json(conn, %{account: account})
   end
 
   def getAccountByPublicKey(conn, %{"publicKey" => publicKey}) do
-    account = Block.AccountRepository.get_account_by_publicKey(publicKey)
+    account = AccountRepository.get_account_by_publicKey(publicKey)
     json(conn, %{account: account})
   end
 
   def getAccountByAddress(conn, %{"address" => address}) do
-    account = Block.AccountRepository.get_account_by_address(address)
+    account = AccountRepository.get_account_by_address(address)
     json(conn, %{account: account})
   end
 
@@ -89,7 +91,7 @@ defmodule BlockWeb.AccountController do
           false ->
             json(conn, %{success: false, user: %{username: username}, info: "用户名重复"})
           _ ->
-            user = Block.AccountRepository.get_account(username)
+            user = AccountRepository.get_account(username)
             json(conn, %{success: true, user: user, info: "用户创建成功"})
         end
     end
@@ -97,13 +99,13 @@ defmodule BlockWeb.AccountController do
 
   def addSignature(conn, %{"username" => username, "password" => password}) do
     [success, id] = AccountService.addSignature(username, password)
-    [conn, _] = BlockWeb.Login.user(conn)
+    [conn, _] = Login.user(conn)
     json(conn, %{success:  success, transaction: id})
   end
 
   def getAccountsPublicKey(conn, %{"username" => username}) do
-    user = Block.AccountService.getAccount(username)
-    publicKeys = Block.AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
+    user = AccountService.getAccount(username)
+    publicKeys = AccountRepository.get_all_accounts() |> Enum.map(fn x -> x.publicKey end) |> List.delete(user.publicKey)
     json conn, %{publicKeys: publicKeys}
   end
 end

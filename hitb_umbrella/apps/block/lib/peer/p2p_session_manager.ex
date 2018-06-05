@@ -2,7 +2,7 @@ defmodule Block.P2pSessionManager do
   @moduledoc """
   Oversees clients for each p2p session, using them to send messages.
   """
-
+  alias Block.P2pClientHandler
   # @query_latest_block Repos.P2pMessage.query_latest_block
   # @query_all_blocks   Repos.P2pMessage.query_all_blocks
   # @update_block_chain Repos.P2pMessage.update_block_chain
@@ -19,7 +19,7 @@ defmodule Block.P2pSessionManager do
           end
         end
       end)
-    {:ok, pid} = Block.P2pClientHandler.start_link(host, port)
+    {:ok, pid} = P2pClientHandler.start_link(host, port)
     :ets.insert(:peers, {pid, %{host: host, port: port}})
     :ok
   end

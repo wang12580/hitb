@@ -11,6 +11,11 @@ defmodule BlockWeb.P2pChannel do
   alias Block.OtherSyncService
   @connection_error   Block.P2pMessage.connection_error
   @connection_success Block.P2pMessage.connection_success
+  alias Block.BlockService
+  alias Block.AccountRepository
+  alias Block.BlockRepository
+  alias Block.TransactionRepository
+  alias Block.P2pSessionManager
 
   def join(_topic, _payload, socket) do
     {:ok, socket}
@@ -22,25 +27,25 @@ defmodule BlockWeb.P2pChannel do
 
   def handle_in(@query_latest_block, _payload, socket) do
     Logger.info("sending latest block")
-    data = Block.BlockService.get_latest_block()|>send()
+    data = BlockService.get_latest_block()|>send()
     {:reply, {:ok, %{type: @query_latest_block, data: data}}, socket}
   end
 
   def handle_in(@query_all_accounts, _payload, socket) do
     Logger.info("sending all accounts")
-    data = Block.AccountRepository.get_all_accounts()|>Enum.map(fn x -> send(x) end)
+    data = AccountRepository.get_all_accounts()|>Enum.map(fn x -> send(x) end)
     {:reply, {:ok, %{type: @query_all_accounts, data: data}}, socket}
   end
 
   def handle_in(@query_all_blocks, _payload, socket) do
     Logger.info("sending all blocks")
-    data = Block.BlockRepository.get_all_blocks()|>Enum.map(fn x -> send(x) end)
+    data = BlockRepository.get_all_blocks()|>Enum.map(fn x -> send(x) end)
     {:reply, {:ok, %{type: @query_all_blocks, data: data}}, socket}
   end
 
   def handle_in(@query_all_transactions, _payload, socket) do
     Logger.info("sending all transactions")
-    data = Block.TransactionRepository.get_all_transactions()|>Enum.map(fn x -> send(x) end)
+    data = TransactionRepository.get_all_transactions()|>Enum.map(fn x -> send(x) end)
     {:reply, {:ok, %{type: @query_all_transactions, data: data}}, socket}
   end
 
@@ -56,7 +61,7 @@ defmodule BlockWeb.P2pChannel do
 
   def handle_in(@add_peer_request, payload, socket) do
     Logger.info("attempting to connect...")
-    result = Block.P2pSessionManager.connect(payload["host"], payload["port"])
+    result = P2pSessionManager.connect(payload["host"], payload["port"])
     if result != :ok do
       {:reply, {:ok, %{type: @connection_error}}, socket}
     else
