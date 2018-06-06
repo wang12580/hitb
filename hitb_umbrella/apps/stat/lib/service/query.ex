@@ -10,7 +10,7 @@ defmodule Stat.Query do
   alias Hitb.Stat.StatDrgHeal
 
   #自定义取数据库
-  def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type, server_type) do
+  def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type, _server_type) do
     #获取各种keys
     key = Key.key(username, drg, type, tool_type, page_type) #英文key
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end) #中文key

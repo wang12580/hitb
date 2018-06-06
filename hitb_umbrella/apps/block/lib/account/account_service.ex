@@ -2,6 +2,8 @@ defmodule Block.AccountService do
   alias Block.AccountRepository
   alias Block.BlockService
   alias Block.TransactionService
+  alias Block.TransactionRepository
+  alias Block.BlockRepository
   @moduledoc """
   Documentation for Account.
   """
@@ -16,7 +18,8 @@ defmodule Block.AccountService do
     else
       address = generateAddress(account.username)
       publicKey = generatePublickey(account.username)
-      index = accounts |> Enum.map(fn x -> x.index end)
+      blocks = BlockRepository.get_all_blocks
+      index = blocks |> Enum.map(fn x -> x.index end)
       [index, latest_block_index] =
         case index do
           nil -> [0, 0]

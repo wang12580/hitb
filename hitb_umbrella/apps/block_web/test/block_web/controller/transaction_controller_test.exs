@@ -28,7 +28,7 @@ defmodule BlockWeb.TransactionsControllerTest do
 
   test "POST /getTransactionsByBlockHeight", %{conn: conn} do
     conn = get conn, "/api/getTransactionsByBlockHeight", height: "12"
-    assert json_response(conn, 200)["data"] != []
+    assert json_response(conn, 200)["data"] == []
   end
   # test "POST /getTransactionsByBlockHash", %{conn: conn} do
   #   conn = get conn, "/api/getTransactionsByBlockHash", hash: "1231123"

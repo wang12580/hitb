@@ -7,7 +7,7 @@ defmodule Library.RuleServiceTest do
   end
 
   test "test rule_file" do
-    assert RuleService.rule_file('server') == ["mdc.csv", "adrg.csv", "drg.csv", "icd9.csv", "icd10.csv", "基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv", "中药.csv", "中成药.csv"]
+    assert RuleService.rule_file('server') == ["mdc.csv", "adrg.csv", "drg.csv", "icd9.csv", "icd10.csv", "基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv", "中药.csv", "中成药.csv", "西药.csv"]
   end
 
   test "test rule_client" do
