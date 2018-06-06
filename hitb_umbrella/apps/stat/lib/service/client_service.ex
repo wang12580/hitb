@@ -1,20 +1,23 @@
 defmodule Stat.ClientService do
   import Ecto.Query
-  alias Hitb.Repo
+  alias Hitb.Repo, as: HitbRepo
+  alias Block.Repo, as: BlockRepo
+  alias Block.ShareRecord
   alias Stat.Query
   alias Stat.Convert
   alias Stat.Key
+  alias Block.ShareRecord
   alias Hitb.Stat.ClientStat, as: HitbClinetStat
   alias Block.Stat.ClientStat, as: BlockClinetStat
   alias Hitb.Time
 
   def stat_create(data, username) do
     filename = Time.stimehour_number <> "对比分析.csv"
-    case Repo.get_by(HitbClinetStat, filename: filename, username: username) do
+    case HitbRepo.get_by(HitbClinetStat, filename: filename, username: username) do
       nil ->
         %HitbClinetStat{}
         |> HitbClinetStat.changeset(%{data: data, username: username, filename: filename})
-        |> Repo.insert
+        |> HitbRepo.insert
         %{success: true, filename: filename}
       _ ->
         %{success: false, filename: filename}
@@ -23,9 +26,9 @@ defmodule Stat.ClientService do
 
   def stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows, server_type) do
     clinet_stat = if(server_type == "server")do HitbClinetStat else BlockClinetStat end
-    files = Repo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
+    files = HitbRepo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
     if(page_type <> ".csv" in files)do
-      stat = Repo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
+      stat = HitbRepo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
       stat = Poison.decode!(stat.data)
       header = Enum.at(stat, 0)
       #求病历总数
@@ -70,41 +73,59 @@ defmodule Stat.ClientService do
     end
   end
 
-  def stat_file(name, username) do
+  def stat_file(name, username, server_type) do
     [data, menu] =
-      cond do
-        name == "" ->
-          [["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"], "一级菜单"]
-        name in ["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"] ->
-          case name do
-            "医疗质量" -> [["医疗质量_手术质量","医疗质量_负性事件"], "二级菜单"]
-            "机构分析" -> [["机构分析_基础分析"], "二级菜单"]
-            "机构绩效" -> [["机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效"], "二级菜单"]
-            "统计分析" -> [["统计分析_病案统计", "统计分析_肿瘤统计"], "二级菜单"]
-            "财务指标" -> [["财务指标_机构收入"], "二级菜单"]
-            "保存的对比分析" -> [Repo.all(from p in HitbClinetStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq, "二级菜单"]
+      case server_type do
+        "server" ->
+          cond do
+            name == "" ->
+              [["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"], "一级菜单"]
+            name in ["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"] ->
+              case name do
+                "医疗质量" -> [["医疗质量_手术质量","医疗质量_负性事件"], "二级菜单"]
+                "机构分析" -> [["机构分析_基础分析"], "二级菜单"]
+                "机构绩效" -> [["机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效"], "二级菜单"]
+                "统计分析" -> [["统计分析_病案统计", "统计分析_肿瘤统计"], "二级菜单"]
+                "财务指标" -> [["财务指标_机构收入"], "二级菜单"]
+                "保存的对比分析" -> [HitbRepo.all(from p in HitbClinetStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq, "二级菜单"]
+              end
+            name in ["医疗质量_手术质量","医疗质量_负性事件","机构分析_基础分析", "机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效","统计分析_病案统计", "统计分析_肿瘤统计","财务指标_机构收入"] ->
+              csv =
+                case name do
+                  "医疗质量_手术质量" -> ["医疗质量_手术质量_手术质量分析"]
+                  "医疗质量_负性事件" -> ["医疗质量_负性事件_压疮", "医疗质量_负性事件_护理", "医疗质量_负性事件_药物", "医疗质量_负性事件_输血"]
+                  "机构分析_基础分析" -> ["机构分析_基础分析"]
+                  "机构绩效_机构工作量" -> ["机构绩效_机构工作量_医疗检查工作量", "机构绩效_机构工作量_医疗治疗工作量", "机构绩效_机构工作量_医技工作量", "机构绩效_机构工作量_重症监护室工作量"]
+                  "机构绩效_机构效率" -> ["机构绩效_机构效率_床位指标"]
+                  "机构绩效_机构绩效" -> ["机构绩效_机构绩效_低风险组统计", "机构绩效_机构绩效_中低风险组统计", "机构绩效_机构绩效_中高风险组统计"]
+                  "统计分析_病案统计" -> ["统计分析_病案统计_DRG病案入组统计"]
+                  "统计分析_肿瘤统计" -> ["统计分析_肿瘤统计_分化统计", "统计分析_肿瘤统计_发病部分统计", "统计分析_肿瘤统计_肿瘤患者T0期统计", "统计分析_肿瘤统计_肿瘤患者N0期统计"]
+                  "财务指标_机构收入" -> ["财务指标_机构收入_医疗收入", "财务指标_机构收入_医疗治疗收入", "财务指标_机构收入_管理收入", "财务指标_机构收入_耗材收入", "财务指标_机构收入_西药制品收入", "财务指标_机构收入_中药收入"]
+                end
+              data = Enum.map(csv, fn x ->
+                      tool = Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
+                      case length(tool) do
+                        0 -> x <> ".csv"
+                        _ -> Enum.map(tool, fn x2 -> x <> "_" <> x2 <> ".csv" end)
+                      end
+                    end)|>List.flatten
+              [data, "三级菜单"]
           end
-        name in ["医疗质量_手术质量","医疗质量_负性事件","机构分析_基础分析", "机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效","统计分析_病案统计", "统计分析_肿瘤统计","财务指标_机构收入"] ->
-          csv =
-            case name do
-              "医疗质量_手术质量" -> ["医疗质量_手术质量_手术质量分析"]
-              "医疗质量_负性事件" -> ["医疗质量_负性事件_压疮", "医疗质量_负性事件_护理", "医疗质量_负性事件_药物", "医疗质量_负性事件_输血"]
-              "机构分析_基础分析" -> ["机构分析_基础分析"]
-              "机构绩效_机构工作量" -> ["机构绩效_机构工作量_医疗检查工作量", "机构绩效_机构工作量_医疗治疗工作量", "机构绩效_机构工作量_医技工作量", "机构绩效_机构工作量_重症监护室工作量"]
-              "机构绩效_机构效率" -> ["机构绩效_机构效率_床位指标"]
-              "机构绩效_机构绩效" -> ["机构绩效_机构绩效_低风险组统计", "机构绩效_机构绩效_中低风险组统计", "机构绩效_机构绩效_中高风险组统计"]
-              "统计分析_病案统计" -> ["统计分析_病案统计_DRG病案入组统计"]
-              "统计分析_肿瘤统计" -> ["统计分析_肿瘤统计_分化统计", "统计分析_肿瘤统计_发病部分统计", "统计分析_肿瘤统计_肿瘤患者T0期统计", "统计分析_肿瘤统计_肿瘤患者N0期统计"]
-              "财务指标_机构收入" -> ["财务指标_机构收入_医疗收入", "财务指标_机构收入_医疗治疗收入", "财务指标_机构收入_管理收入", "财务指标_机构收入_耗材收入", "财务指标_机构收入_西药制品收入", "财务指标_机构收入_中药收入"]
-            end
-          data = Enum.map(csv, fn x ->
-                  tool = Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
-                  case length(tool) do
-                    0 -> x <> ".csv"
-                    _ -> Enum.map(tool, fn x2 -> x <> "_" <> x2 <> ".csv" end)
-                  end
-                end)|>List.flatten
-          [data, "三级菜单"]
+        "block" ->
+          db_names =
+            BlockRepo.all(ShareRecord)
+            |>Enum.map(fn x ->
+                Enum.at(String.split((x.file_name), ".csv"), 0)
+              end)
+            |>Enum.map(fn x -> String.split((x), "_") end)
+          menus1 = Enum.map(db_names, fn x -> Enum.at(x, 0) end)
+          menus2 = Enum.map(db_names, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}" end)
+          menus3 = Enum.map(db_names, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 1)}.csv" end)
+          cond do
+            name == "" -> [menus1, "一级菜单"]
+            name in menus1 -> [menus2, "二级菜单"]
+            name in menus2 -> [menus3, "三级菜单"]
+          end
       end
     %{data: data, menu: menu}
   end
