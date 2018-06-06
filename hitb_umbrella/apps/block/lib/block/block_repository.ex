@@ -36,7 +36,7 @@ defmodule Block.BlockRepository do
 
   def get_latest_block() do
     id = Repo.all(from p in BlockList, select: count(p.id))|>List.first
-    block = Repo.get!(BlockList, id)
+    block = Repo.get_by(BlockList, id: id)
     :ets.insert(:latest_block, {:latest, block})
     block
   end
