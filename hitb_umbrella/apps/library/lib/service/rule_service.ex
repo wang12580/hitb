@@ -115,7 +115,7 @@ defmodule Library.RuleService do
         tab_type == "中成药" and server_type == "server"  -> HitbChineseMedicinePatent
         tab_type == "中成药" and server_type == "block" -> BlockChineseMedicinePatent
         tab_type == "西药" and server_type == "server"  -> HitbWesternMedicine
-        true -> if(server_type == "server")do LibWt4 else BlockLibWt4 end
+        true -> if(server_type == "server")do HitbLibWt4 else BlockLibWt4 end
       end
     [result, list, page_list, page_num, count, type] =
       cond do
