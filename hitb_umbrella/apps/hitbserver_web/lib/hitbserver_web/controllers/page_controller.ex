@@ -73,4 +73,7 @@ defmodule HitbserverWeb.PageController do
       redirect conn, to: "/hospitals/login"
     end
   end
+  def connect(conn, _params) do
+    json conn, %{success: true}
+  end
 end

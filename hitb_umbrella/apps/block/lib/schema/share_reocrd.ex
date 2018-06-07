@@ -13,8 +13,8 @@ defmodule Block.ShareRecord do
   end
 
   @doc false
-  def changeset(%ShareRecord{} = share, attrs) do
-    share
+  def changeset(%ShareRecord{} = share_record, attrs) do
+    share_record
     |> cast(attrs, [:file_name, :username, :datetime, :type])
     |> validate_required([:file_name, :username, :datetime, :type])
   end

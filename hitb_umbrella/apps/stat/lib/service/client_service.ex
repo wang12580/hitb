@@ -2,7 +2,7 @@ defmodule Stat.ClientService do
   import Ecto.Query
   alias Hitb.Repo, as: HitbRepo
   alias Block.Repo, as: BlockRepo
-  alias Block.ShareRecord
+  # alias Block.ShareRecord
   alias Stat.Query
   alias Stat.Convert
   alias Stat.Key
