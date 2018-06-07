@@ -178,9 +178,6 @@ defmodule Block.P2pClientHandler do
                 "libwt4_hash" ->
                   %BlockLibWt4{}
                   |>BlockLibWt4.changeset(x)
-                "ruleadrg_hash" ->
-                  %BlockRuleAdrg{}
-                  |>BlockRuleAdrg.changeset(x)
                 "wt4_hash" ->
                   %BlockWt4{}
                   |>BlockWt4.changeset(x)

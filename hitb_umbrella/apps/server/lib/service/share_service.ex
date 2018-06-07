@@ -37,145 +37,78 @@ defmodule Server.ShareService do
         [] ->  ""
         _ -> Poison.decode!(content)
       end
+    latest =
+      case type do
+        "edit" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
+        "stat" -> BlockRepo.all(from p in BlockStatOrg, order_by: [desc: p.inserted_at], limit: 1)
+        "library" ->
+          case file_name do
+            "mdc.csv" ->   BlockRepo.all(from p in BlockRuleMdc, order_by: [desc: p.inserted_at], limit: 1)
+            "adrg.csv" ->  BlockRepo.all(from p in BlockRuleAdrg, order_by: [desc: p.inserted_at], limit: 1)
+            "drg.csv" ->   BlockRepo.all(from p in BlockRuleDrg, order_by: [desc: p.inserted_at], limit: 1)
+            "icd9.csv" ->  BlockRepo.all(from p in BlockRuleIcd9, order_by: [desc: p.inserted_at], limit: 1)
+            "icd10.csv" -> BlockRepo.all(from p in BlockRuleIcd10, order_by: [desc: p.inserted_at], limit: 1)
+            "中药.csv" ->   BlockRepo.all(from p in BlockChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
+            "中成药.csv" -> BlockRepo.all(from p in BlockChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
+            _ ->
+              file_name = String.split(file_name, ".")|>List.first
+              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name, order_by: [desc: p.inserted_at], limit: 1)
+          end
+      end
+    previous_hash =
+      case latest do
+        [] -> ""
+        _ -> List.first(latest)|>Map.get(:hash)
+      end
+    data =
       case type do
         "edit" ->
           [_, editName] = String.split(file_name, "-")
-          latest = BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
-          previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-          cda = HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
-          Enum.reduce(cda, previous_hash, fn x, acc ->
-            hash = hash("#{x.name}")
-            %BlockCda{}
-            |>BlockCda.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-            |>BlockRepo.insert
-            hash
-          end)
+          HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
         "stat" ->
-          content = Enum.map(content, fn x ->
-              x = String.split(x, ",")
-              "#{Enum.at(x, 0)}#{Enum.at(x, 1)}"
-            end)
-          latest = BlockRepo.all(from p in BlockStatOrg, order_by: [desc: p.inserted_at], limit: 1)
-          hashs = BlockRepo.all(from p in BlockStatOrg, select: p.hash)
-          previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "-" end
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download", "server")
-          Enum.reject(stat, fn x -> "#{x.org}#{x.time}" not in content end)
-          |>Enum.reduce(previous_hash, fn x, acc ->
-              hash = hash("#{x.org}#{x.time}")
-              if(hash not in hashs)do
-                %BlockStatOrg{}
-                |>BlockStatOrg.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              else
-                acc
+          stat
+        "library" ->
+          file_name = String.split(file_name, ".")|>List.first
+          [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
+          library
+      end
+    data =
+      Enum.reduce(data, [[], previous_hash], fn x, acc ->
+        [data, previous_hash] = acc
+        hash =
+          case type do
+            "edit" -> hash("#{x.name}#{x.content}")
+            "stat" -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}")
+            "library" ->
+              cond do
+                file_name in ["mdc.csv", "adrg.csv", "drg.csv", "icd9.csv", "icd10.csv"] ->
+                  hash("#{x.code}#{x.name}#{x.version}#{x.year}#{x.org}#{x.plat}")
+                true ->
+                  hash("#{x.code}#{x.name}")
               end
-            end)
-          if(BlockRepo.get_by(ShareRecord, type: "stat", file_name: file_name) == nil)do
-              %ShareRecord{}
-              |>ShareRecord.changeset(%{username: username, file_name: file_name, datetime: Time.stime_local(), type: "stat"})
-              |>BlockRepo.insert
           end
+        x = Map.drop(x, [:id, :__meta__, :__struct__])
+          |>Map.merge(%{hash: hash, previous_hash: previous_hash})
+        [Enum.concat(data, [x]), hash]
+      end)
+    Enum.each(data, fn x ->
+      case type do
+        "edit" -> %BlockCda{}|>BlockCda.changeset(x)
+        "stat" -> %BlockStatOrg{}|>BlockStatOrg.changeset(x)
         "library" ->
           case file_name do
-            "mdc.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleMdc, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [mdc, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockRuleMdc{}
-                |>BlockRuleMdc.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "adrg.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleAdrg, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [adrg, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(adrg, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockRuleAdrg{}
-                |>BlockRuleAdrg.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "drg.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleDrg, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [drg, _list, _count, _page_list,_page_num] =  RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(drg, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockRuleDrg{}
-                |>BlockRuleDrg.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "icd9.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleIcd9, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [icd9, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(icd9, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockRuleIcd9{}
-                |>BlockRuleIcd9.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "icd10.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockRuleIcd10, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [icd10, _list, _count, _page_list,_page_num] =  RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(icd10, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockRuleIcd10{}
-                |>BlockRuleIcd10.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "中药.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              [mdc, _list, _count, _page_list,_page_num] =  RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(mdc, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockChineseMedicine{}
-                |>BlockChineseMedicine.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            "中成药.csv" ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              cmp = RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(cmp, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockChineseMedicinePatent{}
-                |>BlockChineseMedicinePatent.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
-            _ ->
-              file_name = String.split(file_name, ".")|>List.first
-              latest = BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name, order_by: [desc: p.inserted_at], limit: 1)
-              previous_hash = if(latest != [])do latest|>hd|>Map.get(:hash) else "" end
-              lib_wt4 = RuleService.rule_client(1, "year", file_name, "BJ", "", "", 0, "server")
-              Enum.reduce(lib_wt4, previous_hash, fn x, acc ->
-                hash = hash("#{x.code}#{x.name}")
-                %BlockLibWt4{}
-                |>BlockLibWt4.changeset(Map.merge(Map.drop(x, [:id, :__meta__, :__struct__]), %{hash: hash, previous_hash: acc}))
-                |>BlockRepo.insert
-                hash
-              end)
+            "mdc.csv" ->  %BlockRuleMdc{}|>BlockRuleMdc.changeset(x)
+            "adrg.csv" -> %BlockRuleAdrg{}|>BlockRuleAdrg.changeset(x)
+            "drg.csv" ->  %BlockRuleDrg{}|>BlockRuleDrg.changeset(x)
+            "icd9.csv" ->  %BlockRuleIcd9{}|>BlockRuleIcd9.changeset(x)
+            "icd10.csv" -> %BlockRuleIcd10{}|>BlockRuleIcd10.changeset(x)
+            "中药.csv" ->  %BlockChineseMedicine{}|>BlockChineseMedicine.changeset(x)
+            "中成药.csv" -> %BlockLibWt4{}|>BlockLibWt4.changeset(x)
           end
       end
+      |>BlockRepo.insert
+    end)
   end
 
   def get_share() do
@@ -245,22 +178,29 @@ defmodule Server.ShareService do
   def insert(table, _time) do
     case table do
       "edit" ->
-
+        edit = HitbRepo.all(from p in HitbCda, select: %{name: p.name, content: p.content})|>Enum.map(fn x -> hash("#{x.name}#{x.content}") end)
         BlockRepo.all(from p in BlockCda)
+        |>Enum.reject(fn x -> x.hash in edit end)
         |>Enum.map(fn x ->
             %HitbCda{}
             |>HitbCda.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
             |>HitbRepo.insert
           end)
       "stat_org" ->
+        stat_org =  HitbRepo.all(from p in HitbStatOrg, select: %{org: p.org, time: p.time, org_type: p.org_type, time_type: p.time_type})
+        |>Enum.map(fn x -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}") end)
         BlockRepo.all(from p in BlockStatOrg)
+        |>Enum.reject(fn x -> x.hash in stat_org end)
         |>Enum.map(fn x ->
             %HitbStatOrg{}
             |>HitbStatOrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
             |>HitbRepo.insert
           end)
       "mdc" ->
+        mdc =  HitbRepo.all(from p in HitbRuleMdc, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+          |>Enum.map(fn x -> hash("#{x.code}#{x.name}#{x.version}#{x.year}#{x.org}#{x.plat}") end)
         BlockRepo.all(from p in BlockRuleMdc)
+        |>Enum.reject(fn x -> x.hash in mdc end)
         |>Enum.map(fn x ->
             %HitbRuleMdc{}
             |>HitbRuleMdc.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))

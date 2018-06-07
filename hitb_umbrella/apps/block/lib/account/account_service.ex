@@ -22,7 +22,6 @@ defmodule Block.AccountService do
       index = blocks |> Enum.map(fn x -> x.index end)
       [index, latest_block_index] =
         case index do
-          nil -> [0, 0]
           [] -> [0, 0]
           _ -> [hd(index) + 1, BlockService.get_latest_block().index]
         end

@@ -119,7 +119,7 @@ defmodule HitbserverWeb.Router do
     pipe_through :api
     post "/login", PageController, :login
     #省市县三级联动
-    get "/province", ServerController, :province
+    get "/province", PageServerController, :province
     get "/json_check", PageServerController, :json_check
     get "/check_html", PageServerController, :check_html
     get "/test", PageServerController, :test

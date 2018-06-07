@@ -3,6 +3,7 @@ defmodule Block.TransactionService do
   alias Block.AccountRepository
   alias Block.BlockService
   alias Block.TransactionRepository
+  alias Block.TransactionService
 
   def hello do
     :transaction
@@ -14,7 +15,6 @@ defmodule Block.TransactionService do
     sender = AccountService.getAccountByPublicKey(transaction.publicKey)
     case sender do
       nil -> [:error, nil, ""]
-      [] -> [:error, nil, ""]
       _ ->
       tran = %{
         id: transaction.id,

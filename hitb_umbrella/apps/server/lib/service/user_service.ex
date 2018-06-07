@@ -96,7 +96,7 @@ defmodule Server.UserService do
         attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "type" => 2, "key" => []}, attrs)
         #调用block服务
         secret = generate_secret(username)
-        block_address = AccountService.newAccount(%{username: username, balance: 0})
+        block_address = AccountService.newAccount(%{username: secret, balance: 0})
         case block_address do
           false ->
             attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"]), "is_show" => false}, attrs)
