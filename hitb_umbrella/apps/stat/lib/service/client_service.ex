@@ -9,6 +9,7 @@ defmodule Stat.ClientService do
   alias Block.ShareRecord
   alias Hitb.Stat.ClientStat, as: HitbClinetStat
   alias Block.Stat.ClientStat, as: BlockClinetStat
+  alias Hitb.Stat.StatFile
   alias Hitb.Time
 
   def stat_create(data, username) do
@@ -51,7 +52,12 @@ defmodule Stat.ClientService do
         end
       %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}
     else
-      page_type = Stat.page_en(page_type)
+      stat_file = HitbRepo.get_by(StatFile, file_name: "#{page_type}.csv")
+      page_type =
+        case stat_file do
+          nil -> "base"
+          _ -> stat_file.page_type
+        end
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
       [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat", server_type)
@@ -74,41 +80,20 @@ defmodule Stat.ClientService do
   end
 
   def stat_file(name, username, server_type) do
+    first_menu = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.first_menu))|>List.flatten
+    second_menu = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
+    file_name = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
     [data, menu] =
       case server_type do
         "server" ->
           cond do
             name == "" ->
-              [["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"], "一级菜单"]
-            name in ["医疗质量", "机构分析", "机构绩效", "统计分析", "财务指标", "保存的对比分析"] ->
-              case name do
-                "医疗质量" -> [["医疗质量_手术质量","医疗质量_负性事件"], "二级菜单"]
-                "机构分析" -> [["机构分析_基础分析"], "二级菜单"]
-                "机构绩效" -> [["机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效"], "二级菜单"]
-                "统计分析" -> [["统计分析_病案统计", "统计分析_肿瘤统计"], "二级菜单"]
-                "财务指标" -> [["财务指标_机构收入"], "二级菜单"]
-                "保存的对比分析" -> [HitbRepo.all(from p in HitbClinetStat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq, "二级菜单"]
-              end
-            name in ["医疗质量_手术质量","医疗质量_负性事件","机构分析_基础分析", "机构绩效_机构工作量","机构绩效_机构效率", "机构绩效_机构绩效","统计分析_病案统计", "统计分析_肿瘤统计","财务指标_机构收入"] ->
-              csv =
-                case name do
-                  "医疗质量_手术质量" -> ["医疗质量_手术质量_手术质量分析"]
-                  "医疗质量_负性事件" -> ["医疗质量_负性事件_压疮", "医疗质量_负性事件_护理", "医疗质量_负性事件_药物", "医疗质量_负性事件_输血"]
-                  "机构分析_基础分析" -> ["机构分析_基础分析"]
-                  "机构绩效_机构工作量" -> ["机构绩效_机构工作量_医疗检查工作量", "机构绩效_机构工作量_医疗治疗工作量", "机构绩效_机构工作量_医技工作量", "机构绩效_机构工作量_重症监护室工作量"]
-                  "机构绩效_机构效率" -> ["机构绩效_机构效率_床位指标"]
-                  "机构绩效_机构绩效" -> ["机构绩效_机构绩效_低风险组统计", "机构绩效_机构绩效_中低风险组统计", "机构绩效_机构绩效_中高风险组统计"]
-                  "统计分析_病案统计" -> ["统计分析_病案统计_DRG病案入组统计"]
-                  "统计分析_肿瘤统计" -> ["统计分析_肿瘤统计_分化统计", "统计分析_肿瘤统计_发病部分统计", "统计分析_肿瘤统计_肿瘤患者T0期统计", "统计分析_肿瘤统计_肿瘤患者N0期统计"]
-                  "财务指标_机构收入" -> ["财务指标_机构收入_医疗收入", "财务指标_机构收入_医疗治疗收入", "财务指标_机构收入_管理收入", "财务指标_机构收入_耗材收入", "财务指标_机构收入_西药制品收入", "财务指标_机构收入_中药收入"]
-                end
-              data = Enum.map(csv, fn x ->
-                      tool = Key.tool(Stat.page_en(x))|>Enum.map(fn x -> x.cn end)
-                      case length(tool) do
-                        0 -> x <> ".csv"
-                        _ -> Enum.map(tool, fn x2 -> x <> "_" <> x2 <> ".csv" end)
-                      end
-                    end)|>List.flatten
+              [first_menu, "一级菜单"]
+            name in first_menu ->
+              data = HitbRepo.all(from p in StatFile, where: p.first_menu == ^name, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
+              [data, "二级菜单"]
+            name in second_menu ->
+              data = HitbRepo.all(from p in StatFile, where: p.second_menu == ^name, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
               [data, "三级菜单"]
           end
         "block" ->
