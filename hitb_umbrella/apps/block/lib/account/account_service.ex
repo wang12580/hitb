@@ -23,7 +23,7 @@ defmodule Block.AccountService do
       [index, latest_block_index] =
         case index do
           [] -> [0, 0]
-          _ -> [hd(index) + 1, BlockService.get_latest_block().index]
+          _ -> [hd(index) + 1, hd(index)]
         end
       account = %{index: index, username: account.username, u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: address, publicKey: publicKey, secondPublicKey: nil, balance: account.balance, u_balance: 0, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: to_string(latest_block_index), nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: to_string(latest_block_index)}
       AccountRepository.insert_account(account)

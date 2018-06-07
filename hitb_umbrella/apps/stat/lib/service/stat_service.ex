@@ -2,7 +2,7 @@ defmodule Stat.StatService do
   alias Stat.Key
   alias Stat.Query
   alias Stat.Convert
-  alias Hitb.File
+  alias Hitb.FileService
   alias Stat.Chart
   def stat_json(page, page_type, type, tool_type, org, time, drg, order, order_type, username) do
     #获取分析结果
@@ -22,7 +22,7 @@ defmodule Stat.StatService do
           str = Enum.join(x, ",")
           acc <> str <> "\n"
         end)
-    File.write(System.user_home() <> "/download/", "stat.csv", str)
+    FileService.write(System.user_home() <> "/download/", "stat.csv", str)
   end
 
   def stat_info(type, tool_type, drg, page_type, username) do

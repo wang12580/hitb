@@ -3,7 +3,7 @@ defmodule HitbserverWeb.PageServerController do
   alias Server.UserService
   alias Hitb.Province
   # alias Hitb.Library.EnglishMedicine
-  alias Hitb.File
+  alias Hitb.FileService
   plug HitbserverWeb.Access
 
 
@@ -125,7 +125,7 @@ defmodule HitbserverWeb.PageServerController do
     json conn, %{province: Province.province(), city: Province.city(), county: Province.county()}
   end
   def json_check(conn, %{"file_path" => file_path})do
-    file_json = File.check(file_path)
+    file_json = FileService.check(file_path)
     Hitb.ets_insert(:json, :json, file_json)
     # ConCache.put(:json, :json, file_json)
     json conn, %{result: true}
@@ -167,7 +167,7 @@ defmodule HitbserverWeb.PageServerController do
   #   path = "/home/hitb/桌面/未命名文件夹 2/西药 (复件).csv"
   #   {:ok, arr} = File.read(path)
   #   arrs = String.split(arr, "\n") -- [""]
-  #   Enum.each(arrs, fn x -> 
+  #   Enum.each(arrs, fn x ->
   #     [first_level, second_level, third_level, zh_name, en_name, dosage_form, reimbursement_restrictions] = String.split(x, ",")
   #     body = %{"first_level" => first_level, "second_level" => second_level, "third_level" => third_level, "zh_name" =>zh_name, "en_name" => en_name, "dosage_form" => dosage_form, "reimbursement_restrictions" => reimbursement_restrictions}
   #     %EnglishMedicine{}
