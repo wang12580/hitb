@@ -66,7 +66,8 @@ defmodule Server.ShareService do
           [_, editName] = String.split(file_name, "-")
           HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
         "stat" ->
-          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", Stat.page_en(file_name), 15, "download", "server")
+          page_type = HitbRepo.get_by(StatFile, file_name: "#{file_name}.csv")
+          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", page_type, 15, "download", "server")
           stat
         "library" ->
           file_name = String.split(file_name, ".")|>List.first
@@ -104,7 +105,8 @@ defmodule Server.ShareService do
             "icd9.csv" ->  %BlockRuleIcd9{}|>BlockRuleIcd9.changeset(x)
             "icd10.csv" -> %BlockRuleIcd10{}|>BlockRuleIcd10.changeset(x)
             "中药.csv" ->  %BlockChineseMedicine{}|>BlockChineseMedicine.changeset(x)
-            "中成药.csv" -> %BlockLibWt4{}|>BlockLibWt4.changeset(x)
+            "中成药.csv" -> %BlockChineseMedicinePatent{}|>BlockChineseMedicinePatent.changeset(x)
+            _ ->          %BlockLibWt4{}|>BlockLibWt4.changeset(x)
           end
       end
       |>BlockRepo.insert
@@ -176,86 +178,69 @@ defmodule Server.ShareService do
   end
 
   def insert(table, _time) do
-    case table do
-      "edit" ->
-        edit = HitbRepo.all(from p in HitbCda, select: %{name: p.name, content: p.content})|>Enum.map(fn x -> hash("#{x.name}#{x.content}") end)
-        BlockRepo.all(from p in BlockCda)
-        |>Enum.reject(fn x -> x.hash in edit end)
-        |>Enum.map(fn x ->
-            %HitbCda{}
-            |>HitbCda.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "stat_org" ->
-        stat_org =  HitbRepo.all(from p in HitbStatOrg, select: %{org: p.org, time: p.time, org_type: p.org_type, time_type: p.time_type})
-        |>Enum.map(fn x -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}") end)
-        BlockRepo.all(from p in BlockStatOrg)
-        |>Enum.reject(fn x -> x.hash in stat_org end)
-        |>Enum.map(fn x ->
-            %HitbStatOrg{}
-            |>HitbStatOrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "mdc" ->
-        mdc =  HitbRepo.all(from p in HitbRuleMdc, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+    hashs =
+      cond do
+        table == "edit" ->
+          HitbRepo.all(from p in HitbCda, select: %{name: p.name, content: p.content})
+          |>Enum.map(fn x -> hash("#{x.name}#{x.content}") end)
+        table == "stat_org" ->
+          HitbRepo.all(from p in HitbStatOrg, select: %{org: p.org, time: p.time, org_type: p.org_type, time_type: p.time_type})
+          |>Enum.map(fn x -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}") end)
+        table in ["mdc", "adrg", "drg", "icd9", "icd10"] ->
+          case table do
+            "mdc" ->
+              HitbRepo.all(from p in HitbRuleMdc, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+            "adrg" ->
+              HitbRepo.all(from p in BlockRuleAdrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+            "drg" ->
+              HitbRepo.all(from p in BlockRuleDrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+            "icd9" ->
+              HitbRepo.all(from p in BlockRuleIcd9, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+            "icd10" ->
+              HitbRepo.all(from p in BlockRuleIcd10, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+          end
           |>Enum.map(fn x -> hash("#{x.code}#{x.name}#{x.version}#{x.year}#{x.org}#{x.plat}") end)
-        BlockRepo.all(from p in BlockRuleMdc)
-        |>Enum.reject(fn x -> x.hash in mdc end)
-        |>Enum.map(fn x ->
-            %HitbRuleMdc{}
-            |>HitbRuleMdc.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "adrg" ->
-        BlockRepo.all(from p in BlockRuleAdrg)
-        |>Enum.map(fn x ->
-            %HitbRuleAdrg{}
-            |>HitbRuleAdrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "drg" ->
-        BlockRepo.all(from p in BlockRuleDrg)
-        |>Enum.map(fn x ->
-            %HitbRuleDrg{}
-            |>HitbRuleDrg.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "icd9" ->
-        BlockRepo.all(from p in BlockRuleIcd9)
-        |>Enum.map(fn x ->
-            %HitbRuleIcd9{}
-            |>HitbRuleIcd9.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "icd10" ->
-        BlockRepo.all(from p in BlockRuleIcd10)
-        |>Enum.map(fn x ->
-            %HitbRuleIcd10{}
-            |>HitbRuleIcd10.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "chinese_medicine" ->
-        BlockRepo.all(from p in BlockChineseMedicine)
-        |>Enum.map(fn x ->
-            %HitbChineseMedicine{}
-            |>HitbChineseMedicine.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "chinese_medicine_patent" ->
-        BlockRepo.all(from p in BlockChineseMedicinePatent)
-        |>Enum.map(fn x ->
-            %HitbChineseMedicinePatent{}
-            |>HitbChineseMedicinePatent.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-      "lib_wt4" ->
-        BlockRepo.all(from p in BlockLibWt4)
-        |>Enum.map(fn x ->
-            %HitbLibWt4{}
-            |>HitbLibWt4.changeset(Map.drop(x, [:id, :__meta__, :__struct__]))
-            |>HitbRepo.insert
-          end)
-    end
+        table == "chinese_medicine" ->
+          BlockRepo.all(from p in BlockChineseMedicine, select: %{code: p.code, name: p.name})
+          |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
+        table == "chinese_medicine_patent" ->
+          BlockRepo.all(from p in BlockChineseMedicinePatent, select: %{code: p.code, name: p.name})
+          |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
+        true ->
+          BlockRepo.all(from p in BlockLibWt4, select: %{code: p.code, name: p.name})
+          |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
+      end
+    data =
+      case table do
+        "edit" ->   BlockRepo.all(from p in BlockCda)
+        "stat_org" -> BlockRepo.all(from p in BlockStatOrg)
+        "mdc" -> BlockRepo.all(from p in BlockRuleMdc)
+        "adrg" -> BlockRepo.all(from p in BlockRuleAdrg)
+        "drg" -> BlockRepo.all(from p in BlockRuleDrg)
+        "icd9" -> BlockRepo.all(from p in BlockRuleIcd9)
+        "icd10" -> BlockRepo.all(from p in BlockRuleIcd10)
+        "chinese_medicine" -> BlockRepo.all(from p in BlockChineseMedicine)
+        "chinese_medicine_patent" -> BlockRepo.all(from p in BlockChineseMedicinePatent)
+        "lib_wt4" -> BlockRepo.all(from p in BlockLibWt4)
+      end
+    data
+    |>Enum.reject(fn x -> x.hash in hashs end)
+    |>Enum.map(fn x ->
+        x = Map.drop(x, [:id, :__meta__, :__struct__])
+        case table do
+          "edit" -> %HitbCda{}|>HitbCda.changeset(x)
+          "stat_org" -> %HitbStatOrg{}|>HitbStatOrg.changeset(x)
+          "mdc" -> %HitbRuleMdc{}|>HitbRuleMdc.changeset(x)
+          "adrg" -> %HitbRuleAdrg{}|>HitbRuleAdrg.changeset(x)
+          "drg" -> %HitbRuleDrg{}|>HitbRuleDrg.changeset(x)
+          "icd9" -> %HitbRuleIcd9{}|>HitbRuleIcd9.changeset(x)
+          "icd10" -> %HitbRuleIcd10{}|>HitbRuleIcd10.changeset(x)
+          "chinese_medicine" -> %HitbChineseMedicine{}|>HitbChineseMedicine.changeset(x)
+          "chinese_medicine_patent" -> %HitbChineseMedicinePatent{}|>HitbChineseMedicinePatent.changeset(x)
+          "lib_wt4" -> %HitbLibWt4{}|>HitbLibWt4.changeset(x)
+        end
+        |>HitbRepo.insert
+      end)
   end
 
   defp hash(s) do
