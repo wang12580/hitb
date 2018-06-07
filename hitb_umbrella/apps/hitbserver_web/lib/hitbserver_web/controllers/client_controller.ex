@@ -15,8 +15,8 @@ defmodule HitbserverWeb.ClientController do
   end
 
   def stat_file(conn, _params) do
-    %{"name" => name, "username" => username} = Map.merge(%{"name" => ""}, conn.params)
-    result = ClientService.stat_file(name, username)
+    %{"name" => name, "username" => username, "server_type" => server_type} = Map.merge(%{"name" => "", "server_type" => "server"}, conn.params)
+    result = ClientService.stat_file(name, username, server_type)
     json conn, result
   end
 
