@@ -117,6 +117,9 @@ defmodule HitbserverWeb.Router do
   # Other scopes may use custom stacks.
   scope "/hospitals", HitbserverWeb do
     pipe_through :api
+
+    get "/test", ClientController, :test
+
     post "/login", PageController, :login
     #省市县三级联动
     get "/province", PageServerController, :province

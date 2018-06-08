@@ -1,4 +1,4 @@
-defmodule Hitb.File do
+defmodule Hitb.FileService do
   alias Hitb.Library.Wt4
   #对写入文件的处理
   def write(file_path, file_name, str)do
