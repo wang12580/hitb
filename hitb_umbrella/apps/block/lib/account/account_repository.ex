@@ -4,6 +4,7 @@ defmodule Block.AccountRepository do
   alias Block.Account
 
   def insert_account(account) do
+    IO.inspect %Account{}|> Account.changeset(account)
     %Account{}
     |> Account.changeset(account)
     |> Repo.insert

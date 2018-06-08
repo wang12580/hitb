@@ -6,6 +6,7 @@ defmodule Library.RuleService do
   alias Block.Repo, as: BlockRepo
   # alias Hitb.Time
   alias Hitb.Library.RuleMdc, as: HitbRuleMdc
+  alias Hitb.Library.LibraryFile, as: HitbLibraryFile
   alias Hitb.Library.RuleAdrg, as: HitbRuleAdrg
   alias Hitb.Library.RuleDrg, as: HitbRuleDrg
   alias Hitb.Library.RuleIcd9, as: HitbRuleIcd9
@@ -66,7 +67,8 @@ defmodule Library.RuleService do
         |>List.flatten
         |>Enum.map(fn x -> x <> ".csv" end)
       _ ->
-        ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药", "西药"]
+        HitbRepo.all(from p in HitbLibraryFile, select: p.file_name)
+        # ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药", "西药"]
         |>Enum.map(fn x -> x <> ".csv" end)
     end
   end
