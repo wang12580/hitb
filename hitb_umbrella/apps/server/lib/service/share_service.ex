@@ -93,6 +93,7 @@ defmodule Server.ShareService do
           |>Map.merge(%{hash: hash, previous_hash: previous_hash})
         [Enum.concat(data, [x]), hash]
       end)
+      |>List.first
     Enum.each(data, fn x ->
       case type do
         "edit" -> %BlockCda{}|>BlockCda.changeset(x)
