@@ -8,7 +8,6 @@ defmodule Server.UserService do
 
   #登录,返回conn
   def login(_conn, user, blockchain) do
-    IO.inspect user
     db_user = Repo.get_by(User, username: user.username)
     IO.inspect db_user
     case db_user do
