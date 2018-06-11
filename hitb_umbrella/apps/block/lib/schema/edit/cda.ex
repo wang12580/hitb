@@ -17,7 +17,6 @@ defmodule Block.Edit.Cda do
 
   @doc false
   def changeset(%Cda{} = cda, attrs) do
-    IO.inspect "-----------------------"
     cda
     |> cast(attrs, [:username, :name, :content, :is_change, :is_show, :previous_hash, :hash])
     |> validate_required([:username, :name, :content, :is_change, :is_show, :hash])

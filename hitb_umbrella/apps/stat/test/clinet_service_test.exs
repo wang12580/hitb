@@ -11,7 +11,7 @@ defmodule Stat.ClientServiceTest do
   end
 
   test "test stat_file" do
-    assert ClientService.stat_file("医疗质量_手术质量", "dzc") == %{data: ["医疗质量_手术质量_手术质量分析.csv"], menu: "三级菜单"}
+    assert ClientService.stat_file("", "dzc", "server") == %{data: [nil], menu: "一级菜单"}
   end
 
 end
