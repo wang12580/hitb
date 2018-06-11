@@ -22,6 +22,8 @@ defmodule HitbserverWeb.OnlineChannel do
             Hitb.ets_insert(:socket_user, username, true)
             Logger.warn("用户--#{username}--加入服务端")
             socket = %{socket | :assigns => user}
+            Process.flag(:trap_exit, true)
+            :timer.send_interval(5000, :ping)
             {:ok, socket}
           else
             {:error, %{reason: "用户登录失败,账号或密码错误"}}
@@ -30,6 +32,11 @@ defmodule HitbserverWeb.OnlineChannel do
     else
       {:error, %{reason: "已经登录"}}
     end
+  end
+
+  def handle_info(:ping, socket) do
+    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()  -- [socket.assigns.username] }
+    {:noreply, socket}
   end
 
   def handle_in("用户信息", _private, socket) do
@@ -49,6 +56,13 @@ defmodule HitbserverWeb.OnlineChannel do
       Logger.warn("用户--#{socket.assigns.username}--已下线")
     end
     :ok
+  end
+
+  defp online() do
+    Hitb.ets_get(:socket_user, :all_users)
+    |>Enum.map(fn x -> %{username: x, online: Hitb.ets_get(:socket_user, x)}  end)
+    |>Enum.reject(fn x -> x.online in [nil, false] end)
+    |>Enum.map(fn x -> x.username end)
   end
 
 end
