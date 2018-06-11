@@ -1,6 +1,6 @@
 defmodule HitbserverWeb.UserControllerTest do
   use HitbserverWeb.ConnCase
-
+  use Hitbserver.DataCase
   alias Hitb.Repo
   alias Hitb.Server.User
 

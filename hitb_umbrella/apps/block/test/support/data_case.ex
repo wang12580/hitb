@@ -21,7 +21,7 @@ defmodule Block.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Block.DataCase
+      # import Block.DataCase
     end
   end
 
