@@ -4,13 +4,13 @@ defmodule HitbserverWeb.CdaController do
   # alias Hitb.Time
   plug HitbserverWeb.Access
 
-  def cda_user(conn, _params) do
-    [cda, info] = CdaService.cda_user()
+  def cda_user(conn, %{"server_type" => server_type}) do
+    [cda, info] = CdaService.cda_user(server_type)
     json conn, %{cda: cda, info: info}
   end
 
   def cda_file(conn, _params) do
-    %{"username" => username, "server_type" => server_type} = Map.merge(%{"username" => "", "server_type" => ""}, conn.params)
+    %{"username" => username, "server_type" => server_type} = Map.merge(%{"username" => "", "server_type" => "server"}, conn.params)
     [cda, info] = CdaService.cda_files(username, server_type)
     json conn, %{cda: cda, info: info}
   end

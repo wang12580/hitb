@@ -9,7 +9,6 @@ defmodule Server.UserService do
   #登录,返回conn
   def login(_conn, user, blockchain) do
     db_user = Repo.get_by(User, username: user.username)
-    IO.inspect db_user
     case db_user do
       nil ->
         user = %{login: false, username: "", key: []}
@@ -105,6 +104,8 @@ defmodule Server.UserService do
             {:error, changeset}
           _ ->
             attrs = Map.merge(%{"block_address" => block_address.address}, attrs)
+            IO.inspect "------------------------"
+            IO.inspect   %User{}|> User.changeset(attrs)
             %User{}
             |> User.changeset(attrs)
             |> Repo.insert()

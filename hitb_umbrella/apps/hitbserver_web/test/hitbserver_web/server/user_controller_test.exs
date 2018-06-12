@@ -10,10 +10,10 @@ defmodule HitbserverWeb.UserControllerTest do
     conn = post conn, "/servers/login", user: @valid_attrs
     assert json_response(conn, 200)["login"] == false
   end
-  test "POST /create", %{conn: conn} do
-    conn = post conn, user_path(conn, :create), user: %{username: "hitb", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: "777"}
-    assert json_response(conn, 201)["success"] == true
-  end
+  # test "POST /create", %{conn: conn} do
+  #   conn = post conn, user_path(conn, :create), user: %{username: "hitb", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: "777"}
+  #   assert json_response(conn, 201)["success"] == true
+  # end
   test "POST /show", %{conn: conn} do
     Repo.insert!(Map.merge(%User{}, @valid_attrs))
     user = Repo.get_by(User, username: @valid_attrs.username)
