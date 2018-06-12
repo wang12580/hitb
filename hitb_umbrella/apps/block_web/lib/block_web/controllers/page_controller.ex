@@ -8,6 +8,7 @@ defmodule BlockWeb.PageController do
   alias Share
   alias Token
   alias BlockWeb.Login
+  import Ecto.Query
 
   def index(conn, _params) do
     login = Login.is_login(conn)
@@ -17,6 +18,17 @@ defmodule BlockWeb.PageController do
     else
       redirect conn, to: "/block/login"
     end
+  end
+
+  def test(conn, _params) do
+    Block.Repo.all(from p in Block.Edit.Cda)
+    |>Enum.each(fn x ->
+        changeset = Block.Edit.CdaFile.changeset(%Block.Edit.CdaFile{}, %{username: x.username, filename: x.name})
+        Block.Repo.insert(changeset)
+
+
+    end)
+    json conn, %{}
   end
 
   def status(conn, _params) do
