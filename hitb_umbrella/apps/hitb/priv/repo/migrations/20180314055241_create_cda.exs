@@ -4,6 +4,7 @@ defmodule Hitb.Edit.Repo.Migrations.CreateCda do
   def change do
     create table(:cda) do
       add :username, :string
+      add :patient_id, :string
       add :name, :string
       add :content, :string
       add :is_change, :boolean, default: false
