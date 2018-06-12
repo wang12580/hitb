@@ -29,6 +29,7 @@ defmodule BlockWeb.Router do
   scope "/api", BlockWeb do
     pipe_through :api
 
+    get "/test", PageController, :test
     get "/status", PageController, :status
     get "/status/sync", PageController, :sync
     get "/getSystemInfo", PageController, :getSystemInfo
