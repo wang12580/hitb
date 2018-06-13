@@ -7,10 +7,10 @@ defmodule Hitb.Stat.StatFile do
     field :first_menu, :string
     field :second_menu, :string
     field :file_name, :string
-    field :page_type, :string    
-    field :insert_user, :string 
-    field :update_user, :string 
-    field :header, :string 
+    field :page_type, :string
+    field :insert_user, :string
+    field :update_user, :string
+    field :header, :string
     timestamps()
   end
 
