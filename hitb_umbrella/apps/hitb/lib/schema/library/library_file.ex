@@ -6,9 +6,9 @@ defmodule Hitb.Library.LibraryFile do
 
   schema "library_file" do
     field :file_name, :string #文件名称
-    field :insert_user, :string 
-    field :update_user, :string 
-    field :header, :string 
+    field :insert_user, :string
+    field :update_user, :string
+    field :header, :string
     timestamps()
   end
 
