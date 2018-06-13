@@ -3,6 +3,7 @@ defmodule HitbserverWeb.PageController do
   alias Server.UserService
   alias Server.UploadService
   plug HitbserverWeb.Access
+  import Ecto.Query
 
   def index(conn, _params) do
     user = get_session(conn, :user)
@@ -14,6 +15,23 @@ defmodule HitbserverWeb.PageController do
       redirect conn, to: "/hospitals/login"
     end
   end
+
+  def test(conn, _params) do
+    Hitb.Repo.all(from p in Hitb.Edit.Cda)
+    |>Enum.map(fn x ->
+        inserted_at = Hitb.Time.stime_ecto(x.inserted_at)
+        updated_at = Hitb.Time.stime_ecto(x.updated_at)
+        str = "创建时间:#{inserted_at};保存时间:#{updated_at};创建用户:#{x.username};修改用户:#{x.username};标题:;姓名:,#{x.content}"
+        x
+        |>Hitb.Edit.Cda.changeset(%{content: str})
+        |>Hitb.Repo.update
+    end)
+
+
+    json conn, %{}
+  end
+
+
 
   def chat(conn, _params) do
     user = get_session(conn, :user)
