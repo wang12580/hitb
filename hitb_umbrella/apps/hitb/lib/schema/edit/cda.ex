@@ -7,6 +7,7 @@ defmodule Hitb.Edit.Cda do
   schema "cda" do
     field :content, :string
     field :name, :string
+    field :patient_id, :string
     field :username, :string
     field :is_change, :boolean, default: false
     field :is_show, :boolean, default: false
@@ -16,7 +17,7 @@ defmodule Hitb.Edit.Cda do
   @doc false
   def changeset(%Cda{} = cda, attrs) do
     cda
-    |> cast(attrs, [:username, :name, :content, :is_change, :is_show])
+    |> cast(attrs, [:username, :name, :content, :is_change, :is_show, :patient_id])
     |> validate_required([:username, :name, :content, :is_change, :is_show])
   end
 end
