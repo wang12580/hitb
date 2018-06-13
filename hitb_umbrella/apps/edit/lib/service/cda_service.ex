@@ -4,19 +4,15 @@ defmodule Edit.CdaService do
   alias Hitb.Repo, as: HitbRepo
   alias Block.Repo, as: BlockRepo
   alias Hitb.Edit.Cda, as: HitbCda
-  alias Hitb.Edit.CdaFile, as: BlockCdaFile
   alias Hitb.Edit.CdaFile, as: HitbCdaFile
   alias Block.Edit.Cda, as: BlockCda
   alias Hitb.Edit.MyMould
   alias Hitb.Time
   alias Hitb.Server.User
+  alias Edit.PatientService
 
-  def cda_user(server_type) do
-    users =
-      case server_type do
-        "server" -> HitbRepo.all(from p in HitbCdaFile, select: p.username)|>:lists.usort
-        "block" -> BlockRepo.all(from p in BlockCdaFile, select: p.username)|>:lists.usort
-      end
+  def cda_user() do
+    users = HitbRepo.all(from p in HitbCdaFile, select: p.username)|>:lists.usort
     users2 = HitbRepo.all(from p in User, where: p.is_show == false, select: p.username)
     users2 = if(users2)do users2 else [] end
     [users -- users2, "读取成功"]
@@ -51,6 +47,7 @@ defmodule Edit.CdaService do
   end
 
   def update(content, file_name, username, doctype, mouldtype) do
+    IO.inspect content
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
         List.to_tuple(String.split(file_name, "-"))
@@ -61,7 +58,9 @@ defmodule Edit.CdaService do
     if (mouldtype == "模板") do
       myMoulds(file_name, file_username, content, doctype)
     else
-      myCdas(file_name, file_username, content, doctype, username)
+      times = Time.stime_number()
+      myCdas(file_name, file_username, content, doctype, username, times)
+      PatientService.patient_insert(content, username, times)
     end
   end
 
@@ -82,7 +81,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myCdas(file_name, file_username, content, doctype, username) do
+  defp myCdas(file_name, file_username, content, doctype, username, patient_id) do
     cda = HitbRepo.get_by(HitbCda, name: file_name, username: file_username)
     if(cda)do
       cond do
@@ -103,7 +102,7 @@ defmodule Edit.CdaService do
       end
     else
       namea = "#{doctype}_#{Time.stime_number}.cda"
-      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true}
+      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id}
       %HitbCda{}
       |> HitbCda.changeset(body)
       |> HitbRepo.insert()

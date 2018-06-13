@@ -138,7 +138,9 @@ defmodule HitbserverWeb.Router do
     get "/mouldfile", MouldController, :mould_file
     get "/helpinsert", HelpController, :help_insert
     get "/helplist", HelpController, :help_list
+    post "/patientlist", PatientController, :patient_list
     get "/helpfile", HelpController, :help_file
+    
   end
 
   scope "/library", HitbserverWeb do
