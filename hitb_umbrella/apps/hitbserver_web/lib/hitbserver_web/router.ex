@@ -118,14 +118,13 @@ defmodule HitbserverWeb.Router do
   scope "/hospitals", HitbserverWeb do
     pipe_through :api
 
-    get "/test", ClientController, :test
+    get "/test", PageController, :test
 
     post "/login", PageController, :login
     #省市县三级联动
     get "/province", PageServerController, :province
     get "/json_check", PageServerController, :json_check
     get "/check_html", PageServerController, :check_html
-    get "/test", PageServerController, :test
   end
 
   scope "/edit", HitbserverWeb do
@@ -140,7 +139,7 @@ defmodule HitbserverWeb.Router do
     get "/helplist", HelpController, :help_list
     post "/patientlist", PatientController, :patient_list
     get "/helpfile", HelpController, :help_file
-    
+
   end
 
   scope "/library", HitbserverWeb do
