@@ -8,6 +8,7 @@ defmodule Stat.ClientService do
   alias Stat.Key
   alias Block.ShareRecord
   alias Hitb.Stat.ClientStat, as: HitbClinetStat
+  alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.ClientStat, as: BlockClinetStat
   alias Hitb.Stat.StatFile
   alias Hitb.Time
@@ -75,6 +76,9 @@ defmodule Stat.ClientService do
       org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
       time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
       drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
+      file_info = HitbRepo.get_by(HitbStatFile, page_type: page_type)
+      stat = [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"]] ++ stat
+      IO.inspect stat
       %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
     end
   end

@@ -5,14 +5,19 @@ defmodule Edit.CdaService do
   alias Block.Repo, as: BlockRepo
   alias Hitb.Edit.Cda, as: HitbCda
   alias Hitb.Edit.CdaFile, as: HitbCdaFile
+  alias Block.Edit.CdaFile, as: BlockCdaFile
   alias Block.Edit.Cda, as: BlockCda
   alias Hitb.Edit.MyMould
   alias Hitb.Time
   alias Hitb.Server.User
   alias Edit.PatientService
 
-  def cda_user() do
-    users = HitbRepo.all(from p in HitbCdaFile, select: p.username)|>:lists.usort
+  def cda_user(server_type) do
+    users =
+      case server_type do
+        "server" -> HitbRepo.all(from p in HitbCdaFile, select: p.username)|>:lists.usort
+        _ -> BlockRepo.all(from p in BlockCdaFile, select: p.username)|>:lists.usort
+      end
     users2 = HitbRepo.all(from p in User, where: p.is_show == false, select: p.username)
     users2 = if(users2)do users2 else [] end
     [users -- users2, "读取成功"]
