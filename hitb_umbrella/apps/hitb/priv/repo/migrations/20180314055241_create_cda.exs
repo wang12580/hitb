@@ -9,6 +9,7 @@ defmodule Hitb.Edit.Repo.Migrations.CreateCda do
       add :content, :string
       add :is_change, :boolean, default: false
       add :is_show, :boolean, default: false
+      add :header, :string, default: false
       timestamps()
     end
 
