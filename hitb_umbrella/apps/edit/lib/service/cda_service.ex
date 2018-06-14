@@ -45,21 +45,20 @@ defmodule Edit.CdaService do
       edit.is_show == false ->
         [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
       edit.is_change == false ->
-        [[edit.content],["文件读取成功,但文件拥有者不允许修改"]]
+        [Map.drop(edit, [:__meta__, :__struct__, :id]),["文件读取成功,但文件拥有者不允许修改"]]
       true ->
-        [[edit.content],["文件读取成功"]]
+        [Map.drop(edit, [:__meta__, :__struct__]), ["文件读取成功"]]
     end
   end
 
   def update(content, file_name, username, doctype, mouldtype) do
-    IO.inspect content
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
         List.to_tuple(String.split(file_name, "-"))
       else
         {username, file_name}
       end
-    _rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
+    # _rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
     if (mouldtype == "模板") do
       myMoulds(file_name, file_username, content, doctype)
     else
