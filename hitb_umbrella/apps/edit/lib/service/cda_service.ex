@@ -36,7 +36,6 @@ defmodule Edit.CdaService do
         end
     end
   end
-
   def cda_file(filename, username) do
     edit = HitbRepo.get_by(HitbCda, username: username, name: filename)
     cond do
@@ -50,8 +49,7 @@ defmodule Edit.CdaService do
         [Map.drop(edit, [:__meta__, :__struct__]), ["文件读取成功"]]
     end
   end
-
-  def update(content, file_name, username, doctype, mouldtype) do
+  def update(id, content, file_name, username, doctype, mouldtype, header) do
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
         List.to_tuple(String.split(file_name, "-"))
@@ -60,24 +58,31 @@ defmodule Edit.CdaService do
       end
     # _rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
     if (mouldtype == "模板") do
-      myMoulds(file_name, file_username, content, doctype)
+      myMoulds(file_name, file_username, content, doctype, header)
     else
       times = Time.stime_number()
-      myCdas(file_name, file_username, content, doctype, username, times)
+      myCdas(id, file_name, file_username, content, doctype, username, times, header)
       PatientService.patient_insert(content, username, times)
     end
   end
 
-  defp myMoulds(file_name, file_username, content, doctype) do
+  defp myMoulds(file_name, file_username, content, doctype, header) do
     mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
+    header = Enum.reduce(Map.keys(header), "", fn x, acc -> 
+      if acc == "" do
+        "#{acc}#{x}:#{Map.get(header,x)}"
+      else 
+        "#{acc};#{x}:#{Map.get(header,x)}"
+      end
+    end)
     if(mymould)do
       mymould
-      |> MyMould.changeset(%{content: content})
+      |> MyMould.changeset(%{content: content, header: header})
       |> HitbRepo.update()
       %{success: true, info: "保存成功"}
     else
       namea = doctype<>".cdh"
-      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true}
+      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true, "header" => header}
       %MyMould{}
       |> MyMould.changeset(body)
       |> HitbRepo.insert()
@@ -85,28 +90,36 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myCdas(file_name, file_username, content, doctype, username, patient_id) do
-    cda = HitbRepo.get_by(HitbCda, name: file_name, username: file_username)
-    if(cda)do
+  defp myCdas(id, file_name, file_username, content, doctype, username, patient_id, header) do
+    header = Enum.reduce(Map.keys(header), "", fn x, acc -> 
+      if acc == "" do
+        "#{acc}#{x}:#{Map.get(header,x)}"
+      else 
+        "#{acc};#{x}:#{Map.get(header,x)}"
+      end
+    end)
+    if(id != "")do
       cond do
         username == file_username ->
-          cda
-          |>HitbCda.changeset(%{content: content})
+          HitbRepo.get!(HitbCda, id)
+          |>HitbCda.changeset(%{content: content, header: header})
           |>HitbRepo.update
           %{success: true, info: "保存成功"}
         true ->
+          cda = HitbRepo.get_by(HitbCda, id: id)
           case cda.is_change do
             false -> %{success: false, info: "用户设置该文件不允许其他用户修改,请联系该文件拥有者"}
             true ->
-              cda
-              |>HitbCda.changeset(%{content: content})
+              HitbRepo.get!(HItbCda, id)
+              |>HitbCda.changeset(%{content: content, header: header})
               |>HitbRepo.update
               %{success: true, info: "保存成功"}
           end
       end
     else
       namea = "#{doctype}_#{Time.stime_number}.cda"
-      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id}
+      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id, "header" => header}
+      # IO.inspect body 
       %HitbCda{}
       |> HitbCda.changeset(body)
       |> HitbRepo.insert()

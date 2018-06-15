@@ -27,12 +27,12 @@ defmodule Edit.PatientService do
                 _ -> acc
             end
         end)
+    maps = Map.merge(%{:name => "--", :gender => "--", :age => "--", :nationality => "--", :marriage => "--", :native_place => "--", :occupation => "--"}, maps)
     %{ :name => name, :gender => gender, :age => age, :nationality => nationality, :native_place => native_place, :occupation => occupation} = maps
-    patient = Repo.all(from p in Patient, where: (p.name == ^name or p.gender == ^gender or p.age == ^age or p.nationality == ^nationality or p.native_place == ^native_place or p.occupation == ^occupation) and p.username == ^username, select: [p.patient_id])
+    patient = Repo.all(from p in Patient, where: (p.name == ^name or p.gender == ^gender or p.age == ^age or p.nationality == ^nationality or p.native_place == ^native_place or p.occupation == ^occupation) and p.username == ^username, select: p.patient_id)
   end
 
   def patient_insert(content, usernames, patient_ids) do
-    IO.inspect content
     b = String.split(content, ",")
     IO.inspect b
     maps =
@@ -59,7 +59,7 @@ defmodule Edit.PatientService do
                 _ -> acc
             end
         end)
-    IO.inspect maps
+        maps = Map.merge(%{:name => "--", :gender => "--", :age => "--", :nationality => "--", :marriage => "--", :native_place => "--", :occupation => "--"}, maps)
     patient = Repo.get_by(Patient, name: maps.name, gender: maps.gender, age: maps.age, nationality: maps.nationality, marriage: maps.marriage,
     native_place: maps.native_place, occupation: maps.occupation , username: usernames)
     # patient = Repo.get_by(Patient, name: maps.name, username: usernames)
