@@ -2,6 +2,7 @@ defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
   alias Server.UserService
   alias Server.UploadService
+  alias Server.UploadService
   plug HitbserverWeb.Access
   import Ecto.Query
 
@@ -17,29 +18,36 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    Hitb.Repo.all(from p in Hitb.Stat.StatFile)
-    |>Enum.map(fn x ->
-        filename = x.file_name
-        filename = String.split(filename, ".")|>List.first
-        filename =
-          cond do
-            String.contains? filename,"占比" -> String.split(filename, "_占比")|>List.first
-            String.contains? filename,"平均" -> String.split(filename, "_平均")|>List.first
-            String.contains? filename,"总数" -> String.split(filename, "_总数")|>List.first
-            true -> filename
-          end
+    # Hitb.Repo.all(from p in Hitb.Stat.StatFile)
+    # |>Enum.map(fn x ->
+    #     filename = x.file_name
+    #     filename = String.split(filename, ".")|>List.first
+    #     filename =
+    #       cond do
+    #         String.contains? filename,"占比" -> String.split(filename, "_占比")|>List.first
+    #         String.contains? filename,"平均" -> String.split(filename, "_平均")|>List.first
+    #         String.contains? filename,"总数" -> String.split(filename, "_总数")|>List.first
+    #         true -> filename
+    #       end
 
 
 
 
-        IO.inspect a(filename)
-    #     inserted_at = Hitb.Time.stime_ecto(x.inserted_at)
-    #     updated_at = Hitb.Time.stime_ecto(x.updated_at)
-    #     str = "创建时间:#{inserted_at};保存时间:#{updated_at};创建用户:#{x.username};修改用户:#{x.username};标题:;姓名:,#{x.content}"
-        x
-        |>Hitb.Stat.StatFile.changeset(%{page_type: a(filename)})
-        |>Hitb.Repo.update
-    end)
+    #     IO.inspect a(filename)
+        # a = Hitb.Repo.all(from p in MyMould)
+        # Enum.each(a, fn x-> 
+        #   inserted_at = Hitb.Time.stime_ecto(x.inserted_at)
+        #   updated_at = Hitb.Time.stime_ecto(x.updated_at)
+        #   str = "创建时间:#{inserted_at};保存时间:#{updated_at};创建用户:#{x.username};修改用户:#{x.username};标题:;姓名:,#{x.content}"
+        #   x
+        #   |>MyMould.changeset(%{header: str})
+        #   |>Hitb.Repo.update
+        # end)
+        
+        # x
+        # |>Hitb.Stat.StatFile.changeset(%{page_type: a(filename)})
+        # |>Hitb.Repo.update
+    # end)
 
 
     json conn, %{}

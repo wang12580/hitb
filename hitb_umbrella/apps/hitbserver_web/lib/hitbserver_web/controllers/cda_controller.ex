@@ -21,8 +21,8 @@ defmodule HitbserverWeb.CdaController do
     json conn, %{cda: cda, info: info}
   end
 
-  def update(conn, %{"content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype, "mouldtype" => mouldtype}) do
-    result = CdaService.update(content, file_name, username, doctype, mouldtype)
+  def update(conn, %{"id" => id, "content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype, "mouldtype" => mouldtype, "header"=> header}) do
+    result = CdaService.update(id, content, file_name, username, doctype, mouldtype, header)
     json conn, result
   end
 end

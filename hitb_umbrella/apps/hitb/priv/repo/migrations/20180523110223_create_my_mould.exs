@@ -6,6 +6,7 @@ defmodule Hitb.Edit.Repo.Migrations.CreateMyMould do
       add :username, :string
       add :name, :string
       add :content, :string
+      add :header, :string
       add :is_change, :boolean, default: false
       add :is_show, :boolean, default: false
       timestamps()
