@@ -8,7 +8,6 @@ defmodule Server.UploadService do
     file_path = System.user_home() <> "/wt4/"
     %{:path => file_path, :file_name => file_name, :file_size => file_size} = FileService.upload_file(file_path, conn.params["file"])
     Hitb.ets_insert(:json, :file_info, %{file_path: file_path, file_name: file_name, file_size: file_size})
-    IO.inspect file_path
     %{file_path: file_path, file_name: file_name, file_size: file_size}
   end
   #
