@@ -104,7 +104,6 @@ defmodule Server.UserService do
             {:error, changeset}
           _ ->
             attrs = Map.merge(%{"block_address" => block_address.address}, attrs)
-            IO.inspect "------------------------"
             IO.inspect   %User{}|> User.changeset(attrs)
             %User{}
             |> User.changeset(attrs)
@@ -121,6 +120,12 @@ defmodule Server.UserService do
   def get_user!(id), do: Repo.get!(User, id)
 
   def update_user(id, attrs) do
+    if (attrs["password"]) do
+      attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"])}, attrs)
+    else
+      attrs
+    end
+    IO.inspect attrs
     get_user!(id)
     |> User.changeset(attrs)
     |> Repo.update()
