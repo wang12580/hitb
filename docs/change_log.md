@@ -1,3 +1,86 @@
+### 2018-06-15
+* 修改用户更新方法
+### 2018-06-14
+* 修改cda保存方法
+* 修改cda查询返回方法
+### 2018-06-13
+* 增加edit/library/stat文件头信息
+* 修改部分表字段名称
+### 2018-06-12
+* 增加病人表
+### 2018-06-11
+* mix test
+### 2018-06-8
+* mix test
+* 修改clinet文件分享bug
+### 2018-06-7
+* 重构clinet文件分享代码
+* 增加cdafile表
+* 整理stat的filename
+* 增加分析文件从数据库读取
+* 修复注册错误和file模块命名错误
+### 2018-06-6
+* 修复字典库查询bug
+* 修复block初始化查询失败bug
+* 修复stat远程查询错误
+### 2018-06-5
+* 修复语法错误
+* 修复新建模板bug
+* 修复注册功能
+* 修复同步错误
+* mix test
+* 修复edit分享功能
+* 补充alias
+* 修改西药表名称
+* 修复登录bug
+### 2018-06-4
+* 修复stat分享bug
+* 增加西药查询
+* 修复导入bug
+* 修复同步bug
+* 增加每张表最后分享时间
+### 2018-06-3
+* 区块链导入
+* 增加其他同步
+### 2018-06-1
+* fix bug
+* mix test
+* 修复bug
+* 增加区块链分享的文件查询
+* 节点同步其他表功能
+* 其他表同步
+* alpine增加glibc支持 https://github.com/sgerrand/alpine-pkg-glibc
+### 2018-05-31
+* 增加唯一验证
+* 调试clinet文件分享功能
+* 修改路径
+* 修改block显示bug问题
+* 增加library/edit/server各个表定义和发布
+* block的index重复问题
+### 2018-05-30
+* 增加中药中成药分类查询
+* 增加clinet帮助保存功能
+* mix test
+### 2018-05-29
+* 增加区块链用户名生成
+* 增加中药中成药查询
+* block,transaction,account同步bug解决
+* 修复部分页面不显示问题
+* user增加字段
+### 2018-05-28
+* 修改端口
+* 修复block的channel bug
+* 修复文件上传bug
+* 修复依赖
+* 解决初始化问题
+* 解决编辑器警告
+* 修复mix test错误
+* 修复clinet部分链接bug
+* 增加block初始启动时产生区块的交易生成/增加hitb项目默认用户生成
+* 转移controller测试到hitbserver_web中
+* 转移之前各个项目model测试到hitb项目中
+* 修复socket登录bug
+* 修改nginx配置
 ### 2018-05-25
 * 代码清理
 * 增加block数据库操作
