@@ -10,6 +10,8 @@ defmodule Server.ShareService do
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
   alias Block.ShareRecord
+  alias Hitb.Stat.StatFile, as: HitbStatFile
+  alias Block.Stat.StatFile, as: BlockStatFile
   alias Block.Library.RuleMdc, as: BlockRuleMdc
   alias Hitb.Library.RuleMdc, as: HitbRuleMdc
   alias Library.RuleService
@@ -31,6 +33,7 @@ defmodule Server.ShareService do
 
 
   def share(type, file_name, username, content) do
+    IO.inspect file_name
     content =
       case content do
         "" -> content
@@ -66,8 +69,13 @@ defmodule Server.ShareService do
           [_, editName] = String.split(file_name, "-")
           HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
         "stat" ->
-          page_type = HitbRepo.get_by(StatFile, file_name: "#{file_name}.csv")
-          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", page_type, 15, "download", "server")
+          page_type = HitbRepo.get_by(HitbStatFile, file_name: "#{file_name}")
+          if(BlockRepo.get_by(BlockStatFile, file_name: "#{file_name}") == nil)do
+            %BlockStatFile{}
+            |>BlockStatFile.changeset(Map.drop(page_type, [:id, :__meta__, :__struct__]))
+            |>BlockRepo.insert
+          end
+          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", page_type.page_type, 15, "download", "server")
           stat
         "library" ->
           file_name = String.split(file_name, ".")|>List.first
