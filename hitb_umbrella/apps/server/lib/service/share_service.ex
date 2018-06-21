@@ -9,7 +9,7 @@ defmodule Server.ShareService do
   alias Hitb.Edit.Cda, as: HitbCda
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
-  alias Block.ShareRecord
+  # alias Block.ShareRecord
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.StatFile, as: BlockStatFile
   alias Block.Library.RuleMdc, as: BlockRuleMdc
@@ -33,7 +33,6 @@ defmodule Server.ShareService do
 
 
   def share(type, file_name, username, content) do
-    IO.inspect file_name
     content =
       case content do
         "" -> content
@@ -54,8 +53,8 @@ defmodule Server.ShareService do
             "中药.csv" ->   BlockRepo.all(from p in BlockChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
             "中成药.csv" -> BlockRepo.all(from p in BlockChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
             _ ->
-              file_name = String.split(file_name, ".")|>List.first
-              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name, order_by: [desc: p.inserted_at], limit: 1)
+              file_name2 = String.split(file_name, ".")|>List.first
+              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name2, order_by: [desc: p.inserted_at], limit: 1)
           end
       end
     previous_hash =

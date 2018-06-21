@@ -68,10 +68,10 @@ defmodule Edit.CdaService do
 
   defp myMoulds(file_name, file_username, content, doctype, header) do
     mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
-    header = Enum.reduce(Map.keys(header), "", fn x, acc -> 
+    header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
-      else 
+      else
         "#{acc};#{x}:#{Map.get(header,x)}"
       end
     end)
@@ -90,11 +90,11 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myCdas(id, file_name, file_username, content, doctype, username, patient_id, header) do
-    header = Enum.reduce(Map.keys(header), "", fn x, acc -> 
+  defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header) do
+    header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
-      else 
+      else
         "#{acc};#{x}:#{Map.get(header,x)}"
       end
     end)
@@ -119,7 +119,7 @@ defmodule Edit.CdaService do
     else
       namea = "#{doctype}_#{Time.stime_number}.cda"
       body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id, "header" => header}
-      # IO.inspect body 
+      # IO.inspect body
       %HitbCda{}
       |> HitbCda.changeset(body)
       |> HitbRepo.insert()

@@ -5,8 +5,8 @@ defmodule Stat.ClientService do
   # alias Block.ShareRecord
   alias Stat.Query
   alias Stat.Convert
-  alias Stat.Key
-  alias Block.ShareRecord
+  # alias Stat.Key
+  # alias Block.ShareRecord
   alias Hitb.Stat.ClientStat, as: HitbClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.ClientStat, as: BlockClinetStat
@@ -81,7 +81,8 @@ defmodule Stat.ClientService do
     end
   end
 
-  def stat_file(name, username, server_type) do
+  def stat_file(name, _username, server_type) do
+    IO.inspect username
     [repo, tab] =
       case server_type do
         "server" -> [HitbRepo, HitbStatFile]
@@ -89,7 +90,7 @@ defmodule Stat.ClientService do
       end
     first_menu = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.first_menu))|>List.flatten
     second_menu = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
-    file_name = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
+    # file_name = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
     [data, menu] =
       cond do
         name == "" ->
