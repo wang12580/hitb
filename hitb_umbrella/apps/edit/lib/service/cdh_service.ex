@@ -1,6 +1,6 @@
 defmodule Edit.CdhService do
   # import Ecto
-  import Ecto.Query
+  # import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Edit.Cdh
 

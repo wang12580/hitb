@@ -82,7 +82,6 @@ defmodule Stat.ClientService do
   end
 
   def stat_file(name, _username, server_type) do
-    IO.inspect username
     [repo, tab] =
       case server_type do
         "server" -> [HitbRepo, HitbStatFile]
