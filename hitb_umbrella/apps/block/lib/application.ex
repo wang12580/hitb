@@ -23,11 +23,11 @@ defmodule Block.Application do
   end
 
   defp init_peer() do
-    init_peer = %{
-      host:  "139.129.165.56",
-      port:  "4000",
-      connect: true
-    }
+    # init_peer = %{
+    #   host:  "139.129.165.56",
+    #   port:  "4000",
+    #   connect: true
+    # }
     # if(Mix.env() != :test)do
     #   Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
     # end

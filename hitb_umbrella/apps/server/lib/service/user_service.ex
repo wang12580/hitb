@@ -119,11 +119,12 @@ defmodule Server.UserService do
   def get_user!(id), do: Repo.get!(User, id)
 
   def update_user(id, attrs) do
-    if (attrs["password"]) do
-      attrs = Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"])}, attrs)
-    else
-      attrs
-    end
+    attrs =
+      if (attrs["password"]) do
+        Map.merge(%{"hashpw" => Bcrypt.hashpwsalt(attrs["password"])}, attrs)
+      else
+        attrs
+      end
     get_user!(id)
     |> User.changeset(attrs)
     |> Repo.update()
