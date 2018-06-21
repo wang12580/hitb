@@ -11,7 +11,7 @@ defmodule Hitb.Edit.Cda do
     field :username, :string
     field :is_change, :boolean, default: false
     field :is_show, :boolean, default: false
-    field :header, :string, default: false
+    field :header, :string
     timestamps()
   end
 
