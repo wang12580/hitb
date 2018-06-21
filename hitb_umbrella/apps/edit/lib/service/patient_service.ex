@@ -34,7 +34,6 @@ defmodule Edit.PatientService do
 
   def patient_insert(content, usernames, patient_ids) do
     b = String.split(content, ",")
-    IO.inspect b
     maps =
         Enum.reduce(b, %{}, fn x, acc ->
             [hd | all] = String.split(x, " ")
@@ -63,14 +62,12 @@ defmodule Edit.PatientService do
     patient = Repo.get_by(Patient, name: maps.name, gender: maps.gender, age: maps.age, nationality: maps.nationality, marriage: maps.marriage,
     native_place: maps.native_place, occupation: maps.occupation , username: usernames)
     # patient = Repo.get_by(Patient, name: maps.name, username: usernames)
-    IO.inspect patient
     if (patient) do
         patient
         |>Patient.changeset(%{patient_id: patient.patient_id ++ [patient_ids]})
         |>Repo.update
     else
         mapa = Map.merge(maps, %{username: usernames, patient_id: [patient_ids]})
-        IO.inspect mapa
         %Patient{}
         |> Patient.changeset(mapa)
         |> Repo.insert()

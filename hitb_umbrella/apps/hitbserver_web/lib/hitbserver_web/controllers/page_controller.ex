@@ -18,38 +18,18 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    # Hitb.Repo.all(from p in Hitb.Stat.StatFile)
-    # |>Enum.map(fn x ->
-    #     filename = x.file_name
-    #     filename = String.split(filename, ".")|>List.first
-    #     filename =
-    #       cond do
-    #         String.contains? filename,"占比" -> String.split(filename, "_占比")|>List.first
-    #         String.contains? filename,"平均" -> String.split(filename, "_平均")|>List.first
-    #         String.contains? filename,"总数" -> String.split(filename, "_总数")|>List.first
-    #         true -> filename
-    #       end
-
-
-
-
-    #     IO.inspect a(filename)
-        # a = Hitb.Repo.all(from p in MyMould)
-        # Enum.each(a, fn x-> 
-        #   inserted_at = Hitb.Time.stime_ecto(x.inserted_at)
-        #   updated_at = Hitb.Time.stime_ecto(x.updated_at)
-        #   str = "创建时间:#{inserted_at};保存时间:#{updated_at};创建用户:#{x.username};修改用户:#{x.username};标题:;姓名:,#{x.content}"
-        #   x
-        #   |>MyMould.changeset(%{header: str})
-        #   |>Hitb.Repo.update
-        # end)
-        
-        # x
-        # |>Hitb.Stat.StatFile.changeset(%{page_type: a(filename)})
-        # |>Hitb.Repo.update
+    # {:ok, pid} = Postgrex.start_link(hostname: "127.0.0.1", username: "postgres", password: "postgres", database: "drg_dev")
+    # sql = "select code, name from icd10c;"
+    # icd10 = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows
+    # Enum.each(icd10, fn x ->
+    #   [x, name] = x
+    #   sql = "select name from rule_bj_icd10 where icdc = '#{x}';"
+    #   a = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows|>List.flatten
+    #   IO.inspect [name | a]
     # end)
-
-
+    # IO.inspect Hitb.Repo.all(from p in Hitb.Library.RuleMdc, select: p.version, group_by: p.version)
+    names = Hitb.Repo.all(from p in Hitb.Library.RuleMdc, where: p.version == "CN", order_by: [asc: p.code], select: p.name)
+    IO.inspect ["MDC"| names]|>Enum.join(" ")
     json conn, %{}
   end
 

@@ -10,7 +10,8 @@ defmodule Stat.ClientService do
   alias Hitb.Stat.ClientStat, as: HitbClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.ClientStat, as: BlockClinetStat
-  alias Hitb.Stat.StatFile
+  alias Hitb.Stat.StatFile, as: HitbStatFile
+  alias Block.Stat.StatFile, as: BlockStatFile
   alias Hitb.Time
 
   def stat_create(data, username) do
@@ -27,10 +28,10 @@ defmodule Stat.ClientService do
   end
 
   def stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows, server_type) do
-    clinet_stat = if(server_type == "server")do HitbClinetStat else BlockClinetStat end
-    files = HitbRepo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
+    [repo, clinet_stat, stat_file] = if(server_type == "server")do [HitbRepo, HitbClinetStat, HitbStatFile] else [BlockRepo, BlockClinetStat, BlockStatFile] end
+    files = repo.all(from p in clinet_stat, where: p.username == ^username, select: p.filename)|>List.flatten|>Enum.uniq
     if(page_type <> ".csv" in files)do
-      stat = HitbRepo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
+      stat = repo.get_by(clinet_stat, filename: page_type <> ".csv", username: username)
       stat = Poison.decode!(stat.data)
       header = Enum.at(stat, 0)
       #求病历总数
@@ -51,9 +52,9 @@ defmodule Stat.ClientService do
         else
           [length(stat) - 1, 0, 0, 0]
         end
-      %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num}
+      %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, server_type: server_type}
     else
-      stat_file = HitbRepo.get_by(StatFile, file_name: "#{page_type}.csv")
+      stat_file = repo.get_by(stat_file, file_name: "#{page_type}.csv")
       page_type =
         case stat_file do
           nil -> "base"
@@ -76,45 +77,29 @@ defmodule Stat.ClientService do
       org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
       time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
       drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
-      # file_info = HitbRepo.get_by(HitbStatFile, page_type: page_type)
-      # stat = [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"]] ++ stat
-      # IO.inspect stat
-      %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
+      %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, server_type: server_type}
     end
   end
 
   def stat_file(name, username, server_type) do
-    first_menu = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.first_menu))|>List.flatten
-    second_menu = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
-    file_name = HitbRepo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
-    [data, menu] =
+    [repo, tab] =
       case server_type do
-        "server" ->
-          cond do
-            name == "" ->
-              [first_menu, "一级菜单"]
-            name in first_menu ->
-              data = HitbRepo.all(from p in StatFile, where: p.first_menu == ^name, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
-              [data, "二级菜单"]
-            name in second_menu ->
-              data = HitbRepo.all(from p in StatFile, where: p.second_menu == ^name, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
-              [data, "三级菜单"]
-          end
-        "block" ->
-          db_names =
-            BlockRepo.all(ShareRecord)
-            |>Enum.map(fn x ->
-                Enum.at(String.split((x.file_name), ".csv"), 0)
-              end)
-            |>Enum.map(fn x -> String.split((x), "_") end)
-          menus1 = Enum.map(db_names, fn x -> Enum.at(x, 0) end)
-          menus2 = Enum.map(db_names, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}" end)
-          menus3 = Enum.map(db_names, fn x -> "#{Enum.at(x, 0)}_#{Enum.at(x, 1)}_#{Enum.at(x, 1)}.csv" end)
-          cond do
-            name == "" -> [menus1, "一级菜单"]
-            name in menus1 -> [menus2, "二级菜单"]
-            name in menus2 -> [menus3, "三级菜单"]
-          end
+        "server" -> [HitbRepo, HitbStatFile]
+        "block" -> [BlockRepo, BlockStatFile]
+      end
+    first_menu = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.first_menu))|>List.flatten
+    second_menu = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
+    file_name = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
+    [data, menu] =
+      cond do
+        name == "" ->
+          [first_menu, "一级菜单"]
+        name in first_menu ->
+          data = repo.all(from p in tab, where: p.first_menu == ^name, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
+          [data, "二级菜单"]
+        name in second_menu ->
+          data = repo.all(from p in tab, where: p.second_menu == ^name, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
+          [data, "三级菜单"]
       end
     %{data: data, menu: menu}
   end

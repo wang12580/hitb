@@ -104,7 +104,6 @@ defmodule Server.UserService do
             {:error, changeset}
           _ ->
             attrs = Map.merge(%{"block_address" => block_address.address}, attrs)
-            IO.inspect   %User{}|> User.changeset(attrs)
             %User{}
             |> User.changeset(attrs)
             |> Repo.insert()
@@ -125,7 +124,6 @@ defmodule Server.UserService do
     else
       attrs
     end
-    IO.inspect attrs
     get_user!(id)
     |> User.changeset(attrs)
     |> Repo.update()
