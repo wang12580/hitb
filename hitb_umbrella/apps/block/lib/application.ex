@@ -4,45 +4,26 @@ defmodule Block.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
     children = [
-      supervisor(Block.Repo, []),
       Block.S1,
-      Block.S2
+      Block.S2,
+      supervisor(Block.Repo, [])
     ]
     opts = [strategy: :one_for_one, name: Block.Supervisor]
     supervisor = Supervisor.start_link(children, opts)
     initialize_datastore()
+    IO.inspect supervisor
     supervisor
   end
 
   def initialize_datastore() do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
-    init_peer()
+    # init_peer()
     # generate_initial_block()
 
   end
 
-  defp init_peer() do
-    init_peer = %{
-      host:  "139.129.165.56",
-      port:  "4000",
-      connect: true
-    }
-    if(Mix.env() != :test)do
-      Block.P2pSessionManager.connect(init_peer.host, init_peer.port)
-    end
-    # peers = Block.PeerRepository.get_all_peers
-    # if(peers != [])do
-    #   peers |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
-    # else
-    #   case Block.P2pSessionManager.connect(init_peer.host, init_peer.port) do
-    #     :ok ->
-    #       Block.PeerRepository.insert_peer(init_peer)
-    #     _ ->
-    #       Block.PeerRepository.insert_peer(%{init_peer | :connect => false})
-    #   end
-    # end
-  end
+
 
   # defp generate_initial_block() do
   #   if(Block.BlockRepository.get_all_blocks == [])do

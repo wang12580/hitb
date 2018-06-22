@@ -15,6 +15,7 @@ defmodule Block.P2pClientHandler do
   alias Block.TransactionRepository
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Block.Edit.Cda, as: BlockCda
+  alias Block.Edit.Cdh, as: BlockCdh
   alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Block.Library.RuleMdc, as: BlockRuleMdc
@@ -134,6 +135,7 @@ defmodule Block.P2pClientHandler do
           %{
             statorg_hash: OtherSyncService.get_latest_statorg_hash(),
             cda_hash: OtherSyncService.get_latest_cda_hash(),
+            cdh_hash: OtherSyncService.get_latest_cah_hash(),
             ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(),
             cmp_hash: OtherSyncService.get_latest_cmp_hash(),
             cm_hash: OtherSyncService.get_latest_cm_hash(),
@@ -154,6 +156,9 @@ defmodule Block.P2pClientHandler do
                 "cda_hash" ->
                   %BlockCda{}
                   |>BlockCda.changeset(x)
+                "cdh_hash" ->
+                  %BlockCdh{}
+                  |>BlockCdh.changeset(x)
                 "ruleadrg_hash" ->
                   %BlockRuleAdrg{}
                   |>BlockRuleAdrg.changeset(x)
