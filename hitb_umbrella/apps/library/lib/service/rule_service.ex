@@ -84,7 +84,11 @@ defmodule Library.RuleService do
           [Map.keys(List.first(result))] ++ Enum.map(result, fn x -> Map.values(x) end)
       end
     file_info = HitbRepo.get_by(HitbLibraryFile, file_name: tab_type)
-    result = [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"]] ++ result
+    result =
+      case file_info do
+        nil -> []
+        _ -> [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
+      end
     %{library: result, list: list, count: count, page_list: page_list, page: page_num}
   end
 

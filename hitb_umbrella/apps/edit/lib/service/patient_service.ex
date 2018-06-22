@@ -3,7 +3,7 @@ defmodule Edit.PatientService do
   import Ecto.Query
   alias Hitb.Repo
   alias Hitb.Edit.Patient
-  alias Hitb.Edit.Cda
+#   alias Hitb.Edit.Cda
 
   def patient_list(names, username) do
     keys = Map.keys(names)
@@ -29,7 +29,7 @@ defmodule Edit.PatientService do
         end)
     maps = Map.merge(%{:name => "--", :gender => "--", :age => "--", :nationality => "--", :marriage => "--", :native_place => "--", :occupation => "--"}, maps)
     %{ :name => name, :gender => gender, :age => age, :nationality => nationality, :native_place => native_place, :occupation => occupation} = maps
-    patient = Repo.all(from p in Patient, where: (p.name == ^name or p.gender == ^gender or p.age == ^age or p.nationality == ^nationality or p.native_place == ^native_place or p.occupation == ^occupation) and p.username == ^username, select: p.patient_id)
+    Repo.all(from p in Patient, where: (p.name == ^name or p.gender == ^gender or p.age == ^age or p.nationality == ^nationality or p.native_place == ^native_place or p.occupation == ^occupation) and p.username == ^username, select: p.patient_id)
   end
 
   def patient_insert(content, usernames, patient_ids) do
@@ -37,9 +37,12 @@ defmodule Edit.PatientService do
     maps =
         Enum.reduce(b, %{}, fn x, acc ->
             [hd | all] = String.split(x, " ")
-            if (all == []) do
-                all = ["--"]
-            end
+            all =
+              if(all == [])do
+                ["--"]
+              else
+                all
+              end
             case hd do
                 "姓名" ->
                     Map.put(acc, :name, List.to_string(all))
