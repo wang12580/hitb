@@ -9,7 +9,7 @@ defmodule Server.ShareService do
   alias Hitb.Edit.Cda, as: HitbCda
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
-  alias Block.ShareRecord
+  # alias Block.ShareRecord
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.StatFile, as: BlockStatFile
   alias Block.Library.RuleMdc, as: BlockRuleMdc
@@ -32,14 +32,13 @@ defmodule Server.ShareService do
 
 
 
-  def share(type, file_name, username, content) do
-    IO.inspect file_name
-    content =
-      case content do
-        "" -> content
-        [] ->  ""
-        _ -> Poison.decode!(content)
-      end
+  def share(type, file_name, username, _content) do
+    # content =
+    #   case content do
+    #     "" -> content
+    #     [] ->  ""
+    #     _ -> Poison.decode!(content)
+    #   end
     latest =
       case type do
         "edit" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
@@ -54,8 +53,8 @@ defmodule Server.ShareService do
             "中药.csv" ->   BlockRepo.all(from p in BlockChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
             "中成药.csv" -> BlockRepo.all(from p in BlockChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
             _ ->
-              file_name = String.split(file_name, ".")|>List.first
-              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name, order_by: [desc: p.inserted_at], limit: 1)
+              file_name2 = String.split(file_name, ".")|>List.first
+              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name2, order_by: [desc: p.inserted_at], limit: 1)
           end
       end
     previous_hash =
@@ -78,8 +77,8 @@ defmodule Server.ShareService do
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", page_type.page_type, 15, "download", "server")
           stat
         "library" ->
-          file_name = String.split(file_name, ".")|>List.first
-          [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name, "BJ", "", "", 0, "server")
+          file_name2 = String.split(file_name, ".")|>List.first
+          [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name2, "BJ", "", "", 0, "server")
           library
       end
     data =

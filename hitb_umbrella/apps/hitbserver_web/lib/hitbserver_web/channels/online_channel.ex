@@ -2,6 +2,7 @@ defmodule HitbserverWeb.OnlineChannel do
   use Phoenix.Channel
   require Logger
   alias Server.UserService
+  alias Edit.CdhService
 
   def join("online:list", message, socket) do
     if(message["username"])do
@@ -36,6 +37,12 @@ defmodule HitbserverWeb.OnlineChannel do
 
   def handle_info(:ping, socket) do
     push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()  -- [socket.assigns.username] }
+    {:noreply, socket}
+  end
+
+  def handle_in("cdh帮助", _private, socket) do
+    cdh = CdhService.channel_cdh_list()
+    broadcast! socket, "cdh帮助", %{cdh: cdh}
     {:noreply, socket}
   end
 
