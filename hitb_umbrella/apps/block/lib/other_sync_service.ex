@@ -78,6 +78,7 @@ defmodule Block.OtherSyncService do
       "rulemdc_hash" -> Repo.all(RuleMdc)
       "libwt4_hash" -> Repo.all(LibWt4)
       "wt4_hash" -> Repo.all(Wt4)
+      _ -> []
     end
     |>Enum.reject(fn x -> x.hash in hash end)
     |>Enum.map(fn x -> Map.drop(x, [:__meta__, :__struct__, :id]) end)
