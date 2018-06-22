@@ -10,11 +10,13 @@ defmodule Edit.CdhService do
 
   def channel_cdh_list() do
     Repo.all(Cdh)
-    |>Enum.map(fn x ->
-        content = x.content|>String.split(" ")
-        key = List.first(content)
-        value = List.delete_at(content, 0)
-        Map.put(%{}, key, value)
+    |>Enum.reduce(%{}, fn x, acc ->
+        content = x.content|>String.split(" ")|>Enum.reject(fn x -> x == nil end)
+        value = Map.get(acc, x.name)
+        case value do
+          nil -> Map.put(acc, x.name, [content])
+          _ -> Map.put(acc, x.name, [content | value])
+        end
       end)
   end
 end
