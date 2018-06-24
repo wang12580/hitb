@@ -57,6 +57,11 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_connected(transport, state) do
+    case :ets.lookup(:client, :transport) do
+      [] -> :ets.insert(:client, {:transport, [transport]})
+      transports ->
+        :ets.insert(:client, {:transport, [transport] ++ transports |> hd |> elem(1)})
+    end
     Logger.info("connected")
     GenSocketClient.join(transport, "p2p")
     {:ok, state}
@@ -225,8 +230,8 @@ defmodule Block.P2pClientHandler do
 
   def handle_info(@add_peer_request, transport, state) do
     Logger.info("sending request to add me as a peer")
-    local_server_host = Application.get_env(:oniichain, HitbWeb.Endpoint)[:url][:host]
-    local_server_port = Application.get_env(:oniichain, HitbWeb.Endpoint)[:http][:port]
+    local_server_host = Application.get_env(:oniichain, BlockWeb.Endpoint)[:url][:host]
+    local_server_port = Application.get_env(:oniichain, BlockWeb.Endpoint)[:http][:port]
     GenSocketClient.push(transport, "p2p", @add_peer_request, %{host: local_server_host, port: local_server_port})
     {:ok, state}
   end

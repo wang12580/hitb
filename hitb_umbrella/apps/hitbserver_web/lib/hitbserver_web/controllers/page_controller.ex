@@ -19,6 +19,9 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
+    # Block.AutoSyncService.sync()
+
+
     # {:ok, pid} = Postgrex.start_link(hostname: "127.0.0.1", username: "postgres", password: "postgres", database: "drg_dev")
     # sql = "select code, name from icd10c;"
     # icd10 = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows
@@ -29,14 +32,14 @@ defmodule HitbserverWeb.PageController do
     #   IO.inspect [name | a]
     # end)
     # IO.inspect Hitb.Repo.all(from p in Hitb.Library.RuleMdc, select: p.version, group_by: p.version)
-    names = Hitb.Repo.all(from p in Hitb.Library.RuleDrg, where: p.version == "CN", order_by: [asc: p.code], select: [p.name, p.code])
-    Enum.each(names, fn x ->
-      x = x|>Enum.join(" ")
-      body =%{ "type" => "CN", "name" => "DRG", "content" => x}
-      %Cdh{}
-      |> Cdh.changeset(body)
-      |> Hitb.Repo.insert()
-    end)
+    # names = Hitb.Repo.all(from p in Hitb.Library.RuleDrg, where: p.version == "CN", order_by: [asc: p.code], select: [p.name, p.code])
+    # Enum.each(names, fn x ->
+    #   x = x|>Enum.join(" ")
+    #   body =%{ "type" => "CN", "name" => "DRG", "content" => x}
+    #   %Cdh{}
+    #   |> Cdh.changeset(body)
+    #   |> Hitb.Repo.insert()
+    # end)
 
     # content = ["ICD10"| names]|>Enum.join(" ")
     # body =%{ "type" => "CN", "name" => "ICD10", "content" => content}

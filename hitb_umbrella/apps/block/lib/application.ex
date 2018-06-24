@@ -17,6 +17,7 @@ defmodule Block.Application do
   def initialize_datastore() do
     :ets.new(:peers, [:set, :public, :named_table])
     :ets.new(:latest_block, [:set, :public, :named_table])
+    :ets.new(:client, [:set, :public, :named_table])
     init_peer()
     # generate_initial_block()
   end

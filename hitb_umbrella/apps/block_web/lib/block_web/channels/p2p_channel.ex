@@ -16,6 +16,7 @@ defmodule BlockWeb.P2pChannel do
   alias Block.BlockRepository
   alias Block.TransactionRepository
   alias Block.P2pSessionManager
+  alias Block.PeerRepository
 
   def join(_topic, _payload, socket) do
     {:ok, socket}
@@ -57,6 +58,12 @@ defmodule BlockWeb.P2pChannel do
           Map.put(acc, String.to_atom(x), data)
         end)
     {:reply, {:ok, %{type: "other_sync", data: data}}, socket}
+  end
+
+  def handle_in("acto_sync", payload, socket) do
+    PeerRepository.get_all_peers
+    |> Enum.each(fn x -> Block.P2pSessionManager.connect(x.host, x.port) end)
+    {:reply, {:ok, %{type: "acto_sync", data: []}}, socket}
   end
 
   def handle_in(@add_peer_request, payload, socket) do
