@@ -77,11 +77,12 @@ defmodule Library.RuleService do
 
   def rule_client(page, type, tab_type, version, year, dissect, rows, server_type) do
     [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type)
+    keys = Map.keys(List.first(result))|>Enum.map(fn x -> cn(x) end)
     result =
       case length(result) do
         0 -> []
         _ ->
-          [Map.keys(List.first(result))] ++ Enum.map(result, fn x -> Map.values(x) end)
+          [keys] ++ Enum.map(result, fn x -> Map.values(x) end)
       end
     file_info = HitbRepo.get_by(HitbLibraryFile, file_name: tab_type)
     result =
@@ -374,6 +375,7 @@ defmodule Library.RuleService do
     [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
   end
+
   defp ruleEnglish(type, tab_type, tab, page, rows, server_type) do
     list =
       cond do
@@ -405,5 +407,45 @@ defmodule Library.RuleService do
       |>repo.all
     [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, list, page_list, page_num, count_page, type]
+  end
+
+  defp cn(key) do
+    case to_string(key) do
+      "code" -> "编码"
+      "name" -> "名称"
+      "type" -> "分类"
+      "year" -> "年份"
+      "version" -> "版本"
+      "adrg" -> "ADRG编码"
+      "codes" -> "编码"
+      "dissect" -> "部位"
+      "option" -> "选项"
+      "property" -> "属性"
+      "cc" -> "CC"
+      "mcc" -> "MCC"
+      "consumption" -> "用量"
+      "effect" -> "功效"
+      "indication" -> "适应症"
+      "meridian" -> "归经"
+      "name_1" -> "别名"
+      "need_attention" -> "注意事项"
+      "sexual_taste" -> "性味"
+      "toxicity" -> "毒性"
+      "department_limit" -> "限医疗机构等级"
+      "medicine_type" -> "类型"
+      "org_limit" -> "医疗"
+      "other_limit" -> "其他限制"
+      "other_spec" -> "其他规格"
+      "user_limit" -> "人员限制"
+      "medicine_code" -> "药品编号"
+      "dosage_form" -> "剂型"
+      "en_name" -> "英文名称"
+      "first_level" -> "一级分类"
+      "third_level" -> "三级分类"
+      "second_level" -> "二级分类"
+      "reimbursement_restrictions" -> "报销限制内容"
+      "zh_name" -> "中文名称"
+      _ -> to_string(key)
+    end
   end
 end
