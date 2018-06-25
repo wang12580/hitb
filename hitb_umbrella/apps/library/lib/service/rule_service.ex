@@ -77,19 +77,21 @@ defmodule Library.RuleService do
 
   def rule_client(page, type, tab_type, version, year, dissect, rows, server_type) do
     [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type)
-    keys = Map.keys(List.first(result))|>Enum.map(fn x -> cn(x) end)
     result =
       case length(result) do
         0 -> []
         _ ->
+          keys = Map.keys(List.first(result))|>Enum.map(fn x -> cn(x) end)
           [keys] ++ Enum.map(result, fn x -> Map.values(x) end)
       end
     file_info = HitbRepo.get_by(HitbLibraryFile, file_name: tab_type)
     result =
       case file_info do
         nil -> []
-        _ -> [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
+        _ ->
+        [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
       end
+    # IO.inspect result
     %{library: result, list: list, count: count, page_list: page_list, page: page_num}
   end
 
@@ -97,13 +99,14 @@ defmodule Library.RuleService do
     [result, page_list, page_num, count, _, _, _, list, _, _] = get_rule(page, type, tab_type, version, year, dissect, rows, server_type)
     result = result
       |>Enum.map(fn x ->
-          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa])
+          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
         end)
       |>Enum.map(fn x ->
           x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
           x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
           x
         end)
+    # IO.inspect result
     [result, list, count, page_list, page_num]
   end
 
@@ -445,6 +448,8 @@ defmodule Library.RuleService do
       "second_level" -> "二级分类"
       "reimbursement_restrictions" -> "报销限制内容"
       "zh_name" -> "中文名称"
+      "hash" -> "哈希值"
+      "previous_hash" -> "上一条哈希值"
       _ -> to_string(key)
     end
   end
