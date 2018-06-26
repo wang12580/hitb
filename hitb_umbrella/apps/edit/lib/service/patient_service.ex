@@ -2,6 +2,7 @@ defmodule Edit.PatientService do
   # import Ecto
   import Ecto.Query
   alias Hitb.Repo
+  alias Hitb.Edit.Cda
   alias Hitb.Edit.Patient
 #   alias Hitb.Edit.Cda
 
@@ -34,6 +35,13 @@ defmodule Edit.PatientService do
       |>where([p], field(p, ^key) == ^value)
     end)
     |>Repo.all
+    |>Enum.map(fn x ->
+        Enum.map(x.patient_id, fn id ->
+          Repo.all(from p in Cda, where: p.patient_id == ^id)
+        end)
+      end)
+    |>List.flatten
+    |>Enum.map(fn x -> x.content end)
   end
 
   def patient_insert(content, usernames, patient_ids) do

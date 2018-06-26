@@ -19,6 +19,20 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
+    Enum.map(Hitb.Repo.all(from p in Hitb.Edit.Cda), fn x ->
+      [date, time] = Hitb.Time.stime_ecto(x.inserted_at)|>String.split("　")
+      date = String.split(date, "-")|>Enum.join("")
+      time = String.split(time, ":")|>Enum.join("")
+      if(x.patient_id === nil)do
+        x
+        |>Hitb.Edit.Cda.changeset(%{patient_id: "#{date}#{time}"})
+        |>Hitb.Repo.update
+      end
+    end)
+
+
+
+
     # Block.AutoSyncService.sync()
 
 
