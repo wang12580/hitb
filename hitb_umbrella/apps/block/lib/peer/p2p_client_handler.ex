@@ -15,6 +15,7 @@ defmodule Block.P2pClientHandler do
   alias Block.TransactionRepository
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Block.Edit.Cda, as: BlockCda
+  alias Block.Edit.Cdh, as: BlockCdh
   alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Block.Library.RuleMdc, as: BlockRuleMdc
@@ -56,6 +57,11 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_connected(transport, state) do
+    case :ets.lookup(:client, :transport) do
+      [] -> :ets.insert(:client, {:transport, [transport]})
+      transports ->
+        :ets.insert(:client, {:transport, [transport] ++ transports |> hd |> elem(1)})
+    end
     Logger.info("connected")
     GenSocketClient.join(transport, "p2p")
     {:ok, state}
@@ -134,6 +140,7 @@ defmodule Block.P2pClientHandler do
           %{
             statorg_hash: OtherSyncService.get_latest_statorg_hash(),
             cda_hash: OtherSyncService.get_latest_cda_hash(),
+            cdh_hash: OtherSyncService.get_latest_cah_hash(),
             ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(),
             cmp_hash: OtherSyncService.get_latest_cmp_hash(),
             cm_hash: OtherSyncService.get_latest_cm_hash(),
@@ -154,6 +161,9 @@ defmodule Block.P2pClientHandler do
                 "cda_hash" ->
                   %BlockCda{}
                   |>BlockCda.changeset(x)
+                "cdh_hash" ->
+                  %BlockCdh{}
+                  |>BlockCdh.changeset(x)
                 "ruleadrg_hash" ->
                   %BlockRuleAdrg{}
                   |>BlockRuleAdrg.changeset(x)
@@ -220,8 +230,8 @@ defmodule Block.P2pClientHandler do
 
   def handle_info(@add_peer_request, transport, state) do
     Logger.info("sending request to add me as a peer")
-    local_server_host = Application.get_env(:oniichain, HitbWeb.Endpoint)[:url][:host]
-    local_server_port = Application.get_env(:oniichain, HitbWeb.Endpoint)[:http][:port]
+    local_server_host = Application.get_env(:oniichain, BlockWeb.Endpoint)[:url][:host]
+    local_server_port = Application.get_env(:oniichain, BlockWeb.Endpoint)[:http][:port]
     GenSocketClient.push(transport, "p2p", @add_peer_request, %{host: local_server_host, port: local_server_port})
     {:ok, state}
   end

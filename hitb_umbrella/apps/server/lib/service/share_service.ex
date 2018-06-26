@@ -3,6 +3,7 @@ defmodule Server.ShareService do
   import Ecto.Query
   alias Stat.Query
   alias Hitb.Time
+  alias Block.AutoSyncService
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
@@ -119,6 +120,7 @@ defmodule Server.ShareService do
       end
       |>BlockRepo.insert
     end)
+    AutoSyncService.sync()
   end
 
   def get_share() do
