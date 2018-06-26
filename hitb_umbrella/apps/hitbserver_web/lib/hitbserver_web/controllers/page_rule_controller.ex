@@ -8,11 +8,6 @@ defmodule HitbserverWeb.PageRuleController do
     login = UserService.is_login(conn)
     if(login)do
       %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => ""}, conn.params)
-      # IO.inspect tab_type
-      # cond do
-      #   tab_type  === "中成药" -> type = "ChineseMedicinePatent"
-      #   true -> type = "year"
-      # end
       render conn, "rule.html", user: user, page: page, type: type, tab_type: tab_type, version: version, year: year,
       dissect: dissect
     else

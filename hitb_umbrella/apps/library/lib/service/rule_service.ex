@@ -106,11 +106,11 @@ defmodule Library.RuleService do
           x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
           x
         end)
-    # IO.inspect result
     [result, list, count, page_list, page_num]
   end
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
     tab =
       cond do
         tab_type == "mdc" and server_type == "server" -> HitbRuleMdc
@@ -201,11 +201,15 @@ defmodule Library.RuleService do
             year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
             true -> from(w in tab)
           end
-          # ruleWT4(version, year, dissect, tab, type, page, rows, server_type)
       end
-    IO.inspect query
-    [[], [], 1, 1, tab_type, type, dissect, [], version, year]
-    # [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
+    count = select(query, [w], count(w.id))
+      |>repo.all([timeout: 1500000])
+      |>List.first
+    skip = Page.skip(page, rows)
+    query = if(rows == 0)do query else order_by(query, [w], asc: w.code)|>limit([w], ^rows)|>offset([w], ^skip) end
+    result = repo.all(query)
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
+    [result, page_list, page_num, count, tab_type, type, dissect, [], version, year]
   end
 
   def contrast(table, id) do
@@ -292,146 +296,6 @@ defmodule Library.RuleService do
       Map.drop(x, [:__meta__, :__struct__])
     end)
     %{table: result, page_num: page_num, page_list: page_list}
-  end
-
-  defp ruleWT4(version, year, dissect, tab, type, page, rows, server_type) do
-    type = String.to_atom(type)
-    query =
-      cond do
-        year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
-        year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
-        year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
-        year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
-        year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-        year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
-        year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
-        true -> from(w in tab)
-      end
-    [lib_wt4, repo] = if(server_type == "server")do [HitbLibWt4, HitbRepo] else [BlockLibWt4, BlockRepo]end
-    query = if(type != "" and tab == lib_wt4)do query|>where([w], w.type == ^type) else query end
-    query =
-      if(type != "" and tab != lib_wt4)do
-        query_type = to_string(type)
-        cond do
-          query_type in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] -> query|>where([w], w.property == ^query_type)
-          true -> query
-        end
-      else
-        query
-      end
-    num = select(query, [w], count(w.id))
-    count = hd(repo.all(num, [timeout: 1500000]))
-    skip = Page.skip(page, rows)
-    query = if(rows == 0)do query else order_by(query, [w], asc: w.code)|>limit([w], ^rows)|>offset([w], ^skip) end
-    result = repo.all(query)
-    list =
-      cond do
-        to_string(type) in ["诊断性操作", "治疗性操作", "手术室手术", "中医性操作"] ->
-          i = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :year)))
-            |>Enum.reject(fn x -> x == nil end)
-          case i do
-            [] -> []
-            _ -> List.first(i)|>Enum.sort
-          end
-        true ->
-          i = repo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, ^type)))
-            |>Enum.reject(fn x -> x == nil end)
-          case i do
-            [] -> []
-            _ -> List.first(i)|>Enum.sort
-          end
-      end
-    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
-    [result, list, page_list, page_num, count_page, type]
-  end
-
-  defp ruleOther(type, tab_type, tab, page, rows, server_type) do
-    query = from(p in tab)
-    #计数
-    repo = if(server_type == "server")do HitbRepo else BlockRepo end
-    count = query
-      |>select([p], count(p.id))
-      |>repo.all
-      |>hd
-
-    skip = Page.skip(page, rows)
-    #查询
-    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
-    result = query
-      |>repo.all
-    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
-    list = []
-    [result, list, page_list, page_num, count_page, type]
-  end
-
-  defp ruleChinese(type, tab_type, tab, page, rows, server_type) do
-    list =
-      cond do
-        tab_type == "中成药" ->
-          i = HitbRepo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :medicine_type)))
-            |>Enum.reject(fn x -> x == nil end)
-          case i do
-            [] -> []
-            _ -> List.first(i)|>Enum.sort
-          end
-        tab_type == "中药" -> []
-      end
-    query =
-      cond do
-        type in ["解表药", "清热解毒药", "泻下药", "消导药", "止咳化痰药", "理气药", "温里药", "祛风湿药?", "固涩药", "利水渗湿药", "开窍药"] ->
-          from(p in tab)
-          |>where([p], p.type == ^type)
-        type in list ->
-          from(p in tab)
-          |>where([p], p.medicine_type == ^type)
-        true ->
-          from(p in tab)
-      end
-    repo = if(server_type == "server")do HitbRepo else BlockRepo end
-    count = query
-      |>select([p], count(p.id))
-      |>repo.all
-      |>hd
-    # count = Repo.all(from p in tab, select: count(p.id)) |>hd
-    skip = Page.skip(page, rows)
-    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
-    result = query
-      |>repo.all
-    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
-    [result, list, page_list, page_num, count_page, type]
-  end
-
-  defp ruleEnglish(type, tab_type, tab, page, rows, server_type) do
-    list =
-      cond do
-        tab_type == "西药" ->
-          i = HitbRepo.all(from p in tab, select: fragment("array_agg(distinct ?)", field(p, :dosage_form)))
-            |>Enum.reject(fn x -> x == nil end)
-          case i do
-            [] -> []
-            _ -> List.first(i)|>Enum.sort
-          end
-      end
-    query =
-    cond do
-      type in list ->
-        from(p in tab)
-        |>where([p], p.dosage_form == ^type)
-      true ->
-        from(p in tab)
-    end
-    repo = if(server_type == "server")do HitbRepo else BlockRepo end
-    count = query
-      |>select([p], count(p.id))
-      |>repo.all
-      |>hd
-    # count = Repo.all(from p in tab, select: count(p.id)) |>hd
-    skip = Page.skip(page, rows)
-    query = if(rows == 0)do query else query|>limit([w], ^rows)|>offset([w], ^skip) end
-    result = query
-      |>repo.all
-    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
-    [result, list, page_list, page_num, count_page, type]
   end
 
   defp cn(key) do
