@@ -111,38 +111,101 @@ defmodule Library.RuleService do
   end
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
-    rows = to_string(rows)|>String.to_integer
     tab =
       cond do
         tab_type == "mdc" and server_type == "server" -> HitbRuleMdc
-        tab_type == "mdc" and server_type == "block" -> BlockRuleMdc
         tab_type == "adrg" and server_type == "server"  -> HitbRuleAdrg
-        tab_type == "adrg" and server_type == "block" -> BlockRuleAdrg
         tab_type == "drg" and server_type == "server"  -> HitbRuleDrg
-        tab_type == "drg" and server_type == "block" -> BlockRuleDrg
         tab_type == "icd10" and server_type == "server"  -> HitbRuleIcd10
-        tab_type == "icd10" and server_type == "block" -> BlockRuleIcd10
         tab_type == "icd9" and server_type == "server"  -> HitbRuleIcd9
-        tab_type == "icd9" and server_type == "block" -> BlockRuleIcd9
         tab_type == "中药" and server_type == "server"  -> HitbChineseMedicine
-        tab_type == "中药" and server_type == "block" -> BlockChineseMedicine
         tab_type == "中成药" and server_type == "server"  -> HitbChineseMedicinePatent
-        tab_type == "中成药" and server_type == "block" -> BlockChineseMedicinePatent
         tab_type == "西药" and server_type == "server"  -> HitbWesternMedicine
+        tab_type == "mdc" and server_type == "block" -> BlockRuleMdc
+        tab_type == "adrg" and server_type == "block" -> BlockRuleAdrg
+        tab_type == "drg" and server_type == "block" -> BlockRuleDrg
+        tab_type == "icd10" and server_type == "block" -> BlockRuleIcd10
+        tab_type == "icd9" and server_type == "block" -> BlockRuleIcd9
+        tab_type == "中药" and server_type == "block" -> BlockChineseMedicine
+        tab_type == "中成药" and server_type == "block" -> BlockChineseMedicinePatent
         true -> if(server_type == "server")do HitbLibWt4 else BlockLibWt4 end
       end
-    [result, list, page_list, page_num, count, type] =
+    query =
       cond do
         tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
-          ruleOther(type, tab_type, tab, page, rows, server_type)
+          cond do
+            type != "year" and type != "" ->
+              from(p in tab)
+              |>where([p], p.type == ^type)
+            tab_type == "基本信息" ->
+              from(p in tab)
+              |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
+            tab_type == "街道乡镇代码"->
+              from(p in tab)
+              |>where([p], p.type == "街道乡镇代码")
+            tab_type == "民族"->
+              from(p in tab)
+              |>where([p], p.type == "民族")
+            tab_type == "区县编码"->
+              from(p in tab)
+              |>where([p], p.type == "区县编码")
+            tab_type == "手术血型"->
+              from(p in tab)
+              |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
+            tab_type == "出入院编码"->
+              from(p in tab)
+              |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
+            tab_type == "肿瘤编码"->
+              from(p in tab)
+              |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
+            tab_type == "科别代码"->
+              from(p in tab)
+              |>where([p], p.type == "科别")
+            tab_type == "病理诊断编码"->
+              from(p in tab)
+              |>where([p], p.type == "病理诊断编码(M码)")
+            tab_type == "医保诊断依据"->
+              from(p in tab)
+              |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
+          end
+          # ruleOther(type, tab_type, tab, page, rows, server_type)
         tab_type in ["中药", "中成药"] ->
-          ruleChinese(type, tab_type, tab, page, rows, server_type)
+          cond do
+            type in ["解表药", "清热解毒药", "泻下药", "消导药", "止咳化痰药", "理气药", "温里药", "祛风湿药?", "固涩药", "利水渗湿药", "开窍药"] ->
+              from(p in tab)
+              |>where([p], p.type == ^type)
+            # type in list ->
+            #   from(p in tab)
+            #   |>where([p], p.medicine_type == ^type)
+            true ->
+              from(p in tab)
+          end
         tab_type in ["西药"] ->
-          ruleEnglish(type, tab_type, tab, page, rows, server_type)
+          types = HitbRepo.all(from p in tab, select: fragment("array_agg(distinct ?)", p.dosage_form))|>List.flatten
+          cond do
+            type in types ->
+              from(p in tab)
+              |>where([p], p.dosage_form == ^type)
+            true ->
+              from(p in tab)
+          end
         true->
-          ruleWT4(version, year, dissect, tab, type, page, rows, server_type)
+          type = String.to_atom(type)
+          cond do
+            year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
+            year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
+            year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
+            year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
+            year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
+            year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
+            year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
+            true -> from(w in tab)
+          end
+          # ruleWT4(version, year, dissect, tab, type, page, rows, server_type)
       end
-    [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
+    IO.inspect query
+    [[], [], 1, 1, tab_type, type, dissect, [], version, year]
+    # [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
 
   def contrast(table, id) do
@@ -236,17 +299,11 @@ defmodule Library.RuleService do
     query =
       cond do
         year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
-
         year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
-
         year != "" and version == "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.dissect == ^dissect)
-
         year != "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version and w.dissect == ^dissect)
-
         year == "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.version == ^version)
-
         year == "" and version != "" and dissect != "" -> from(w in tab)|>where([w], w.version == ^version and w.dissect == ^dissect)
-
         year == "" and version == "" and dissect != "" -> from(w in tab)|>where([w],  w.dissect == ^dissect)
         true -> from(w in tab)
       end
@@ -289,42 +346,7 @@ defmodule Library.RuleService do
   end
 
   defp ruleOther(type, tab_type, tab, page, rows, server_type) do
-    query =
-      cond do
-        type != "year" and type != "" ->
-          from(p in tab)
-          |>where([p], p.type == ^type)
-        tab_type == "基本信息" ->
-          from(p in tab)
-          |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
-        tab_type == "街道乡镇代码"->
-          from(p in tab)
-          |>where([p], p.type == "街道乡镇代码")
-        tab_type == "民族"->
-          from(p in tab)
-          |>where([p], p.type == "民族")
-        tab_type == "区县编码"->
-          from(p in tab)
-          |>where([p], p.type == "区县编码")
-        tab_type == "手术血型"->
-          from(p in tab)
-          |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
-        tab_type == "出入院编码"->
-          from(p in tab)
-          |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
-        tab_type == "肿瘤编码"->
-          from(p in tab)
-          |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
-        tab_type == "科别代码"->
-          from(p in tab)
-          |>where([p], p.type == "科别")
-        tab_type == "病理诊断编码"->
-          from(p in tab)
-          |>where([p], p.type == "病理诊断编码(M码)")
-        tab_type == "医保诊断依据"->
-          from(p in tab)
-          |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
-      end
+    query = from(p in tab)
     #计数
     repo = if(server_type == "server")do HitbRepo else BlockRepo end
     count = query
