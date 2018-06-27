@@ -7,18 +7,20 @@ defmodule Edit.HelpService do
   def help_insert(name, content) do
     body = %{"name" => name, "content" => content}
     help = Repo.get_by(ClinetHelp, name: name)
-    if (help) do
-      help
-      |>ClinetHelp.changeset(%{content: content})
-      |>Repo.update
-      %{success: true, info: "修改成功"}
-    else
-      %ClinetHelp{}
+    case help do
+      nil ->
+        %ClinetHelp{}
         |> ClinetHelp.changeset(body)
         |> Repo.insert()
-      %{success: true, info: "新建成功"}
+        %{success: true, info: "新建成功"}
+      _ ->
+        help
+        |>ClinetHelp.changeset(%{content: content})
+        |>Repo.update
+        %{success: true, info: "修改成功"}
     end
   end
+  
   def help_list() do
     Repo.all(from p in ClinetHelp, select: p.name)
   end

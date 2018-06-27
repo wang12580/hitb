@@ -6,24 +6,10 @@ defmodule HitbserverWeb.UserController do
 
   action_fallback HitbserverWeb.FallbackController
 
-  def login(conn, %{"user" => user}) do
-    # %{"username" => username, "password" => password, "address" => address, "privateKey" => privateKey, "publicKey" => publicKey, "secret" => secret} = Map.merge(%{"address" => "", "privateKey" => "", "publicKey" => "", "secret" => ""}, user)
-    # IO.inspect user
-    [user, login] = UserService.login(conn, %{username: user["username"], password: user["password"]}, %{})
-    conn = put_session(conn, :user, user)
-    user =
-      case login do
-        true -> get_session(conn, :user)
-        false -> user
-      end
-    json conn, Map.merge(%{login: login, username: user.username}, user)
-  end
-
-
   def index(conn, _params) do
     %{"page" => page} = Map.merge(%{"page" => "1"}, conn.params)
     [count, user] = UserService.list_user(page, 15)
-    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
+    [page_num, page_list, _count] = Hitb.Page.page_list(page, count, 15)
     render(conn, "index.json", user: user, page_num: page_num, page_list: page_list)
   end
 

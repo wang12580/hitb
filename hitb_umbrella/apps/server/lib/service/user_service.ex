@@ -7,48 +7,51 @@ defmodule Server.UserService do
   # alias ServerWeb.MyUser
 
   #登录,返回conn
-  def login(_conn, user, blockchain) do
+  def login(user, blockchain) do
     db_user = Repo.get_by(User, username: user.username)
-    case db_user do
-      nil ->
+    cond do
+      db_user == nil ->
         user = %{login: false, username: "", key: []}
         [user, false]
-      _ ->
-        case Bcrypt.checkpw(user.password, db_user.hashpw) do
-          true ->
-            #缓存区块链数据
-            Hitb.ets_insert(:my_user, "blockchain" <> user.username, Map.merge(%{address2: ""}, blockchain))
-            #缓存用户数据
-            Hitb.ets_insert(:my_user, user.username, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain})
-            #返回登录
-            user = %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}
-            [user, true]
-          _ ->
-          user = %{login: false, username: "", type: 2, key: []}
-          [user, false]
-        end
+      Bcrypt.checkpw(user.password, db_user.hashpw) ->
+        account =
+          if(db_user.block_address == nil)do
+            %{publicKey: "", username: ""}
+          else
+            AccountService.getAccountByAddress(db_user.block_address)
+          end
+        blockchain = %{address: db_user.block_address, publicKey: account.publicKey, secret: account.username}
+        #缓存区块链数据
+        Hitb.ets_insert(:my_user, "blockchain" <> user.username, Map.merge(%{address2: ""}, blockchain))
+        #缓存用户数据
+        Hitb.ets_insert(:my_user, user.username, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain})
+        #返回登录
+        user = %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}
+        [user, true]
+      true ->
+        user = %{login: false, username: "", type: 2, key: []}
+        [user, false]
     end
   end
 
   #登录,返回conn
   def socket_login(user) do
     db_user = Repo.get_by(User, username: user.username)
-    case db_user do
-      nil ->
+    cond do
+      db_user == nil ->
         [false, %{login: false, username: user.username}]
-      _ ->
-        case Bcrypt.checkpw(user.password, db_user.hashpw) do
-          true ->
-            account =
-              if(db_user.block_address == nil)do
-                %{publicKey: "", username: ""}
-              else
-                AccountService.getAccountByAddress(db_user.block_address)
-              end
-            blockchain = %{address: db_user.block_address, publicKey: account.publicKey, secret: account.username}
-            [true, %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}]
-          _ -> [false, %{login: false, username: user.username}]
-        end
+      Bcrypt.checkpw(user.password, db_user.hashpw) ->
+        account =
+          if(db_user.block_address == nil)do
+            %{publicKey: "", username: ""}
+          else
+            AccountService.getAccountByAddress(db_user.block_address)
+          end
+        blockchain = %{address: db_user.block_address, publicKey: account.publicKey, secret: account.username}
+        user = %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}
+        [true, blockchain]
+      true ->
+        [false, %{login: false, username: user.username}]
     end
   end
 

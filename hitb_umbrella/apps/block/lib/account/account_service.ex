@@ -161,7 +161,7 @@ defmodule Block.AccountService do
           message: "设置二级密码"}
           TransactionRepository.insert_transaction(tran)
           AccountRepository.insert_account(Map.merge(account, %{balance: account.balance - 5}))
-        [true, tran.id]
+        [true, tran.transaction_id]
       _ ->
         [false, []]
     end

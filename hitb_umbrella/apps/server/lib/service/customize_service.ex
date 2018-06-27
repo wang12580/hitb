@@ -16,13 +16,13 @@ defmodule Server.CustomizeDepartmentService do
     count = query
       |>select([w], count(w.id))
       |>Repo.all
-      |>hd
+      |>List.first
     query = query
       |> limit([w], ^num)
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
     result = query|>Repo.all
-    [page_num, page_list, _] = Page.page_list(page, count, 15)
+    [page_num, page_list, _count] = Page.page_list(page, count, 15)
     %{customize_department: result, page_num: page_num, page_list: page_list}
   end
 

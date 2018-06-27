@@ -8,7 +8,7 @@ defmodule HitbserverWeb.RecordController do
 
   def index(conn, %{"page"=> page}) do
     [count, record] = RecordService.list_record(page, 15)
-    [page_num, page_list, _] = Hitb.Page.page_list(page, count, 15)
+    [page_num, page_list, _count] = Hitb.Page.page_list(page, count, 15)
     render(conn, "index.json", record: record, page_num: page_num, page_list: page_list)
   end
 

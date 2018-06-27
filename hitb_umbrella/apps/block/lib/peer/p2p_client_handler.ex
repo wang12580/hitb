@@ -194,7 +194,7 @@ defmodule Block.P2pClientHandler do
               |>Block.Repo.insert
             end)
         end)
-        :timer.send_interval(5000, :ping)
+        # :timer.send_interval(5000, :ping)
     end
     {:ok, state}
   end
