@@ -9,6 +9,7 @@ defmodule Server.ShareService do
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.Cdh, as: BlockCdh
   alias Hitb.Edit.Cda, as: HitbCda
+  alias Hitb.Edit.Cdh, as: HitbCdh
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
   # alias Block.ShareRecord
@@ -43,7 +44,7 @@ defmodule Server.ShareService do
     #   end
     latest =
       case type do
-        "cdh" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
+        "cdh" -> BlockRepo.all(from p in BlockCdh, order_by: [desc: p.inserted_at], limit: 1)
         "edit" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
         "stat" -> BlockRepo.all(from p in BlockStatOrg, order_by: [desc: p.inserted_at], limit: 1)
         "library" ->
@@ -67,6 +68,8 @@ defmodule Server.ShareService do
       end
     data =
       case type do
+        "cdh" ->
+          HitbRepo.all(from p in HitbCdh)
         "edit" ->
           [_, editName] = String.split(file_name, "-")
           HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
@@ -89,6 +92,7 @@ defmodule Server.ShareService do
         [data, previous_hash] = acc
         hash =
           case type do
+            "cdh" -> hash("#{x.content}#{x.name}#{x.type}")
             "edit" -> hash("#{x.name}#{x.content}")
             "stat" -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}")
             "library" ->
@@ -106,6 +110,7 @@ defmodule Server.ShareService do
       |>List.first
     Enum.each(data, fn x ->
       case type do
+        "cdh" -> %BlockCdh{}|>BlockCdh.changeset(x)
         "edit" -> %BlockCda{}|>BlockCda.changeset(x)
         "stat" -> %BlockStatOrg{}|>BlockStatOrg.changeset(x)
         "library" ->
