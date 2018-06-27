@@ -82,7 +82,7 @@ defmodule HitbserverWeb.PageController do
 
   def login(conn, %{"user" => user}) do
     %{"username" => username, "password" => password} = user
-    [user, login] = UserService.login(conn, %{username: username, password: password}, %{})
+    [user, login] = UserService.login(%{username: username, password: password}, %{})
     conn =
       case login do
         false ->
@@ -90,7 +90,7 @@ defmodule HitbserverWeb.PageController do
         true ->
           put_session(conn, :user, %{id: user.id, login: login, username: username, type: user.type, key: user.key})
       end
-    json conn, %{login: login, username: username}
+    json conn, %{login: true, username: username}
   end
 
   def logout(conn, _params) do

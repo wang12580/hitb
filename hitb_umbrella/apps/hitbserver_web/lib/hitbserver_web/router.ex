@@ -133,6 +133,7 @@ defmodule HitbserverWeb.Router do
     get "/cda_user", CdaController, :cda_user
     get "/cda_file", CdaController, :cda_file
     post "/cda", CdaController, :update
+    post "/cda_consule", CdaController, :cda_consule
     get "/mouldlist", MouldController, :mould_list
     get "/mouldfile", MouldController, :mould_file
     get "/helpinsert", HelpController, :help_insert
@@ -163,8 +164,6 @@ defmodule HitbserverWeb.Router do
     get "/connect", PageController, :connect
     #上传wt4
     post "/wt4_upload", PageController, :wt4_upload
-    #登录
-    post "/login", UserController, :login
     #更新机构
     post "/org_update", OrgController, :update
     #机构

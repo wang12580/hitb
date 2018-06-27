@@ -13,7 +13,7 @@ defmodule Library.Wt4Service do
       |> order_by([w], [asc: w.id])
       |> Repo.all
     count = hd(Repo.all(from p in Wt4, select: count(p.id)))
-    [page_num, page_list, _] = Page.page_list(page, count, 15)
+    [page_num, page_list, _count] = Page.page_list(page, count, 15)
     %{wt4: result, page_num: page_num, page_list: page_list, num: count, org_num: 0, time_num: 0, drg_num: 0}
   end
 

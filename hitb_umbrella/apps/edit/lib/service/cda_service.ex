@@ -13,29 +13,27 @@ defmodule Edit.CdaService do
   alias Edit.PatientService
 
   def cda_user(server_type) do
-    users =
+    cda_users =
       case server_type do
         "server" -> HitbRepo.all(from p in HitbCdaFile, select: p.username)|>:lists.usort
         _ -> BlockRepo.all(from p in BlockCdaFile, select: p.username)|>:lists.usort
       end
-    users2 = HitbRepo.all(from p in User, where: p.is_show == false, select: p.username)
-    users2 = if(users2)do users2 else [] end
-    [users -- users2, "读取成功"]
+    users = HitbRepo.all(from p in User, where: p.is_show == false, select: p.username)
+    users = if(users)do users else [] end
+    [cda_users -- users, "读取成功"]
   end
 
   def cda_files(username, server_type) do
-    case server_type do
-      "block" ->
+    cond do
+      server_type == "block" ->
         [BlockRepo.all(from p in BlockCda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
-      _ ->
-        case username do
-          "" ->
-            [HitbRepo.all(from p in HitbCda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
-          _ ->
-            [HitbRepo.all(from p in HitbCda, where: p.username == ^username, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
-        end
+      username == "" ->
+        [HitbRepo.all(from p in HitbCda, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
+      true ->
+        [HitbRepo.all(from p in HitbCda, where: p.username == ^username, select: [p.username, p.name]) |> Enum.map(fn x -> Enum.join(x, "-") end), "读取成功"]
     end
   end
+
   def cda_file(filename, username) do
     edit = HitbRepo.get_by(HitbCda, username: username, name: filename)
     cond do
@@ -49,6 +47,7 @@ defmodule Edit.CdaService do
         [Map.drop(edit, [:__meta__, :__struct__]), ["文件读取成功"]]
     end
   end
+
   def update(id, content, file_name, username, doctype, mouldtype, header) do
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
@@ -56,13 +55,65 @@ defmodule Edit.CdaService do
       else
         {username, file_name}
       end
-    # _rules = %{"file_name" => file_name, "file_username" => file_username, "content" => content, "doctype" => doctype, "username" => username}
     if (mouldtype == "模板") do
       myMoulds(file_name, file_username, content, doctype, header)
     else
       times = Time.stime_number()
       myCdas(id, file_name, file_username, content, doctype, username, times, header)
       PatientService.patient_insert(content, username, times)
+    end
+  end
+
+  def consule(cda_info) do
+    cda_info =
+      Enum.reject(cda_info, fn x ->
+        cond do
+          x == "" -> true
+          String.contains? x, "省" -> true
+          String.contains? x, "市" -> true
+          String.contains? x, "县" -> true
+          String.contains? x, "区" -> true
+          String.contains? x, "街" -> true
+          String.contains? x, "乡" -> true
+          String.contains? x, "镇" -> true
+          String.contains? x, "族" -> true
+          String.contains? x, "国" -> true
+          String.contains? x, "-" -> true
+          x in ["有", "无"] -> true
+          x in ["否", "是"] -> true
+          x in ["男","女"] -> true
+          x in ["已婚", "未婚", "离异"] -> true
+          x == "配偶" -> true
+          is_num(x) -> true
+          true -> false
+        end
+      end)
+    query = from(p in HitbCda)
+    Enum.reduce(cda_info, query, fn x, acc ->
+      x = "%#{x}%"
+      acc
+      |>or_where([p],  like(p.content, ^x))
+    end)
+    |>HitbRepo.all
+    |>:lists.usort
+    |>Enum.map(fn x -> x.content end)
+  end
+
+  defp is_num(x) do
+    x2 =
+      try do
+        String.to_integer(x)
+      rescue
+        _ ->
+          try do
+            String.to_float(x)
+          rescue
+            _ -> x
+          end
+      end
+    case x == x2 do
+      true -> false
+      false -> true
     end
   end
 
@@ -91,6 +142,7 @@ defmodule Edit.CdaService do
   end
 
   defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header) do
+    cda = HitbRepo.get_by(HitbCda, id: id)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
@@ -98,32 +150,27 @@ defmodule Edit.CdaService do
         "#{acc};#{x}:#{Map.get(header,x)}"
       end
     end)
-    if(id != "")do
-      cond do
-        username == file_username ->
-          HitbRepo.get!(HitbCda, id)
-          |>HitbCda.changeset(%{content: content, header: header})
-          |>HitbRepo.update
-          %{success: true, info: "保存成功"}
-        true ->
-          cda = HitbRepo.get_by(HitbCda, id: id)
-          case cda.is_change do
-            false -> %{success: false, info: "用户设置该文件不允许其他用户修改,请联系该文件拥有者"}
-            true ->
-              HitbRepo.get!(HItbCda, id)
-              |>HitbCda.changeset(%{content: content, header: header})
-              |>HitbRepo.update
-              %{success: true, info: "保存成功"}
-          end
-      end
-    else
-      namea = "#{doctype}_#{Time.stime_number}.cda"
-      body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id, "header" => header}
-      # IO.inspect body
-      %HitbCda{}
-      |> HitbCda.changeset(body)
-      |> HitbRepo.insert()
-       %{success: true, info: "新建成功"}
+    case id do
+      "" ->
+        %HitbCda{}
+        |> HitbCda.changeset(%{"content" => content, "name" => "#{doctype}_#{Time.stime_number}.cda", "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id, "header" => header})
+        |> HitbRepo.insert()
+        %{success: true, info: "新建成功"}
+      _ ->
+        cond do
+          username == file_username ->
+            HitbRepo.get!(HitbCda, id)
+            |>HitbCda.changeset(%{content: content, header: header})
+            |>HitbRepo.update
+            %{success: true, info: "保存成功"}
+          cda.is_change == false ->
+            %{success: false, info: "用户设置该文件不允许其他用户修改,请联系该文件拥有者"}
+          true ->
+            HitbRepo.get!(HItbCda, id)
+            |>HitbCda.changeset(%{content: content, header: header})
+            |>HitbRepo.update
+            %{success: true, info: "保存成功"}
+        end
     end
   end
 end
