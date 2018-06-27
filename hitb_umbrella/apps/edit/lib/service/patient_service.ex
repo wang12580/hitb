@@ -49,7 +49,7 @@ defmodule Edit.PatientService do
     maps =
       Enum.reduce(b, %{}, fn x, acc ->
         [hd | all] = String.split(x, " ")
-        all = f(all == [])do ["-"] else all end
+        all = if(all == [])do ["-"] else all end
         case hd do
           "姓名" ->
               Map.put(acc, :name, List.to_string(all))
