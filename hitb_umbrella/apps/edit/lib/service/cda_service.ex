@@ -103,18 +103,20 @@ defmodule Edit.CdaService do
   end
 
   defp is_num(x) do
-    try do
-      String.to_integer(x)
-      true
-    rescue
-      _ ->
-        try do
-          String.to_float(x)
-          true
-        rescue
-          _ ->
-            false
-        end
+    x2 =
+      try do
+        String.to_integer(x)
+      rescue
+        _ ->
+          try do
+            String.to_float(x)
+          rescue
+            _ -> x
+          end
+      end
+    case x == x2 do
+      true -> false
+      false -> true
     end
   end
 

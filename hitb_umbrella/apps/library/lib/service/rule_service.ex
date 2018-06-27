@@ -190,7 +190,7 @@ defmodule Library.RuleService do
               from(p in tab)
           end
         true->
-          type = String.to_atom(type)
+          # query_type = String.to_atom(type)
           cond do
             year != "" and version != "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year and w.version == ^version)
             year != "" and version == "" and dissect == "" -> from(w in tab)|>where([w], w.year == ^year)
@@ -208,7 +208,7 @@ defmodule Library.RuleService do
     skip = Page.skip(page, rows)
     query = if(rows == 0)do query else order_by(query, [w], asc: w.inserted_at)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = repo.all(query)
-    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
+    [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, [], version, year]
   end
 
