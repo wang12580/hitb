@@ -49,6 +49,7 @@ defmodule Edit.CdaService do
         [Map.drop(edit, [:__meta__, :__struct__]), ["文件读取成功"]]
     end
   end
+
   def update(id, content, file_name, username, doctype, mouldtype, header) do
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
@@ -63,6 +64,57 @@ defmodule Edit.CdaService do
       times = Time.stime_number()
       myCdas(id, file_name, file_username, content, doctype, username, times, header)
       PatientService.patient_insert(content, username, times)
+    end
+  end
+
+  def consule(cda_info) do
+    cda_info =
+      Enum.reject(cda_info, fn x ->
+        cond do
+          x == "" -> true
+          String.contains? x, "省" -> true
+          String.contains? x, "市" -> true
+          String.contains? x, "县" -> true
+          String.contains? x, "区" -> true
+          String.contains? x, "街" -> true
+          String.contains? x, "乡" -> true
+          String.contains? x, "镇" -> true
+          String.contains? x, "族" -> true
+          String.contains? x, "国" -> true
+          String.contains? x, "-" -> true
+          x in ["有", "无"] -> true
+          x in ["否", "是"] -> true
+          x in ["男","女"] -> true
+          x in ["已婚", "未婚", "离异"] -> true
+          x == "配偶" -> true
+          is_num(x) -> true
+          true -> false
+        end
+      end)
+    query = from(p in HitbCda)
+    Enum.reduce(cda_info, query, fn x, acc ->
+      x = "%#{x}%"
+      acc
+      |>or_where([p],  like(p.content, ^x))
+    end)
+    |>HitbRepo.all
+    |>:lists.usort
+    |>Enum.map(fn x -> x.content end)
+  end
+
+  defp is_num(x) do
+    try do
+      String.to_integer(x)
+      true
+    rescue
+      _ ->
+        try do
+          String.to_float(x)
+          true
+        rescue
+          _ ->
+            false
+        end
     end
   end
 

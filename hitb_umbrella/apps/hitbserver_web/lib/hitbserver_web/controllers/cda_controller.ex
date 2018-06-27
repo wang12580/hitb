@@ -14,12 +14,15 @@ defmodule HitbserverWeb.CdaController do
     [cda, info] = CdaService.cda_files(username, server_type)
     json conn, %{cda: cda, info: info}
   end
-  
+
   def cda_consule(conn, _params) do
-    %{"diag" => diag, } = Map.merge(%{"diag" => []}, conn.params)
-    IO.inspect diag
-    json conn, %{}
+    %{"diag" => cda_info} = Map.merge(%{"diag" => []}, conn.params)
+    cda_info = Poison.decode!(cda_info)
+    result = CdaService.consule(cda_info)
+    json conn, %{cda: result}
   end
+
+
 
   def index(conn, _params) do
     %{"filename" => filename, "username" => username} = Map.merge(%{"filename" => "", "username" => ""}, conn.params)
