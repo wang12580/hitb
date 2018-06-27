@@ -2,34 +2,46 @@ defmodule Edit.PatientService do
   # import Ecto
   import Ecto.Query
   alias Hitb.Repo
+  alias Hitb.Edit.Cda
   alias Hitb.Edit.Patient
 #   alias Hitb.Edit.Cda
 
-  def patient_list(names, username) do
-    keys = Map.keys(names)
-    maps =
-        Enum.reduce(keys, %{}, fn x, acc ->
+  def patient_list(info, username) do
+    info = Map.keys(info)
+        |>Enum.map(fn x ->
             case x do
-                "姓名" ->
-                    Map.put(acc, :name, Map.get(names, x))
-                "性别" ->
-                    Map.put(acc, :gender, Map.get(names, x))
-                "年龄" ->
-                    Map.put(acc, :age, Map.get(names, x))
-                "民族" ->
-                    Map.put(acc, :nationality, Map.get(names, x))
-                "婚姻状况" ->
-                    Map.put(acc, :marriage, Map.get(names, x))
-                "出生地" ->
-                    Map.put(acc, :native_place, Map.get(names, x))
-                "职业" ->
-                    Map.put(acc, :occupation,Map.get(names, x))
-                _ -> acc
+              "姓名" ->
+                [:name, Map.get(info, x)]
+              "性别" ->
+                [:gender, Map.get(info, x)]
+              "年龄" ->
+                [:age, Map.get(info, x)]
+              "民族" ->
+                [:nationality, Map.get(info, x)]
+              "婚姻状况" ->
+                [:marriage, Map.get(info, x)]
+              "出生地" ->
+                [:native_place, Map.get(info, x)]
+              "职业" ->
+                [:occupation, Map.get(info, x)]
+              _ -> []
             end
+          end)
+        |>Enum.reject(fn x -> x == nil or x == [] end)
+    query = from(p in Patient)
+    Enum.reduce(info, query, fn x, acc ->
+      [key, value] = x
+      acc
+      |>where([p], field(p, ^key) == ^value)
+    end)
+    |>Repo.all
+    |>Enum.map(fn x ->
+        Enum.map(x.patient_id, fn id ->
+          Repo.all(from p in Cda, where: p.patient_id == ^id)
         end)
-    maps = Map.merge(%{:name => "--", :gender => "--", :age => "--", :nationality => "--", :marriage => "--", :native_place => "--", :occupation => "--"}, maps)
-    %{ :name => name, :gender => gender, :age => age, :nationality => nationality, :native_place => native_place, :occupation => occupation} = maps
-    Repo.all(from p in Patient, where: (p.name == ^name or p.gender == ^gender or p.age == ^age or p.nationality == ^nationality or p.native_place == ^native_place or p.occupation == ^occupation) and p.username == ^username, select: p.patient_id)
+      end)
+    |>List.flatten
+    |>Enum.map(fn x -> x.content end)
   end
 
   def patient_insert(content, usernames, patient_ids) do
