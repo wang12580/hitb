@@ -3,9 +3,12 @@ defmodule HitbserverWeb.PageController do
   alias Server.UserService
   alias Server.UploadService
   alias Server.UploadService
-  alias Hitb.Edit.Cdh
+  alias Server.UploadService
+  # alias Hitb.Library.LibWt4
+  # alias Hitb.Repo
+  # alias Hitb.Edit.Cdh
   plug HitbserverWeb.Access
-  import Ecto.Query
+  # import Ecto.Query
 
   def index(conn, _params) do
     user = get_session(conn, :user)
@@ -19,6 +22,15 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
+    # {:ok, binary} = File.read("/home/hitb/桌面/共享!/B_WT4-V20151106-V11 (复件1).csv")
+    # file = String.split(binary, "\n") -- ["代码,名称"]
+    # Enum.each(file -- [""], fn x ->
+    #   [head | tail] = String.split(x, ",")
+    #   body =%{ "code" => head, "name" => to_string(tail), "year" => "", "type" => "民族"}
+    #   %LibWt4{}
+    #   |> LibWt4.changeset(body)
+    #   |> Repo.insert()
+    # end)
     # Block.AutoSyncService.sync()
 
 

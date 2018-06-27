@@ -132,6 +132,7 @@ defmodule HitbserverWeb.Router do
     get "/cda", CdaController, :index
     get "/cda_user", CdaController, :cda_user
     get "/cda_file", CdaController, :cda_file
+    post "/cda_consule", CdaController, :cda_consule
     post "/cda", CdaController, :update
     get "/mouldlist", MouldController, :mould_list
     get "/mouldfile", MouldController, :mould_file
