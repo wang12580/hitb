@@ -109,7 +109,6 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_reply(_topic, _ref, payload, transport, state) do
-
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
@@ -195,6 +194,7 @@ defmodule Block.P2pClientHandler do
               |>Block.Repo.insert
             end)
         end)
+        :timer.send_interval(5000, :ping)
     end
     {:ok, state}
   end
@@ -202,6 +202,11 @@ defmodule Block.P2pClientHandler do
   def handle_info(:connect, _transport, state) do
     Logger.info("connecting")
     {:connect, state}
+  end
+
+  def handle_info(:ping, transport, socket) do
+    GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
+    {:ok, socket}
   end
 
   def handle_info({:join, topic}, transport, state) do
