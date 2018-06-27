@@ -7,6 +7,7 @@ defmodule Server.ShareService do
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
+  alias Block.Edit.Cdh, as: BlockCdh
   alias Hitb.Edit.Cda, as: HitbCda
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
@@ -42,6 +43,7 @@ defmodule Server.ShareService do
     #   end
     latest =
       case type do
+        "cdh" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
         "edit" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
         "stat" -> BlockRepo.all(from p in BlockStatOrg, order_by: [desc: p.inserted_at], limit: 1)
         "library" ->

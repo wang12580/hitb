@@ -110,6 +110,7 @@ defmodule Library.RuleService do
   end
 
   defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
+    rows = if(is_integer(rows))do rows else String.to_integer(rows) end
     repo = if(server_type == "server")do HitbRepo else BlockRepo end
     tab =
       cond do
@@ -168,7 +169,6 @@ defmodule Library.RuleService do
               from(p in tab)
               |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
           end
-          # ruleOther(type, tab_type, tab, page, rows, server_type)
         tab_type in ["中药", "中成药"] ->
           cond do
             type in ["解表药", "清热解毒药", "泻下药", "消导药", "止咳化痰药", "理气药", "温里药", "祛风湿药?", "固涩药", "利水渗湿药", "开窍药"] ->
@@ -206,7 +206,7 @@ defmodule Library.RuleService do
       |>repo.all([timeout: 1500000])
       |>List.first
     skip = Page.skip(page, rows)
-    query = if(rows == 0)do query else order_by(query, [w], asc: w.code)|>limit([w], ^rows)|>offset([w], ^skip) end
+    query = if(rows == 0)do query else order_by(query, [w], asc: w.inserted_at)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = repo.all(query)
     [page_num, page_list, count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, [], version, year]
