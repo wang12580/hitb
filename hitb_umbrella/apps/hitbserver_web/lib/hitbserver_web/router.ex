@@ -164,8 +164,6 @@ defmodule HitbserverWeb.Router do
     get "/connect", PageController, :connect
     #上传wt4
     post "/wt4_upload", PageController, :wt4_upload
-    #登录
-    post "/login", UserController, :login
     #更新机构
     post "/org_update", OrgController, :update
     #机构

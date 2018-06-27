@@ -140,7 +140,7 @@ defmodule HitbserverWeb.PageServerController do
       #求json
       [json, _, count] = get_json(skip)
       #求分页列表
-      [page_num, page_list, count] = Hitb.Page.page_list(page, count, 15)
+      [page_num, page_list, _count] = Hitb.Page.page_list(page, count, 15)
       file_info = Map.merge(%{:count => count}, Hitb.ets_get(:json, :file_info))
       json =
         Enum.map(json, fn x ->

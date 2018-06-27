@@ -291,7 +291,7 @@ defmodule Library.RuleService do
       |> HitbRepo.all
     query = from w in tab, where: like(w.code, ^code) or like(w.name, ^code), select: count(w.id)
     count = hd(HitbRepo.all(query))
-    [page_num, page_list, _] = Page.page_list(page, count, 10)
+    [page_num, page_list, _count] = Page.page_list(page, count, 10)
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)

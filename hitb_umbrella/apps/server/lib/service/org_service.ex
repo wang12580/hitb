@@ -21,7 +21,7 @@ defmodule Server.OrgService do
       |> offset([w], ^skip)
       |> order_by([w], [asc: w.id])
     result = query|>Repo.all
-    [page_num, page_list, _] = Page.page_list(page, count, 15)
+    [page_num, page_list, _count] = Page.page_list(page, count, 15)
     %{org: result, page_num: page_num, page_list: page_list}
   end
 
@@ -50,30 +50,20 @@ defmodule Server.OrgService do
 
   def update_org(id, attrs) do
     org = get_org!(id)
-    case attrs["code"] do
-      nil ->
-        org
-        |> Org.changeset(attrs)
+    cond do
+      attrs["code"] == nil ->
+        Org.changeset(org, attrs)
         |> Repo.update()
-      _ ->
-        cond do
-          org.code == attrs["code"] ->
-            org
-            |> Org.changeset(attrs)
-            |> Repo.update
-          true ->
-            db_org = Repo.get_by(Org, code: attrs["code"])
-            case db_org do
-              nil ->
-                org
-                |> Org.changeset(attrs)
-                |> Repo.update()
-              _ ->
-                changeset = Org.changeset(%Org{}, attrs)
-                changeset = %{changeset | :errors => ["error": "编码已存在！"]}
-                {:error, changeset}
-            end
-        end
+      attrs["code"] == org.code ->
+        Org.changeset(org, attrs)
+        |> Repo.update
+      Repo.get_by(Org, code: attrs["code"]) == nil ->
+        Org.changeset(org, attrs)
+        |> Repo.update()
+      true ->
+        changeset = Org.changeset(%Org{}, attrs)
+        changeset = %{changeset | :errors => ["error": "编码已存在！"]}
+        {:error, changeset}
     end
   end
 
