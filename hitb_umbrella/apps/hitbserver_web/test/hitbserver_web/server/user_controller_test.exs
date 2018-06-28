@@ -4,11 +4,11 @@ defmodule HitbserverWeb.UserControllerTest do
   alias Hitb.Repo
   alias Hitb.Server.User
 
-  @valid_attrs %{username: "hitb", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: 777}
+  @valid_attrs %{username: "aaa", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: 777}
   # , user: @valid_attrs
-  test "POST /servers/login", %{conn: conn} do
-    conn = post conn, "/servers/login", user: @valid_attrs
-    assert json_response(conn, 200)["login"] == false
+  test "POST /hospitals/login", %{conn: conn} do
+    conn = post conn, "/hospitals/login", user: @valid_attrs
+    assert json_response(conn, 200)["login"] == true
   end
   # test "POST /create", %{conn: conn} do
   #   conn = post conn, user_path(conn, :create), user: %{username: "hitb", password: "123456", tel: "77", org: "77", name: "777", email: "77", age: "777"}

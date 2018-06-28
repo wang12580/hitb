@@ -2,7 +2,7 @@ defmodule Block.AccountServiceTest do
   # use ExUnit.Case
   use Block.DataCase, async: true
   alias Block.AccountService
-  alias Block.BlockService
+  # alias Block.BlockService
 
   @account %{username: "sssss", u_username: "", isDelegate: 0, u_isDelegate: 0, secondSignature: 0, u_secondSignature: 0, address: AccountService.generateAddress("sssss"), publicKey: AccountService.generatePublickey("sssss"), secondPublicKey: nil, balance: 10, u_balance: 0, vote: 0, rate: 0, delegates: "", u_delegates: "", multisignatures: "", u_multisignatures: "", multimin: 1, u_multimin: 1, multilifetime: 1, u_multilifetime: 1, blockId: "1", nameexist: true, u_nameexist: true, producedblocks: 1, missedblocks: 1, fees: 0, rewards: 1, lockHeight: 1}
 

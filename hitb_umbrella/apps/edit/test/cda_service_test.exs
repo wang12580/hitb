@@ -1,7 +1,9 @@
 defmodule Edit.CdaServiceTest do
   use Hitb.DataCase, async: true
   alias Edit.CdaService
+  alias Hitb.Edit.Cda
 
+  @valid_attrs %Cda{content: "sss", name: "sss", username: "sss", is_show: false, is_change: false}
   test "test cda_user" do
     assert CdaService.cda_user("server") == [[], "读取成功"]
   end
@@ -15,7 +17,9 @@ defmodule Edit.CdaServiceTest do
   end
 
   test "test update" do
-    assert CdaService.update("", "sdasd dsadsa,姓名 a,年龄 20,出生地 来了,职业 急急急,婚姻状况 来了,民族 啊啊,性别 啊", "test.cda", "test", "doctype", "sadas", %{}).success == true
+    cda = Repo.insert!(@valid_attrs)
+    # id, content, file_name, username, doctype, mouldtype, header
+    assert CdaService.update(cda.id, "sdasd dsadsa,姓名 a,年龄 20,出生地 来了,职业 急急急,婚姻状况 来了,民族 啊啊,性别 啊", "test.cda", "test", "doctype", "sadas", %{}).success == true
   end
 
 end
