@@ -3,7 +3,7 @@ defmodule Library.RuleServiceTest do
   alias Library.RuleService
 
   test "test rule" do
-    assert RuleService.rule(1, "year", "mdc", "BJ", "", "", 15) == %{dissect: "", list: [], page_list: [], page_num: 1, result: [], tab_type: "mdc", type: :year, version: "BJ", year: ""}
+    assert RuleService.rule(1, "year", "mdc", "BJ", "", "", 15) == %{dissect: "", list: [], page_list: [], page_num: 1, result: [], tab_type: "mdc", type: "year", version: "BJ", year: ""}
   end
 
   test "test rule_file" do
