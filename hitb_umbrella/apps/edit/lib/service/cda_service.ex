@@ -117,7 +117,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myMoulds(file_name, file_username, content, doctype, header, save_type) do
+  defp myMoulds(file_name, file_username, content, doctype, header, _save_type) do
     mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do

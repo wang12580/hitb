@@ -70,24 +70,10 @@ defmodule Block.BlockService do
       list == [] ->
         BlockRepository.get_latest_block()
       list |> hd |> elem(1) == nil ->
-        generate_init_block
+        generate_init_block()
       true ->
         list |> hd |> elem(1)
     end
-    #
-    #
-    #
-    #
-    # case :ets.lookup(:latest_block, :latest) do
-    #   [] ->
-    #     IO.inspect "11111111111"
-    #     IO.inspect BlockRepository.get_latest_block()
-    #     BlockRepository.get_latest_block()
-    # list ->
-    #   IO.inspect "2222222222222"
-    #   IO.inspect list
-    #   list |> hd |> elem(1)
-    # end
   end
 
   defp generate_init_block() do

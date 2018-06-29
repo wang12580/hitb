@@ -9,22 +9,22 @@ defmodule Stat.CompService do
   end
 
   def target(file) do
-    index = 0
-    case target1() do
-      [nil] -> []
-      []
-      _ ->
-        target =
-        Enum.reduce(target1(), %{}, fn x, acc ->
-          val = Repo.all(from p in StatFile, where: p.second_menu == ^x, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
-          Map.put(acc, x, val)
-        end)
-
-      index = Map.get(target, file)
-        |>Enum.map(fn x ->
-            Repo.get_by(StatFile, file_name: x).page_type
+    index =
+      case target1() do
+        [nil] -> 0
+        [] -> 0
+        _ ->
+          target =
+          Enum.reduce(target1(), %{}, fn x, acc ->
+            val = Repo.all(from p in StatFile, where: p.second_menu == ^x, select: fragment("array_agg(distinct ?)", p.file_name))|>List.flatten
+            Map.put(acc, x, val)
           end)
-      index = index
+
+        index = Map.get(target, file)
+          |>Enum.map(fn x ->
+              Repo.get_by(StatFile, file_name: x).page_type
+            end)
+        index
         |>Enum.map(fn x ->
             case Key.tool(x) do
               [] -> Key.key("", "", "", "", x)
@@ -36,7 +36,8 @@ defmodule Stat.CompService do
           end)
         |>List.flatten|>List.delete("org")|>List.delete("time")|>:lists.usort
         |>Enum.map(fn x -> Key.cnkey(x) end)
-    end
+        index
+      end
     %{index: index, dimension: ["时间", "机构", "病种"]}
   end
 end

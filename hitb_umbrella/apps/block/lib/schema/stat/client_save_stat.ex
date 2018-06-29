@@ -1,10 +1,10 @@
-defmodule Block.Stat.ClientStat do
+defmodule Block.Stat.ClientSaveStat do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Block.Stat.ClientStat
+  alias Block.Stat.ClientSaveStat
 
 
-  schema "client_stat" do
+  schema "client_save_stat" do
     field :username, :string #创建用户
     field :filename, :string #文件名
     field :data, :string #数据
@@ -14,8 +14,8 @@ defmodule Block.Stat.ClientStat do
   end
 
   @doc false
-  def changeset(%ClientStat{} = client_stat, attrs) do
-    client_stat
+  def changeset(%ClientSaveStat{} = client_save_stat, attrs) do
+    client_save_stat
     |> cast(attrs, [:username, :filename, :data, :previous_hash, :hash])
     |> validate_required([:username, :filename, :data, :previous_hash, :hash])
   end
