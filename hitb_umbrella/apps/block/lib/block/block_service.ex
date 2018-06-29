@@ -31,7 +31,7 @@ defmodule Block.BlockService do
   # creates a new block based on the latest one
   def create_next_block(data, secret) do
     latest_block = get_latest_block()
-    latest_block = if(latest_block)do latest_block else %{index: 0, hash: ""} end
+    latest_block = if(latest_block)do latest_block else %{index: 1, hash: ""} end
     index        = latest_block.index + 1
     timestamp    = :os.system_time(:seconds)
     hash         = generate_block_hash(index, latest_block.hash, timestamp, data)
@@ -65,12 +65,43 @@ defmodule Block.BlockService do
   end
 
   def get_latest_block() do
-    case :ets.lookup(:latest_block, :latest) do
-      [] ->
+    list = :ets.lookup(:latest_block, :latest)
+    cond do
+      list == [] ->
         BlockRepository.get_latest_block()
-    list ->
-      list |> hd |> elem(1)
+      list |> hd |> elem(1) == nil ->
+        generate_init_block
+      true ->
+        list |> hd |> elem(1)
     end
+    #
+    #
+    #
+    #
+    # case :ets.lookup(:latest_block, :latest) do
+    #   [] ->
+    #     IO.inspect "11111111111"
+    #     IO.inspect BlockRepository.get_latest_block()
+    #     BlockRepository.get_latest_block()
+    # list ->
+    #   IO.inspect "2222222222222"
+    #   IO.inspect list
+    #   list |> hd |> elem(1)
+    # end
+  end
+
+  defp generate_init_block() do
+    secret = "someone manual strong movie roof episode eight spatial brown soldier soup motor"
+    init_block = %{
+      index: 0,
+      previous_hash: "0",
+      timestamp: :os.system_time(:seconds),
+      data: "foofizzbazz",
+      hash: :crypto.hash(:sha256, "cool") |> Base.encode64 |> regex,
+      generateAdress: :crypto.hash(:sha256, "#{secret}")|> Base.encode64 |> regex
+    }
+    BlockRepository.insert_block(init_block)
+    init_block
   end
 
   defp generate_hash_from_block(block) do

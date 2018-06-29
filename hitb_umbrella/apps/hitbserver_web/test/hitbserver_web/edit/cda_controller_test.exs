@@ -23,8 +23,8 @@ defmodule HitbserverWeb.CdaControllerTest do
   end
   test "POST /cda", %{conn: conn} do
     cda = Repo.insert!(@valid_attrs)
-    conn = post conn, "/edit/cda", id: cda.id, content: "content", file_name: "file_name", username: "username", doctype: "doctype", mouldtype: "mouldtype", header: %{"a" =>"a", "b"=>"n"}
-    assert json_response(conn, 200)["info"] == "新建成功"
+    conn = post conn, "/edit/cda", id: cda.id, content: "content", file_name: "file_name", username: "username", doctype: "doctype", mouldtype: "mouldtype", header: %{"a" =>"a", "b"=>"n"}, save_type: "更新"
+    assert json_response(conn, 200)["info"] == "保存成功"
   end
 
 end
