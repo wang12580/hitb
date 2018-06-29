@@ -30,7 +30,7 @@ defmodule Library.RuleService do
   alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
-    [result, page_list, page_num, _count, tab_type, type, dissect, list, version, year] = get_rule(page, type, tab_type, version, year, dissect, rows, "server")
+    [result, page_list, page_num, _count, tab_type, _type, dissect, list, version, _year] = get_rule(page, type, tab_type, version, year, dissect, rows, "server")
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
