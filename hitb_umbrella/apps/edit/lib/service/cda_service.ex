@@ -142,7 +142,6 @@ defmodule Edit.CdaService do
   end
 
   defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header) do
-    cda = HitbRepo.get_by(HitbCda, id: id)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
@@ -157,6 +156,7 @@ defmodule Edit.CdaService do
         |> HitbRepo.insert()
         %{success: true, info: "新建成功"}
       _ ->
+        cda = HitbRepo.get_by(HitbCda, id: id)
         cond do
           username == file_username ->
             HitbRepo.get!(HitbCda, id)
