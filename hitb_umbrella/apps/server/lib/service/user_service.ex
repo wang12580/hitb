@@ -49,7 +49,7 @@ defmodule Server.UserService do
           end
         blockchain = %{address: db_user.block_address, publicKey: account.publicKey, secret: account.username}
         user = %{id: db_user.id, org: db_user.org, login: true, username: db_user.username, type: db_user.type, key: db_user.key, blockchain: blockchain, is_show: db_user.is_show}
-        [true, blockchain]
+        [true, user]
       true ->
         [false, %{login: false, username: user.username}]
     end
