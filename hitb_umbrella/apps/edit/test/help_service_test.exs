@@ -10,4 +10,8 @@ defmodule Edit.HelpServiceTest do
     assert HelpService.help_file() == []
   end
 
+  test "test help_insert" do
+    assert HelpService.help_insert("aa", "bb") == %{info: "新建成功", success: true}
+  end
+
 end
