@@ -48,7 +48,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  def update(id, content, file_name, username, doctype, mouldtype, header) do
+  def update(id, content, file_name, username, doctype, mouldtype, header, save_type) do
     {file_username, file_name} =
       if(String.contains? file_name, "-")do
         List.to_tuple(String.split(file_name, "-"))
@@ -56,11 +56,11 @@ defmodule Edit.CdaService do
         {username, file_name}
       end
     if (mouldtype == "模板") do
-      myMoulds(file_name, file_username, content, doctype, header)
+      myMoulds(file_name, file_username, content, doctype, header, save_type)
     else
       times = Time.stime_number()
-      myCdas(id, file_name, file_username, content, doctype, username, times, header)
       PatientService.patient_insert(content, username, times)
+      myCdas(id, file_name, file_username, content, doctype, username, times, header, save_type)
     end
   end
 
@@ -117,7 +117,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myMoulds(file_name, file_username, content, doctype, header) do
+  defp myMoulds(file_name, file_username, content, doctype, header, save_type) do
     mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
@@ -141,7 +141,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header) do
+  defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header, save_type) do
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
@@ -149,13 +149,13 @@ defmodule Edit.CdaService do
         "#{acc};#{x}:#{Map.get(header,x)}"
       end
     end)
-    case id do
-      "" ->
+    cond do
+      save_type in ["上传", "新建"] ->
         %HitbCda{}
         |> HitbCda.changeset(%{"content" => content, "name" => "#{doctype}_#{Time.stime_number}.cda", "username" => file_username, "is_change" => false, "is_show" => true, "patient_id" => patient_id, "header" => header})
         |> HitbRepo.insert()
-        %{success: true, info: "新建成功"}
-      _ ->
+        %{success: true, info: "#{save_type}成功"}
+      id != "" ->
         cda = HitbRepo.get_by(HitbCda, id: id)
         cond do
           username == file_username ->
