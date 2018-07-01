@@ -18,26 +18,20 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    Enum.map(Hitb.Repo.all(from p in Hitb.Edit.Cda, where: p.username == "test@hitb.com.cn"), fn x ->
-      IO.inspect x
-    #   [date, time] = Hitb.Time.stime_ecto(x.inserted_at)|>String.split("　")
-    #   date = String.split(date, "-")|>Enum.join("")
-    #   time = String.split(time, ":")|>Enum.join("")
-    #   if(x.patient_id === nil)do
-      x = Map.drop(x, [:id, :__meta__, :__struct__])
-      x = %{x | :username => "test@test.com.cn"}
-        %Hitb.Edit.Cda{}
-        |>Hitb.Edit.Cda.changeset(x)
-        |>Hitb.Repo.insert
-    #   end
-    end)
-
-
-
-
-    # Block.AutoSyncService.sync()
-
-
+    Stat.StatCdaService.comp()
+    # Enum.map(Hitb.Repo.all(from p in Hitb.Edit.Cda, where: p.username == "test@hitb.com.cn"), fn x ->
+    #   IO.inspect x
+    # #   [date, time] = Hitb.Time.stime_ecto(x.inserted_at)|>String.split("　")
+    # #   date = String.split(date, "-")|>Enum.join("")
+    # #   time = String.split(time, ":")|>Enum.join("")
+    # #   if(x.patient_id === nil)do
+    #   x = Map.drop(x, [:id, :__meta__, :__struct__])
+    #   x = %{x | :username => "test@test.com.cn"}
+    #     %Hitb.Edit.Cda{}
+    #     |>Hitb.Edit.Cda.changeset(x)
+    #     |>Hitb.Repo.insert
+    # #   end
+    # end)
     # {:ok, pid} = Postgrex.start_link(hostname: "127.0.0.1", username: "postgres", password: "postgres", database: "drg_dev")
     # sql = "select code, name from icd10c;"
     # icd10 = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows
@@ -56,7 +50,6 @@ defmodule HitbserverWeb.PageController do
     #   |> Cdh.changeset(body)
     #   |> Hitb.Repo.insert()
     # end)
-
     # content = ["ICD10"| names]|>Enum.join(" ")
     # body =%{ "type" => "CN", "name" => "ICD10", "content" => content}
     # %Cdh{}
