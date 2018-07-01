@@ -25,5 +25,9 @@ defmodule Library.RuleServiceTest do
   test "test search" do
     assert RuleService.search(1, "mdc", "MDCA") == %{table: [], page_list: [], page_num: 1}
   end
+  test "test clinet" do
+    assert RuleService.clinet(1, "year", "mdc", "BJ", "", "", 15, "server") == [[], [], 0, [], 1]
+  end
+
 
 end

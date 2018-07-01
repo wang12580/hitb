@@ -1,4 +1,4 @@
-defmodule Stat.ClientService do
+defmodule Stat.ClientSaveService do
   import Ecto.Query
   alias Hitb.Repo, as: HitbRepo
   alias Block.Repo, as: BlockRepo
@@ -7,9 +7,9 @@ defmodule Stat.ClientService do
   alias Stat.Convert
   # alias Stat.Key
   # alias Block.ShareRecord
-  alias Hitb.Stat.ClientStat, as: HitbClinetStat
+  alias Hitb.Stat.ClientSaveStat, as: HitbClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
-  alias Block.Stat.ClientStat, as: BlockClinetStat
+  alias Block.Stat.ClientSaveStat, as: BlockClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.StatFile, as: BlockStatFile
   alias Hitb.Time
