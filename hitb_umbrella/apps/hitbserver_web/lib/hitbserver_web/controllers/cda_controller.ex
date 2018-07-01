@@ -17,12 +17,15 @@ defmodule HitbserverWeb.CdaController do
 
   def cda_consule(conn, _params) do
     %{"diag" => cda_info} = Map.merge(%{"diag" => []}, conn.params)
-    cda_info = Poison.decode!(cda_info)
-    result = CdaService.consule(cda_info)
+    result =
+      case cda_info do
+        [] -> []
+        _->
+          cda_info = Poison.decode!(cda_info)
+          CdaService.consule(cda_info)
+      end
     json conn, %{cda: result}
   end
-
-
 
   def index(conn, _params) do
     %{"filename" => filename, "username" => username} = Map.merge(%{"filename" => "", "username" => ""}, conn.params)
@@ -30,8 +33,8 @@ defmodule HitbserverWeb.CdaController do
     json conn, %{cda: cda, info: info}
   end
 
-  def update(conn, %{"id" => id, "content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype, "mouldtype" => mouldtype, "header"=> header}) do
-    result = CdaService.update(id, content, file_name, username, doctype, mouldtype, header)
+  def update(conn, %{"id" => id, "content" => content, "file_name" => file_name, "username" => username, "doctype" => doctype, "mouldtype" => mouldtype, "header"=> header, "save_type" => save_type}) do
+    result = CdaService.update(id, content, file_name, username, doctype, mouldtype, header, save_type)
     json conn, result
   end
 end

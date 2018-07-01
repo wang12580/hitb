@@ -1,10 +1,10 @@
-defmodule Hitb.Stat.ClientStat do
+defmodule Hitb.Stat.ClientSaveStat do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Hitb.Stat.ClientStat
+  alias Hitb.Stat.ClientSaveStat
 
 
-  schema "client_stat" do
+  schema "client_save_stat" do
     field :username, :string #创建用户
     field :filename, :string #文件名
     field :data, :string #数据
@@ -12,8 +12,8 @@ defmodule Hitb.Stat.ClientStat do
   end
 
   @doc false
-  def changeset(%ClientStat{} = client_stat, attrs) do
-    client_stat
+  def changeset(%ClientSaveStat{} = client_save_stat, attrs) do
+    client_save_stat
     |> cast(attrs, [:username, :filename, :data])
     |> validate_required([:username, :filename, :data])
   end

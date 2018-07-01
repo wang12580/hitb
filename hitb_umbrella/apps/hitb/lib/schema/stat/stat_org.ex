@@ -30,6 +30,6 @@ defmodule Hitb.Stat.StatOrg do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:time, :org, :weight_count, :death_num, :death_rate, :icd10_num, :day_avg, :fee_avg, :fee_index, :day_index, :cmi, :death_age_avg, :weight, :int_time, :num_sum, :death_rate_log, :org_type, :time_type, :true_org])
-    |> validate_required([])
+    |> validate_required([:time])
   end
 end
