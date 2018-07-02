@@ -15,56 +15,56 @@ defmodule Block.OtherSyncService do
   alias Block.Library.Wt4
   alias Block.Stat.StatOrg
 
-  def get_latest_cda_hash do
+  def get_cda_hash do
     Repo.all(from p in Cda, select: p.hash)
   end
 
-  def get_latest_cda_file_hash do
+  def get_cda_file_hash do
     Repo.all(from p in CdaFile, select: p.hash)
   end
 
-  def get_latest_cah_hash do
+  def get_cah_hash do
     Repo.all(from p in Cdh, select: p.hash)
   end
 
-  def get_latest_statorg_hash do
+  def get_statorg_hash do
     Repo.all(from p in StatOrg, select: p.hash)
   end
 
 
-  def get_latest_ruleadrg_hash do
+  def get_ruleadrg_hash do
     Repo.all(from p in RuleAdrg, select: p.hash)
   end
 
-  def get_latest_cmp_hash do
+  def get_cmp_hash do
     Repo.all(from p in ChineseMedicinePatent, select: p.hash)
   end
 
-  def get_latest_cm_hash do
+  def get_cm_hash do
     Repo.all(from p in ChineseMedicine, select: p.hash)
   end
 
-  def get_latest_ruledrg_hash do
+  def get_ruledrg_hash do
     Repo.all(from p in RuleDrg, select: p.hash)
   end
 
-  def get_latest_ruleicd9_hash do
+  def get_ruleicd9_hash do
     Repo.all(from p in RuleIcd9, select: p.hash)
   end
 
-  def get_latest_ruleicd10_hash do
+  def get_ruleicd10_hash do
     Repo.all(from p in RuleIcd10, select: p.hash)
   end
 
-  def get_latest_rulemdc_hash do
+  def get_rulemdc_hash do
     Repo.all(from p in RuleMdc, select: p.hash)
   end
 
-  def get_latest_libwt4_hash do
+  def get_libwt4_hash do
     Repo.all(from p in LibWt4, select: p.hash)
   end
 
-  def get_latest_wt4_hash do
+  def get_wt4_hash do
     Repo.all(from p in Wt4, select: p.hash)
   end
 
