@@ -6,6 +6,7 @@ defmodule Server.ShareService do
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
+  alias Block.Edit.CdaFile, as: BlockCdaFile
   alias Block.Edit.Cdh, as: BlockCdh
   alias Hitb.Edit.Cda, as: HitbCda
   alias Hitb.Edit.Cdh, as: HitbCdh
@@ -33,13 +34,13 @@ defmodule Server.ShareService do
 
 
 
-  def share(type, file_name, username, _content) do
-    # content =
-    #   case content do
-    #     "" -> content
-    #     [] ->  ""
-    #     _ -> Poison.decode!(content)
-    #   end
+  def share(type, file_name, username, content) do
+    content =
+      case content do
+        "" -> content
+        [] ->  ""
+        _ -> Poison.decode!(content)
+      end
     latest =
       case type do
         "cdh" -> BlockRepo.all(from p in BlockCdh, order_by: [desc: p.inserted_at], limit: 1)
@@ -69,8 +70,16 @@ defmodule Server.ShareService do
         "cdh" ->
           HitbRepo.all(from p in HitbCdh)
         "edit" ->
-          [_, editName] = String.split(file_name, "-")
-          HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
+          [username, editName] = String.split(file_name, "-")
+          edit = HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
+          bloackCdaFile = BlockRepo.get_by(BlockCdaFile, username: username, filename: editName)
+          if !bloackCdaFile do
+            body = %{"username" => username, "filename" => editName}
+            %BlockCdaFile{}
+            |> BlockCdaFile.changeset(body)
+            |> BlockRepo.insert()
+          end
+          edit
         "stat" ->
           page_type = HitbRepo.get_by(HitbStatFile, file_name: "#{file_name}")
           if(BlockRepo.get_by(BlockStatFile, file_name: "#{file_name}") == nil)do
@@ -78,7 +87,19 @@ defmodule Server.ShareService do
             |>BlockStatFile.changeset(Map.drop(page_type, [:id, :__meta__, :__struct__]))
             |>BlockRepo.insert
           end
-          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "", "", "", "", "org", "asc", page_type.page_type, 15, "download", "server")
+          [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "total", "", "", "", "org", "asc", page_type.page_type, 15, "download", "server")
+          # content.
+          cont = Enum.map(content, fn x ->
+            x = String.split(x, ",")
+            # %{org: Enum.at(x, 0), time: Enum.at(x, 1)}
+            "#{Enum.at(x, 0)}-#{Enum.at(x, 1)}"
+          end)
+          stat = Enum.reject(stat, fn x -> "#{x.org}-#{x.time}" not in cont end)
+
+          IO.inspect stat
+          # Enum.each(stat, fn x ->
+          #   # IO.inspect x
+          # end)
           stat
         "library" ->
           file_name2 = String.split(file_name, ".")|>List.first
