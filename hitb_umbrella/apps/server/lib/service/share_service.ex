@@ -7,9 +7,9 @@ defmodule Server.ShareService do
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.CdaFile, as: BlockCdaFile
-  alias Block.Edit.Cdh, as: BlockCdh
+  alias Block.Library.Cdh, as: BlockCdh
   alias Hitb.Edit.Cda, as: HitbCda
-  alias Hitb.Edit.Cdh, as: HitbCdh
+  alias Hitb.Library.Cdh, as: HitbCdh
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Hitb.Stat.StatOrg, as: HitbStatOrg
   alias Hitb.Stat.StatFile, as: HitbStatFile
