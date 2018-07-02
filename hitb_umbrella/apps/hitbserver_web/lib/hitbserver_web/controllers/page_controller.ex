@@ -18,43 +18,30 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    Stat.StatCdaService.comp()
-    # Enum.map(Hitb.Repo.all(from p in Hitb.Edit.Cda, where: p.username == "test@hitb.com.cn"), fn x ->
-    #   IO.inspect x
-    # #   [date, time] = Hitb.Time.stime_ecto(x.inserted_at)|>String.split("　")
-    # #   date = String.split(date, "-")|>Enum.join("")
-    # #   time = String.split(time, ":")|>Enum.join("")
-    # #   if(x.patient_id === nil)do
-    #   x = Map.drop(x, [:id, :__meta__, :__struct__])
-    #   x = %{x | :username => "test@test.com.cn"}
-    #     %Hitb.Edit.Cda{}
-    #     |>Hitb.Edit.Cda.changeset(x)
+    Server.ShareService.share("cdh", "", "", [])
+    # Hitb.Repo.all(from p in Hitb.Library.LibWt4, where: p.type != "病理诊断编码(M码)" and p.type != "街道乡镇代码" and p.type != "科别" and p.type != "行政区划" and p.type != "区县编码", select: p.type, group_by: p.type)|>List.flatten
+    # |>Enum.map(fn x ->
+    #     res = Hitb.Repo.all(from p in Hitb.Library.LibWt4, select: p.name, where: p.type == ^x)
+    #     res = res
+    #       |>Enum.map(fn x ->
+    #           x = Regex.replace(~r/ /, x, "")
+    #           x = Regex.replace(~r/ /, x, "")
+    #         end)
+    #     %Hitb.Library.Cdh{}
+    #     |>Hitb.Library.Cdh.changeset(%{key: x, value: res|>Enum.join(" ")})
     #     |>Hitb.Repo.insert
-    # #   end
-    # end)
-    # {:ok, pid} = Postgrex.start_link(hostname: "127.0.0.1", username: "postgres", password: "postgres", database: "drg_dev")
-    # sql = "select code, name from icd10c;"
-    # icd10 = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows
-    # Enum.each(icd10, fn x ->
-    #   [x, name] = x
-    #   sql = "select name from rule_bj_icd10 where icdc = '#{x}';"
-    #   a = Postgrex.query!(pid, sql, [], [timeout: 15000000]).rows|>List.flatten
-    #   IO.inspect [name | a]
-    # end)
-    # IO.inspect Hitb.Repo.all(from p in Hitb.Library.RuleMdc, select: p.version, group_by: p.version)
-    # names = Hitb.Repo.all(from p in Hitb.Library.RuleDrg, where: p.version == "CN", order_by: [asc: p.code], select: [p.name, p.code])
-    # Enum.each(names, fn x ->
-    #   x = x|>Enum.join(" ")
-    #   body =%{ "type" => "CN", "name" => "DRG", "content" => x}
-    #   %Cdh{}
-    #   |> Cdh.changeset(body)
-    #   |> Hitb.Repo.insert()
-    # end)
-    # content = ["ICD10"| names]|>Enum.join(" ")
-    # body =%{ "type" => "CN", "name" => "ICD10", "content" => content}
-    # %Cdh{}
-    # |> Cdh.changeset(body)
-    # |> Hitb.Repo.insert()
+    #   end)
+
+    # city = Hitb.Province.county()
+    # Hitb.Province.city()|>Map.values()|>List.flatten
+    # |>Enum.map(fn x ->
+    #   %Hitb.Library.Cdh{}
+    #   |>Hitb.Library.Cdh.changeset(%{key: x, value: Map.get(city, x)|>Enum.join(" ")})
+    #   |>Hitb.Repo.insert
+    #
+    #  end)
+
+
     json conn, %{}
   end
 

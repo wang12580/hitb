@@ -16,7 +16,7 @@ defmodule Block.P2pClientHandler do
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.CdaFile, as: BlockCdaFIle
-  alias Block.Edit.Cdh, as: BlockCdh
+  alias Block.Library.Cdh, as: BlockCdh
   alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Block.Library.RuleMdc, as: BlockRuleMdc

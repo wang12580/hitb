@@ -3,7 +3,7 @@ defmodule Block.OtherSyncService do
   alias Block.Repo
   alias Block.Edit.Cda
   alias Block.Edit.CdaFile
-  alias Block.Edit.Cdh
+  alias Block.Library.Cdh
   alias Block.Library.RuleAdrg
   alias Block.Library.ChineseMedicinePatent
   alias Block.Library.ChineseMedicine

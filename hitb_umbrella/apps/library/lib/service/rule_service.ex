@@ -70,6 +70,7 @@ defmodule Library.RuleService do
         |>Enum.map(fn x -> x <> ".csv" end)
       _ ->
         HitbRepo.all(from p in HitbLibraryFile, select: p.file_name)
+        |>List.insert_at(-1, "cdh")
         # ["mdc", "adrg", "drg", "icd9", "icd10", "基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据", "中药", "中成药", "西药"]
         |>Enum.map(fn x -> x <> ".csv" end)
     end
