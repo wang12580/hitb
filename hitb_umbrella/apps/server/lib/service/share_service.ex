@@ -6,6 +6,7 @@ defmodule Server.ShareService do
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
+  alias Block.Edit.CdaFile, as: BlockCdaFile
   alias Block.Edit.Cdh, as: BlockCdh
   alias Hitb.Edit.Cda, as: HitbCda
   alias Hitb.Edit.Cdh, as: HitbCdh
@@ -69,8 +70,16 @@ defmodule Server.ShareService do
         "cdh" ->
           HitbRepo.all(from p in HitbCdh)
         "edit" ->
-          [_, editName] = String.split(file_name, "-")
-          HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
+          [username, editName] = String.split(file_name, "-")
+          edit = HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
+          bloackCdaFile = BlockRepo.get_by(BlockCdaFile, username: username, filename: editName)
+          if !bloackCdaFile do
+            body = %{"username" => username, "filename" => editName}
+            %BlockCdaFile{}
+            |> BlockCdaFile.changeset(body)
+            |> BlockRepo.insert()
+          end
+          edit
         "stat" ->
           page_type = HitbRepo.get_by(HitbStatFile, file_name: "#{file_name}")
           if(BlockRepo.get_by(BlockStatFile, file_name: "#{file_name}") == nil)do
