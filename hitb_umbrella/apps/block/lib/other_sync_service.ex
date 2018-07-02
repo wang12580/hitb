@@ -2,6 +2,7 @@ defmodule Block.OtherSyncService do
   import Ecto.Query, warn: false
   alias Block.Repo
   alias Block.Edit.Cda
+  alias Block.Edit.CdaFile
   alias Block.Edit.Cdh
   alias Block.Library.RuleAdrg
   alias Block.Library.ChineseMedicinePatent
@@ -16,6 +17,10 @@ defmodule Block.OtherSyncService do
 
   def get_latest_cda_hash do
     Repo.all(from p in Cda, select: p.hash)
+  end
+
+  def get_latest_cda_file_hash do
+    Repo.all(from p in CdaFile, select: p.hash)
   end
 
   def get_latest_cah_hash do
@@ -68,6 +73,7 @@ defmodule Block.OtherSyncService do
     case x do
       "statorg_hash" -> Repo.all(StatOrg)
       "cda_hash" -> Repo.all(Cda)
+      "cda_file_hash" -> Repo.all(CdaFile)
       "cdh_hash" -> Repo.all(Cdh)
       "ruleadrg_hash" -> Repo.all(RuleAdrg)
       "cmp_hash" -> Repo.all(ChineseMedicinePatent)
