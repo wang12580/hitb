@@ -2,7 +2,7 @@ defmodule HitbserverWeb.OnlineChannel do
   use Phoenix.Channel
   require Logger
   alias Server.UserService
-  alias Edit.CdhService
+  alias Library.CdhService
 
   def join("online:list", message, socket) do
     if(message["username"])do

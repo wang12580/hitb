@@ -1,7 +1,7 @@
 defmodule Stat.StatCdaService do
   import Ecto.Query
   alias Hitb.Repo
-  alias Stat.StatCda
+  # alias Stat.StatCda
   alias Hitb.Edit.Cda
 
   def comp() do

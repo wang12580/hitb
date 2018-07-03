@@ -3,9 +3,8 @@ defmodule Block.Library.Repo.Migrations.Cdh do
 
   def change do
     create table(:cdh) do
-      add :content, :string, size: 10485760
-      add :name, :string
-      add :type, :string
+      add :key, :string
+      add :value, :string, size: 10485760
       add :previous_hash, :string
       add :hash, :string
       timestamps()

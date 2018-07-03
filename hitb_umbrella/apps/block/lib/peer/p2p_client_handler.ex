@@ -16,7 +16,7 @@ defmodule Block.P2pClientHandler do
   alias Block.Stat.StatOrg, as: BlockStatOrg
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.CdaFile, as: BlockCdaFIle
-  alias Block.Edit.Cdh, as: BlockCdh
+  alias Block.Library.Cdh, as: BlockCdh
   alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Block.Library.RuleMdc, as: BlockRuleMdc
@@ -138,19 +138,19 @@ defmodule Block.P2pClientHandler do
         |> Enum.each(fn x -> TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync",
           %{
-            statorg_hash: OtherSyncService.get_latest_statorg_hash(),
-            cda_hash: OtherSyncService.get_latest_cda_hash(),
-            cda_file_hash: OtherSyncService.get_latest_cda_file_hash(),
-            cdh_hash: OtherSyncService.get_latest_cah_hash(),
-            ruleadrg_hash: OtherSyncService.get_latest_ruleadrg_hash(),
-            cmp_hash: OtherSyncService.get_latest_cmp_hash(),
-            cm_hash: OtherSyncService.get_latest_cm_hash(),
-            ruledrg_hash: OtherSyncService.get_latest_ruledrg_hash(),
-            ruleicd9_hash: OtherSyncService.get_latest_ruleicd9_hash(),
-            ruleicd10_hash: OtherSyncService.get_latest_ruleicd10_hash(),
-            rulemdc_hash: OtherSyncService.get_latest_rulemdc_hash(),
-            libwt4_hash: OtherSyncService.get_latest_libwt4_hash(),
-            wt4_hash: OtherSyncService.get_latest_wt4_hash()})
+            statorg_hash: OtherSyncService.get_statorg_hash(),
+            cda_hash: OtherSyncService.get_cda_hash(),
+            cda_file_hash: OtherSyncService.get_cda_file_hash(),
+            cdh_hash: OtherSyncService.get_cah_hash(),
+            ruleadrg_hash: OtherSyncService.get_ruleadrg_hash(),
+            cmp_hash: OtherSyncService.get_cmp_hash(),
+            cm_hash: OtherSyncService.get_cm_hash(),
+            ruledrg_hash: OtherSyncService.get_ruledrg_hash(),
+            ruleicd9_hash: OtherSyncService.get_ruleicd9_hash(),
+            ruleicd10_hash: OtherSyncService.get_ruleicd10_hash(),
+            rulemdc_hash: OtherSyncService.get_rulemdc_hash(),
+            libwt4_hash: OtherSyncService.get_libwt4_hash(),
+            wt4_hash: OtherSyncService.get_wt4_hash()})
       "other_sync" ->
         Map.keys(response)
         |>Enum.each(fn k ->
