@@ -1,8 +1,8 @@
-defmodule Hitb.Edit.CdhTest do
+defmodule Hitb.Library.CdhTest do
   use Hitb.DataCase
 
-  alias Hitb.Edit.Cdh
-  @valid_attrs %{content: "sss", name: "sss", type: "sss"}
+  alias Hitb.Library.Cdh
+  @valid_attrs %{key: "sss", value: "sss"}
   @invalid_attrs %{}
 
 
