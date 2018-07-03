@@ -297,7 +297,22 @@ defmodule Library.RuleService do
     end)
     %{table: result, page_num: page_num, page_list: page_list}
   end
-
+  def rule_down(filename) do
+    tab =
+      cond do
+        filename == "icd9" -> HitbRuleIcd9
+        filename == "icd10" -> HitbRuleIcd10
+        filename == "mdc" -> HitbRuleMdc
+        filename == "adrg" -> HitbRuleAdrg
+        filename == "drg" -> HitbRuleDrg
+      end
+    result = HitbRepo.all(from p in tab)
+    result = result
+      |>Enum.map(fn x ->
+          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
+        end)
+    %{result: result}
+  end
   defp cn(key) do
     case to_string(key) do
       "code" -> "编码"
