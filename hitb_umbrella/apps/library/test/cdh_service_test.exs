@@ -1,6 +1,6 @@
-defmodule Edit.CdhServiceTest do
+defmodule Library.CdhServiceTest do
   use Hitb.DataCase, async: true
-  alias Edit.CdhService
+  alias Library.CdhService
 
   test "test cdh_list" do
     assert CdhService.cdh_list() == []
