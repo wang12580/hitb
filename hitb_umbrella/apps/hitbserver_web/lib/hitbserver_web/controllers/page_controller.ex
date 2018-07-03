@@ -4,7 +4,6 @@ defmodule HitbserverWeb.PageController do
   alias Server.UploadService
   alias Server.UploadService
   plug HitbserverWeb.Access
-  import Ecto.Query
 
   def index(conn, _params) do
     user = get_session(conn, :user)
@@ -18,7 +17,7 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    Server.ShareService.share("cdh", "", "", [])
+    # Server.ShareService.share("cdh", "", "", [])
     # Hitb.Repo.all(from p in Hitb.Library.LibWt4, where: p.type != "病理诊断编码(M码)" and p.type != "街道乡镇代码" and p.type != "科别" and p.type != "行政区划" and p.type != "区县编码", select: p.type, group_by: p.type)|>List.flatten
     # |>Enum.map(fn x ->
     #     res = Hitb.Repo.all(from p in Hitb.Library.LibWt4, select: p.name, where: p.type == ^x)

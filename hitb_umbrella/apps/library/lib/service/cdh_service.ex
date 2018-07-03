@@ -21,7 +21,7 @@ defmodule Library.CdhService do
       end)
   end
 
-  def cdh(page, rows, server_type) do
+  def cdh(page, rows, _server_type) do
     rows = if(is_integer(rows))do rows else String.to_integer(rows) end
     skip = Page.skip(page, rows)
     query = from(w in Cdh)
@@ -38,16 +38,6 @@ defmodule Library.CdhService do
       end
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     %{library: result, list: [], count: count, page_list: page_list, page: page_num}
-  end
-
-  defp cn(key) do
-    case to_string(key) do
-      "key" -> "KEY"
-      "value" -> "VALUE"
-      "hash" -> "哈希值"
-      "previous_hash" -> "上一条哈希值"
-      _ -> to_string(key)
-    end
   end
 
 end
