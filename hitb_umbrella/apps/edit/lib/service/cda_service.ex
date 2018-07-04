@@ -64,59 +64,6 @@ defmodule Edit.CdaService do
     end
   end
 
-  def consule(cda_info) do
-    cda_info =
-      Enum.reject(cda_info, fn x ->
-        cond do
-          x == "" -> true
-          String.contains? x, "省" -> true
-          String.contains? x, "市" -> true
-          String.contains? x, "县" -> true
-          String.contains? x, "区" -> true
-          String.contains? x, "街" -> true
-          String.contains? x, "乡" -> true
-          String.contains? x, "镇" -> true
-          String.contains? x, "族" -> true
-          String.contains? x, "国" -> true
-          String.contains? x, "-" -> true
-          x in ["有", "无"] -> true
-          x in ["否", "是"] -> true
-          x in ["男","女"] -> true
-          x in ["已婚", "未婚", "离异"] -> true
-          x == "配偶" -> true
-          is_num(x) -> true
-          true -> false
-        end
-      end)
-    query = from(p in HitbCda)
-    Enum.reduce(cda_info, query, fn x, acc ->
-      x = "%#{x}%"
-      acc
-      |>or_where([p],  like(p.content, ^x))
-    end)
-    |>HitbRepo.all
-    |>:lists.usort
-    |>Enum.map(fn x -> x.content end)
-  end
-
-  defp is_num(x) do
-    x2 =
-      try do
-        String.to_integer(x)
-      rescue
-        _ ->
-          try do
-            String.to_float(x)
-          rescue
-            _ -> x
-          end
-      end
-    case x == x2 do
-      true -> false
-      false -> true
-    end
-  end
-
   defp myMoulds(file_name, file_username, content, doctype, header, _save_type) do
     mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
