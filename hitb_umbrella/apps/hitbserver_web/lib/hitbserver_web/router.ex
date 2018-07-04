@@ -153,6 +153,8 @@ defmodule HitbserverWeb.Router do
     get "/wt4", Wt4Controller, :index
     get "/stat_wt4", Wt4Controller, :stat_wt4
     get "/server_rule", RuleController, :server_rule
+    get "/rule_down", RuleController, :rule_down
+
   end
 
   scope "/servers", HitbserverWeb do

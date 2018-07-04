@@ -46,5 +46,10 @@ defmodule HitbserverWeb.RuleController do
     result = RuleService.search(page, table, code)
     json conn, result
   end
+  # 字典库下载
+  def rule_down(conn, %{"filename" => filename}) do
+    result = RuleService.rule_down(filename)
+    json conn, result
+  end
 
 end
