@@ -20,6 +20,8 @@ defmodule Stat.StatCdaService do
     |>List.flatten
     |>:lists.usort
     |>Enum.map(fn x -> Repo.all(from p in Cda, where: p.patient_id == ^x) end)
+    |>List.flatten
+    |>Enum.map(fn x -> x.content end)
   end
 
   def comp() do
