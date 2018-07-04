@@ -4,7 +4,7 @@ defmodule HitbserverWeb.StatCdaController do
   # alias Hitb.Time
   plug HitbserverWeb.Access
 
-  def cda_consult(conn, %{"server_type" => server_type}) do
+  def cda_consult(conn, %{"server_type" => _server_type}) do
     %{"item" => item} = Map.merge(%{"item" => ""}, conn.params)
     result =
       case item do
