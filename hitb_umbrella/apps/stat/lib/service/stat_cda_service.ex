@@ -19,7 +19,7 @@ defmodule Stat.StatCdaService do
     |>Repo.all
     |>List.flatten
     |>:lists.usort
-    |>Enum.map(fn x -> Repo.all(from p in Cda, where: p.patient_id == ^x) end)
+    |>Enum.map(fn x -> Repo.get!(Cda, String.to_integer(x)) end)
     |>List.flatten
     |>Enum.map(fn x -> x.content end)
   end
@@ -55,7 +55,7 @@ defmodule Stat.StatCdaService do
 
   #初始化计算
   def init_comp() do
-    Repo.delete_all(from p in Wt4StatCvSave)
+    Repo.delete_all(from p in StatCda)
     generate()
     |>Enum.map(fn x ->
         %StatCda{}

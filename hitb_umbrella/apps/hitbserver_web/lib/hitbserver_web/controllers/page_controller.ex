@@ -1,7 +1,9 @@
 defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
+  # import Ecto.Query
   alias Server.UserService
-  alias Stat.StatCdaService
+  alias Server.UploadService
+  # alias Stat.StatCdaService
   plug HitbserverWeb.Access
 
   def index(conn, _params) do
@@ -16,29 +18,6 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-    IO.inspect StatCdaService.get_stat_cda("死亡")
-    # Server.ShareService.share("cdh", "", "", [])
-    # Hitb.Repo.all(from p in Hitb.Library.LibWt4, where: p.type != "病理诊断编码(M码)" and p.type != "街道乡镇代码" and p.type != "科别" and p.type != "行政区划" and p.type != "区县编码", select: p.type, group_by: p.type)|>List.flatten
-    # |>Enum.map(fn x ->
-    #     res = Hitb.Repo.all(from p in Hitb.Library.LibWt4, select: p.name, where: p.type == ^x)
-    #     res = res
-    #       |>Enum.map(fn x ->
-    #           x = Regex.replace(~r/ /, x, "")
-    #           x = Regex.replace(~r/ /, x, "")
-    #         end)
-    #     %Hitb.Library.Cdh{}
-    #     |>Hitb.Library.Cdh.changeset(%{key: x, value: res|>Enum.join(" ")})
-    #     |>Hitb.Repo.insert
-    #   end)
-
-    # city = Hitb.Province.county()
-    # Hitb.Province.city()|>Map.values()|>List.flatten
-    # |>Enum.map(fn x ->
-    #   %Hitb.Library.Cdh{}
-    #   |>Hitb.Library.Cdh.changeset(%{key: x, value: Map.get(city, x)|>Enum.join(" ")})
-    #   |>Hitb.Repo.insert
-    #
-    #  end)
 
 
     json conn, %{}
