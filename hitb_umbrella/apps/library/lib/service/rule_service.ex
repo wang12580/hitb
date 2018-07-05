@@ -13,6 +13,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.RuleIcd9, as: HitbRuleIcd9
   alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
   alias Hitb.Library.LibWt4, as: HitbLibWt4
+  alias Hitb.Library.Cdh, as: HitbRuleCdh
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
   alias Hitb.Library.WesternMedicine, as: HitbWesternMedicine
@@ -300,17 +301,31 @@ defmodule Library.RuleService do
   def rule_down(filename) do
     tab =
       cond do
-        filename == "icd9" -> HitbRuleIcd9
-        filename == "icd10" -> HitbRuleIcd10
-        filename == "mdc" -> HitbRuleMdc
-        filename == "adrg" -> HitbRuleAdrg
-        filename == "drg" -> HitbRuleDrg
+        filename == "icd9.csv" -> HitbRuleIcd9
+        filename == "icd10.csv" -> HitbRuleIcd10
+        filename == "mdc.csv" -> HitbRuleMdc
+        filename == "adrg.csv" -> HitbRuleAdrg
+        filename == "drg.csv" -> HitbRuleDrg
+        filename == "cdh.csv" -> HitbRuleCdh
       end
     result = HitbRepo.all(from p in tab)
     result = result
       |>Enum.map(fn x ->
           Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
         end)
+      |>Enum.map(fn x ->
+          x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
+          x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
+          x
+        end)
+    result =
+      case length(result) do
+        0 -> []
+        _ ->
+          keys = Map.keys(List.first(result))|>Enum.map(fn x -> cn(x) end)
+          [keys] ++ Enum.map(result, fn x -> Map.values(x) end)
+      end
+    IO.inspect result
     %{result: result}
   end
   defp cn(key) do
