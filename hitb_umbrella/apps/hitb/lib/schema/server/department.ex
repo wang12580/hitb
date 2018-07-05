@@ -17,5 +17,6 @@ defmodule Hitb.Server.Department do
     drpartment
     |> cast(attrs, [:class_code, :class_name, :department_code, :department_name])
     |> validate_required([:class_code, :class_name, :department_code, :department_name])
+    |> unique_constraint(:class_code)
   end
 end

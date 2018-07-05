@@ -16,5 +16,6 @@ defmodule Hitb.Stat.StatCda do
     stat_cda
     |> cast(attrs, [:items, :num, :patient_id])
     |> validate_required([:items, :num, :patient_id])
+    |> unique_constraint(:items)
   end
 end
