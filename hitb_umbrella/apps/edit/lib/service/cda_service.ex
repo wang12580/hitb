@@ -121,7 +121,7 @@ defmodule Edit.CdaService do
     end
   end
 
-  defp generate_patient_id() do
+  def generate_patient_id() do
     {megaSecs, secs, _} = :erlang.timestamp()
     randMegaSecs = :rand.uniform(megaSecs)
     randSecs = :rand.uniform(secs)

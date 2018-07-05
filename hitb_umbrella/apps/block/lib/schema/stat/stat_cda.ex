@@ -18,5 +18,6 @@ defmodule Block.Stat.StatCda do
     stat_cda
     |> cast(attrs, [:items, :num, :patient_id, :previous_hash, :hash])
     |> validate_required([:items, :num, :patient_id, :previous_hash, :hash])
+    |> unique_constraint(:items)
   end
 end

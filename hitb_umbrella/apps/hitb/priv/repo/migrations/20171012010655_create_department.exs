@@ -9,6 +9,7 @@ defmodule Hitb.Server.Repo.Migrations.CreateDepartment do
       add :department_name, :string #科室名称
       timestamps()
     end
+    create unique_index(:department, [:class_code])
 
   end
 end

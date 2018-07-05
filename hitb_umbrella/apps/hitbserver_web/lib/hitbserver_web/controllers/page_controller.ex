@@ -18,6 +18,16 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
+
+    cda = Block.Repo.all(from p in Block.Edit.Cda)
+
+    Enum.map(cda, fn x ->
+      patient_id = Hitb.Repo.get_by(Hitb.Edit.Cda, name: x.name, username: x.username).patient_id
+      x
+      |>Block.Edit.Cda.changeset(%{patient_id: patient_id})
+      |>Block.Repo.update
+    end)
+
     json conn, %{}
   end
 

@@ -9,5 +9,6 @@ defmodule Block.Library.Repo.Migrations.Cdh do
       add :hash, :string
       timestamps()
     end
+    create unique_index(:cdh, [:key])
   end
 end
