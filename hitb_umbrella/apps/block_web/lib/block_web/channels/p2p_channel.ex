@@ -8,7 +8,7 @@ defmodule BlockWeb.P2pChannel do
   # @update_block_chain Block.P2pMessage.update_block_chain
   @add_peer_request   Block.P2pMessage.add_peer_request
   @query_all_transactions "query_all_transactions"
-  alias Block.OtherSyncService
+  alias Block.SyncService
   @connection_error   Block.P2pMessage.connection_error
   @connection_success Block.P2pMessage.connection_success
   alias Block.BlockService
@@ -54,7 +54,7 @@ defmodule BlockWeb.P2pChannel do
     data =
       Map.keys(payload)
       |>Enum.reduce(%{}, fn x, acc ->
-          data = OtherSyncService.get_data(x, Map.get(payload, x))
+          data = SyncService.get_data(x, Map.get(payload, x))
           Map.put(acc, String.to_atom(x), data)
         end)
     {:reply, {:ok, %{type: "other_sync", data: data}}, socket}

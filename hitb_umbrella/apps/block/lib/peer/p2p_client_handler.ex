@@ -10,10 +10,11 @@ defmodule Block.P2pClientHandler do
   alias Block.BlockService
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
-  alias Block.OtherSyncService
+  alias Block.SyncService
   alias Block.P2pSessionManager
   alias Block.TransactionRepository
   alias Block.Stat.StatOrg, as: BlockStatOrg
+  alias Block.Stat.StatCda, as: BlockStatCda
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.CdaFile, as: BlockCdaFIle
   alias Block.Library.Cdh, as: BlockCdh
@@ -138,19 +139,20 @@ defmodule Block.P2pClientHandler do
         |> Enum.each(fn x -> TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync",
           %{
-            statorg_hash: OtherSyncService.get_statorg_hash(),
-            cda_hash: OtherSyncService.get_cda_hash(),
-            cda_file_hash: OtherSyncService.get_cda_file_hash(),
-            cdh_hash: OtherSyncService.get_cah_hash(),
-            ruleadrg_hash: OtherSyncService.get_ruleadrg_hash(),
-            cmp_hash: OtherSyncService.get_cmp_hash(),
-            cm_hash: OtherSyncService.get_cm_hash(),
-            ruledrg_hash: OtherSyncService.get_ruledrg_hash(),
-            ruleicd9_hash: OtherSyncService.get_ruleicd9_hash(),
-            ruleicd10_hash: OtherSyncService.get_ruleicd10_hash(),
-            rulemdc_hash: OtherSyncService.get_rulemdc_hash(),
-            libwt4_hash: OtherSyncService.get_libwt4_hash(),
-            wt4_hash: OtherSyncService.get_wt4_hash()})
+            statorg_hash: SyncService.get_statorg_hash(),
+            statcda_hash: SyncService.get_stat_cda_hash(),
+            cda_hash: SyncService.get_cda_hash(),
+            cda_file_hash: SyncService.get_cda_file_hash(),
+            cdh_hash: SyncService.get_cah_hash(),
+            ruleadrg_hash: SyncService.get_ruleadrg_hash(),
+            cmp_hash: SyncService.get_cmp_hash(),
+            cm_hash: SyncService.get_cm_hash(),
+            ruledrg_hash: SyncService.get_ruledrg_hash(),
+            ruleicd9_hash: SyncService.get_ruleicd9_hash(),
+            ruleicd10_hash: SyncService.get_ruleicd10_hash(),
+            rulemdc_hash: SyncService.get_rulemdc_hash(),
+            libwt4_hash: SyncService.get_libwt4_hash(),
+            wt4_hash: SyncService.get_wt4_hash()})
       "other_sync" ->
         Map.keys(response)
         |>Enum.each(fn k ->
@@ -159,6 +161,9 @@ defmodule Block.P2pClientHandler do
                 "statorg_hash" ->
                   %BlockStatOrg{}
                   |>BlockStatOrg.changeset(x)
+                "statcda_hash" ->
+                  %BlockStatCda{}
+                  |>BlockStatCda.changeset(x)
                 "cda_hash" ->
                   %BlockCda{}
                   |>BlockCda.changeset(x)
