@@ -1,6 +1,6 @@
 defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
-  # import Ecto.Query
+  import Ecto.Query
   alias Server.UserService
   alias Server.UploadService
   # alias Stat.StatCdaService
@@ -18,8 +18,6 @@ defmodule HitbserverWeb.PageController do
   end
 
   def test(conn, _params) do
-
-
     json conn, %{}
   end
 
