@@ -38,9 +38,9 @@ defmodule Edit.CdaService do
     edit = HitbRepo.get_by(HitbCda, username: username, name: filename)
     cond do
       edit == nil ->
-        [[],["文件读取失败,无此文件"]]
+        [%{header: "", content: ""}, ["文件读取失败,无此文件"]]
       edit.is_show == false ->
-        [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
+        [%{header: "", content: ""}, ["文件拥有者不允许他人查看,请联系文件拥有者"]]
       edit.is_change == false ->
         [Map.drop(edit, [:__meta__, :__struct__, :id]),["文件读取成功,但文件拥有者不允许修改"]]
       true ->

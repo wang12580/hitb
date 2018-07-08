@@ -6,7 +6,7 @@ defmodule Block.Edit.Repo.Migrations.CreateCda do
       add :username, :string
       add :patient_id, :string
       add :name, :string
-      add :content, :string
+      add :content, :string, size: 10485760
       add :previous_hash, :string
       add :hash, :string
       add :is_change, :boolean, default: false

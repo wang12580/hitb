@@ -2,7 +2,8 @@ defmodule Library.CdhService do
   # import Ecto
   import Ecto.Query
   alias Hitb.Repo
-  alias Hitb.Library.Cdh
+  alias Hitb.Library.Cdh, as: HitbCdh
+  alias Block.Library.Cdh, as: BlockCdh
   alias Hitb.Page
 
   def cdh_list() do
@@ -21,10 +22,10 @@ defmodule Library.CdhService do
       end)
   end
 
-  def cdh(page, rows, _server_type) do
+  def cdh(page, rows, server_type) do
     rows = if(is_integer(rows))do rows else String.to_integer(rows) end
     skip = Page.skip(page, rows)
-    query = from(w in Cdh)
+    query = if(server_type == "server")do from(w in HitbCdh) else from(w in BlockCdh) end
     count = query |> select([w], count(w.id)) |> Repo.all |> List.first
     result = query
       |> limit([w], ^rows)
