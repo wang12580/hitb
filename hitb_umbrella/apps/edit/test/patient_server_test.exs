@@ -3,7 +3,7 @@ defmodule Edit.PatientServiceTest do
   alias Edit.PatientService
 
   test "test patient_list" do
-    assert PatientService.patient_list(%{"a" =>"a", "b"=>"n"}, "test") == []
+    assert PatientService.patient_list(%{"a" =>"a", "b"=>"n"}) == []
   end
 
   test "test patient_insert" do

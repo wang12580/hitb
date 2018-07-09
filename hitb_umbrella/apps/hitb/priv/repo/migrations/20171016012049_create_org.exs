@@ -18,6 +18,6 @@ defmodule Hitb.Server.Repo.Migrations.CreateOrg do
       add :stat_org_name, :integer #计算机构补充
       timestamps()
     end
-
+    create unique_index(:org, [:code])
   end
 end

@@ -2,15 +2,19 @@ defmodule Stat.Query do
   import Ecto.Query
   alias Stat.Key
   alias Stat.Convert
-  alias Hitb.Repo
-  alias Hitb.Stat.StatOrg
-  alias Hitb.Stat.StatDrg
-  alias Hitb.Stat.StatWt4
-  alias Hitb.Stat.StatOrgHeal
-  alias Hitb.Stat.StatDrgHeal
-
+  alias Hitb.Repo, as: HitbRepo
+  alias Block.Repo, as: BlockRepo
+  alias Hitb.Stat.StatOrg, as: HitbStatOrg
+  alias Hitb.Stat.StatDrg, as: HitbStatDrg
+  alias Hitb.Stat.StatWt4, as: HitbStatWt4
+  alias Hitb.Stat.StatOrgHeal, as: HitbStatOrgHeal
+  alias Block.Stat.StatOrg, as: BlockStatOrg
+  alias Block.Stat.StatDrg, as: BlockStatDrg
+  alias Block.Stat.StatWt4, as: BlockStatWt4
+  alias Block.Stat.StatOrgHeal, as: BlockStatOrgHeal
   #自定义取数据库
-  def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type, _server_type) do
+  def getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num, stat_type, server_type) do
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
     #获取各种keys
     key = Key.key(username, drg, type, tool_type, page_type) #英文key
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end) #中文key
@@ -23,27 +27,27 @@ defmodule Stat.Query do
         stat_type == "download" ->
           order = String.to_atom(order)
           #获取query
-          query = query(page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num)
+          query = query(type, org, time, drg, server_type)
           stat =
             case order_type do
-              "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>Repo.all
-              "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>Repo.all
+              "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>repo.all
+              "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>repo.all
             end
           [[], 0, 15, stat]
         Hitb.ets_get(:stat, cache_key) == nil ->
           order = String.to_atom(order)
           #获取左侧list
-          list = list(type, org, time)
+          list = list(type, org, time, repo, server_type)
           #获取query
-          query = query(page, type, tool_type, org, time, drg, order, order_type, page_type, rows_num)
+          query = query(type, org, time, drg, server_type)
           #取总数
-          count = select(query, [p], count(p.id))|>Repo.all([timeout: 1500000])|>List.last
+          count = select(query, [p], count(p.id))|>repo.all([timeout: 1500000])|>List.last
           #求本页stat
           skip = Hitb.Page.skip(page, rows_num)
           stat =
             case order_type do
-              "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
-              "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>Repo.all
+              "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>repo.all
+              "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>limit([p], ^rows_num)|>offset([p], ^skip)|>repo.all
             end
           #缓存
           Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
@@ -62,7 +66,7 @@ defmodule Stat.Query do
     # {[],[],[],[],1,0,[],[],[]}
   end
 
-  def info(username, _rows_num) do
+  def info(username) do
     [_page, type, tool_type, drg, _order, _order_type, page_type, _org, _time] =
       case Hitb.ets_get(:stat_drg, "defined_url_" <> username) do
         nil -> ["1", "org", "total", "", "org", "asc", "base", "", ""]
@@ -80,8 +84,8 @@ defmodule Stat.Query do
         #记录转换
         stat =
           [Map.merge(%{info_type: "当前记录"}, stat),
-          Map.merge(%{info_type: "环比记录"}, Repo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org)),
-          Map.merge(%{info_type: "同比记录"}, Repo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org))]
+          Map.merge(%{info_type: "环比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org)),
+          Map.merge(%{info_type: "同比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org))]
         #去除多余的key
         stat
         |>Enum.map(fn x ->
@@ -98,50 +102,83 @@ defmodule Stat.Query do
   end
 
   #左侧list
-  defp list(type, org, time) do
+  defp list(type, org, time, repo, server_type) do
     cond do
       type == "org" ->
-        from(p in StatOrg)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+        |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
       type == "heal" ->
-        from(p in StatOrgHeal)|>department_where(org)|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatOrgHeal) else from(p in BlockStatOrgHeal) end
+        |>department_where(org)|>select([p], fragment("distinct ?", p.org))
       type == "department" ->
-        from(p in StatOrg)|>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+        |>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))
       type in ["mdc", "adrg", "drg"] ->
-        from(p in StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], fragment("distinct ?", p.drg2))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
+        |>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], fragment("distinct ?", p.drg2))
       type == "case" and String.contains? org, "_" ->
         query_org = hd(String.split(org, "_")) <> "_%"
-        from(p in StatWt4)|>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
+        |>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))
       type == "case" ->
-        from(p in StatWt4)|>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
+        |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
       type == "time" ->
-        from(p in StatOrg)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
+        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+        |>select([p], fragment("distinct ?", p.time))
       type == "drg2" ->
-        []
+        if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
+        |>select([p], fragment("distinct ?", p.drg2))
       type in ["year_time", "month_time", "season_time", "half_year"] ->
-        from(p in StatOrg)|>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))|>Repo.all|>Enum.sort
-    end
+        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+        |>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))
+      end
+    |>repo.all
+    |>Enum.sort
   end
 
   #生成查询语句
-  defp query(_page, type, _tool_type, org, time, drg, _order, _order_type, _page_type, _rows_num) do
+  defp query(type, org, time, drg, server_type) do
     cond do
       type in ["mdc", "adrg", "drg"] ->
         drg = if(type == "mdc")do String.slice(drg, 3, 1) else drg end
-        _query = from(p in StatDrg)|>mywhere(type, org, time)|>where([p], p.etype == ^type)|>drgwhere(type, drg)
+        case server_type do
+          "server" ->
+            from(p in HitbStatDrg)
+          "block" ->
+            from(p in BlockStatDrg)
+        end
+        |>mywhere(type, org, time)
+        |>where([p], p.etype == ^type)
+        |>drgwhere(type, drg)
       type == "heal" ->
-        myfrom(drg)|>mywhere(type, org, time)
+        myfrom(drg, server_type)|>mywhere(type, org, time)
       type == "case" ->
-        from(p in StatWt4)|>mywhere(type, org, time)
+        case server_type do
+          "server" ->
+            from(p in HitbStatWt4)
+          "block" ->
+            from(p in BlockStatWt4)
+        end
+        |>mywhere(type, org, time)
       true ->
-        from(p in StatOrg)|>mywhere(type, org, time)
+        case server_type do
+          "server" ->
+            from(p in HitbStatOrg)
+          "block" ->
+            from(p in BlockStatOrg)
+        end
+        |>mywhere(type, org, time)
     end
   end
 
   #表判断
-  defp myfrom(drg) do
-    case drg do
-      "" -> from(p in StatOrgHeal)
-      _ ->  from(p in StatDrgHeal)
+  defp myfrom(drg, server_type) do
+    cond do
+      drg == "" and server_type == "server" -> from(p in HitbStatOrgHeal)
+      drg == "" and server_type == "block" -> from(p in BlockStatOrgHeal)
+      server_type == "server" -> from(p in HitbStatOrgHeal)
+      server_type == "block" -> from(p in BlockStatOrgHeal)
     end
   end
 

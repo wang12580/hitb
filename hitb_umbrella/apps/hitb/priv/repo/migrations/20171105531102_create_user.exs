@@ -16,5 +16,6 @@ defmodule Hitb.Server.Repo.Migrations.CreateUser do
       add :is_show, :boolean, default: false
       timestamps()
     end
+    create unique_index(:user, [:username])
   end
 end

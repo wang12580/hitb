@@ -3,12 +3,13 @@ defmodule BlockWeb.P2pChannel do
   require Logger
 
   @query_latest_block Block.P2pMessage.query_latest_block
+  @sync_block         Block.P2pMessage.sync_block
   @query_all_accounts Block.P2pMessage.query_all_accounts
   @query_all_blocks   Block.P2pMessage.query_all_blocks
   # @update_block_chain Block.P2pMessage.update_block_chain
   @add_peer_request   Block.P2pMessage.add_peer_request
   @query_all_transactions "query_all_transactions"
-  alias Block.OtherSyncService
+  alias Block.SyncService
   @connection_error   Block.P2pMessage.connection_error
   @connection_success Block.P2pMessage.connection_success
   alias Block.BlockService
@@ -24,6 +25,12 @@ defmodule BlockWeb.P2pChannel do
 
   def handle_info(_message, socket) do
     {:noreply, socket}
+  end
+
+  def handle_in(@sync_block, _payload, socket) do
+    Logger.info("sending latest block")
+    data = BlockService.get_latest_block()|>send()
+    {:reply, {:ok, %{type: @sync_block, data: data}}, socket}
   end
 
   def handle_in(@query_latest_block, _payload, socket) do
@@ -54,7 +61,7 @@ defmodule BlockWeb.P2pChannel do
     data =
       Map.keys(payload)
       |>Enum.reduce(%{}, fn x, acc ->
-          data = OtherSyncService.get_data(x, Map.get(payload, x))
+          data = SyncService.get_data(x, Map.get(payload, x))
           Map.put(acc, String.to_atom(x), data)
         end)
     {:reply, {:ok, %{type: "other_sync", data: data}}, socket}

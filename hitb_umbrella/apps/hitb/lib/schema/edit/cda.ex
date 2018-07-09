@@ -20,5 +20,6 @@ defmodule Hitb.Edit.Cda do
     cda
     |> cast(attrs, [:username, :name, :content, :is_change, :is_show, :patient_id, :header])
     |> validate_required([:username, :name, :content, :is_change, :is_show])
+    |> unique_constraint(:patient_id)
   end
 end
