@@ -17,5 +17,6 @@ defmodule Block.Library.Cdh do
     cdh
     |> cast(attrs, [:key, :value, :previous_hash, :hash])
     |> validate_required([:key, :value, :previous_hash, :hash])
+    |> unique_constraint(:key)
   end
 end

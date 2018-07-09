@@ -6,7 +6,7 @@ defmodule Edit.PatientService do
   alias Hitb.Edit.Patient
 #   alias Hitb.Edit.Cda
 
-  def patient_list(info, _username) do
+  def patient_list(info) do
     info = Map.keys(info)
         |>Enum.map(fn x ->
             case x do

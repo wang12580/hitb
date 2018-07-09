@@ -22,6 +22,7 @@ defmodule Block.Repo.Migrations.CreateTransaction do
       add :message,             :string
       timestamps()
     end
+    create unique_index(:transaction, [:transaction_id])
   end
 
 end

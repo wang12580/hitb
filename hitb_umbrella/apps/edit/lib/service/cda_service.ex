@@ -38,9 +38,9 @@ defmodule Edit.CdaService do
     edit = HitbRepo.get_by(HitbCda, username: username, name: filename)
     cond do
       edit == nil ->
-        [[],["文件读取失败,无此文件"]]
+        [%{header: "", content: ""}, ["文件读取失败,无此文件"]]
       edit.is_show == false ->
-        [[],["文件拥有者不允许他人查看,请联系文件拥有者"]]
+        [%{header: "", content: ""}, ["文件拥有者不允许他人查看,请联系文件拥有者"]]
       edit.is_change == false ->
         [Map.drop(edit, [:__meta__, :__struct__, :id]),["文件读取成功,但文件拥有者不允许修改"]]
       true ->
@@ -58,9 +58,9 @@ defmodule Edit.CdaService do
     if (mouldtype == "模板") do
       myMoulds(file_name, file_username, content, doctype, header, save_type)
     else
-      times = Time.stime_number()
-      PatientService.patient_insert(content, username, times)
-      myCdas(id, file_name, file_username, content, doctype, username, times, header, save_type)
+      patient_id = generate_patient_id()
+      PatientService.patient_insert(content, username, patient_id)
+      myCdas(id, file_name, file_username, content, doctype, username, patient_id, header, save_type)
     end
   end
 
@@ -79,7 +79,7 @@ defmodule Edit.CdaService do
       |> HitbRepo.update()
       %{success: true, info: "保存成功"}
     else
-      namea = doctype<>".cdh"
+      namea = "#{doctype}.cdh"
       body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true, "header" => header}
       %MyMould{}
       |> MyMould.changeset(body)
@@ -119,5 +119,13 @@ defmodule Edit.CdaService do
             %{success: true, info: "保存成功"}
         end
     end
+  end
+
+  def generate_patient_id() do
+    {megaSecs, secs, _} = :erlang.timestamp()
+    randMegaSecs = :rand.uniform(megaSecs)
+    randSecs = :rand.uniform(secs)
+    randSec = :os.system_time(:seconds)
+    [randSec, randSecs, randMegaSecs] |> Enum.map(fn x -> to_string(x) end) |> Enum.join("")
   end
 end

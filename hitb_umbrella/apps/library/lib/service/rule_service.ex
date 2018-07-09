@@ -298,6 +298,7 @@ defmodule Library.RuleService do
     end)
     %{table: result, page_num: page_num, page_list: page_list}
   end
+
   def rule_down(filename) do
     tab =
       cond do
@@ -328,6 +329,7 @@ defmodule Library.RuleService do
     IO.inspect result
     %{result: result}
   end
+
   defp cn(key) do
     case to_string(key) do
       "code" -> "编码"

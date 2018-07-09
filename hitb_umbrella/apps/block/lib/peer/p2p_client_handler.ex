@@ -10,10 +10,11 @@ defmodule Block.P2pClientHandler do
   alias Block.BlockService
   alias Block.BlockRepository
   alias Phoenix.Channels.GenSocketClient
-  alias Block.OtherSyncService
+  alias Block.SyncService
   alias Block.P2pSessionManager
   alias Block.TransactionRepository
   alias Block.Stat.StatOrg, as: BlockStatOrg
+  alias Block.Stat.StatCda, as: BlockStatCda
   alias Block.Edit.Cda, as: BlockCda
   alias Block.Edit.CdaFile, as: BlockCdaFIle
   alias Block.Library.Cdh, as: BlockCdh
@@ -32,6 +33,7 @@ defmodule Block.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
+  @sync_block     Block.P2pMessage.sync_block
   @query_all_accounts   Block.P2pMessage.query_all_accounts
   @query_latest_block     Block.P2pMessage.query_latest_block
   @query_all_blocks       Block.P2pMessage.query_all_blocks
@@ -69,10 +71,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_disconnected(reason, state) do
-    # peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
-    # PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
-    # Process.send_after(self(), :connect, :timer.seconds(20000))
     {:ok, state}
   end
 
@@ -109,10 +108,14 @@ defmodule Block.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_reply(_topic, _ref, payload, transport, state) do
+  def handle_reply(topic, _ref, payload, transport, state) do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
+      "sync_block" ->
+        if(BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(BlockService.get_latest_block, :timestamp))do
+          GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        end
       "get_all_accounts" ->
         usernames = AccountRepository.get_all_usernames()
         response
@@ -138,19 +141,20 @@ defmodule Block.P2pClientHandler do
         |> Enum.each(fn x -> TransactionRepository.insert_transaction(x) end)
         GenSocketClient.push(transport, "p2p", "other_sync",
           %{
-            statorg_hash: OtherSyncService.get_statorg_hash(),
-            cda_hash: OtherSyncService.get_cda_hash(),
-            cda_file_hash: OtherSyncService.get_cda_file_hash(),
-            cdh_hash: OtherSyncService.get_cah_hash(),
-            ruleadrg_hash: OtherSyncService.get_ruleadrg_hash(),
-            cmp_hash: OtherSyncService.get_cmp_hash(),
-            cm_hash: OtherSyncService.get_cm_hash(),
-            ruledrg_hash: OtherSyncService.get_ruledrg_hash(),
-            ruleicd9_hash: OtherSyncService.get_ruleicd9_hash(),
-            ruleicd10_hash: OtherSyncService.get_ruleicd10_hash(),
-            rulemdc_hash: OtherSyncService.get_rulemdc_hash(),
-            libwt4_hash: OtherSyncService.get_libwt4_hash(),
-            wt4_hash: OtherSyncService.get_wt4_hash()})
+            statorg_hash: SyncService.get_statorg_hash(),
+            statcda_hash: SyncService.get_stat_cda_hash(),
+            cda_hash: SyncService.get_cda_hash(),
+            cda_file_hash: SyncService.get_cda_file_hash(),
+            cdh_hash: SyncService.get_cah_hash(),
+            ruleadrg_hash: SyncService.get_ruleadrg_hash(),
+            cmp_hash: SyncService.get_cmp_hash(),
+            cm_hash: SyncService.get_cm_hash(),
+            ruledrg_hash: SyncService.get_ruledrg_hash(),
+            ruleicd9_hash: SyncService.get_ruleicd9_hash(),
+            ruleicd10_hash: SyncService.get_ruleicd10_hash(),
+            rulemdc_hash: SyncService.get_rulemdc_hash(),
+            libwt4_hash: SyncService.get_libwt4_hash(),
+            wt4_hash: SyncService.get_wt4_hash()})
       "other_sync" ->
         Map.keys(response)
         |>Enum.each(fn k ->
@@ -159,6 +163,9 @@ defmodule Block.P2pClientHandler do
                 "statorg_hash" ->
                   %BlockStatOrg{}
                   |>BlockStatOrg.changeset(x)
+                "statcda_hash" ->
+                  %BlockStatCda{}
+                  |>BlockStatCda.changeset(x)
                 "cda_hash" ->
                   %BlockCda{}
                   |>BlockCda.changeset(x)
@@ -199,7 +206,7 @@ defmodule Block.P2pClientHandler do
               |>Block.Repo.insert
             end)
         end)
-        # :timer.send_interval(5000, :ping)
+        :timer.send_interval(10000, :ping)
     end
     {:ok, state}
   end
@@ -209,9 +216,9 @@ defmodule Block.P2pClientHandler do
     {:connect, state}
   end
 
-  def handle_info(:ping, transport, socket) do
-    GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
-    {:ok, socket}
+  def handle_info(:ping, transport, state) do
+    GenSocketClient.push(transport, "p2p", @sync_block, %{})
+    {:ok, state}
   end
 
   def handle_info({:join, topic}, transport, state) do
@@ -247,6 +254,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_info(message, _transport, state) do
+    IO.inspect message
     Logger.warn("Unhandled message #{inspect message}")
     {:ok, state}
   end

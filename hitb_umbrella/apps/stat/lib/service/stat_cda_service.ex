@@ -51,17 +51,19 @@ defmodule Stat.StatCdaService do
           |>Repo.insert
       end
     end)
+    :ok
   end
 
   #初始化计算
   def init_comp() do
     Repo.delete_all(from p in StatCda)
     generate()
-    |>Enum.map(fn x ->
+    |>Enum.each(fn x ->
         %StatCda{}
         |>StatCda.changeset(x)
         |>Repo.insert
       end)
+    :ok
   end
 
   defp generate() do
@@ -105,7 +107,7 @@ defmodule Stat.StatCdaService do
   end
 
   #去除含有无用信息item
-  def reject(x) do
+  defp reject(x) do
     cond do
       x == "" -> true
       String.contains? x, "邮政编码" -> true

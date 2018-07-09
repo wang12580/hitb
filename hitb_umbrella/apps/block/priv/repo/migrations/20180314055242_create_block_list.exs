@@ -11,6 +11,7 @@ defmodule Block.Repo.Migrations.CreateBlockList do
       add :generateAdress,  :string
       timestamps()
     end
+    create unique_index(:block_list, [:index])
   end
 
 end

@@ -12,6 +12,7 @@ defmodule Hitb.Edit.Repo.Migrations.CreateCda do
       add :header, :string, default: false
       timestamps()
     end
+    create unique_index(:cda, [:patient_id])
 
   end
 end
