@@ -3,6 +3,7 @@ defmodule Server.ShareService do
   import Ecto.Query
   alias Stat.Query
   alias Hitb.Time
+  alias Block.BlockService
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
@@ -31,6 +32,8 @@ defmodule Server.ShareService do
   alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
+  alias Hitb.Server.User
+  alias Block.AccountService
 
 
 
@@ -127,25 +130,32 @@ defmodule Server.ShareService do
         [Enum.concat(data, [x]), hash]
       end)
       |>List.first
-    Enum.each(data, fn x ->
-      case type do
-        "cdh" -> %BlockCdh{}|>BlockCdh.changeset(x)
-        "edit" -> %BlockCda{}|>BlockCda.changeset(x)
-        "stat" -> %BlockStatOrg{}|>BlockStatOrg.changeset(x)
-        "library" ->
-          case file_name do
-            "mdc.csv" ->  %BlockRuleMdc{}|>BlockRuleMdc.changeset(x)
-            "adrg.csv" -> %BlockRuleAdrg{}|>BlockRuleAdrg.changeset(x)
-            "drg.csv" ->  %BlockRuleDrg{}|>BlockRuleDrg.changeset(x)
-            "icd9.csv" ->  %BlockRuleIcd9{}|>BlockRuleIcd9.changeset(x)
-            "icd10.csv" -> %BlockRuleIcd10{}|>BlockRuleIcd10.changeset(x)
-            "中药.csv" ->  %BlockChineseMedicine{}|>BlockChineseMedicine.changeset(x)
-            "中成药.csv" -> %BlockChineseMedicinePatent{}|>BlockChineseMedicinePatent.changeset(x)
-            _ ->          %BlockLibWt4{}|>BlockLibWt4.changeset(x)
-          end
-      end
-      |>BlockRepo.insert
-    end)
+    user = HitbRepo.get_by(User, username: username)
+    if(user)do
+      Enum.each(data, fn x ->
+        case type do
+          "cdh" -> %BlockCdh{}|>BlockCdh.changeset(x)
+          "edit" -> %BlockCda{}|>BlockCda.changeset(x)
+          "stat" -> %BlockStatOrg{}|>BlockStatOrg.changeset(x)
+          "library" ->
+            case file_name do
+              "mdc.csv" ->  %BlockRuleMdc{}|>BlockRuleMdc.changeset(x)
+              "adrg.csv" -> %BlockRuleAdrg{}|>BlockRuleAdrg.changeset(x)
+              "drg.csv" ->  %BlockRuleDrg{}|>BlockRuleDrg.changeset(x)
+              "icd9.csv" ->  %BlockRuleIcd9{}|>BlockRuleIcd9.changeset(x)
+              "icd10.csv" -> %BlockRuleIcd10{}|>BlockRuleIcd10.changeset(x)
+              "中药.csv" ->  %BlockChineseMedicine{}|>BlockChineseMedicine.changeset(x)
+              "中成药.csv" -> %BlockChineseMedicinePatent{}|>BlockChineseMedicinePatent.changeset(x)
+              _ ->          %BlockLibWt4{}|>BlockLibWt4.changeset(x)
+            end
+        end
+        |>BlockRepo.insert
+      end)
+      secret = AccountService.getAccountByAddress(user.block_address).username
+      block = BlockService.create_next_block("#{type}-#{file_name}", secret)
+      BlockService.add_block(block)
+    end
+    :ok
   end
 
   def get_share() do

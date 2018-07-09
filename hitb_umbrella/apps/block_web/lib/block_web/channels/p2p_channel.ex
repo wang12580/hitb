@@ -3,6 +3,7 @@ defmodule BlockWeb.P2pChannel do
   require Logger
 
   @query_latest_block Block.P2pMessage.query_latest_block
+  @sync_block         Block.P2pMessage.sync_block
   @query_all_accounts Block.P2pMessage.query_all_accounts
   @query_all_blocks   Block.P2pMessage.query_all_blocks
   # @update_block_chain Block.P2pMessage.update_block_chain
@@ -24,6 +25,12 @@ defmodule BlockWeb.P2pChannel do
 
   def handle_info(_message, socket) do
     {:noreply, socket}
+  end
+
+  def handle_in(@sync_block, _payload, socket) do
+    Logger.info("sending latest block")
+    data = BlockService.get_latest_block()|>send()
+    {:reply, {:ok, %{type: @sync_block, data: data}}, socket}
   end
 
   def handle_in(@query_latest_block, _payload, socket) do

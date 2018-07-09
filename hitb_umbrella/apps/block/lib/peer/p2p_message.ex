@@ -11,6 +11,7 @@ defmodule Block.P2pMessage do
   @already_connected    "already_connected"
   @connection_error     "connection_error"
   @connection_success   "successfully_connected"
+  @sync_block           "sync_block"
 
   def query_latest_block,   do: @query_latest_block
   def query_all_accounts,     do: @query_all_accounts
@@ -21,4 +22,5 @@ defmodule Block.P2pMessage do
   def already_connected,    do: @already_connected
   def connection_error,     do: @connection_error
   def connection_success,   do: @connection_success
+  def sync_block,           do: @sync_block
 end

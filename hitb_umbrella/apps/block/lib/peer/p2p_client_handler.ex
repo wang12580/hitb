@@ -33,6 +33,7 @@ defmodule Block.P2pClientHandler do
   @behaviour GenSocketClient
 
   # can't inherit attributes and use them inside matches, so this is necessary
+  @sync_block     Block.P2pMessage.sync_block
   @query_all_accounts   Block.P2pMessage.query_all_accounts
   @query_latest_block     Block.P2pMessage.query_latest_block
   @query_all_blocks       Block.P2pMessage.query_all_blocks
@@ -70,10 +71,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_disconnected(reason, state) do
-    # peer = :ets.tab2list(:peers) |> Enum.reject(fn x -> elem(x, 0) != self() end) |> List.first |> elem(1)
-    # PeerRepository.update_peer(peer.host, peer.port, %{connect: false})
     Logger.error("disconnected: #{inspect reason}. 20 minutes later attempting to reconnect...")
-    # Process.send_after(self(), :connect, :timer.seconds(20000))
     {:ok, state}
   end
 
@@ -110,10 +108,14 @@ defmodule Block.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_reply(_topic, _ref, payload, transport, state) do
+  def handle_reply(topic, _ref, payload, transport, state) do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
+      "sync_block" ->
+        if(BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(BlockService.get_latest_block, :timestamp))do
+          GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        end
       "get_all_accounts" ->
         usernames = AccountRepository.get_all_usernames()
         response
@@ -204,7 +206,7 @@ defmodule Block.P2pClientHandler do
               |>Block.Repo.insert
             end)
         end)
-        # :timer.send_interval(5000, :ping)
+        :timer.send_interval(10000, :ping)
     end
     {:ok, state}
   end
@@ -214,9 +216,9 @@ defmodule Block.P2pClientHandler do
     {:connect, state}
   end
 
-  def handle_info(:ping, transport, socket) do
-    GenSocketClient.push(transport, "p2p", @query_all_accounts, %{})
-    {:ok, socket}
+  def handle_info(:ping, transport, state) do
+    GenSocketClient.push(transport, "p2p", @sync_block, %{})
+    {:ok, state}
   end
 
   def handle_info({:join, topic}, transport, state) do
@@ -252,6 +254,7 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_info(message, _transport, state) do
+    IO.inspect message
     Logger.warn("Unhandled message #{inspect message}")
     {:ok, state}
   end
