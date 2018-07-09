@@ -24,5 +24,6 @@ defmodule Hitb.Server.User do
     user
     |> cast(attrs, [:username, :hashpw, :org, :age, :email, :tel, :name, :type, :key, :is_show, :block_address])
     |> validate_required([:username, :hashpw, :org, :age, :email, :tel, :name, :type, :is_show])
+    |> unique_constraint(:username)
   end
 end

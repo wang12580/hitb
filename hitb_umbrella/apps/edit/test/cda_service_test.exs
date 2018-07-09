@@ -11,7 +11,7 @@ defmodule Edit.CdaServiceTest do
   end
 
   test "test cda_file" do
-    assert CdaService.cda_file("test.cda", "test") == [[],["文件读取失败,无此文件"]]
+    assert CdaService.cda_file("test.cda", "test") == [%{content: "", header: ""},["文件读取失败,无此文件"]]
   end
 
   test "test update" do

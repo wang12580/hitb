@@ -1,4 +1,4 @@
-defmodule Block.OtherSyncService do
+defmodule Block.SyncService do
   import Ecto.Query, warn: false
   alias Block.Repo
   alias Block.Edit.Cda
@@ -14,6 +14,7 @@ defmodule Block.OtherSyncService do
   alias Block.Library.LibWt4
   alias Block.Library.Wt4
   alias Block.Stat.StatOrg
+  alias Block.Stat.StatCda
 
   def get_cda_hash do
     Repo.all(from p in Cda, select: p.hash)
@@ -68,10 +69,15 @@ defmodule Block.OtherSyncService do
     Repo.all(from p in Wt4, select: p.hash)
   end
 
+  def get_stat_cda_hash do
+    Repo.all(from p in StatCda, select: p.hash)
+  end
+
   def get_data(x, hash) do
     hash = if(hash == nil)do [] else hash end
     case x do
       "statorg_hash" -> Repo.all(StatOrg)
+      "statcda_hash" -> Repo.all(StatCda)
       "cda_hash" -> Repo.all(Cda)
       "cda_file_hash" -> Repo.all(CdaFile)
       "cdh_hash" -> Repo.all(Cdh)

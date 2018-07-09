@@ -27,5 +27,6 @@ defmodule Hitb.Server.Org do
     org
     |> cast(attrs, [:code, :name, :level, :type, :province, :city, :person_name, :tel, :email, :is_show, :is_ban, :county, :stat_org_name])
     |> validate_required([:code, :name, :level, :type, :province, :city, :person_name, :tel, :email, :is_show, :is_ban, :county, :stat_org_name])
+    |> unique_constraint(:code)
   end
 end

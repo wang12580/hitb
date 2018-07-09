@@ -31,7 +31,7 @@ defmodule Stat.StatService do
     key = if(is_list(key) and key != [])do ["info_type", "org", "time"] ++ key else Key.key(username, drg, type, tool_type, page_type) end
     cnkey = Enum.map(key, fn x -> Key.cnkey(x) end)
     #获取分析
-    stat = Query.info(username, 13)
+    stat = Query.info(username)
     suggest =
       if (stat != [[], []]) do
         Enum.map(List.delete_at(stat, 0), fn x ->
@@ -83,7 +83,7 @@ defmodule Stat.StatService do
       end
     #获取分析结果
     # IO.inspect Stat.Query.info(username, 13)
-    stat_info = Convert.map(Query.info(username, 13), key)
+    stat_info = Convert.map(Query.info(username), key)
     # IO.inspect stat_info
     Chart.chart(stat_info, chart_type)
   end
