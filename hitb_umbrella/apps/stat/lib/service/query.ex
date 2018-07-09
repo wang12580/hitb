@@ -127,7 +127,8 @@ defmodule Stat.Query do
         if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
         |>select([p], fragment("distinct ?", p.time))
       type == "drg2" ->
-        []
+        if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
+        |>select([p], fragment("distinct ?", p.drg2))
       type in ["year_time", "month_time", "season_time", "half_year"] ->
         if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
         |>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))
