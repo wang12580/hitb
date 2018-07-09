@@ -219,6 +219,8 @@ defmodule Library.RuleService do
           repo.all(from p in tab, distinct: true, select: p.org)
         _ -> []
       end
+    IO.inspect list
+    IO.inspect []
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
