@@ -37,7 +37,7 @@ defmodule Stat.Query do
         Hitb.ets_get(:stat, cache_key) == nil ->
           order = String.to_atom(order)
           #获取左侧list
-          list = list(type, org, time, repo, server_type)
+          list = list(type, org, time, server_type)
           #获取query
           query = query(type, org, time, drg, server_type)
           #取总数
@@ -63,7 +63,6 @@ defmodule Stat.Query do
     # # stat = if(stat_type == "download")do stat else [] end
     # # 返回结果(分析结果, 列表, 页面工具, 页码列表, 当前页码, 字段, 中文字段, 表头字段)
     [stat, list, [], page_list, page_num, count_page, key, cnkey, thkey]
-    # {[],[],[],[],1,0,[],[],[]}
   end
 
   def info(username) do
@@ -102,39 +101,49 @@ defmodule Stat.Query do
   end
 
   #左侧list
-  defp list(type, org, time, repo, server_type) do
-    cond do
-      type == "org" ->
-        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
-        |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
-      type == "heal" ->
-        if(server_type == "server")do from(p in HitbStatOrgHeal) else from(p in BlockStatOrgHeal) end
-        |>department_where(org)|>select([p], fragment("distinct ?", p.org))
-      type == "department" ->
-        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
-        |>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))
-      type in ["mdc", "adrg", "drg"] ->
-        if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
-        |>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], fragment("distinct ?", p.drg2))
-      type == "case" and String.contains? org, "_" ->
-        query_org = hd(String.split(org, "_")) <> "_%"
-        if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
-        |>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))
-      type == "case" ->
-        if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
-        |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
-      type == "time" ->
-        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
-        |>select([p], fragment("distinct ?", p.time))
-      type == "drg2" ->
-        if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
-        |>select([p], fragment("distinct ?", p.drg2))
-      type in ["year_time", "month_time", "season_time", "half_year"] ->
-        if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
-        |>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))
-      end
-    |>repo.all
-    |>Enum.sort
+  def list(type, org, time, server_type) do
+    repo = if(server_type == "server")do HitbRepo else BlockRepo end
+    cache = Hitb.ets_get(:stat_list, [type, org, time, server_type])
+    case cache do
+      nil ->
+        list =
+          cond do
+            type == "org" ->
+              if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+              |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
+            type == "heal" ->
+              if(server_type == "server")do from(p in HitbStatOrgHeal) else from(p in BlockStatOrgHeal) end
+              |>department_where(org)|>select([p], fragment("distinct ?", p.org))
+            type == "department" ->
+              if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+              |>department_where(org)|>where([p], p.org_type == "department")|>select([p], fragment("distinct ?", p.org))
+            type in ["mdc", "adrg", "drg"] ->
+              if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
+              |>mywhere(type, org, time)|>where([p], p.etype == ^type)|>select([p], p.drg2)|>group_by([p], p.drg2)
+            type == "case" and String.contains? org, "_" ->
+              query_org = hd(String.split(org, "_")) <> "_%"
+              if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
+              |>where([p], like(p.org, ^query_org))|>select([p], fragment("distinct ?", p.org))
+            type == "case" ->
+              if(server_type == "server")do from(p in HitbStatWt4) else from(p in BlockStatWt4) end
+              |>where([p], p.org_type == "org")|>select([p], fragment("distinct ?", p.org))
+            type == "time" ->
+              if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+              |>select([p], fragment("distinct ?", p.time))
+            type == "drg2" ->
+              if(server_type == "server")do from(p in HitbStatDrg) else from(p in BlockStatDrg) end
+              |>select([p], p.drg2)|>group_by([p], p.drg2)
+            type in ["year_time", "month_time", "season_time", "half_year"] ->
+              if(server_type == "server")do from(p in HitbStatOrg) else from(p in BlockStatOrg) end
+              |>where([p], p.time_type == ^type)|>select([p], fragment("distinct ?", p.time))
+            end
+          |>repo.all
+          |>Enum.sort
+        Hitb.ets_insert(:stat_list, [type, org, time, server_type], list)
+        list
+      _ ->
+      cache
+    end
   end
 
   #生成查询语句
@@ -162,11 +171,11 @@ defmodule Stat.Query do
         end
         |>mywhere(type, org, time)
       true ->
-        case server_type do
-          "server" ->
-            from(p in HitbStatOrg)
-          "block" ->
-            from(p in BlockStatOrg)
+        cond do
+          drg == "" and server_type == "server" -> from(p in HitbStatOrg)
+          drg != "" and server_type == "server" -> from(p in HitbStatDrg)|>drgwhere(type, drg)
+          drg == "" and server_type == "block" -> from(p in BlockStatOrg)
+          drg != "" and server_type == "block" -> from(p in BlockStatDrg)|>drgwhere(type, drg)
         end
         |>mywhere(type, org, time)
     end
@@ -202,7 +211,13 @@ defmodule Stat.Query do
           "heal" ->
             code = code <> "%"
             where(w, [p], like(p.drg, ^code))
-           _ -> where(w, [p], p.drg == ^code and p.etype == ^type)
+           _ ->
+            cond do
+              type in ["drg", "adrg", "mdc"] ->
+                where(w, [p], p.drg == ^code and p.etype == ^type)
+              true ->
+                where(w, [p], p.drg == ^code)
+            end
         end
     end
   end
