@@ -51,5 +51,11 @@ defmodule HitbserverWeb.RuleController do
     result = RuleService.rule_down(filename)
     json conn, result
   end
+  # 客户端模糊搜索
+  def rule_search(conn, _params) do
+    %{"filename" => filename, "value" => value, "servertype" => servertype} = Map.merge(%{"filename" => "", "value" => "", "servertype" => ""}, conn.params)
+    result = RuleService.rule_search(filename, value, servertype)
+    json conn, result
+  end
 
 end
