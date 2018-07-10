@@ -147,6 +147,7 @@ defmodule HitbserverWeb.Router do
     get "/rule_client", RuleController, :rule_client
     get "/rule_file", RuleController, :rule_file
     get "/rule", RuleController, :rule
+    get "/rule_search", RuleController, :rule_search
     get "/contrast", RuleController, :contrast
     get "/details", RuleController, :details
     get "/search", RuleController, :search

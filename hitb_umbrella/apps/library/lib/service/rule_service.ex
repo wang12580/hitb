@@ -340,6 +340,63 @@ defmodule Library.RuleService do
     IO.inspect result
     %{result: result}
   end
+  def rule_search(filename, value, servertype) do
+    tab =
+      case servertype do
+        "server" ->
+          case filename do
+            "icd9.csv" -> HitbRuleIcd9
+            "icd10.csv" -> HitbRuleIcd10
+            "mdc.csv" -> HitbRuleMdc
+            "adrg.csv" -> HitbRuleAdrg
+            "drg.csv" -> HitbRuleDrg
+            "cdh.csv" -> HitbRuleCdh
+          end
+        "block" ->
+          case filename do
+            "icd9.csv" -> BlockRuleIcd9
+            "icd10.csv" -> BlockRuleIcd10
+            "mdc.csv" -> BlockRuleMdc
+            "adrg.csv" -> BlockRuleAdrg
+            "drg.csv" -> BlockRuleDrg
+            # filename == "cdh.csv" -> HitbRuleCdh
+          end
+          _ -> true
+      end
+      result =
+        case servertype do
+          "server" -> HitbRepo.all(from p in tab, limit: 1)
+          "block" -> BlockRepo.all(from p in tab, limit: 1)
+        end
+      result = result
+        |>Enum.map(fn x ->
+            Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
+          end)
+      keys =
+        hd(result)|>Map.keys()
+      query = from(p in tab)
+      query =
+        Enum.reduce(keys, query, fn x, acc ->
+          value = "%#{value}%"
+          acc
+          |>or_where([p],  like(field(p, ^x), ^value))
+        end)
+      result =
+        case servertype do
+          "server" -> HitbRepo.all(query)
+          "block" -> BlockRepo.all(query)
+        end
+      result = result
+        |>Enum.map(fn x ->
+            Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
+          end)
+          |>Enum.map(fn x ->
+              x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
+              x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
+              x
+            end)
+    %{result: result}
+  end
 
   defp cn(key) do
     case to_string(key) do
