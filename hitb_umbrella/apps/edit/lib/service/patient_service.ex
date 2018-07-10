@@ -45,7 +45,11 @@ defmodule Edit.PatientService do
   end
 
   def patient_insert(content, usernames, patient_ids) do
-    b = String.split(content, ",")
+    b =
+      cond do
+        String.contains? content, "," -> String.split(content, ",")
+        true -> []
+      end
     maps =
       Enum.reduce(b, %{}, fn x, acc ->
         [hd | all] = String.split(x, " ")
