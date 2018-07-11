@@ -28,7 +28,7 @@ defmodule BlockWeb.P2pChannel do
   end
 
   def handle_in(@sync_block, _payload, socket) do
-    Logger.info("sending latest block")
+    Logger.info("sync_block block")
     data = BlockService.get_latest_block()|>send()
     {:reply, {:ok, %{type: @sync_block, data: data}}, socket}
   end
