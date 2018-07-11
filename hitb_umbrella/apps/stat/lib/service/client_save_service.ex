@@ -62,22 +62,17 @@ defmodule Stat.ClientSaveService do
         end
       rows = to_string(rows)|>String.to_integer
       #获取分析结果
-      [stat, list, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat", server_type)
+      [stat, _, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "stat", server_type)
       stat = [key, cnkey] ++ Convert.map2list(stat, key)
       #存储在自定义之前最后一次url
       Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
+      #多种list一次返回
+      list = %{org: ["全部"] ++ Query.list("org", org, time, server_type), time: ["全部"] ++ Query.list("time", org, time, server_type), drg: ["-", "全部"] ++ Query.list("drg", org, time, server_type)}
       #计算客户端提示
-      [clinet_stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, rows, "download", server_type)
-      clinet_stat = [key, cnkey] ++ Convert.map2list(clinet_stat, key)
-      header = Enum.at(clinet_stat, 1)
-      clinet_stat = clinet_stat|>List.delete_at(0)|>List.delete_at(0)
-      num = clinet_stat|>Enum.map(fn x -> List.last(x) end)|>Enum.sum
-      org_num =  clinet_stat|>Enum.map(fn x -> List.first(x) end)|>:lists.usort|>length
-      time_num =  clinet_stat|>Enum.map(fn x -> Enum.at(x, 1) end)|>:lists.usort|>length
-      drg_num = if("病种" in header)do clinet_stat|>Enum.map(fn x -> Enum.at(x, 2) end)|>:lists.usort|>length else 0 end
-      %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, server_type: server_type}
+      [num, org_num, time_num, drg_num] = [count, length(list.org), length(list.time), length(list.drg)]
+      %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, server_type: server_type, type: type}
     end
   end
 

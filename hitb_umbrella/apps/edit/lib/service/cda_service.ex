@@ -48,24 +48,25 @@ defmodule Edit.CdaService do
     end
   end
 
-  def update(id, content, file_name, username, doctype, mouldtype, header, save_type) do
-    {file_username, file_name} =
-      if(String.contains? file_name, "-")do
-        List.to_tuple(String.split(file_name, "-"))
-      else
-        {username, file_name}
-      end
+  def update(id, content, file_name, username, doctype, header, save_type, mouldtype) do
     if (mouldtype == "模板") do
-      myMoulds(file_name, file_username, content, doctype, header, save_type)
+      myMoulds(file_name, username, content, doctype, header, save_type)
     else
+      {file_username, file_name} =
+        if(String.contains? file_name, "-")do
+          List.to_tuple(String.split(file_name, "-"))
+        else
+          {username, file_name}
+        end
       patient_id = generate_patient_id()
       PatientService.patient_insert(content, username, patient_id)
       myCdas(id, file_name, file_username, content, doctype, username, patient_id, header, save_type)
     end
   end
 
-  defp myMoulds(file_name, file_username, content, doctype, header, _save_type) do
-    mymould = HitbRepo.get_by(MyMould, name: file_name, username: file_username)
+  defp myMoulds(file_name, file_username, content, _doctype, header, _save_type) do
+    IO.inspect header
+    mymould = HitbRepo.get_by(MyMould, name: "#{file_name}.cdh", username: file_username)
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
@@ -79,7 +80,8 @@ defmodule Edit.CdaService do
       |> HitbRepo.update()
       %{success: true, info: "保存成功"}
     else
-      namea = "#{doctype}.cdh"
+      namea = "#{file_name}.cdh"
+      IO.inspect namea
       body = %{"content" => content, "name" => namea, "username" => file_username, "is_change" => true, "is_show" => true, "header" => header}
       %MyMould{}
       |> MyMould.changeset(body)
@@ -89,6 +91,7 @@ defmodule Edit.CdaService do
   end
 
   defp myCdas(id, _file_name, file_username, content, doctype, username, patient_id, header, save_type) do
+    IO.inspect header
     header = Enum.reduce(Map.keys(header), "", fn x, acc ->
       if acc == "" do
         "#{acc}#{x}:#{Map.get(header,x)}"
