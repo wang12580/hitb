@@ -92,7 +92,6 @@ defmodule Library.RuleService do
         _ ->
         [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
       end
-    # IO.inspect result
     %{library: result, list: list, count: count, page_list: page_list, page: page_num}
   end
 
@@ -209,17 +208,17 @@ defmodule Library.RuleService do
     skip = Page.skip(page, rows)
     query = if(rows == 0)do query else order_by(query, [w], asc: w.inserted_at)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = repo.all(query)
-    list =
-      case type do
-        "time" ->
-          repo.all(from p in tab, distinct: true, select: p.year)
-        "version" ->
-          repo.all(from p in tab, distinct: true, select: p.version)
-        "org" ->
-          repo.all(from p in tab, distinct: true, select: p.org)
-        _ -> []
-      end
-    IO.inspect list
+    # list =
+    #   case type do
+    #     "time" ->
+    #       repo.all(from p in tab, distinct: true, select: p.year)
+    #     "version" ->
+    #       repo.all(from p in tab, distinct: true, select: p.version)
+    #     "org" ->
+    #       repo.all(from p in tab, distinct: true, select: p.org)
+    #     _ -> []
+    #   end
+    list = %{org: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.org), time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), version: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.version)}
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
