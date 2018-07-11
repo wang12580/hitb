@@ -1,9 +1,9 @@
 defmodule Server.ShareService do
   # import Ecto
   import Ecto.Query
-  alias Stat.Query
   alias Hitb.Time
   alias Block.BlockService
+  alias Block.AccountService
   alias Block.Repo, as: BlockRepo
   alias Hitb.Repo, as: HitbRepo
   alias Block.Edit.Cda, as: BlockCda
@@ -33,9 +33,6 @@ defmodule Server.ShareService do
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
   alias Hitb.Server.User
-  alias Block.AccountService
-
-
 
   def share(type, file_name, username, content) do
     content =
@@ -97,13 +94,7 @@ defmodule Server.ShareService do
             # %{org: Enum.at(x, 0), time: Enum.at(x, 1)}
             "#{Enum.at(x, 0)}-#{Enum.at(x, 1)}"
           end)
-          stat = Enum.reject(stat, fn x -> "#{x.org}-#{x.time}" not in cont end)
-
-          IO.inspect stat
-          # Enum.each(stat, fn x ->
-          #   # IO.inspect x
-          # end)
-          stat
+          Enum.reject(stat, fn x -> "#{x.org}-#{x.time}" not in cont end)
         "library" ->
           file_name2 = String.split(file_name, ".")|>List.first
           [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name2, "BJ", "", "", 0, "server")

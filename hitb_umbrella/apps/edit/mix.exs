@@ -36,6 +36,7 @@ defmodule Edit.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:block, in_umbrella: true},
       {:hitb, in_umbrella: true}
     ]
   end

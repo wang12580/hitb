@@ -5,8 +5,8 @@ defmodule HitbserverWeb.PatientController do
     plug HitbserverWeb.Access
 
     def patient_list(conn, _params) do
-      %{"info" => info, "username" => username} = Map.merge(%{"info" => %{}, "username" => ""}, conn.params)
-      result = PatientService.patient_list(info, username)
+      %{"info" => info, "username" => _username} = Map.merge(%{"info" => %{}, "username" => ""}, conn.params)
+      result = PatientService.patient_list(info)
       json conn, %{result: result, success: true}
     end
 

@@ -15,7 +15,7 @@ defmodule Edit.CdaServiceTest do
   end
 
   test "test update" do
-    assert CdaService.update("", "sdasd dsadsa,姓名 a,年龄 20,出生地 来了,职业 急急急,婚姻状况 来了,民族 啊啊,性别 啊", "test.cda", "test", "doctype", "sadas", %{}, "新建").success == true
+    assert CdaService.update("", "sdasd dsadsa,姓名 a,年龄 20,出生地 来了,职业 急急急,婚姻状况 来了,民族 啊啊,性别 啊", "test.cda", "test", "doctype", %{}, "新建", "模板").success == true
   end
 
 end

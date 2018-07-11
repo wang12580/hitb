@@ -7,11 +7,14 @@ defmodule Library.CdhService do
   alias Hitb.Page
 
   def cdh_list() do
-    Repo.all(Cdh)
+    Repo.all(HitbCdh)
+    |>Enum.map(fn x ->
+        Map.drop(x, [:__meta__, :__struct__])
+      end)
   end
 
   def channel_cdh_list() do
-    Repo.all(Cdh)
+    Repo.all(HitbCdh)
     |>Enum.reduce(%{}, fn x, acc ->
         content = x.content|>String.split(" ")|>Enum.reject(fn x -> x == nil end)
         value = Map.get(acc, x.name)

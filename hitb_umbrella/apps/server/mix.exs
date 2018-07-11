@@ -40,9 +40,9 @@ defmodule Server.Mixfile do
       {:mnemonic, "~> 0.2.0"},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 1.1"},
+      {:block, in_umbrella: true},
       {:library, in_umbrella: true},
       {:hitb, in_umbrella: true},
-      {:block, in_umbrella: true},
       {:stat, in_umbrella: true},
     ]
   end
