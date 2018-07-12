@@ -41,7 +41,7 @@ defmodule Library.CdhService do
           [[], ["键", "值"]] ++ Enum.map(result, fn x -> [:key, :value]|>Enum.map(fn key -> Map.get(x, key) end) end)
       end
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
-    %{library: result, list: [], count: count, page_list: page_list, page: page_num}
+    %{library: result, list: %{time: [], org: [], version: []}, count: count, page_list: page_list, page: page_num}
   end
 
 end
