@@ -92,7 +92,6 @@ defmodule Library.RuleService do
         _ ->
         [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
       end
-    # IO.inspect result
     %{library: result, list: list, count: count, page_list: page_list, page: page_num}
   end
 
@@ -219,7 +218,6 @@ defmodule Library.RuleService do
           repo.all(from p in tab, distinct: true, select: p.org)
         _ -> []
       end
-    IO.inspect list
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
   end
@@ -337,7 +335,6 @@ defmodule Library.RuleService do
           keys = Map.keys(List.first(result))|>Enum.map(fn x -> cn(x) end)
           [keys] ++ Enum.map(result, fn x -> Map.values(x) end)
       end
-    IO.inspect result
     %{result: result}
   end
   def rule_search(filename, value, servertype) do

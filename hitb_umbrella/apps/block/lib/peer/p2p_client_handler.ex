@@ -113,8 +113,23 @@ defmodule Block.P2pClientHandler do
     response = payload["response"]["data"]
     case type do
       "sync_block" ->
-        if(BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(BlockService.get_latest_block, :timestamp))do
+        if(Map.get(response, "hash") != Map.get(BlockService.get_latest_block, :hash))do
           GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        end
+      "get_latest_block" ->
+        if(BlockService.get_latest_block == nil or Map.get(response, "hash") != Map.get(BlockService.get_latest_block, :hash))do
+          GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
+        else
+          GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
+        end
+      "get_all_blocks" ->
+        block_hashs = BlockRepository.get_all_block_hashs
+        blocks = response
+        |> Enum.reject(fn x -> x["hash"] in block_hashs end)
+        #区块不全后同步其他部分
+        if(blocks != [] and blocks != nil)do
+          blocks|> Enum.each(fn x -> BlockRepository.insert_block(x) end)
+          GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
         end
       "get_all_accounts" ->
         usernames = AccountRepository.get_all_usernames()
@@ -122,18 +137,6 @@ defmodule Block.P2pClientHandler do
         |> Enum.reject(fn x -> x["username"] in usernames end)
         |> Enum.each(fn x -> AccountRepository.insert_account(x) end)
         GenSocketClient.push(transport, "p2p", @query_latest_block, %{})
-      "get_latest_block" ->
-        if(BlockService.get_latest_block == nil or Map.get(response, "timestamp") != Map.get(BlockService.get_latest_block, :timestamp))do
-          GenSocketClient.push(transport, "p2p", @query_all_blocks, %{})
-        else
-          GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
-        end
-      "get_all_blocks" ->
-        block_hashs = BlockRepository.get_all_block_hashs
-        response
-        |> Enum.reject(fn x -> x["hash"] in block_hashs end)
-        |> Enum.each(fn x -> BlockRepository.insert_block(x) end)
-        GenSocketClient.push(transport, "p2p", @query_all_transactions, %{})
       "query_all_transactions" ->
         transactios_id = TransactionRepository.get_all_transactions_id()
         response
