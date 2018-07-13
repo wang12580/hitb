@@ -209,14 +209,13 @@ defmodule Library.RuleService do
     query = if(rows == 0)do query else order_by(query, [w], asc: w.inserted_at)|>limit([w], ^rows)|>offset([w], ^skip) end
     result = repo.all(query)
     list =
-      case type do
-        "time" ->
-          repo.all(from p in tab, distinct: true, select: p.year)
-        "version" ->
-          repo.all(from p in tab, distinct: true, select: p.version)
-        "org" ->
-          repo.all(from p in tab, distinct: true, select: p.org)
-        _ -> []
+      cond do
+        tab_type in ["mdc", "adrg", "drg", "icd9", "icd10"] ->
+          %{time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), version: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.version), org: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.org)}
+        tab_type in ["中药", "中成药", "西药"] ->
+          %{time: [], org: [], version: []}
+        true ->
+          %{time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), org: [], version: []}
       end
     [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
     [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
