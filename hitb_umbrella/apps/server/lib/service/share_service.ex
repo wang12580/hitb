@@ -2,37 +2,28 @@ defmodule Server.ShareService do
   # import Ecto
   import Ecto.Query
   alias Hitb.Time
+  alias Hitb.Repo
+
   alias Block.BlockService
   alias Block.AccountService
-  alias Block.Repo, as: BlockRepo
-  alias Hitb.Repo, as: HitbRepo
-  alias Block.Edit.Cda, as: BlockCda
-  alias Block.Edit.CdaFile, as: BlockCdaFile
-  alias Block.Library.Cdh, as: BlockCdh
-  alias Hitb.Edit.Cda, as: HitbCda
-  alias Hitb.Library.Cdh, as: HitbCdh
-  alias Block.Stat.StatOrg, as: BlockStatOrg
-  alias Hitb.Stat.StatOrg, as: HitbStatOrg
-  alias Hitb.Stat.StatFile, as: HitbStatFile
-  alias Block.Stat.StatFile, as: BlockStatFile
-  alias Block.Library.RuleMdc, as: BlockRuleMdc
-  alias Hitb.Library.RuleMdc, as: HitbRuleMdc
-  alias Library.RuleService
-  alias Block.Library.RuleAdrg, as: BlockRuleAdrg
-  alias Hitb.Library.RuleAdrg, as: HitbRuleAdrg
-  alias Block.Library.RuleDrg, as: BlockRuleDrg
-  alias Hitb.Library.RuleDrg, as: HitbRuleDrg
-  alias Block.Library.RuleIcd9, as: BlockRuleIcd9
-  alias Hitb.Library.RuleIcd9, as: HitbRuleIcd9
-  alias Block.Library.RuleIcd10, as: BlockRuleIcd10
-  alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
-  alias Block.Library.LibWt4, as: BlockLibWt4
-  alias Hitb.Library.LibWt4, as: HitbLibWt4
-  alias Block.Library.ChineseMedicinePatent, as: BlockChineseMedicinePatent
-  alias Block.Library.ChineseMedicine, as: BlockChineseMedicine
-  alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
-  alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
+  alias Block.LibraryService
+  alias Block.EditService
+  alias Block.StatService
+
+  alias Hitb.Edit.Cda
+  alias Hitb.Library.Cdh
+  alias Hitb.Stat.StatOrg
+  alias Hitb.Stat.StatFile
+  alias Hitb.Library.RuleMdc
+  alias Hitb.Library.RuleAdrg
+  alias Hitb.Library.RuleDrg
+  alias Hitb.Library.RuleIcd9
+  alias Hitb.Library.RuleIcd10
+  alias Hitb.Library.LibWt4
+  alias Hitb.Library.ChineseMedicinePatent
+  alias Hitb.Library.ChineseMedicine
   alias Hitb.Server.User
+  alias Library.RuleService
 
   def share(type, file_name, username, content) do
     content =
@@ -43,21 +34,21 @@ defmodule Server.ShareService do
       end
     latest =
       case type do
-        "cdh" -> BlockRepo.all(from p in BlockCdh, order_by: [desc: p.inserted_at], limit: 1)
-        "edit" -> BlockRepo.all(from p in BlockCda, order_by: [desc: p.inserted_at], limit: 1)
-        "stat" -> BlockRepo.all(from p in BlockStatOrg, order_by: [desc: p.inserted_at], limit: 1)
+        "cdh" -> LibraryService.get_cdh()
+        "edit" -> EditService.get_cda()
+        "stat" -> StatService.get_stat()
         "library" ->
           case file_name do
-            "mdc.csv" ->   BlockRepo.all(from p in BlockRuleMdc, order_by: [desc: p.inserted_at], limit: 1)
-            "adrg.csv" ->  BlockRepo.all(from p in BlockRuleAdrg, order_by: [desc: p.inserted_at], limit: 1)
-            "drg.csv" ->   BlockRepo.all(from p in BlockRuleDrg, order_by: [desc: p.inserted_at], limit: 1)
-            "icd9.csv" ->  BlockRepo.all(from p in BlockRuleIcd9, order_by: [desc: p.inserted_at], limit: 1)
-            "icd10.csv" -> BlockRepo.all(from p in BlockRuleIcd10, order_by: [desc: p.inserted_at], limit: 1)
-            "中药.csv" ->   BlockRepo.all(from p in BlockChineseMedicine, order_by: [desc: p.inserted_at], limit: 1)
-            "中成药.csv" -> BlockRepo.all(from p in BlockChineseMedicinePatent, order_by: [desc: p.inserted_at], limit: 1)
+            "mdc.csv" -> LibraryService.get_rulemdc()
+            "adrg.csv" -> LibraryService.get_ruleadrg()
+            "drg.csv" -> LibraryService.get_ruledrg()
+            "icd9.csv" -> LibraryService.get_ruleicd9()
+            "icd10.csv" -> LibraryService.get_ruleicd10()
+            "中药.csv" -> LibraryService.get_chinese_medicine()
+            "中成药.csv" -> LibraryService.get_chinese_medicine_patent()
             _ ->
               file_name2 = String.split(file_name, ".")|>List.first
-              BlockRepo.all(from p in BlockLibWt4, where: p.type == ^file_name2, order_by: [desc: p.inserted_at], limit: 1)
+              LibraryService.get_lib_wt4(file_name2)
           end
       end
     previous_hash =
@@ -68,24 +59,20 @@ defmodule Server.ShareService do
     data =
       case type do
         "cdh" ->
-          HitbRepo.all(from p in HitbCdh)
+          Repo.all(from p in Cdh)
         "edit" ->
           [username, editName] = String.split(file_name, "-")
-          edit = HitbRepo.all(from p in HitbCda, where: p.name == ^editName and p.username == ^username)
-          bloackCdaFile = BlockRepo.get_by(BlockCdaFile, username: username, filename: editName)
+          edit = Repo.all(from p in Cda, where: p.name == ^editName and p.username == ^username)
+          bloackCdaFile = EditService.get_cda_file(username, editName)
           if !bloackCdaFile do
             body = %{"username" => username, "filename" => editName}
-            %BlockCdaFile{}
-            |> BlockCdaFile.changeset(body)
-            |> BlockRepo.insert()
+            EditService.create_cda_file(body)
           end
           edit
         "stat" ->
-          page_type = HitbRepo.get_by(HitbStatFile, file_name: "#{file_name}")
-          if(BlockRepo.get_by(BlockStatFile, file_name: "#{file_name}") == nil)do
-            %BlockStatFile{}
-            |>BlockStatFile.changeset(Map.drop(page_type, [:id, :__meta__, :__struct__]))
-            |>BlockRepo.insert
+          page_type = Repo.get_by(StatFile, file_name: "#{file_name}")
+          if(StatService.get_stat_file(file_name) == nil)do
+            StatService.create_stat_file(Map.drop(page_type, [:id, :__meta__, :__struct__]))
           end
           [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, 1, "org", "total", "", "", "", "org", "asc", page_type.page_type, 15, "download", "server")
           # content.
@@ -121,26 +108,25 @@ defmodule Server.ShareService do
         [Enum.concat(data, [x]), hash]
       end)
       |>List.first
-    user = HitbRepo.get_by(User, username: username)
+    user = Repo.get_by(User, username: username)
     if(user)do
       Enum.each(data, fn x ->
         case type do
-          "cdh" -> %BlockCdh{}|>BlockCdh.changeset(x)
-          "edit" -> %BlockCda{}|>BlockCda.changeset(x)
-          "stat" -> %BlockStatOrg{}|>BlockStatOrg.changeset(x)
+          "cdh" -> LibraryService.create_cdh(x)
+          "edit" -> EditService.create_cda(x)
+          "stat" -> StatService.create_stat_org(x)
           "library" ->
             case file_name do
-              "mdc.csv" ->  %BlockRuleMdc{}|>BlockRuleMdc.changeset(x)
-              "adrg.csv" -> %BlockRuleAdrg{}|>BlockRuleAdrg.changeset(x)
-              "drg.csv" ->  %BlockRuleDrg{}|>BlockRuleDrg.changeset(x)
-              "icd9.csv" ->  %BlockRuleIcd9{}|>BlockRuleIcd9.changeset(x)
-              "icd10.csv" -> %BlockRuleIcd10{}|>BlockRuleIcd10.changeset(x)
-              "中药.csv" ->  %BlockChineseMedicine{}|>BlockChineseMedicine.changeset(x)
-              "中成药.csv" -> %BlockChineseMedicinePatent{}|>BlockChineseMedicinePatent.changeset(x)
-              _ ->          %BlockLibWt4{}|>BlockLibWt4.changeset(x)
+              "mdc.csv" -> LibraryService.create_rulemdc(x)
+              "adrg.csv" -> LibraryService.create_ruleadrg(x)
+              "drg.csv" -> LibraryService.create_ruledrg(x)
+              "icd9.csv" -> LibraryService.create_ruleicd9(x)
+              "icd10.csv" -> LibraryService.create_ruleicd10(x)
+              "中药.csv" -> LibraryService.create_chinese_medicine(x)
+              "中成药.csv" -> LibraryService.create_chinese_medicine_patent(x)
+              _ -> LibraryService.create_libwt4(x)
             end
         end
-        |>BlockRepo.insert
       end)
       secret = AccountService.getAccountByAddress(user.block_address).username
       block = BlockService.create_next_block("#{type}-#{file_name}", secret)
@@ -150,65 +136,65 @@ defmodule Server.ShareService do
   end
 
   def get_share() do
-    edit = BlockRepo.all(from p in BlockCda, select: count(p.id))|>List.first
-    stat_org = BlockRepo.all(from p in BlockStatOrg, select: count(p.id))|>List.first
-    mdc = BlockRepo.all(from p in BlockRuleMdc, select: count(p.id))|>List.first
-    adrg = BlockRepo.all(from p in BlockRuleAdrg, select: count(p.id))|>List.first
-    drg = BlockRepo.all(from p in BlockRuleDrg, select: count(p.id))|>List.first
-    icd9 = BlockRepo.all(from p in BlockRuleIcd9, select: count(p.id))|>List.first
-    icd10 = BlockRepo.all(from p in BlockRuleIcd10, select: count(p.id))|>List.first
-    chinese_medicine = BlockRepo.all(from p in BlockChineseMedicine, select: count(p.id))|>List.first
-    chinese_medicine_patent = BlockRepo.all(from p in BlockChineseMedicinePatent, select: count(p.id))|>List.first
-    lib_wt4 = BlockRepo.all(from p in BlockLibWt4, select: count(p.id))|>List.first
+    edit = EditService.get_cda_num()
+    stat_org = StatService.get_stat_num()
+    mdc = LibraryService.get_rulemdc_num()
+    adrg = LibraryService.get_ruleadrg_num()
+    drg = LibraryService.get_ruledrg_num()
+    icd9 = LibraryService.get_ruleicd9_num()
+    icd10 = LibraryService.get_ruleicd10_num()
+    chinese_medicine = LibraryService.get_chinese_medicine_num()
+    chinese_medicine_patent = LibraryService.get_chinese_medicine_patent_num()
+    lib_wt4 = LibraryService.get_lib_wt4_num()
     last_edit =
       case edit do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockCda, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> EditService.get_cda|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_stat_org =
       case stat_org do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockStatOrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> StatService.get_stat|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_mdc =
       case mdc do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleMdc, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_rulemdc|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_adrg =
       case adrg do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleAdrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_ruleadrg|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_drg =
       case drg do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleDrg, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_ruledrg|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_icd9 =
       case icd9 do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleIcd9, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_ruleicd9|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_icd10 =
       case icd10 do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockRuleIcd10, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_ruleicd10|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_chinese_medicine =
       case chinese_medicine do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockChineseMedicine, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_chinese_medicine|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_chinese_medicine_patent =
       case chinese_medicine_patent do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockChineseMedicinePatent, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_chinese_medicine_patent|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     last_lib_wt4 =
       case lib_wt4 do
         0 -> "-"
-        _ -> BlockRepo.all(from p in BlockLibWt4, select: p.inserted_at, order_by: [asc: p.inserted_at], limit: 1)|>List.first|>Time.stime_ecto
+        _ -> LibraryService.get_last_lib_wt4|>Map.get(:inserted_at)|>List.first|>Time.stime_ecto
       end
     [%{key: "edit", val: edit, last: last_edit}, %{key: "stat_org", val: stat_org, last: last_stat_org}, %{key: "mdc", val: mdc, last: last_mdc}, %{key: "adrg", val: adrg, last: last_adrg}, %{key: "drg", val: drg, last: last_drg}, %{key: "icd9", val: icd9, last: last_icd9}, %{key: "icd10", val: icd10, last: last_icd10}, %{key: "chinese_medicine", val: chinese_medicine, last: last_chinese_medicine}, %{key: "chinese_medicine_patent", val: chinese_medicine_patent, last: last_chinese_medicine_patent}, %{key: "lib_wt4", val: lib_wt4, last: last_lib_wt4}]
   end
@@ -217,65 +203,65 @@ defmodule Server.ShareService do
     hashs =
       cond do
         table == "edit" ->
-          HitbRepo.all(from p in HitbCda, select: %{name: p.name, content: p.content})
+          Repo.all(from p in Cda, select: %{name: p.name, content: p.content})
           |>Enum.map(fn x -> hash("#{x.name}#{x.content}") end)
         table == "stat_org" ->
-          HitbRepo.all(from p in HitbStatOrg, select: %{org: p.org, time: p.time, org_type: p.org_type, time_type: p.time_type})
+          Repo.all(from p in StatOrg, select: %{org: p.org, time: p.time, org_type: p.org_type, time_type: p.time_type})
           |>Enum.map(fn x -> hash("#{x.org}#{x.time}#{x.org_type}#{x.time_type}") end)
         table in ["mdc", "adrg", "drg", "icd9", "icd10"] ->
           case table do
             "mdc" ->
-              HitbRepo.all(from p in HitbRuleMdc, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+              Repo.all(from p in RuleMdc, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
             "adrg" ->
-              HitbRepo.all(from p in BlockRuleAdrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+              Repo.all(from p in RuleAdrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
             "drg" ->
-              HitbRepo.all(from p in BlockRuleDrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+              Repo.all(from p in RuleDrg, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
             "icd9" ->
-              HitbRepo.all(from p in BlockRuleIcd9, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+              Repo.all(from p in RuleIcd9, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
             "icd10" ->
-              HitbRepo.all(from p in BlockRuleIcd10, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
+              Repo.all(from p in RuleIcd10, select: %{code: p.code, name: p.name, version: p.version, year: p.year, org: p.org, plat: p.plat})
           end
           |>Enum.map(fn x -> hash("#{x.code}#{x.name}#{x.version}#{x.year}#{x.org}#{x.plat}") end)
         table == "chinese_medicine" ->
-          BlockRepo.all(from p in BlockChineseMedicine, select: %{code: p.code, name: p.name})
+          Repo.all(from p in ChineseMedicine, select: %{code: p.code, name: p.name})
           |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
         table == "chinese_medicine_patent" ->
-          BlockRepo.all(from p in BlockChineseMedicinePatent, select: %{code: p.code, name: p.name})
+          Repo.all(from p in ChineseMedicinePatent, select: %{code: p.code, name: p.name})
           |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
         true ->
-          BlockRepo.all(from p in BlockLibWt4, select: %{code: p.code, name: p.name})
+          Repo.all(from p in LibWt4, select: %{code: p.code, name: p.name})
           |>Enum.map(fn x -> hash("#{x.code}#{x.name}") end)
       end
     data =
       case table do
-        "edit" ->   BlockRepo.all(from p in BlockCda)
-        "stat_org" -> BlockRepo.all(from p in BlockStatOrg)
-        "mdc" -> BlockRepo.all(from p in BlockRuleMdc)
-        "adrg" -> BlockRepo.all(from p in BlockRuleAdrg)
-        "drg" -> BlockRepo.all(from p in BlockRuleDrg)
-        "icd9" -> BlockRepo.all(from p in BlockRuleIcd9)
-        "icd10" -> BlockRepo.all(from p in BlockRuleIcd10)
-        "chinese_medicine" -> BlockRepo.all(from p in BlockChineseMedicine)
-        "chinese_medicine_patent" -> BlockRepo.all(from p in BlockChineseMedicinePatent)
-        "lib_wt4" -> BlockRepo.all(from p in BlockLibWt4)
+        "edit" ->  EditService.get_cdas()
+        "stat_org" -> StatService.get_stats()
+        "mdc" -> LibraryService.get_rulemdcs()
+        "adrg" -> LibraryService.get_ruleadrgs()
+        "drg" -> LibraryService.get_ruledrgs()
+        "icd9" -> LibraryService.get_ruleicd9s()
+        "icd10" -> LibraryService.get_ruleicd10s()
+        "chinese_medicine" -> LibraryService.get_chinese_medicines()
+        "chinese_medicine_patent" -> LibraryService.get_chinese_medicine_patents()
+        "lib_wt4" -> LibraryService.get_lib_wt4s()
       end
     data
     |>Enum.reject(fn x -> x.hash in hashs end)
     |>Enum.map(fn x ->
         x = Map.drop(x, [:id, :__meta__, :__struct__])
         case table do
-          "edit" -> %HitbCda{}|>HitbCda.changeset(x)
-          "stat_org" -> %HitbStatOrg{}|>HitbStatOrg.changeset(x)
-          "mdc" -> %HitbRuleMdc{}|>HitbRuleMdc.changeset(x)
-          "adrg" -> %HitbRuleAdrg{}|>HitbRuleAdrg.changeset(x)
-          "drg" -> %HitbRuleDrg{}|>HitbRuleDrg.changeset(x)
-          "icd9" -> %HitbRuleIcd9{}|>HitbRuleIcd9.changeset(x)
-          "icd10" -> %HitbRuleIcd10{}|>HitbRuleIcd10.changeset(x)
-          "chinese_medicine" -> %HitbChineseMedicine{}|>HitbChineseMedicine.changeset(x)
-          "chinese_medicine_patent" -> %HitbChineseMedicinePatent{}|>HitbChineseMedicinePatent.changeset(x)
-          "lib_wt4" -> %HitbLibWt4{}|>HitbLibWt4.changeset(x)
+          "edit" -> %Cda{}|>Cda.changeset(x)
+          "stat_org" -> %StatOrg{}|>StatOrg.changeset(x)
+          "mdc" -> %RuleMdc{}|>RuleMdc.changeset(x)
+          "adrg" -> %RuleAdrg{}|>RuleAdrg.changeset(x)
+          "drg" -> %RuleDrg{}|>RuleDrg.changeset(x)
+          "icd9" -> %RuleIcd9{}|>RuleIcd9.changeset(x)
+          "icd10" -> %RuleIcd10{}|>RuleIcd10.changeset(x)
+          "chinese_medicine" -> %ChineseMedicine{}|>ChineseMedicine.changeset(x)
+          "chinese_medicine_patent" -> %ChineseMedicinePatent{}|>ChineseMedicinePatent.changeset(x)
+          "lib_wt4" -> %LibWt4{}|>LibWt4.changeset(x)
         end
-        |>HitbRepo.insert
+        |>Repo.insert
       end)
   end
 
