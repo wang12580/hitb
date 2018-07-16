@@ -2,6 +2,7 @@ defmodule HitbserverWeb.ClientController do
   use HitbserverWeb, :controller
   plug HitbserverWeb.Access
   alias Stat.ClientSaveService
+  alias Stat.Key
 
   def stat_create(conn, %{"data" => data, "username" => username}) do
     result = ClientSaveService.stat_create(data, username)
@@ -28,6 +29,7 @@ defmodule HitbserverWeb.ClientController do
         "-" -> ["org", ""]
         _ -> [type, drg]
       end
+    order = Key.enkey(order)
     result = ClientSaveService.stat_client(page, page_type, type, tool_type, org, time, drg, order, order_type, username, rows, server_type)
     json conn, result
   end
