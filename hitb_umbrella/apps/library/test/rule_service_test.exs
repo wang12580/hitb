@@ -3,7 +3,7 @@ defmodule Library.RuleServiceTest do
   alias Library.RuleService
 
   test "test rule" do
-    assert RuleService.rule(1, "year", "mdc", "BJ", "", "", 15) == %{dissect: "", list: [], page_list: [], page_num: 1, result: [], tab_type: "mdc", type: "year", version: "BJ", year: ""}
+    assert RuleService.rule(1, "year", "mdc", "BJ", "", "", 15) == %{dissect: "", page_list: [], page_num: 1, result: [], tab_type: "mdc", type: "year", version: "BJ", year: "", list: %{org: ["全部"], time: ["全部"], version: ["全部"]}}
   end
 
   test "test rule_file" do
@@ -11,7 +11,7 @@ defmodule Library.RuleServiceTest do
   end
 
   test "test rule_client" do
-    assert RuleService.rule_client(1, "year", "mdc", "BJ", "", "", 1, "server") == %{count: 0, library: [], list: [], page: 1, page_list: []}
+    assert RuleService.rule_client(1, "year", "mdc", "BJ", "", "", 1, "server") == %{count: 0, library: [], page: 1, page_list: [], list: %{org: ["全部"], time: ["全部"], version: ["全部"]}}
   end
 
   test "test contrast" do
@@ -26,7 +26,7 @@ defmodule Library.RuleServiceTest do
     assert RuleService.search(1, "mdc", "MDCA") == %{table: [], page_list: [], page_num: 1}
   end
   test "test clinet" do
-    assert RuleService.clinet(1, "year", "mdc", "BJ", "", "", 15, "server") == [[], [], 0, [], 1]
+    assert RuleService.clinet(1, "year", "mdc", "BJ", "", "", 15, "server") == [[], %{org: ["全部"], time: ["全部"], version: ["全部"]}, 0, [], 1]
   end
 
 

@@ -15,6 +15,13 @@ defmodule HitbserverWeb.ClientController do
       |>Enum.map(fn x ->
           if(x == "全部")do "" else x end
         end)
+    # [type, drg] =
+    #   cond do
+    #     type != "org" and drg == "全部" -> [type, ""]
+    #     type == "org" and drg == "全部" -> ["drg", ""]
+    #     type != "org" and drg == "-" -> ["org", ""]
+    #     type == "org" and drg == "-" -> ["org", ""]
+    #   end
     [type, drg] =
       case drg do
         "全部" -> ["drg", ""]

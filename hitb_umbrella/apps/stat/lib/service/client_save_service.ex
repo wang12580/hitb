@@ -69,9 +69,18 @@ defmodule Stat.ClientSaveService do
       # stat = Stat.Rand.rand(stat)
       stat = stat|>List.delete_at(0)
       #多种list一次返回
-      list = %{org: ["全部"] ++ Query.list("org", org, time, server_type), time: ["全部"] ++ Query.list("time", org, time, server_type), drg: ["-", "全部"] ++ Query.list("drg", org, time, server_type)}
+      list =
+        %{org: ["全部"] ++ Query.list("org", org, time, server_type),
+        department: ["全部"] ++ Query.list("department", org, time, server_type),
+        year_time: ["全部"] ++ Query.list("year_time", org, time, server_type),
+        half_year: ["全部"] ++ Query.list("half_year", org, time, server_type),
+        season_time: ["全部"] ++ Query.list("season_time", org, time, server_type),
+        month_time: ["全部"] ++ Query.list("month_time", org, time, server_type),
+        mdc: ["-", "全部"] ++ Query.list("mdc", org, time, server_type),
+        adrg: ["-", "全部"] ++ Query.list("adrg", org, time, server_type),
+        drg: ["-", "全部"] ++ Query.list("drg", org, time, server_type)}
       #计算客户端提示
-      [num, org_num, time_num, drg_num] = [count, length(list.org), length(list.time), length(list.drg)]
+      [num, org_num, time_num, drg_num] = [count, length(list.org), length(list.year_time), length(list.drg)]
       %{stat: stat, count: count, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type, server_type: server_type, type: type}
     end
   end
