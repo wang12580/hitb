@@ -31,7 +31,7 @@ defmodule Library.RuleService do
   alias Stat.Key
 
   def rule(page, type, tab_type, version, year, dissect, rows) do
-    [result, page_list, page_num, _count, tab_type, _type, dissect, list, version, _year] = get_rule(page, type, tab_type, version, year, dissect, rows, "server")
+    [result, page_list, page_num, _count, tab_type, _type, dissect, list, version, _year] = get_rule(page, type, tab_type, version, year, dissect, rows, "server", "asc", "")
     result = Enum.map(result, fn x ->
       Map.drop(x, [:__meta__, :__struct__])
     end)
@@ -76,8 +76,10 @@ defmodule Library.RuleService do
     end
   end
 
-  def rule_client(page, type, tab_type, version, year, dissect, rows, server_type) do
-    [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type)
+  def rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
+    IO.inspect sort_type
+    IO.inspect sort_value
+    [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
     result =
       case length(result) do
         0 -> []
@@ -95,8 +97,8 @@ defmodule Library.RuleService do
     %{library: result, list: list, count: count, page_list: page_list, page: page_num}
   end
 
-  def clinet(page, type, tab_type, version, year, dissect, rows, server_type) do
-    [result, page_list, page_num, count, _, _, _, list, _, _] = get_rule(page, type, tab_type, version, year, dissect, rows, server_type)
+  def clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
+    [result, page_list, page_num, count, _, _, _, list, _, _] = get_rule(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
     result = result
       |>Enum.map(fn x ->
           Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
@@ -109,7 +111,7 @@ defmodule Library.RuleService do
     [result, list, count, page_list, page_num]
   end
 
-  defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type) do
+  defp get_rule(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
     rows = if(is_integer(rows))do rows else String.to_integer(rows) end
     repo = if(server_type == "server")do HitbRepo else BlockRepo end
     tab =
@@ -206,7 +208,27 @@ defmodule Library.RuleService do
       |>repo.all([timeout: 1500000])
       |>List.first
     skip = Page.skip(page, rows)
-    query = if(rows == 0)do query else order_by(query, [w], asc: w.inserted_at)|>limit([w], ^rows)|>offset([w], ^skip) end
+    query =
+      cond do
+        rows == 0 -> query
+        sort_value == "" -> query
+        true ->
+          sort_value = String.to_atom(sort_value)
+          case sort_type do
+            "asc" ->
+              order_by(query, [w], asc: field(w, ^sort_value))
+              |>limit([w], ^rows)
+              |>offset([w], ^skip)
+            "desc" ->
+              order_by(query, [w], desc: field(w, ^sort_value))
+              |>limit([w], ^rows)
+              |>offset([w], ^skip)
+            _->
+            order_by(query, [w], asc: field(w, ^sort_value))
+            |>limit([w], ^rows)
+            |>offset([w], ^skip)
+          end
+      end
     result = repo.all(query)
     list =
       cond do
@@ -308,6 +330,10 @@ defmodule Library.RuleService do
   end
 
   def rule_down(filename) do
+    if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
+      tab_type =  String.slice(filename, 0..-5)
+    end
+    IO.inspect tab_type
     tab =
       cond do
         filename == "icd9.csv" -> HitbRuleIcd9
@@ -316,8 +342,52 @@ defmodule Library.RuleService do
         filename == "adrg.csv" -> HitbRuleAdrg
         filename == "drg.csv" -> HitbRuleDrg
         filename == "cdh.csv" -> HitbRuleCdh
+        filename == "中药.csv" -> HitbChineseMedicine
+        filename == "中成药.csv" -> HitbChineseMedicinePatent
+        filename == "西药.csv" -> HitbWesternMedicine
+        true ->  HitbLibWt4
       end
-    result = HitbRepo.all(from p in tab)
+    if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
+      tab_type =  String.slice(filename, 0..-5)
+    end
+    query =
+      cond do
+        tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
+          cond do
+            tab_type == "基本信息" ->
+              from(p in tab)
+              |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
+            tab_type == "街道乡镇代码"->
+              from(p in tab)
+              |>where([p], p.type == "街道乡镇代码")
+            tab_type == "民族"->
+              from(p in tab)
+              |>where([p], p.type == "民族")
+            tab_type == "区县编码"->
+              from(p in tab)
+              |>where([p], p.type == "区县编码")
+            tab_type == "手术血型"->
+              from(p in tab)
+              |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
+            tab_type == "出入院编码"->
+              from(p in tab)
+              |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
+            tab_type == "肿瘤编码"->
+              from(p in tab)
+              |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
+            tab_type == "科别代码"->
+              from(p in tab)
+              |>where([p], p.type == "科别")
+            tab_type == "病理诊断编码"->
+              from(p in tab)
+              |>where([p], p.type == "病理诊断编码(M码)")
+            tab_type == "医保诊断依据"->
+              from(p in tab)
+              |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
+          end
+        true-> from(w in tab)
+      end
+    result = HitbRepo.all(query)
     result = result
       |>Enum.map(fn x ->
           Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
@@ -434,5 +504,47 @@ defmodule Library.RuleService do
       "previous_hash" -> "上一条哈希值"
       _ -> to_string(key)
     end
+  end
+  def en(key) do
+    case to_string(key) do
+      "编码" -> "code"
+      "名称" -> "name"
+      "分类" -> "type"
+      "年份" -> "year"
+      "版本" -> "version"
+      "ADRG编码" -> "adrg"
+      "编码" -> "codes"
+      "部位" -> "dissect"
+      "选项" -> "option"
+      "属性" -> "property"
+      "CC" -> "cc"
+      "MCC" -> "mcc"
+      "用量" -> "consumption"
+      "功效" -> "effect"
+      "适应症" -> "indication"
+      "归经" -> "meridian"
+      "别名" -> "name_1"
+      "注意事项" -> "need_attention"
+      "性味" -> "sexual_taste"
+      "毒性" -> "toxicity"
+      "限医疗机构等级" -> "department_limit"
+      "类型" -> "medicine_type"
+      "医疗" -> "org_limit"
+      "其他限制" -> "other_limit"
+      "其他规格" -> "other_spec"
+      "人员限制" -> "user_limit"
+      "药品编号" -> "medicine_code"
+      "剂型" -> "dosage_form"
+      "英文名称" -> "en_name"
+      "一级分类" -> "first_level"
+      "三级分类" -> "third_level"
+      "二级分类" -> "second_level"
+      "报销限制内容" -> "reimbursement_restrictions"
+      "中文名称" -> "zh_name"
+      "哈希值" -> "hash"
+      "上一条哈希值" -> "previous_hash"
+      _ ->to_string(key)
+    end
+
   end
 end
