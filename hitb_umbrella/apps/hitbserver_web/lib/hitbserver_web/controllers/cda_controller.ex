@@ -36,4 +36,9 @@ defmodule HitbserverWeb.CdaController do
     result = CdaService.update(id, content, file_name, username, doctype, header, save_type, mouldtype)
     json conn, result
   end
+  def cdh_control(conn, _params) do
+    %{"key" => key} = Map.merge(%{"key" => ""}, conn.params)
+    result = CdaService.cdh_control(key)
+    json conn, result
+  end
 end

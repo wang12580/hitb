@@ -26,6 +26,8 @@ defmodule Server.ShareService do
   alias Library.RuleService
 
   def share(type, file_name, username, content) do
+    IO.inspect type
+    IO.inspect file_name
     content =
       case content do
         "" -> content
@@ -51,6 +53,7 @@ defmodule Server.ShareService do
               LibraryService.get_lib_wt4(file_name2)
           end
       end
+    IO.inspect latest
     previous_hash =
       case latest do
         [] -> ""
@@ -84,9 +87,10 @@ defmodule Server.ShareService do
           Enum.reject(stat, fn x -> "#{x.org}-#{x.time}" not in cont end)
         "library" ->
           file_name2 = String.split(file_name, ".")|>List.first
-          [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name2, "BJ", "", "", 0, "server")
+          [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name2, "BJ", "", "", 0, "server", "", "")
           library
       end
+    IO.inspect data
     data =
       Enum.reduce(data, [[], previous_hash], fn x, acc ->
         [data, previous_hash] = acc
@@ -98,7 +102,7 @@ defmodule Server.ShareService do
             "library" ->
               cond do
                 file_name in ["mdc.csv", "adrg.csv", "drg.csv", "icd9.csv", "icd10.csv"] ->
-                  hash("#{x.code}#{x.name}#{x.version}#{x.year}#{x.org}#{x.plat}")
+                  hash("#{x.code}#{x.name}#{x.version}#{x.year}")
                 true ->
                   hash("#{x.code}#{x.name}")
               end
