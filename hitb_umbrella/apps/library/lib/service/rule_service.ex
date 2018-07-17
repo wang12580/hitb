@@ -77,8 +77,6 @@ defmodule Library.RuleService do
   end
 
   def rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
-    IO.inspect sort_type
-    IO.inspect sort_value
     [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
     result =
       case length(result) do
