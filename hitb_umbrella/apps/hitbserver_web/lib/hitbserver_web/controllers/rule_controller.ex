@@ -2,6 +2,7 @@ defmodule HitbserverWeb.RuleController do
   use HitbserverWeb, :controller
   # alias Server.UserService
   alias Library.RuleService
+  alias Library.RuleService
   alias Library.CdhService
   plug HitbserverWeb.Access
   plug :put_layout, "app_stat.html"
@@ -19,14 +20,15 @@ defmodule HitbserverWeb.RuleController do
   end
 
   def rule_client(conn, _params) do
-    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server"}, conn.params)
+    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type, "sort_type" => sort_type, "sort_value" => sort_value} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server", "sort_type" => "", "sort_value" => ""}, conn.params)
+    sort_value = RuleService.en(sort_value)
     server_type = if(server_type == "undefined")do "server" else server_type end
     result =
       case tab_type do
         "cdh" ->
           CdhService.cdh(page, rows, server_type)
         _ ->
-          RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type)
+          RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
       end
     json conn, result
   end
