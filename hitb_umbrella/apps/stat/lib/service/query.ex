@@ -33,9 +33,9 @@ defmodule Stat.Query do
               "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>repo.all
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>repo.all
             end
+          stat = [[cnkey]] ++ Convert.map2list(stat, key)
           [[], 0, 15, stat]
-        # Hitb.ets_get(:stat, cache_key) == nil ->
-        true ->
+        Hitb.ets_get(:stat, cache_key) == nil ->
           order = String.to_atom(order)
           #获取左侧list
           list = list(type, org, time, server_type)
@@ -54,8 +54,8 @@ defmodule Stat.Query do
           Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
           Hitb.ets_insert(:stat, cache_key, [list, count, skip, stat])
           [list, count, skip, stat]
-        # true ->
-        #   Hitb.ets_get(:stat, cache_key)
+        true ->
+          Hitb.ets_get(:stat, cache_key)
       end
     # #求分页列表
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows_num)
@@ -82,10 +82,17 @@ defmodule Stat.Query do
         #取缓存stat
         key = Key.key(username, drg, type, tool_type, page_type)
         #记录转换
-        stat =
-          [Map.merge(%{info_type: "当前记录"}, stat),
-          Map.merge(%{info_type: "环比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org)),
-          Map.merge(%{info_type: "同比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org))]
+        mm_record =
+          case HitbRepo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org) do
+            nil -> []
+            x -> Map.merge(%{info_type: "环比记录"}, x)
+          end
+        yy_record =
+          case HitbRepo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org) do
+            nil -> []
+            x -> Map.merge(%{info_type: "同比记录"}, x)
+          end
+        stat = [Map.merge(%{info_type: "当前记录"}, stat), mm_record, yy_record]|>Enum.reject(fn x -> x == [] end)
         #去除多余的key
         stat
         |>Enum.map(fn x ->

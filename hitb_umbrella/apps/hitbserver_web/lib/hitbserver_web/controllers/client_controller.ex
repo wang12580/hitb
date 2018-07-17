@@ -34,10 +34,24 @@ defmodule HitbserverWeb.ClientController do
     json conn, result
   end
 
+  def stat_info(conn, %{"username" => username}) do
+    %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "机构", "page_type" => "base", "order_type" => "asc", "rows" => 13, "server_type" => "server"}, conn.params)
+    order = Key.enkey(order)
+    result = ClientSaveService.stat_info(page, type, tool_type, drg, order, order_type, page_type, org, time, username, server_type)
+    json conn, result
+  end
+
   def stat_file(conn, _params) do
     %{"name" => name, "username" => username, "server_type" => server_type} = Map.merge(%{"name" => "", "server_type" => "server"}, conn.params)
     result = ClientSaveService.stat_file(name, username, server_type)
     json conn, result
+  end
+
+  def download_client(conn, _params)do
+    %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "机构", "page_type" => "base", "order_type" => "asc", "username" => "", "rows" => 13, "server_type" => "server"}, conn.params)
+    order = Key.enkey(order)
+    result = ClientSaveService.clinet_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
+    json conn, %{stat: result}
   end
 
 end

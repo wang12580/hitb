@@ -12,13 +12,16 @@ defmodule Stat.StatService do
     %{stat: stat, page: page, tool: tool, list: list, page_list: page_list, page_type: page_type, order: order, order_type: order_type}
   end
 
-  def download_stat(page, page_type, type, tool_type, org, time, drg, order, order_type, username)do
+  def get_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username)do
     #取对比分析
     [stat, _, _, _, _, _, _, _, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "download", "server")
+    stat
+  end
+
+  def download_stat(page, page_type, type, tool_type, org, time, drg, order, order_type, username)do
     #按照字段取值
-    str = stat
-      |>List.delete_at(0)
-      |>Enum.reduce("", fn x, acc ->
+    stat = get_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
+    str = Enum.reduce(stat, "", fn x, acc ->
           str = Enum.join(x, ",")
           acc <> str <> "\n"
         end)

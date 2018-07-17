@@ -214,6 +214,8 @@ defmodule HitbserverWeb.Router do
     get "/stat_file", ClientController, :stat_file
     get "/stat_client", ClientController, :stat_client
     post "/stat_create", ClientController, :stat_create
+    get "/stat_info_client", ClientController, :stat_info
+    get "/download_client", ClientController, :download_client
     #相似病案
     post "/cda_consult", StatCdaController, :cda_consult
   end
