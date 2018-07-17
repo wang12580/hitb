@@ -82,10 +82,17 @@ defmodule Stat.Query do
         #取缓存stat
         key = Key.key(username, drg, type, tool_type, page_type)
         #记录转换
-        stat =
-          [Map.merge(%{info_type: "当前记录"}, stat),
-          Map.merge(%{info_type: "环比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org)),
-          Map.merge(%{info_type: "同比记录"}, HitbRepo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org))]
+        mm_record =
+          case HitbRepo.get_by(Map.get(stat, :__struct__), time: mm_time, org: stat.org) do
+            nil -> []
+            x -> Map.merge(%{info_type: "环比记录"}, x)
+          end
+        yy_record =
+          case HitbRepo.get_by(Map.get(stat, :__struct__), time: yy_time, org: stat.org) do
+            nil -> []
+            x -> Map.merge(%{info_type: "同比记录"}, x)
+          end
+        stat = [Map.merge(%{info_type: "当前记录"}, stat), mm_record, yy_record]|>Enum.reject(fn x -> x == [] end)
         #去除多余的key
         stat
         |>Enum.map(fn x ->

@@ -108,4 +108,20 @@ defmodule Stat.ClientSaveService do
     %{data: data, menu: menu}
   end
 
+  def stat_info(page, type, tool_type, drg, order, order_type, page_type, org, time, username, server_type) do
+    [repo, stat_file] = if(server_type == "server")do [HitbRepo, HitbStatFile] else [BlockRepo, BlockStatFile] end
+    stat_file = repo.get_by(stat_file, file_name: "#{page_type}.csv")
+    page_type =
+      case stat_file do
+        nil -> "base"
+        _ -> stat_file.page_type
+      end
+    drg = ""
+    Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
+    [stat, _, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", server_type)
+    Hitb.ets_insert(:stat_drg, "comx_" <> username, stat)
+    stat = [cnkey] ++ Convert.map2list(Query.info(username), key)
+    %{stat: stat}
+  end
+
 end
