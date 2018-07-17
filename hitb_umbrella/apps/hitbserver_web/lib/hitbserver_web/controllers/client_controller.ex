@@ -10,7 +10,7 @@ defmodule HitbserverWeb.ClientController do
   end
 
   def stat_client(conn, _params) do
-    %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "org", "page_type" => "base", "order_type" => "asc", "username" => "", "rows" => 13, "server_type" => "server"}, conn.params)
+    %{"page" => page, "page_type" => page_type, "type" => type, "tool_type" => tool_type, "org" => org, "time" => time, "drg" => drg, "order" => order, "order_type" => order_type, "username" => username, "rows" => rows, "server_type" => server_type} = Map.merge(%{"page" => "1", "type" => "org", "tool_type" => "total", "org" => "", "time" => "", "drg" => "", "order" => "机构", "page_type" => "base", "order_type" => "asc", "username" => "", "rows" => 13, "server_type" => "server"}, conn.params)
     [time, org] =
       [time, org]
       |>Enum.map(fn x ->
