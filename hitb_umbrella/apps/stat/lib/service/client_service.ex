@@ -5,6 +5,7 @@ defmodule Stat.ClientSaveService do
   # alias Block.ShareRecord
   alias Stat.Query
   alias Stat.Convert
+  alias Stat.StatService
   # alias Stat.Key
   # alias Block.ShareRecord
   alias Hitb.Stat.ClientSaveStat, as: HitbClinetStat
@@ -122,6 +123,16 @@ defmodule Stat.ClientSaveService do
     Hitb.ets_insert(:stat_drg, "comx_" <> username, stat)
     stat = [cnkey] ++ Convert.map2list(Query.info(username), key)
     %{stat: stat}
+  end
+
+  def clinet_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username) do
+    stat_file = HitbRepo.get_by(HitbStatFile, file_name: "#{page_type}.csv")
+    page_type =
+      case stat_file do
+        nil -> "base"
+        _ -> stat_file.page_type
+      end
+    StatService.get_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
   end
 
 end

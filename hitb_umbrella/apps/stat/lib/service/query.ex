@@ -33,9 +33,9 @@ defmodule Stat.Query do
               "asc" -> order_by(query, [p], [asc: field(p, ^order)])|>repo.all
               "desc" -> order_by(query, [p], [desc: field(p, ^order)])|>repo.all
             end
+          stat = [[cnkey]] ++ Convert.map2list(stat, key)
           [[], 0, 15, stat]
-        # Hitb.ets_get(:stat, cache_key) == nil ->
-        true ->
+        Hitb.ets_get(:stat, cache_key) == nil ->
           order = String.to_atom(order)
           #获取左侧list
           list = list(type, org, time, server_type)
@@ -54,8 +54,8 @@ defmodule Stat.Query do
           Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, to_string(order), order_type, page_type, org, time])
           Hitb.ets_insert(:stat, cache_key, [list, count, skip, stat])
           [list, count, skip, stat]
-        # true ->
-        #   Hitb.ets_get(:stat, cache_key)
+        true ->
+          Hitb.ets_get(:stat, cache_key)
       end
     # #求分页列表
     [page_num, page_list, count_page] = Hitb.Page.page_list(page, count, rows_num)
