@@ -439,46 +439,48 @@ defmodule Library.RuleService do
     %{result: result}
   end
   defp table(filename, tab) do
-    if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
-      tab_type =  String.slice(filename, 0..-5)
-    end
-    query =
-      cond do
-        tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
-          cond do
-            tab_type == "基本信息" ->
-              from(p in tab)
-              |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
-            tab_type == "街道乡镇代码"->
-              from(p in tab)
-              |>where([p], p.type == "街道乡镇代码")
-            tab_type == "民族"->
-              from(p in tab)
-              |>where([p], p.type == "民族")
-            tab_type == "区县编码"->
-              from(p in tab)
-              |>where([p], p.type == "区县编码")
-            tab_type == "手术血型"->
-              from(p in tab)
-              |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
-            tab_type == "出入院编码"->
-              from(p in tab)
-              |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
-            tab_type == "肿瘤编码"->
-              from(p in tab)
-              |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
-            tab_type == "科别代码"->
-              from(p in tab)
-              |>where([p], p.type == "科别")
-            tab_type == "病理诊断编码"->
-              from(p in tab)
-              |>where([p], p.type == "病理诊断编码(M码)")
-            tab_type == "医保诊断依据"->
-              from(p in tab)
-              |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
-          end
-        true-> from(w in tab)
+    tab_type =
+      if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
+        String.slice(filename, 0..-5)
+      else
+        filename
       end
+    cond do
+      tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
+        cond do
+          tab_type == "基本信息" ->
+            from(p in tab)
+            |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
+          tab_type == "街道乡镇代码"->
+            from(p in tab)
+            |>where([p], p.type == "街道乡镇代码")
+          tab_type == "民族"->
+            from(p in tab)
+            |>where([p], p.type == "民族")
+          tab_type == "区县编码"->
+            from(p in tab)
+            |>where([p], p.type == "区县编码")
+          tab_type == "手术血型"->
+            from(p in tab)
+            |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
+          tab_type == "出入院编码"->
+            from(p in tab)
+            |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
+          tab_type == "肿瘤编码"->
+            from(p in tab)
+            |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
+          tab_type == "科别代码"->
+            from(p in tab)
+            |>where([p], p.type == "科别")
+          tab_type == "病理诊断编码"->
+            from(p in tab)
+            |>where([p], p.type == "病理诊断编码(M码)")
+          tab_type == "医保诊断依据"->
+            from(p in tab)
+            |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
+        end
+      true-> from(w in tab)
+    end
   end
   defp cn(key) do
     case to_string(key) do
