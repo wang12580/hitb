@@ -5,6 +5,7 @@ defmodule Edit.CdaService do
   alias Block.Repo, as: BlockRepo
   alias Hitb.Edit.Cda, as: HitbCda
   alias Hitb.Edit.CdaFile, as: HitbCdaFile
+  alias Hitb.Library.Cdh, as: HitbCdh
   alias Block.Edit.CdaFile, as: BlockCdaFile
   alias Block.Edit.Cda, as: BlockCda
   alias Hitb.Edit.MyMould
@@ -127,5 +128,17 @@ defmodule Edit.CdaService do
     randSecs = :rand.uniform(secs)
     randSec = :os.system_time(:seconds)
     [randSec, randSecs, randMegaSecs] |> Enum.map(fn x -> to_string(x) end) |> Enum.join("")
+  end
+  def cdh_control(key) do
+    cdh = HitbRepo.get_by(HitbCdh, key: key)
+    if (cdh) do
+      result = "该条已经存在"
+    else
+      %HitbCdh{}
+      |> HitbCdh.changeset(%{"key" => key})
+      |> HitbRepo.insert()
+      result = "添加成功"
+    end
+    %{result: result}
   end
 end
