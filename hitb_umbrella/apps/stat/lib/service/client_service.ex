@@ -10,10 +10,12 @@ defmodule Stat.ClientSaveService do
   # alias Block.ShareRecord
   alias Hitb.Stat.ClientSaveStat, as: HitbClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
+  alias Hitb.Server.User, as: HitbUser
   alias Block.Stat.ClientSaveStat, as: BlockClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
   alias Block.Stat.StatFile, as: BlockStatFile
   alias Hitb.Time
+  alias Stat.CompService
 
   def stat_create(data, username) do
     filename = Time.stimehour_number <> "对比分析.csv"
@@ -117,8 +119,9 @@ defmodule Stat.ClientSaveService do
         nil -> "base"
         _ -> stat_file.page_type
       end
+    drg = ""
     Hitb.ets_insert(:stat_drg, "defined_url_" <> username, [page, type, tool_type, drg, order, order_type, page_type, org, time])
-    [stat, _, _, _, _, _, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", server_type)
+    [stat, _, tool, page_list, _, count, key, cnkey, _] = Query.getstat(username, page, type, tool_type, org, time, drg, order, order_type, page_type, 13, "stat", server_type)
     Hitb.ets_insert(:stat_drg, "comx_" <> username, stat)
     stat = [cnkey] ++ Convert.map2list(Query.info(username), key)
     %{stat: stat}
@@ -133,5 +136,21 @@ defmodule Stat.ClientSaveService do
       end
     StatService.get_download(page, page_type, type, tool_type, org, time, drg, order, order_type, username)
   end
-
+  def custom(custom, username) do
+    key = HitbRepo.get_by( HitbUser, username: username)
+    if key do
+      custom = String.split(custom, ",")
+      keys = Enum.uniq(Enum.concat(custom, key.key))
+      key
+      |> HitbUser.changeset(%{username: username, key: keys})
+      |> HitbRepo.update()
+    end
+  end
+ def custom_select(username, tableName) do
+   IO.inspect tableName
+   key = HitbRepo.get_by( HitbUser, username: username)
+   if key do
+     IO.inspect key.key
+   end
+ end
 end
