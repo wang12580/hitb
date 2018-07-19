@@ -218,6 +218,10 @@ defmodule HitbserverWeb.Router do
     post "/stat_create", ClientController, :stat_create
     #相似病案
     post "/cda_consult", StatCdaController, :cda_consult
+    # 自定义查询
+    get "/custom", ClientController, :custom
+    get "/custom_select", ClientController, :custom_select
+
   end
 
 end
