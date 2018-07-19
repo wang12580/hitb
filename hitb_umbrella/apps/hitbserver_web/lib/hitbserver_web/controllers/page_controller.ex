@@ -1,6 +1,6 @@
 defmodule HitbserverWeb.PageController do
   use HitbserverWeb, :controller
-  import Ecto.Query
+  # import Ecto.Query
   alias Server.UserService
   alias Server.UploadService
   # alias Stat.StatCdaService

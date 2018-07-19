@@ -108,7 +108,7 @@ defmodule Block.P2pClientHandler do
     {:ok, state}
   end
 
-  def handle_reply(topic, _ref, payload, transport, state) do
+  def handle_reply(_topic, _ref, payload, transport, state) do
     type = payload["response"]["type"]
     response = payload["response"]["data"]
     case type do
