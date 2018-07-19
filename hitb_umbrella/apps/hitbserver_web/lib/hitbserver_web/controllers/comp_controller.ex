@@ -12,4 +12,8 @@ defmodule HitbserverWeb.CompController do
     result = CompService.target(file)
     json conn, result
   end
+  def target_key(conn, %{"file" => file, "username" => username}) do
+    result = CompService.target_key(file, username)
+    json conn, result
+  end
 end

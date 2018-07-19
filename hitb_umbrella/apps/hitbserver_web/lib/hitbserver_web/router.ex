@@ -212,6 +212,7 @@ defmodule HitbserverWeb.Router do
     #计算
     get "/target", CompController, :target
     get "/target1", CompController, :target1
+    get "/target_key", CompController, :target_key
     #客户端
     get "/stat_file", ClientController, :stat_file
     get "/stat_client", ClientController, :stat_client

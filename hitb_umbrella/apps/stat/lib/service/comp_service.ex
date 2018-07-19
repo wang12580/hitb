@@ -40,4 +40,11 @@ defmodule Stat.CompService do
       end
     %{index: index, dimension: ["时间", "机构", "病种"]}
   end
+  def target_key(file, username) do
+    page_type = Key.tool(file)
+    key =
+      Enum.map(page_type, fn x ->
+        Key.key(username, "", "org", x.en, file)|>List.delete("org")|>List.delete("time")
+      end)|>List.flatten|>Enum.map(fn x -> Key.cnkey(x) end)
+  end
 end

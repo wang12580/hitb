@@ -6,7 +6,7 @@ defmodule Stat.ClientSaveService do
   alias Stat.Query
   alias Stat.Convert
   alias Stat.StatService
-  # alias Stat.Key
+  alias Stat.Key
   # alias Block.ShareRecord
   alias Hitb.Stat.ClientSaveStat, as: HitbClinetStat
   alias Hitb.Stat.StatFile, as: HitbStatFile
@@ -57,7 +57,11 @@ defmodule Stat.ClientSaveService do
         end
       %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, server_type: server_type}
     else
-      stat_file = repo.get_by(stat_file, file_name: "#{page_type}.csv")
+      stat_file =
+        case page_type do
+          "defind__" -> %{page_type: "defined"}
+          _ -> repo.get_by(stat_file, file_name: "#{page_type}.csv")
+        end
       page_type =
         case stat_file do
           nil -> "base"
@@ -139,18 +143,18 @@ defmodule Stat.ClientSaveService do
   def custom(custom, username) do
     key = HitbRepo.get_by( HitbUser, username: username)
     if key do
-      custom = String.split(custom, ",")
+      custom = String.split(custom, ",")|>Enum.map(fn x -> Key.enkey(x) end)
       keys = Enum.uniq(Enum.concat(custom, key.key))
       key
       |> HitbUser.changeset(%{username: username, key: keys})
       |> HitbRepo.update()
     end
   end
- def custom_select(username, tableName) do
-   IO.inspect tableName
-   key = HitbRepo.get_by( HitbUser, username: username)
-   if key do
+  def custom_select(username, tableName) do
+    IO.inspect tableName
+    key = HitbRepo.get_by( HitbUser, username: username)
+    if key do
      IO.inspect key.key
-   end
- end
+    end
+  end
 end
