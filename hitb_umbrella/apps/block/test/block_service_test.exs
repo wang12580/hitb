@@ -4,7 +4,6 @@ defmodule Block.BlockServiceTest do
   alias Block.BlockService
 
   test "test create_next_block" do
-    # IO.inspect BlockService.create_next_block("sss", "ssss")
     assert BlockService.create_next_block("sss", "ssss") != nil
   end
 

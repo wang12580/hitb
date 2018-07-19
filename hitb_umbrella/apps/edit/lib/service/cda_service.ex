@@ -131,14 +131,15 @@ defmodule Edit.CdaService do
   end
   def cdh_control(key) do
     cdh = HitbRepo.get_by(HitbCdh, key: key)
-    if (cdh) do
-      result = "该条已经存在"
-    else
-      %HitbCdh{}
-      |> HitbCdh.changeset(%{"key" => key})
-      |> HitbRepo.insert()
-      result = "添加成功"
-    end
+    result =
+      if (cdh) do
+        "该条已经存在"
+      else
+        %HitbCdh{}
+        |> HitbCdh.changeset(%{"key" => key})
+        |> HitbRepo.insert()
+        "添加成功"
+      end
     %{result: result}
   end
 end

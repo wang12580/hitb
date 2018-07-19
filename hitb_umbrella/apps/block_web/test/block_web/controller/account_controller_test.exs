@@ -21,7 +21,6 @@ defmodule BlockWeb.AccountControllerTest do
   end
   test "POST /generatePublicKey", %{conn: conn} do
     conn = post conn, "/api/generatePublicKey", username: "sss"
-    # IO.inspect assert json_response(conn, 200)
     assert json_response(conn, 200)["publicKey"] == "4jjQ6wx7Ezrosa1G5dzdkJWazSnjQWwIWYCgTEjPoM"
   end
   test "POST /delegates", %{conn: conn} do
