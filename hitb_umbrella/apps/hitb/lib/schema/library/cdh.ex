@@ -14,6 +14,7 @@ defmodule Hitb.Library.Cdh do
   def changeset(%Cdh{} = cdh, attrs) do
     cdh
     |> cast(attrs, [:key, :value])
-    |> validate_required([:key, :value])
+    |> validate_required([:key])
+    |> unique_constraint(:key)
   end
 end
