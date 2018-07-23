@@ -7,14 +7,14 @@ defmodule Hitb.Library.Cdh do
   schema "cdh" do
     field :key, :string
     field :value, :string
+    field :username, :string
     timestamps()
   end
 
   @doc false
   def changeset(%Cdh{} = cdh, attrs) do
     cdh
-    |> cast(attrs, [:key, :value])
+    |> cast(attrs, [:key, :value, :username])
     |> validate_required([:key])
-    |> unique_constraint(:key)
   end
 end
