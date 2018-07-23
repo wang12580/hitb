@@ -1661,7 +1661,6 @@ defmodule Stat.Key do
       "诊断与病理诊断符合率" -> "zdblfh_rate"
       "入院诊断与手术诊断符合人数" -> "ryssfh_num"
       "入院诊断与手术诊断符合率" -> "ryssfh_rate"
-      "病历数" -> "num_num"
       "护理负性事件患者总数" -> "hlfxsj_num"
       "输液意外损伤人数" -> "syyw_num"
       "输液遗留体内异物人数" -> "syyl_num"

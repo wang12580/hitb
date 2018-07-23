@@ -85,9 +85,7 @@ defmodule Stat.StatService do
         ["org", "time"] ++ if(is_list(key) and key != [])do key else Key.key(username, drg, type, tool_type, page_type) end
       end
     #获取分析结果
-    # IO.inspect Stat.Query.info(username, 13)
     stat_info = Convert.map(Query.info(username), key)
-    # IO.inspect stat_info
     Chart.chart(stat_info, chart_type)
   end
 

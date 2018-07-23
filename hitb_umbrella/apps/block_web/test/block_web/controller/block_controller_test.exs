@@ -29,31 +29,26 @@ defmodule BlockWeb.BlockControllerTest do
   #   assert json_response(conn, 200)["height"] == 0
   # end
   test "POST /getFee", %{conn: conn} do
-      conn = get conn, "/block/api/getFee"
-    # IO.inspect assert json_response(conn, 200)
+    conn = get conn, "/block/api/getFee"
     assert json_response(conn, 200) == %{}
   end
   test "POST /getMilestone", %{conn: conn} do
-      conn = get conn, "/block/api/getMilestone"
-    # IO.inspect assert json_response(conn, 200)
+    conn = get conn, "/block/api/getMilestone"
     assert json_response(conn, 200) == %{}
   end
 
   test "POST /getReward", %{conn: conn} do
-      conn = get conn, "/block/api/getReward"
-    # IO.inspect assert json_response(conn, 200)
+    conn = get conn, "/block/api/getReward"
     assert json_response(conn, 200) == %{}
   end
 
   test "POST /getSupply", %{conn: conn} do
-      conn = get conn, "/block/api/getSupply"
-    # IO.inspect assert json_response(conn, 200)
+    conn = get conn, "/block/api/getSupply"
     assert json_response(conn, 200) == %{}
   end
 
   test "POST /getStatus", %{conn: conn} do
-      conn = get conn, "/block/api/getStatus"
-    # IO.inspect assert json_response(conn, 200)
+    conn = get conn, "/block/api/getStatus"
     assert json_response(conn, 200) == %{}
   end
 

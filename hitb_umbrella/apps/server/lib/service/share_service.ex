@@ -3,6 +3,7 @@ defmodule Server.ShareService do
   import Ecto.Query
   alias Hitb.Time
   alias Hitb.Repo
+  alias Stat.Query
 
   alias Block.BlockService
   alias Block.AccountService
@@ -26,8 +27,6 @@ defmodule Server.ShareService do
   alias Library.RuleService
 
   def share(type, file_name, username, content) do
-    IO.inspect type
-    IO.inspect file_name
     content =
       case content do
         "" -> content
@@ -53,18 +52,18 @@ defmodule Server.ShareService do
               LibraryService.get_lib_wt4(file_name2)
           end
       end
-    IO.inspect latest
     previous_hash =
       case latest do
         [] -> ""
         _ -> List.first(latest)|>Map.get(:hash)
       end
+    username = if(type == "edit")do String.split(file_name, "-")|>List.first else username end
     data =
       case type do
         "cdh" ->
           Repo.all(from p in Cdh)
         "edit" ->
-          [username, editName] = String.split(file_name, "-")
+          [_, editName] = String.split(file_name, "-")
           edit = Repo.all(from p in Cda, where: p.name == ^editName and p.username == ^username)
           bloackCdaFile = EditService.get_cda_file(username, editName)
           if !bloackCdaFile do
@@ -90,7 +89,6 @@ defmodule Server.ShareService do
           [library, _list, _count, _page_list,_page_num] = RuleService.clinet(1, "year", file_name2, "BJ", "", "", 0, "server", "", "")
           library
       end
-    IO.inspect data
     data =
       Enum.reduce(data, [[], previous_hash], fn x, acc ->
         [data, previous_hash] = acc

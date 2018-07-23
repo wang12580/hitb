@@ -22,7 +22,6 @@ defmodule Stat.Application do
   end
 
   # defp test() do
-  #   IO.inspect "=================="
   #   "a"
   # end
 

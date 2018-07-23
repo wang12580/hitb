@@ -46,7 +46,6 @@ defmodule Server.UploadService do
     result = Enum.map(json, fn x ->
         if(x != [])do
           x = Map.merge(x, %{"stat_org_name" => stat_org_name, "org_code" => org.code})
-          # IO.inspect Wt4.changeset(%Wt4{}, x)
           %Wt4{}
           |> Wt4.changeset(x)
           |> Repo.insert

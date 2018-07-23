@@ -257,7 +257,6 @@ defmodule Block.P2pClientHandler do
   end
 
   def handle_info(message, _transport, state) do
-    IO.inspect message
     Logger.warn("Unhandled message #{inspect message}")
     {:ok, state}
   end

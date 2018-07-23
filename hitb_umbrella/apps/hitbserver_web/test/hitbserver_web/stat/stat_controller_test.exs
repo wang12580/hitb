@@ -35,19 +35,16 @@ defmodule HitbserverWeb.StatControllerTest do
   end
   test "GET /stat/stat_info", %{conn: conn} do
     conn = get conn, "/stat/stat_info", username: "sss"
-    # IO.inspect assert json_response(conn, 200)
     assert json_response(conn, 200)["stat"] == []
   end
 #   # test "POST /stat/com_add", %{conn: conn} do
 #   #   conn = post conn, "/stat/com_add", url: ["org", "", "", "", ""], username: "sss"
 #   #   # "type=&tool_type=&org=&time=&drg=", username: "sss"
-#   #   IO.inspect assert json_response(conn, 200)
 #   #   assert json_response(conn, 200)["result"] == true
 #   # end
 #
 #   # test "GET /stat/contrast_clear", %{conn: conn} do
 #   #   conn = get conn, "/stat/contrast_clear", username: "sss"
-#   #   # IO.inspect assert json_response(conn, 200)
 #   # #   assert json_response(conn, 200)["result"] == true
 #   # end
 end

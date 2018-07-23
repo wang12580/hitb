@@ -93,7 +93,6 @@ defmodule BlockWeb.P2pChannel do
   end
 
   # defp data(table, hash) do
-  #   # IO.inspect table
   #   case hash do
   #     nil ->
   #       case table do
