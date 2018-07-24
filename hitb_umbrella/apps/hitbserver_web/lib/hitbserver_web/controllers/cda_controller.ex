@@ -36,9 +36,7 @@ defmodule HitbserverWeb.CdaController do
     json conn, result
   end
   def cdh_control(conn, _params) do
-    IO.inspect "12121231"
     %{"key" => key, "username" => username} = Map.merge(%{"key" => "", "username" => ""}, conn.params)
-    IO.inspect "12121231"
     result = CdaService.cdh_control(key, username)
     json conn, result
   end

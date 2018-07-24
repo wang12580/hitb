@@ -2,7 +2,7 @@ defmodule HitbserverWeb.CompControllerTest do
   use HitbserverWeb.ConnCase
 
   test "GET /stat/target1", %{conn: conn} do
-    conn = get conn, "/stat/target1"
+    conn = get conn, "/stat/target1", username: ""
     assert json_response(conn, 200)["list"] == [nil]
     #   ["机构分析_基础分析", "机构绩效_机构效率", "机构绩效_机构工作量", "机构绩效_机构绩效", "财务指标_机构收入", "财务指标_医保控费",
     #  "医疗质量_重返率", "医疗质量_治愈效果",

@@ -4,7 +4,7 @@ defmodule Stat.CompServiceTest do
   alias Stat.CompService
 
   test "test target1" do
-    assert CompService.target1() == [nil]
+    assert CompService.target1("") == %{key: [], list: [nil]}
   end
 
   test "test target" do
