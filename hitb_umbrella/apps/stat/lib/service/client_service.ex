@@ -3,6 +3,7 @@ defmodule Stat.ClientSaveService do
   alias Hitb.Repo, as: HitbRepo
   alias Block.Repo, as: BlockRepo
   alias Stat.Query
+  alias Stat.Key
   alias Stat.Convert
   alias Stat.StatService
   alias Hitb.Stat.ClientSaveStat, as: HitbClinetStat
@@ -53,7 +54,11 @@ defmodule Stat.ClientSaveService do
         end
       %{stat: stat, num: num, org_num: org_num, time_num: time_num, drg_num: drg_num, server_type: server_type}
     else
-      stat_file = repo.get_by(stat_file, file_name: "#{page_type}.csv")
+      stat_file =
+        case page_type do
+          "defind__" -> %{page_type: "defined"}
+          _ -> repo.get_by(stat_file, file_name: "#{page_type}.csv")
+        end
       page_type =
         case stat_file do
           nil -> "base"
@@ -135,10 +140,10 @@ defmodule Stat.ClientSaveService do
   def custom(custom, username) do
     key = HitbRepo.get_by( HitbUser, username: username)
     if key do
-      custom = String.split(custom, ",")
-      keys = Enum.uniq(Enum.concat(custom, key.key))
+      custom = String.split(custom, ",")|>Enum.map(fn x -> Key.enkey(x) end)
+      # keys = Enum.uniq(Enum.concat(custom, key.key))
       key
-      |> HitbUser.changeset(%{username: username, key: keys})
+      |> HitbUser.changeset(%{username: username, key: custom})
       |> HitbRepo.update()
     end
   end
