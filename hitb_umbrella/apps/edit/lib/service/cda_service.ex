@@ -129,15 +129,13 @@ defmodule Edit.CdaService do
     randSec = :os.system_time(:seconds)
     [randSec, randSecs, randMegaSecs] |> Enum.map(fn x -> to_string(x) end) |> Enum.join("")
   end
-  def cdh_control(key, username) do
+  def cdh_control(key, value, username) do
     cdh = HitbRepo.get_by(HitbCdh, key: key, username: username)
-    IO.inspect username
-    IO.inspect "111111111111111111111"
     if (cdh) do
       result = "该条已经存在"
     else
       %HitbCdh{}
-      |> HitbCdh.changeset(%{"key" => key, "username" => username})
+      |> HitbCdh.changeset(%{"key" => key, "value" => value, "username" => username})
       |> HitbRepo.insert()
       result = "添加成功"
     end
