@@ -4,8 +4,9 @@ defmodule HitbserverWeb.CompController do
   # alias Stat.Key
   alias Stat.CompService
 
-  def target1(conn, _params)do
-    result = CompService.target1()
+  def target1(conn, %{"username" => username})do
+    IO.inspect username
+    result = CompService.target1(username)
     json conn, %{list: result.list, key: result.key}
   end
 
