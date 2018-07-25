@@ -6,7 +6,6 @@ defmodule Stat.CompService do
   alias Hitb.Repo
 
   def target1(username)do
-    IO.inspect username
     list = Repo.all(from p in StatFile, select: fragment("array_agg(distinct ?)", p.second_menu))|>List.flatten
     key =
       Repo.all(from p in User, where: p.email == ^username, select: p.key)|>List.flatten|>Enum.map(fn x ->
@@ -50,10 +49,10 @@ defmodule Stat.CompService do
   end
   def target_key(file, username) do
     page_type = Key.tool(file)
-    key =
-      Enum.map(page_type, fn x ->
-        Key.key(username, "", "org", x.en, file)|>List.delete("org")|>List.delete("time")
-      end)|>List.flatten|>Enum.map(fn x -> Key.cnkey(x) end)
-    IO.inspect key
+    Enum.map(page_type, fn x ->
+      Key.key(username, "", "org", x.en, file)|>List.delete("org")|>List.delete("time")
+    end)
+    |>List.flatten
+    |>Enum.map(fn x -> Key.cnkey(x) end)
   end
 end
