@@ -14,6 +14,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
   alias Hitb.Library.LibWt4, as: HitbLibWt4
   alias Hitb.Library.Cdh, as: HitbRuleCdh
+  alias Hitb.Edit.MyMould, as: HitbRuleMyMould
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
   alias Hitb.Library.WesternMedicine, as: HitbWesternMedicine
@@ -99,7 +100,7 @@ defmodule Library.RuleService do
     [result, page_list, page_num, count, _, _, _, list, _, _] = get_rule(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
     result = result
       |>Enum.map(fn x ->
-          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
+          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc, :content, :header, :is_change, :is_show])
         end)
       |>Enum.map(fn x ->
           x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
@@ -122,6 +123,7 @@ defmodule Library.RuleService do
         tab_type == "中药" and server_type == "server"  -> HitbChineseMedicine
         tab_type == "中成药" and server_type == "server"  -> HitbChineseMedicinePatent
         tab_type == "西药" and server_type == "server"  -> HitbWesternMedicine
+        tab_type == "模板" and server_type == "server"  -> HitbRuleMyMould
         tab_type == "mdc" and server_type == "block" -> BlockRuleMdc
         tab_type == "adrg" and server_type == "block" -> BlockRuleAdrg
         tab_type == "drg" and server_type == "block" -> BlockRuleDrg
@@ -189,6 +191,8 @@ defmodule Library.RuleService do
             true ->
               from(p in tab)
           end
+        tab_type in ["模板"] ->
+          from(p in tab)
         true->
           # query_type = String.to_atom(type)
           cond do
@@ -209,7 +213,11 @@ defmodule Library.RuleService do
     query =
       cond do
         rows == 0 -> query
+        |>limit([w], ^rows)
+        |>offset([w], ^skip)
         sort_value == "" -> query
+        |>limit([w], ^rows)
+        |>offset([w], ^skip)
         true ->
           sort_value = String.to_atom(sort_value)
           case sort_type do
@@ -232,7 +240,7 @@ defmodule Library.RuleService do
       cond do
         tab_type in ["mdc", "adrg", "drg", "icd9", "icd10"] ->
           %{time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), version: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.version), org: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.org)}
-        tab_type in ["中药", "中成药", "西药"] ->
+        tab_type in ["中药", "中成药", "西药", "模板"] ->
           %{time: [], org: [], version: []}
         true ->
           %{time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), org: [], version: []}
