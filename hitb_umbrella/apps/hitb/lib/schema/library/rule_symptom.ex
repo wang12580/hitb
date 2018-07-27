@@ -17,7 +17,7 @@ defmodule Hitb.Library.RuleSymptom do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:symptom, :icd9_a, :icd10_a, :pharmacy])
-    |> validate_required([:symptom, :icd9_a, :icd10_a, :pharmacy])
+    |> validate_required([:symptom, :pharmacy])
   end
 
 end
