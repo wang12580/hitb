@@ -41,6 +41,7 @@ defmodule Stat.Query do
           list = list(type, org, time, server_type)
           #获取query
           query = query(type, org, time, drg, server_type)
+          IO.inspect query
           #取总数
           count = select(query, [p], count(p.id))|>repo.all([timeout: 1500000])|>List.last
           #求本页stat
@@ -158,7 +159,7 @@ defmodule Stat.Query do
   defp query(type, org, time, drg, server_type) do
     cond do
       type in ["mdc", "adrg", "drg"] ->
-        drg = if(type == "mdc")do String.slice(drg, 3, 1) else drg end
+        drg = if(type == "mdc")do String.split(drg, "-")|>List.first else drg end
         case server_type do
           "server" ->
             from(p in HitbStatDrg)
