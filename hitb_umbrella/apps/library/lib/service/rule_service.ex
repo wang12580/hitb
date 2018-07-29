@@ -14,6 +14,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
   alias Hitb.Library.LibWt4, as: HitbLibWt4
   alias Hitb.Library.Cdh, as: HitbRuleCdh
+  alias Hitb.Library.RuleSymptom, as: HitbRuleSymptom
   alias Hitb.Edit.MyMould, as: HitbRuleMyMould
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
@@ -444,6 +445,26 @@ defmodule Library.RuleService do
         end
     %{result: result}
   end
+
+  def rule_symptom(symptom, icd9_a, icd10_a, pharmacy) do
+    symptoms = HitbRepo.get_by(HitbRuleSymptom, symptom: symptom)
+    if symptoms != nil do
+      IO.inspect symptoms
+      symptoms
+      |> HitbRuleSymptom.changeset(%{icd9_a: icd9_a, icd10_a: icd10_a, pharmacy: pharmacy})
+      |> HitbRepo.update()
+      %{success: true, info: "保存成功"}
+    else
+      body = %{"symptom" => symptom, "icd9_a" => icd9_a, "icd10_a" => icd10_a, "pharmacy" => pharmacy}
+      IO.inspect body
+      %HitbRuleSymptom{}
+      |> HitbRuleSymptom.changeset(body)
+      |> HitbRepo.insert()
+      %{success: true, info: "保存成功"}
+    end
+     # HitbRepo.get_by(HitbCda, username: username, name: filename)
+  end
+
   defp table(filename, tab) do
     tab_type =
       if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do

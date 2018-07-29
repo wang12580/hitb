@@ -4,6 +4,7 @@ defmodule HitbserverWeb.RuleController do
   alias Library.RuleService
   alias Library.RuleService
   alias Library.CdhService
+  alias Library.RuleCdaStatService
   plug HitbserverWeb.Access
   plug :put_layout, "app_stat.html"
 
@@ -58,6 +59,16 @@ defmodule HitbserverWeb.RuleController do
     %{"filename" => filename, "value" => value, "servertype" => servertype} = Map.merge(%{"filename" => "", "value" => "", "servertype" => ""}, conn.params)
     result = RuleService.rule_search(filename, value, servertype)
     json conn, result
+  end
+  def rule_symptom(conn, _params) do
+    %{"symptom" => symptom, "icd9_a" => icd9_a, "icd10_a" => icd10_a, "pharmacy" => pharmacy } = Map.merge(%{"symptom" => "上腹痛", "icd9_a" => [], "icd10_a" => [], "pharmacy" => ["消化系溃疡"]}, conn.params)
+    RuleService.rule_symptom(symptom, icd9_a, icd10_a, pharmacy)
+    json conn, %{}
+  end
+  def symptom_serach(conn, _params) do
+    %{"symptom" => symptom} = Map.merge(%{"symptom" => %{}}, conn.params)
+    result = RuleCdaStatService.symptom_serach(symptom)
+    json conn, %{result: result}
   end
 
 end
