@@ -22,12 +22,17 @@ defmodule HitbserverWeb.RuleController do
 
   def rule_client(conn, _params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type, "sort_type" => sort_type, "sort_value" => sort_value} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server", "sort_type" => "", "sort_value" => ""}, conn.params)
-    sort_value = RuleService.en(sort_value)
+    sort_value =
+      cond do
+        tab_type == "西药" and sort_value == "编码" -> "英文名称"
+        tab_type == "cdh" and sort_value == "编码" -> "键"
+        true -> sort_value
+      end
     server_type = if(server_type == "undefined")do "server" else server_type end
     result =
       case tab_type do
         "cdh" ->
-          CdhService.cdh(page, rows, server_type)
+          CdhService.cdh(page, rows, server_type, sort_type, sort_value)
         _ ->
           RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
       end
