@@ -11,7 +11,7 @@ defmodule Library.RuleServiceTest do
   end
 
   test "test rule_client" do
-    assert RuleService.rule_client(1, "year", "mdc", "BJ", "", "", 1, "server", "asc", "code") == %{count: 0, library: [], page: 1, page_list: [], list: %{org: ["全部"], time: ["全部"], version: ["全部"]}}
+    assert RuleService.rule_client(1, "year", "mdc", "BJ", "", "", 1, "server", "asc", "code") == %{count: 0, library: [], list: %{org: ["全部"], time: ["全部"], version: ["全部"]}, page: 1, page_list: [], sort_type: "asc", sort_value: "code"}
   end
 
   test "test contrast" do
