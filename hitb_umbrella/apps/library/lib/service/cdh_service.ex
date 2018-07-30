@@ -27,6 +27,9 @@ defmodule Library.CdhService do
   end
 
   def cdh(page, rows, server_type, sort_type, sort_value) do
+    if sort_value == "" do
+      sort_value = "键"
+    end
     rows = if(is_integer(rows))do rows else String.to_integer(rows) end
     skip = Page.skip(page, rows)
     query = if(server_type == "server")do from(w in HitbCdh) else from(w in BlockCdh) end
