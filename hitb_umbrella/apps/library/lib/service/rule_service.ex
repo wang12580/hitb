@@ -238,6 +238,7 @@ defmodule Library.RuleService do
               |>offset([w], ^skip)
           end
       end
+    IO.inspect query
     result = repo.all(query)
     list =
       cond do
