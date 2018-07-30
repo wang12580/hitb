@@ -14,6 +14,7 @@ defmodule Library.RuleService do
   alias Hitb.Library.RuleIcd10, as: HitbRuleIcd10
   alias Hitb.Library.LibWt4, as: HitbLibWt4
   alias Hitb.Library.Cdh, as: HitbRuleCdh
+  alias Hitb.Library.RuleSymptom, as: HitbRuleSymptom
   alias Hitb.Edit.MyMould, as: HitbRuleMyMould
   alias Hitb.Library.ChineseMedicine, as: HitbChineseMedicine
   alias Hitb.Library.ChineseMedicinePatent, as: HitbChineseMedicinePatent
@@ -78,7 +79,7 @@ defmodule Library.RuleService do
   end
 
   def rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
-    [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
+    [result, list, count, page_list, page_num] = clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, en(sort_value))
     result =
       case length(result) do
         0 -> []
@@ -93,7 +94,7 @@ defmodule Library.RuleService do
         _ ->
         [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
       end
-    %{library: result, list: list, count: count, page_list: page_list, page: page_num}
+    %{library: result, list: list, count: count, page_list: page_list, page: page_num, sort_type: sort_type, sort_value: sort_value}
   end
 
   def clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
@@ -212,12 +213,14 @@ defmodule Library.RuleService do
     skip = Page.skip(page, rows)
     query =
       cond do
-        rows == 0 -> query
-        |>limit([w], ^rows)
-        |>offset([w], ^skip)
-        sort_value == "" -> query
-        |>limit([w], ^rows)
-        |>offset([w], ^skip)
+        rows == 0 ->
+          query
+          |>limit([w], ^rows)
+          |>offset([w], ^skip)
+        sort_value == "" ->
+          query
+          |>limit([w], ^rows)
+          |>offset([w], ^skip)
         true ->
           sort_value = String.to_atom(sort_value)
           case sort_type do
@@ -230,9 +233,9 @@ defmodule Library.RuleService do
               |>limit([w], ^rows)
               |>offset([w], ^skip)
             _->
-            order_by(query, [w], asc: field(w, ^sort_value))
-            |>limit([w], ^rows)
-            |>offset([w], ^skip)
+              order_by(query, [w], asc: field(w, ^sort_value))
+              |>limit([w], ^rows)
+              |>offset([w], ^skip)
           end
       end
     result = repo.all(query)
@@ -245,8 +248,8 @@ defmodule Library.RuleService do
         true ->
           %{time: ["全部"] ++ repo.all(from p in tab, distinct: true, select: p.year), org: [], version: []}
       end
-    [page_num, page_list, _count_page] = Page.page_list(page, count, rows)
-    [result, page_list, page_num, count, tab_type, type, dissect, list, version, year]
+    [page_num, page_list, count_page] = Page.page_list(page, count, rows)
+    [result, page_list, page_num, count_page, tab_type, type, dissect, list, version, year]
   end
 
   def contrast(table, id) do
@@ -369,6 +372,7 @@ defmodule Library.RuleService do
       end
     %{result: result}
   end
+
   def rule_search(filename, value, servertype) do
     tab =
       case servertype do
@@ -444,6 +448,24 @@ defmodule Library.RuleService do
         end
     %{result: result}
   end
+
+  def rule_symptom(symptom, icd9_a, icd10_a, pharmacy) do
+    symptoms = HitbRepo.get_by(HitbRuleSymptom, symptom: symptom)
+    if symptoms != nil do
+      symptoms
+      |> HitbRuleSymptom.changeset(%{icd9_a: icd9_a, icd10_a: icd10_a, pharmacy: pharmacy})
+      |> HitbRepo.update()
+      %{success: true, info: "保存成功"}
+    else
+      body = %{"symptom" => symptom, "icd9_a" => icd9_a, "icd10_a" => icd10_a, "pharmacy" => pharmacy}
+      %HitbRuleSymptom{}
+      |> HitbRuleSymptom.changeset(body)
+      |> HitbRepo.insert()
+      %{success: true, info: "保存成功"}
+    end
+     # HitbRepo.get_by(HitbCda, username: username, name: filename)
+  end
+
   defp table(filename, tab) do
     tab_type =
       if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
@@ -488,6 +510,7 @@ defmodule Library.RuleService do
       true-> from(w in tab)
     end
   end
+
   defp cn(key) do
     case to_string(key) do
       "code" -> "编码"
@@ -529,6 +552,7 @@ defmodule Library.RuleService do
       _ -> to_string(key)
     end
   end
+
   def en(key) do
     case to_string(key) do
       "编码" -> "code"
@@ -566,6 +590,8 @@ defmodule Library.RuleService do
       "中文名称" -> "zh_name"
       "哈希值" -> "hash"
       "上一条哈希值" -> "previous_hash"
+      "键" -> "key"
+      "值" -> "value"
       _ ->to_string(key)
     end
 

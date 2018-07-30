@@ -157,7 +157,8 @@ defmodule HitbserverWeb.Router do
     get "/stat_wt4", Wt4Controller, :stat_wt4
     get "/server_rule", RuleController, :server_rule
     get "/rule_down", RuleController, :rule_down
-
+    get "/rule_symptom", RuleController, :rule_symptom
+    post "/symptom_serach", RuleController, :symptom_serach
   end
 
   scope "/servers", HitbserverWeb do
@@ -217,6 +218,7 @@ defmodule HitbserverWeb.Router do
     get "/stat_file", ClientController, :stat_file
     get "/stat_client", ClientController, :stat_client
     post "/stat_create", ClientController, :stat_create
+    get "/download_client", ClientController, :download_client
     #相似病案
     post "/cda_consult", StatCdaController, :cda_consult
     # 自定义查询
