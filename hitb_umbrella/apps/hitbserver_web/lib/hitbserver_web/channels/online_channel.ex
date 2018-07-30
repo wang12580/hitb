@@ -45,6 +45,12 @@ defmodule HitbserverWeb.OnlineChannel do
     {:noreply, socket}
   end
 
+  def handle_in("用户下线", %{"username" => username}, socket) do
+    Hitb.ets_insert(:socket_user, username, false)
+    Logger.warn("用户--#{username}--用户下线")
+    {:noreply, socket}
+  end
+
   def handle_in("邀请加入" <> _private_room_id, %{"body" => body, "username" => username, "create_room_time" => create_room_time, "invite" => invite, "room_owner" => room_owner}, socket) do
     broadcast! socket, "邀请加入", %{message: "#{username}邀请您进入#{body}房间", time: Hitb.Time.standard_time(), room: body, create_room_time: create_room_time, invite: invite, room_owner: room_owner}
     {:noreply, socket}
