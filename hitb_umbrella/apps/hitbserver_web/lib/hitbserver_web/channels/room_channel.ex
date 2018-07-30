@@ -52,15 +52,15 @@ defmodule HitbserverWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("离开房间", %{"body" => body, "username" => username}, socket) do
-    Hitb.ets_del(:socket_user, socket.username)
-    broadcast! socket, "离开房间", %{body: body, username: username}
+  def handle_in("离开房间", %{"username" => username}, socket) do
+    Hitb.ets_del(:socket_user, username)
+    broadcast! socket, "已离开房间", %{body: "已离开房间", username: username}
     {:noreply, socket}
   end
 
   def terminate(_reason, socket) do
     Hitb.ets_del(:socket_user, socket.assigns.username)
-    Logger.warn("用户--#{socket.assigns.username}--离开房间")
+    Logger.warn("用户「#{socket.assigns.username}」离开房间")
     broadcast! socket, "离开房间", %{body: "离开房间", username: socket.assigns.username}
     :ok
   end

@@ -11,7 +11,7 @@ defmodule HitbserverWeb.OnlineChannel do
         username in ["hitb", "test@test.com.cn"] ->
           [success, user] = UserService.socket_login(%{password: password, username: username})
           Hitb.ets_insert(:socket_user, username, true)
-          Logger.warn("用户--#{username}--加入服务端")
+          Logger.warn("用户「#{username}」登录")
           socket = %{socket | :assigns => user}
           {:ok, socket}
         Hitb.ets_get(:socket_user, username) ->
@@ -20,7 +20,7 @@ defmodule HitbserverWeb.OnlineChannel do
           [success, user] = UserService.socket_login(%{password: password, username: username})
           if(success)do
             Hitb.ets_insert(:socket_user, username, true)
-            Logger.warn("用户--#{username}--加入服务端")
+            Logger.warn("用户「#{username}」登录")
             socket = %{socket | :assigns => user}
             Process.flag(:trap_exit, true)
             :timer.send_interval(5000, :ping)
@@ -34,8 +34,15 @@ defmodule HitbserverWeb.OnlineChannel do
     end
   end
 
+  def join("online:lobby", %{"username" => username}, socket) do
+    Hitb.ets_insert(:socket_user, username, true)
+    Logger.warn("用户「#{username}」已经离开房间,重新进入大厅")
+    {:ok, socket}
+  end
+
   def handle_info(:ping, socket) do
-    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online()  -- [socket.assigns.username] }
+    online_user = online()|>Enum.reject(fn x -> x == socket.assigns.username end)
+    push socket, "ping", %{username: "SYSTEM", body: "ping", time: Hitb.Time.standard_time(), users: online_user}
     {:noreply, socket}
   end
 
@@ -46,8 +53,8 @@ defmodule HitbserverWeb.OnlineChannel do
   end
 
   def handle_in("用户下线", %{"username" => username}, socket) do
-    Hitb.ets_insert(:socket_user, username, false)
-    Logger.warn("用户--#{username}--用户下线")
+    Hitb.ets_del(:socket_user, username)
+    Logger.warn("用户「#{username}」下线")
     {:noreply, socket}
   end
 
@@ -59,7 +66,7 @@ defmodule HitbserverWeb.OnlineChannel do
   def terminate(_, socket) do
     Hitb.ets_del(:socket_user, socket.assigns.username)
     if(socket.assigns.username != "test@test.com.cn")do
-      Logger.warn("用户--#{socket.assigns.username}--已下线")
+      Logger.warn("用户「#{socket.assigns.username}」下线")
     end
     :ok
   end
