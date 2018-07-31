@@ -10,7 +10,7 @@ defmodule HitbserverWeb.RuleController do
 
   def rule(conn, _params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    result = RuleService.rule(page, type, tab_type, version, year, dissect, rows)
+    result = RuleService.rule_json(page, type, tab_type, version, year, dissect, rows)
     json conn, result
   end
 
