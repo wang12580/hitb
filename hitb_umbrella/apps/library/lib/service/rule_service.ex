@@ -77,27 +77,12 @@ defmodule Library.RuleService do
 
   def clinet(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
     [result, page_list, page_num, count, _, _, _, list, _, _] = RuleQuery.get_rule(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
-    result = result
-      |>Enum.map(fn x ->
-          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc, :content, :header, :is_change, :is_show])
-        end)
-      |>Enum.map(fn x ->
-          x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
-          x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
-          x
-        end)
+    result = RuleQuery.results(result)
     [result, list, count, page_list, page_num]
   end
 
   def contrast(table, id) do
-    tab =
-      cond do
-        table == "icd9" -> HitbRuleIcd9
-        table == "icd10" -> HitbRuleIcd10
-        table == "mdc" -> HitbRuleMdc
-        table == "adrg" -> HitbRuleAdrg
-        table == "drg" -> HitbRuleDrg
-      end
+    tab = RuleQuery.tab("server", table)
     result = String.split(id, "-")
       |>Enum.map(fn x ->
           x = String.to_integer(x)
@@ -130,14 +115,7 @@ defmodule Library.RuleService do
   end
 
   def details(code, table, version) do
-    tab =
-      cond do
-        table == "icd9" -> HitbRuleIcd9
-        table == "icd10" -> HitbRuleIcd10
-        table == "mdc" -> HitbRuleMdc
-        table == "adrg" -> HitbRuleAdrg
-        table == "drg" -> HitbRuleDrg
-      end
+    tab = RuleQuery.tab("server", table)
     result = HitbRepo.all(from p in tab, where: p.code == ^code)
     result1 = HitbRepo.all(from p in tab, where: p.code == ^code and p.version == ^version)
     result = Enum.map(result, fn x ->
@@ -152,14 +130,7 @@ defmodule Library.RuleService do
 # 模糊搜索
   def search(page, table, code) do
     skip = Page.skip(page, 10)
-    tab =
-      cond do
-        table == "icd9" -> HitbRuleIcd9
-        table == "icd10" -> HitbRuleIcd10
-        table == "mdc" -> HitbRuleMdc
-        table == "adrg" -> HitbRuleAdrg
-        table == "drg" -> HitbRuleDrg
-      end
+    tab = RuleQuery.tab("server", table)
     code = "%" <> code <> "%"
     result = from(w in tab, where: like(w.code, ^code) or like(w.name, ^code))
       |> limit([w], 10)
@@ -176,30 +147,10 @@ defmodule Library.RuleService do
   end
 
   def rule_down(filename) do
-    tab =
-      cond do
-        filename == "icd9.csv" -> HitbRuleIcd9
-        filename == "icd10.csv" -> HitbRuleIcd10
-        filename == "mdc.csv" -> HitbRuleMdc
-        filename == "adrg.csv" -> HitbRuleAdrg
-        filename == "drg.csv" -> HitbRuleDrg
-        filename == "cdh.csv" -> HitbRuleCdh
-        filename == "中药.csv" -> HitbChineseMedicine
-        filename == "中成药.csv" -> HitbChineseMedicinePatent
-        filename == "西药.csv" -> HitbWesternMedicine
-        true ->  HitbLibWt4
-      end
-    query = table(filename, tab)
+    tab = RuleQuery.tab("server", filename)
+    query = RuleQuery.table(filename, tab)
     result = HitbRepo.all(query)
-    result = result
-      |>Enum.map(fn x ->
-          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
-        end)
-      |>Enum.map(fn x ->
-          x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
-          x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
-          x
-        end)
+    result = RuleQuery.results(result)
     result =
       case length(result) do
         0 -> []
@@ -211,43 +162,18 @@ defmodule Library.RuleService do
   end
 
   def rule_search(filename, value, servertype) do
-    tab =
+    tab = RuleQuery.tab(servertype, filename)
+    result =
       case servertype do
-        "server" ->
-          case filename do
-            "icd9.csv" -> HitbRuleIcd9
-            "icd10.csv" -> HitbRuleIcd10
-            "mdc.csv" -> HitbRuleMdc
-            "adrg.csv" -> HitbRuleAdrg
-            "drg.csv" -> HitbRuleDrg
-            "cdh.csv" -> HitbRuleCdh
-            "中药.csv" -> HitbChineseMedicine
-            "中成药.csv" -> HitbChineseMedicinePatent
-            "西药.csv" -> HitbWesternMedicine
-            _ -> HitbLibWt4
-          end
-        "block" ->
-          case filename do
-            "icd9.csv" -> BlockRuleIcd9
-            "icd10.csv" -> BlockRuleIcd10
-            "mdc.csv" -> BlockRuleMdc
-            "adrg.csv" -> BlockRuleAdrg
-            "drg.csv" -> BlockRuleDrg
-            _ -> BlockLibWt4
-          end
-          _ -> true
+        "server" -> HitbRepo.all(from p in tab, limit: 1)
+        "block" -> BlockRepo.all(from p in tab, limit: 1)
       end
-      result =
-        case servertype do
-          "server" -> HitbRepo.all(from p in tab, limit: 1)
-          "block" -> BlockRepo.all(from p in tab, limit: 1)
-        end
-      result = result
-        |>Enum.map(fn x ->
-            Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
-          end)
+    result = result
+      |>Enum.map(fn x ->
+          Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
+        end)
       keys = hd(result)|>Map.keys()
-      query = table(filename, tab)
+      query = RuleQuery.table(filename, tab)
       query =
         case tab do
           Hitb.Library.LibWt4 ->
@@ -261,21 +187,12 @@ defmodule Library.RuleService do
             |>or_where([p],  like(field(p, ^x), ^value))
           end)
         end
-
       result =
         case servertype do
           "server" -> HitbRepo.all(query)
           "block" -> BlockRepo.all(query)
         end
-      result = result
-        |>Enum.map(fn x ->
-            Map.drop(x, [:__meta__, :__struct__, :inserted_at, :updated_at, :id, :icdc, :icdc_az, :icdcc, :nocc_1, :nocc_a, :nocc_aa, :org, :plat, :mdc, :icd9_a, :icd9_aa, :icd10_a, :icd10_aa, :drgs_1, :icd10_acc, :icd10_b, :icd10_bb, :icd10_bcc, :icd9_acc, :icd9_b, :icd9_bb, :icd9_bcc])
-          end)
-        |>Enum.map(fn x ->
-            x = if(not is_nil(Map.get(x, :adrg)) and is_list(Map.get(x, :adrg)))do %{x | :adrg => Enum.join(x.adrg,",")} else x end
-            x = if(not is_nil(Map.get(x, :codes)))do %{x | :codes => Enum.join(x.codes,",")} else x end
-            x
-          end)
+      result = RuleQuery.results(result)
       result =
         case length(result) do
           0 -> []
@@ -302,52 +219,6 @@ defmodule Library.RuleService do
     end
      # HitbRepo.get_by(HitbCda, username: username, name: filename)
   end
-
-  defp table(filename, tab) do
-    tab_type =
-      if filename in ["基本信息.csv", "街道乡镇代码.csv", "民族.csv", "区县编码.csv", "手术血型.csv", "出入院编码.csv", "肿瘤编码.csv", "科别代码.csv", "病理诊断编码.csv", "医保诊断依据.csv"] do
-        String.slice(filename, 0..-5)
-      else
-        filename
-      end
-    cond do
-      tab_type in ["基本信息", "街道乡镇代码", "民族", "区县编码", "手术血型", "出入院编码", "肿瘤编码", "科别代码", "病理诊断编码", "医保诊断依据"]->
-        cond do
-          tab_type == "基本信息" ->
-            from(p in tab)
-            |>where([p], p.type == "行政区划" or p.type == "性别" or p.type == "婚姻状况" or p.type == "职业代码" or p.type == "联系人关系" or p.type == "国籍")
-          tab_type == "街道乡镇代码"->
-            from(p in tab)
-            |>where([p], p.type == "街道乡镇代码")
-          tab_type == "民族"->
-            from(p in tab)
-            |>where([p], p.type == "民族")
-          tab_type == "区县编码"->
-            from(p in tab)
-            |>where([p], p.type == "区县编码")
-          tab_type == "手术血型"->
-            from(p in tab)
-            |>where([p], p.type == "切口愈合" or p.type == "手术级别" or p.type == "麻醉方式" or p.type == "血型" or p.type == "Rh")
-          tab_type == "出入院编码"->
-            from(p in tab)
-            |>where([p], p.type == "离院方式" or p.type == "入院病情" or p.type == "入院途径" or p.type == "住院计划")
-          tab_type == "肿瘤编码"->
-            from(p in tab)
-            |>where([p], p.type == "0～Ⅳ肿瘤分期" or p.type == "TNM肿瘤分期" or p.type == "分化程度编码")
-          tab_type == "科别代码"->
-            from(p in tab)
-            |>where([p], p.type == "科别")
-          tab_type == "病理诊断编码"->
-            from(p in tab)
-            |>where([p], p.type == "病理诊断编码(M码)")
-          tab_type == "医保诊断依据"->
-            from(p in tab)
-            |>where([p], p.type == "最高诊断依据" or p.type == "药物过敏" or p.type == "重症监护室名称指标" or p.type == "医疗付费方式" or p.type == "病案质量")
-        end
-      true-> from(w in tab)
-    end
-  end
-
   defp cn(key) do
     case to_string(key) do
       "code" -> "编码"
