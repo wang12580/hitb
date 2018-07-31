@@ -10,7 +10,7 @@ defmodule HitbserverWeb.RuleController do
 
   def rule(conn, _params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    result = RuleService.rule_json(page, type, tab_type, version, year, dissect, rows)
+    result = RuleService.json(page, type, tab_type, version, year, dissect, rows)
     json conn, result
   end
 
@@ -22,6 +22,11 @@ defmodule HitbserverWeb.RuleController do
 
   def rule_client(conn, _params) do
     %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type, "sort_type" => sort_type, "sort_value" => sort_value} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server", "sort_type" => "", "sort_value" => ""}, conn.params)
+    rows =
+      case is_integer(rows) do
+        true -> rows
+        _ -> String.to_integer(rows)
+      end
     sort_value =
       cond do
         tab_type == "西药" and sort_value == "编码" -> "英文名称"
@@ -56,7 +61,7 @@ defmodule HitbserverWeb.RuleController do
   end
   # 字典库下载
   def rule_down(conn, %{"filename" => filename}) do
-    result = RuleService.rule_down(filename)
+    result = RuleService.download(filename)
     json conn, result
   end
   # 客户端模糊搜索
