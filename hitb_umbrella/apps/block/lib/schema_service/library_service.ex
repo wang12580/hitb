@@ -170,4 +170,27 @@ defmodule Block.LibraryService do
     |>Repo.insert
   end
 
+  def get_block_file() do
+    [Repo.all(from p in RuleMdc, select: %{table: "mdc", count: count(p.id)}),
+    Repo.all(from p in RuleAdrg, select: %{table: "adrg", count: count(p.id)}),
+    Repo.all(from p in RuleDrg, select: %{table: "drg", count: count(p.id)}),
+    Repo.all(from p in RuleIcd9, select: %{table: "icd9", count: count(p.id)}),
+    Repo.all(from p in RuleIcd10, select: %{table: "icd10", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "基本信息", select: %{table: "基本信息", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "街道乡镇代码", select: %{table: "街道乡镇代码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "民族", select: %{table: "民族", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "区县编码", select: %{table: "区县编码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "手术血型", select: %{table: "手术血型", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "出入院编码", select: %{table: "出入院编码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "肿瘤编码", select: %{table: "肿瘤编码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "科别代码", select: %{table: "科别代码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "病理诊断编码", select: %{table: "病理诊断编码", count: count(p.id)}),
+    Repo.all(from p in LibWt4, where: p.type == "医保诊断依据", select: %{table: "医保诊断依据", count: count(p.id)}),
+    Repo.all(from p in ChineseMedicine, select: %{table: "中药", count: count(p.id)}),
+    Repo.all(from p in ChineseMedicinePatent, select: %{table: "中成药", count: count(p.id)})
+    ]
+    |>List.flatten
+    |>Enum.reject(fn x -> x.count == 0 end)
+    |>Enum.map(fn x -> "#{x.table}.csv" end)
+  end
 end

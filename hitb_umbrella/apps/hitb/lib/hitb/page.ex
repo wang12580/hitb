@@ -1,6 +1,8 @@
 defmodule Hitb.Page do
   #求当前页的skip值(当前页码,每页条数)
   def skip(page, num) do
+    page = to(page)
+    num = to(num)
     #定义每页条目数量
     cond do
       is_integer(page) -> (page-1)*num
@@ -10,6 +12,9 @@ defmodule Hitb.Page do
 
   #求分页列表(当前页码,总计条数,每页条数)
   def page_list(page, count, num) do
+    page = to(page)
+    count = to(count)
+    num = to(num)
     #定义每页条目数量
     unless(num == 0)do
       page =
@@ -62,6 +67,13 @@ defmodule Hitb.Page do
       [page, Enum.reject(page_list, fn (x) -> x == nil end), page_count]
     else
       [1, [], []]
+    end
+  end
+
+  defp to(num) do
+    case is_integer(num) do
+      true -> num
+      _ -> String.to_integer(num)
     end
   end
 end
