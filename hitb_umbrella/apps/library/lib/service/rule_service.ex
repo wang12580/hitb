@@ -11,9 +11,9 @@ defmodule Library.RuleService do
   alias Library.Key
   alias Block.LibraryService
 
-  def json(page, type, tab_type, version, year, dissect, rows) do
+  def json(page, type, tab_type, version, year, dissect, rows, order_type, order) do
     #取得分析结果
-    [result, page_list, page_num, _, tab_type, _type, dissect, list, version, _] = RuleQuery.get_rule(page, type, tab_type, version, year, dissect, rows, "server", "asc", "", "")
+    [result, page_list, page_num, _, tab_type, _type, dissect, list, version, _] = RuleQuery.get_rule(page, type, tab_type, version, year, dissect, rows, "server", "asc", "code", "")
     #去除关键字段
     result = Enum.map(result, fn x -> Map.drop(x, [:__meta__, :__struct__]) end)
     %{result: result, page_list: page_list, page_num: page_num, tab_type: tab_type, type: type, dissect: dissect, list: list, version: version, year: year}
@@ -28,8 +28,8 @@ defmodule Library.RuleService do
     end
   end
 
-  def rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value) do
-    [result, page_list, page_num, count, _, _, _, list, _, _] = RuleQuery.get_rule(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, Key.en(sort_value), "")
+  def rule_client(page, type, tab_type, version, year, dissect, rows, server_type, order_type, order) do
+    [result, page_list, page_num, count, _, _, _, list, _, _] = RuleQuery.get_rule(page, type, tab_type, version, year, dissect, rows, server_type, order_type, Key.en(order), "")
     result = RuleQuery.del_key(result)
     result =
       case length(result) do
@@ -45,7 +45,7 @@ defmodule Library.RuleService do
         _ ->
         [["创建时间:#{Time.stime_ecto(file_info.inserted_at)}", "保存时间:#{Time.stime_ecto(file_info.updated_at)};创建用户:#{file_info.insert_user}", "修改用户:#{file_info.update_user}"] | result]
       end
-    %{library: result, list: list, count: count, page_list: page_list, page: page_num, sort_type: sort_type, sort_value: sort_value}
+    %{library: result, list: list, count: count, page_list: page_list, page: page_num, sort_value: order, sort_type: order_type}
   end
 
   #对比
