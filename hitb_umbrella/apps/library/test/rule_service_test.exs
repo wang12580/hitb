@@ -1,6 +1,7 @@
 defmodule Library.RuleServiceTest do
   use Hitb.DataCase, async: true
   alias Library.RuleService
+  alias Library.RuleCdaStatService
 
   test "test rule" do
     assert RuleService.json(1, "year", "mdc", "BJ", "", "", 15, "code", "asc") == %{dissect: "", page_list: [], page_num: 1, result: [], tab_type: "mdc", type: "year", version: "BJ", year: "", list: %{org: ["全部"], time: ["全部"], version: ["全部"]}}
@@ -24,5 +25,9 @@ defmodule Library.RuleServiceTest do
 
   test "test search" do
     assert RuleService.search(1, "mdc", "MDCA") == %{table: [], page_list: [], page_num: 1}
+  end
+
+  test "test symptom_serach" do
+    assert RuleCdaStatService.symptom_serach(%{}) == []
   end
 end
