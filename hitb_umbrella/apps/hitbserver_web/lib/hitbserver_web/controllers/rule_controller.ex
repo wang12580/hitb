@@ -9,8 +9,14 @@ defmodule HitbserverWeb.RuleController do
   plug :put_layout, "app_stat.html"
 
   def rule(conn, _params) do
-    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15}, conn.params)
-    result = RuleService.json(page, type, tab_type, version, year, dissect, rows)
+    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "order_type" => order_type, "order" => order} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "order_type" => "asc", "order" => "code"}, conn.params)
+    order =
+      cond do
+        tab_type == "western_medicine" and order == "code" -> "en_name"
+        tab_type == "cdh" and order == "code" -> "key"
+        true -> order
+      end
+    result = RuleService.json(page, type, tab_type, version, year, dissect, rows, order_type, order)
     json conn, result
   end
 
@@ -21,25 +27,25 @@ defmodule HitbserverWeb.RuleController do
   end
 
   def rule_client(conn, _params) do
-    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type, "sort_type" => sort_type, "sort_value" => sort_value} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server", "sort_type" => "", "sort_value" => ""}, conn.params)
+    %{"page" => page, "type" => type, "tab_type" => tab_type, "version" => version, "year" => year, "dissect" => dissect, "rows" => rows, "server_type" => server_type, "sort_type" => order_type, "sort_value" => order} = Map.merge(%{"page" => "1", "type" => "year", "tab_type" => "mdc", "version" => "BJ", "year" => "", "dissect" => "", "rows" => 15, "server_type" => "server", "sort_type" => "asc", "sort_value" => "编码"}, conn.params)
     rows =
       case is_integer(rows) do
         true -> rows
         _ -> String.to_integer(rows)
       end
-    sort_value =
+    order =
       cond do
-        tab_type == "西药" and sort_value == "编码" -> "英文名称"
-        tab_type == "cdh" and sort_value == "编码" -> "键"
-        true -> sort_value
+        tab_type == "西药" and order == "编码" -> "英文名称"
+        tab_type == "cdh" and order == "编码" -> "键"
+        true -> order
       end
     server_type = if(server_type == "undefined")do "server" else server_type end
     result =
       case tab_type do
         "cdh" ->
-          CdhService.cdh(page, rows, server_type, sort_type, sort_value)
+          CdhService.cdh(page, rows, server_type, order_type, order)
         _ ->
-          RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type, sort_type, sort_value)
+          RuleService.rule_client(page, type, tab_type, version, year, dissect, rows, server_type, order_type, order)
       end
     json conn, result
   end
