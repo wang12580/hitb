@@ -32,6 +32,10 @@ defmodule HitbserverWeb.RuleControllerTest do
     conn = get conn, "/library/search?table=mdc&code=A"
     assert json_response(conn, 200)["table"] == []
   end
+  test "post /symptom_serach", %{conn: conn} do
+    conn = post conn, "/library/symptom_serach", symptom: %{}
+    assert json_response(conn, 200)["result"] == []
+  end
 
 
 end
